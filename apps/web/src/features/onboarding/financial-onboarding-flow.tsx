@@ -125,7 +125,7 @@ function formatDate(value: string | null): string {
   return `${day}/${month}/${year}`;
 }
 
-function FieldError({ id, message }: Readonly<{ id: string; message?: string }>) {
+function FieldError({ id, message }: Readonly<{ id: string; message: string | undefined }>) {
   if (message === undefined) return null;
 
   return (
