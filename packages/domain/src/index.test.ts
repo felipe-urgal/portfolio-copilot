@@ -5,6 +5,7 @@ import {
   AssetClass,
   AssetId,
   AssetQuantity,
+  calculateAllocationGaps,
   InstrumentType,
   Money,
   Percentage,
@@ -17,7 +18,7 @@ import {
 } from "./index";
 
 describe("domain package boundary", () => {
-  it("exports financial, asset, portfolio, position and transaction primitives", () => {
+  it("exports financial, asset, portfolio, position, contribution and transaction primitives", () => {
     expect(Money.fromDecimal("1.00", "BRL").toDecimalString()).toBe("1.00");
     expect(Percentage.fromPercent("10").toPercentString()).toBe("10.0000");
     expect(AllocationWeight.fromPercent("50").toPercentString()).toBe("50.0000");
@@ -39,5 +40,6 @@ describe("domain package boundary", () => {
     );
     expect(typeof projectAssetPositions).toBe("function");
     expect(typeof TargetAllocation.create).toBe("function");
+    expect(typeof calculateAllocationGaps).toBe("function");
   });
 });
