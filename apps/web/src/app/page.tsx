@@ -6,13 +6,19 @@ export default function Home() {
   return (
     <main className="shell">
       <section className="card" aria-labelledby="page-title">
-        <p className="eyebrow">Fundação técnica</p>
         <h1 id="page-title">{APP_NAME}</h1>
         <p>
-          Base técnica pronta para evoluir o motor de carteira com regras financeiras
-          determinísticas, auditáveis e testáveis.
+          Organize seu contexto financeiro em um fluxo simples e gere um perfil validado antes de
+          avançar para carteira e recomendações.
         </p>
-        <Link href="/health">Verificar saúde da aplicação</Link>
+        <div className="card-actions">
+          <Link className="primary-link" href="/onboarding">
+            Começar onboarding financeiro
+          </Link>
+          <Link className="secondary-link" href="/health">
+            Verificar saúde da aplicação
+          </Link>
+        </div>
       </section>
     </main>
   );
