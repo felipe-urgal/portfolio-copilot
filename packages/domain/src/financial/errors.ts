@@ -2,6 +2,7 @@ export type FinancialDomainErrorCode =
   | "INVALID_DECIMAL"
   | "INVALID_CURRENCY_CODE"
   | "CURRENCY_MISMATCH"
+  | "INVALID_FINANCIAL_SNAPSHOT"
   | "ALLOCATION_WEIGHT_OUT_OF_RANGE";
 
 export class FinancialDomainError extends Error {
@@ -34,6 +35,15 @@ export class CurrencyMismatchError extends FinancialDomainError {
     super(
       "CURRENCY_MISMATCH",
       `Cannot operate on different currencies: ${leftCurrency} and ${rightCurrency}`,
+    );
+  }
+}
+
+export class InvalidFinancialSnapshotError extends FinancialDomainError {
+  public constructor(field: string, value: string) {
+    super(
+      "INVALID_FINANCIAL_SNAPSHOT",
+      `Invalid financial snapshot field ${field}: ${JSON.stringify(value)}`,
     );
   }
 }
