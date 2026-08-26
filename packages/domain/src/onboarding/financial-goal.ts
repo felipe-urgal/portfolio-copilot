@@ -74,7 +74,10 @@ export type FinancialGoalSnapshot = Readonly<{
 
 const CANONICAL_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 
-function normalizeTargetDate(goalType: FinancialGoalType, value: string | null | undefined): string | null {
+function normalizeTargetDate(
+  goalType: FinancialGoalType,
+  value: string | null | undefined,
+): string | null {
   if (value === null || value === undefined) {
     if (goalType.code === "DATED_PURPOSE") {
       throw new InvalidFinancialGoalTargetDateError(goalType.code, null);
@@ -109,11 +112,11 @@ function normalizeTargetAmount(value: Money): Money {
 }
 
 function toFinancialGoalId(value: FinancialGoalId | string): FinancialGoalId {
-  return typeof value === "string" ? FinancialGoalId.from(value) : value;
+  return value instanceof FinancialGoalId ? value : FinancialGoalId.from(String(value));
 }
 
 function toFinancialGoalType(value: FinancialGoalType | FinancialGoalTypeCode): FinancialGoalType {
-  return typeof value === "string" ? FinancialGoalType.from(value) : value;
+  return value instanceof FinancialGoalType ? value : FinancialGoalType.from(String(value));
 }
 
 export class FinancialGoal {
