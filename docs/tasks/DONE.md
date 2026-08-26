@@ -40,3 +40,18 @@ Histórico resumido de atividades concluídas.
 - `apps/web/tsconfig.json` continua incluindo `next-env.d.ts`, conforme recomendado pelo Next.js;
 - `apps/web` passa a executar `next typegen && tsc --noEmit` no `typecheck`, garantindo que os tipos gerados do Next existam antes da validação TypeScript;
 - documentação de desenvolvimento atualizada para refletir o comportamento correto.
+
+## 2026-08-26 — Portfolio Engine: tipos financeiros fundamentais
+
+- `CurrencyCode` criado como value object reutilizável e normalizado;
+- `Money` criado com moeda explícita e `bigint` em unidades mínimas, sem `float` binário;
+- entradas monetárias decimais aceitam `string` e usam arredondamento determinístico half away from zero;
+- soma, subtração e comparação rejeitam moedas incompatíveis;
+- snapshots monetários serializam unidades mínimas como string inteira para persistência futura segura;
+- `Percentage` criado com quatro casas decimais de pontos percentuais e suporte legítimo a valores negativos ou acima de 100%;
+- `AllocationWeight` criado com range estrito de 0% a 100%, validado antes do arredondamento;
+- erros financeiros e snapshots inválidos usam erros de domínio tipados;
+- testes de limites, arredondamento, moedas, snapshots e soma repetida sem drift;
+- teste determinístico de round-trip sobre faixa ampla de centavos sem nova dependência property-based;
+- auto code review sênior extraiu `CurrencyCode`, tipou erros de snapshot e endureceu o helper de arredondamento para `noUncheckedIndexedAccess`;
+- ADR-0005 registra precisão, arredondamento, persistência e separação futura entre dinheiro, preço e quantidade.

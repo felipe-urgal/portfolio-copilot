@@ -16,6 +16,7 @@ Este arquivo resume decisões. Decisões arquiteturais importantes também ganha
 | D-010 | Web/PWA é direção inicial de interface | Proposta, validar na fundação técnica |
 | D-011 | Produto público exige Regulatory Gate | Aceita |
 | D-012 | Sem microaportes artificiais: o motor pode concentrar o aporte do mês em menos destinos para corrigir gaps | Aceita |
+| D-013 | Valores financeiros fundamentais usam representação decimal inteira; `Money` não usa float e quantidade/preço terão tipos próprios | Aceita — ADR-0005 |
 
 ## Como alterar uma decisão
 
