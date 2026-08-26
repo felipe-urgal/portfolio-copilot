@@ -29,5 +29,14 @@ Histórico resumido de atividades concluídas.
 ## 2026-08-26 — Higiene de artefatos locais
 
 - `*.tsbuildinfo` adicionado ao `.gitignore` por ser cache incremental do TypeScript;
-- tratamento de `next-env.d.ts`, `*.tsbuildinfo`, `.next/`, `dist/` e `coverage/` documentado em `docs/DEVELOPMENT.md`;
+- tratamento de arquivos gerados pelo Next.js/TypeScript documentado em `docs/DEVELOPMENT.md`;
 - regra de `git status` limpo de artefatos locais não intencionais reforçada antes de finalizar PRs.
+
+## 2026-08-26 — Correção de versionamento do `next-env.d.ts`
+
+- confirmado na documentação atual do Next.js que `next-env.d.ts` é regenerado por `next dev`, `next build` e `next typegen`;
+- decisão anterior de manter `apps/web/next-env.d.ts` versionado corrigida;
+- `next-env.d.ts` removido do repositório e adicionado ao `.gitignore`;
+- `apps/web/tsconfig.json` continua incluindo `next-env.d.ts`, conforme recomendado pelo Next.js;
+- `apps/web` passa a executar `next typegen && tsc --noEmit` no `typecheck`, garantindo que os tipos gerados do Next existam antes da validação TypeScript;
+- documentação de desenvolvimento atualizada para refletir o comportamento correto.
