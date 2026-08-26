@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useReducer, useRef, type FormEvent } from "react";
+import { useReducer, useRef, type Dispatch, type FormEvent } from "react";
 
 import {
   FINANCIAL_GOAL_TYPES,
@@ -17,6 +17,7 @@ import {
 } from "@portfolio-copilot/domain";
 import { APP_NAME } from "@portfolio-copilot/shared";
 
+import styles from "./financial-onboarding-flow.module.css";
 import {
   ONBOARDING_STEPS,
   createInitialOnboardingState,
@@ -24,32 +25,36 @@ import {
   validateOnboardingStep,
   type FieldErrors,
   type GoalDraft,
+  type OnboardingAction,
   type OnboardingDraft,
   type OnboardingStep,
 } from "./onboarding-form";
-import styles from "./financial-onboarding-flow.module.css";
 
 const STEP_COPY: Record<
   OnboardingStep,
-  Readonly<{ label: string; title: string; description: string }>
+  Readonly<{ label: string; summary: string; title: string; description: string }>
 > = {
   profile: {
     label: "Perfil",
+    summary: "Moeda, risco e horizonte",
     title: "Defina seu contexto financeiro",
     description: "Comece pela moeda, tolerância a risco e horizonte que você declara hoje.",
   },
   reserve: {
     label: "Reserva",
+    summary: "Meta opcional",
     title: "Configure sua meta de reserva",
     description: "Você pode definir a meta agora ou deixar esse ponto pendente para depois.",
   },
   goals: {
     label: "Objetivos",
+    summary: "Metas financeiras",
     title: "Registre seus objetivos financeiros",
     description: "Adicione quantos objetivos fizerem sentido ou siga sem nenhum nesta versão.",
   },
   review: {
     label: "Revisão",
+    summary: "Snapshot validado",
     title: "Revise seu perfil financeiro",
     description: "Este resumo foi construído e validado pelo domínio. Nada foi salvo remotamente.",
   },
@@ -83,12 +88,19 @@ const GOAL_LABELS: Record<FinancialGoalTypeCode, string> = {
   DATED_PURPOSE: "Objetivo com data",
 };
 
+type OnboardingDispatch = Dispatch<OnboardingAction>;
+
 function createBrowserId(): string {
   return globalThis.crypto.randomUUID();
 }
 
 function firstErrorMessage(errors: FieldErrors): string | null {
   return Object.values(errors)[0] ?? null;
+}
+
+function describedBy(helpId: string | null, errorId: string, hasError: boolean): string | undefined {
+  const ids = [helpId, hasError ? errorId : null].filter((id): id is string => id !== null);
+  return ids.length === 0 ? undefined : ids.join(" ");
 }
 
 function focusFirstInvalidField(): void {
@@ -113,7 +125,7 @@ function FieldError({ id, message }: Readonly<{ id: string; message?: string }>)
   if (message === undefined) return null;
 
   return (
-    <p className={styles.fieldError} id={id} role="alert">
+    <p className={styles.fieldError} id={id}>
       {message}
     </p>
   );
@@ -123,11 +135,7 @@ function ProfileStep({
   draft,
   errors,
   dispatch,
-}: Readonly<{
-  draft: OnboardingDraft;
-  errors: FieldErrors;
-  dispatch: React.Dispatch<Parameters<typeof onboardingReducer>[1]>;
-}>) {
+}: Readonly<{ draft: OnboardingDraft; errors: FieldErrors; dispatch: OnboardingDispatch }>) {
   const currencyError = errors["profile.referenceCurrency"];
   const riskError = errors["profile.riskTolerance"];
   const horizonError = errors["profile.horizon"];
@@ -147,7 +155,7 @@ function ProfileStep({
           autoCapitalize="characters"
           autoComplete="off"
           aria-invalid={currencyError !== undefined}
-          aria-describedby={currencyError === undefined ? "currency-help" : "currency-error"}
+          aria-describedby={describedBy("currency-help", "currency-error", currencyError !== undefined)}
           onChange={(event) =>
             dispatch({
               type: "update-profile",
@@ -164,14 +172,20 @@ function ProfileStep({
 
       <fieldset className={styles.fieldset}>
         <legend className={styles.legend}>Tolerância a risco</legend>
-        <p className={styles.helpText}>Registre sua preferência atual. Isso não calcula suitability.</p>
+        <p className={styles.helpText}>
+          Esta é uma preferência declarada e não substitui uma avaliação regulatória de perfil.
+        </p>
         <div className={styles.choiceGrid}>
           {RISK_TOLERANCE_CODES.map((risk) => {
             const content = RISK_LABELS[risk];
             const checked = draft.riskTolerance === risk;
 
             return (
-              <label className={checked ? styles.choiceSelected : styles.choice} key={risk}>
+              <label
+                className={checked ? styles.choiceSelected : styles.choice}
+                data-onboarding-choice
+                key={risk}
+              >
                 <input
                   className={styles.visuallyHiddenControl}
                   type="radio"
@@ -203,6 +217,7 @@ function ProfileStep({
           {FINANCIAL_HORIZON_CODES.map((horizon) => (
             <label
               className={draft.horizon === horizon ? styles.segmentSelected : styles.segment}
+              data-onboarding-segment
               key={horizon}
             >
               <input
@@ -231,11 +246,7 @@ function ReserveStep({
   draft,
   errors,
   dispatch,
-}: Readonly<{
-  draft: OnboardingDraft;
-  errors: FieldErrors;
-  dispatch: React.Dispatch<Parameters<typeof onboardingReducer>[1]>;
-}>) {
+}: Readonly<{ draft: OnboardingDraft; errors: FieldErrors; dispatch: OnboardingDispatch }>) {
   const reserveError = errors["reserve.target"];
 
   return (
@@ -272,11 +283,11 @@ function ReserveStep({
             placeholder="10000,00"
             value={draft.reserveTarget}
             aria-invalid={reserveError !== undefined}
-            aria-describedby={reserveError === undefined ? "reserve-help" : "reserve-error"}
+            aria-describedby={describedBy("reserve-help", "reserve-error", reserveError !== undefined)}
             onChange={(event) => dispatch({ type: "update-reserve", value: event.target.value })}
           />
           <p className={styles.helpText} id="reserve-help">
-            O valor continua como texto na interface e só vira Money durante a validação.
+            O valor permanece como texto na interface e só vira Money durante a validação.
           </p>
           <FieldError id="reserve-error" message={reserveError} />
         </div>
@@ -294,14 +305,12 @@ function GoalEditor({
   goal,
   index,
   errors,
-  canRemove,
   dispatch,
 }: Readonly<{
   goal: GoalDraft;
   index: number;
   errors: FieldErrors;
-  canRemove: boolean;
-  dispatch: React.Dispatch<Parameters<typeof onboardingReducer>[1]>;
+  dispatch: OnboardingDispatch;
 }>) {
   const prefix = `goals.${goal.clientId}`;
   const typeError = errors[`${prefix}.type`];
@@ -318,15 +327,13 @@ function GoalEditor({
             {goal.type === "" ? "Novo objetivo" : GOAL_LABELS[goal.type]}
           </h3>
         </div>
-        {canRemove ? (
-          <button
-            className={styles.textButton}
-            type="button"
-            onClick={() => dispatch({ type: "remove-goal", clientId: goal.clientId })}
-          >
-            Remover
-          </button>
-        ) : null}
+        <button
+          className={styles.textButton}
+          type="button"
+          onClick={() => dispatch({ type: "remove-goal", clientId: goal.clientId })}
+        >
+          Remover
+        </button>
       </div>
 
       <div className={styles.goalGrid}>
@@ -370,9 +377,7 @@ function GoalEditor({
             placeholder="50000,00"
             value={goal.targetAmount}
             aria-invalid={amountError !== undefined}
-            aria-describedby={
-              amountError === undefined ? undefined : `${goal.clientId}-amount-error`
-            }
+            aria-describedby={amountError === undefined ? undefined : `${goal.clientId}-amount-error`}
             onChange={(event) =>
               dispatch({
                 type: "update-goal",
@@ -386,7 +391,7 @@ function GoalEditor({
 
         <div className={styles.fieldGroup}>
           <label className={styles.label} htmlFor={`${goal.clientId}-date`}>
-            Data-alvo {dateRequiredByDomain ? "" : "(opcional)"}
+            Data-alvo {dateRequiredByDomain ? "(obrigatória)" : "(opcional)"}
           </label>
           <input
             className={styles.textInput}
@@ -420,7 +425,7 @@ function GoalsStep({
   draft: OnboardingDraft;
   errors: FieldErrors;
   nextGoalId: () => string;
-  dispatch: React.Dispatch<Parameters<typeof onboardingReducer>[1]>;
+  dispatch: OnboardingDispatch;
 }>) {
   return (
     <div className={styles.stepBody}>
@@ -437,7 +442,6 @@ function GoalsStep({
               goal={goal}
               index={index}
               errors={errors}
-              canRemove
               dispatch={dispatch}
             />
           ))}
@@ -611,7 +615,7 @@ export function FinancialOnboardingFlow() {
                   </span>
                   <span>
                     <strong>{copy.label}</strong>
-                    <small>{index === 3 ? "Confira os dados" : "Etapa do perfil"}</small>
+                    <small>{copy.summary}</small>
                   </span>
                 </li>
               );
