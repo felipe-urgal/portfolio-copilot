@@ -60,7 +60,11 @@ Cadastro canônico de ativos, classes, setores, moedas, identificadores e elegib
 
 ### portfolio
 
-Portfolio, Holding, Transaction, CashPosition, TargetAllocation.
+Portfolio, Transaction, TargetAllocation e políticas de configuração da carteira.
+
+### position
+
+Projeções determinísticas de posições atuais derivadas do transaction ledger. Não é uma segunda fonte de verdade e não persiste holdings no domínio.
 
 ### contribution
 
@@ -141,7 +145,7 @@ AuditEvent
 
 ## Consistência
 
-Casos de uso que alteram transações/posições devem ser atômicos. O valor de uma holding pode ser derivado do ledger de transações; snapshots podem existir para desempenho, nunca como única fonte de verdade sem reconciliação.
+Casos de uso que alteram fatos do ledger devem ser atômicos. Posições atuais são derivadas desses fatos; snapshots podem existir para desempenho, nunca como única fonte de verdade sem reconciliação.
 
 ## Integrações
 
@@ -177,5 +181,3 @@ Registrar métricas de:
 - divergência de reconciliação;
 - recomendações bloqueadas por dado insuficiente;
 - versão da metodologia em uso.
-
-Nunca enviar informações financeiras pessoais desnecessárias para logs.
