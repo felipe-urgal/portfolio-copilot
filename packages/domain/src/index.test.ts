@@ -4,14 +4,18 @@ import {
   AllocationWeight,
   AssetClass,
   AssetId,
+  AssetQuantity,
   InstrumentType,
   Money,
   Percentage,
   PortfolioId,
+  TransactionId,
+  TransactionTimestamp,
+  TransactionType,
 } from "./index";
 
 describe("domain package boundary", () => {
-  it("exports the fundamental financial, asset and portfolio value objects", () => {
+  it("exports financial, asset, portfolio and transaction value objects", () => {
     expect(Money.fromDecimal("1.00", "BRL").toDecimalString()).toBe("1.00");
     expect(Percentage.fromPercent("10").toPercentString()).toBe("10.0000");
     expect(AllocationWeight.fromPercent("50").toPercentString()).toBe("50.0000");
@@ -22,6 +26,14 @@ describe("domain package boundary", () => {
     );
     expect(PortfolioId.from("550e8400-e29b-41d4-a716-446655440010").toString()).toBe(
       "550e8400-e29b-41d4-a716-446655440010",
+    );
+    expect(AssetQuantity.fromDecimal("0.1").toDecimalString()).toBe("0.100000000000");
+    expect(TransactionId.from("550e8400-e29b-41d4-a716-446655440020").toString()).toBe(
+      "550e8400-e29b-41d4-a716-446655440020",
+    );
+    expect(TransactionType.from("BUY").toString()).toBe("BUY");
+    expect(TransactionTimestamp.from("2026-08-26T12:30:45.123Z").toString()).toBe(
+      "2026-08-26T12:30:45.123Z",
     );
   });
 });
