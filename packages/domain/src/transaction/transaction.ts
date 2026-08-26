@@ -56,7 +56,10 @@ function toAssetQuantity(value: AssetQuantity | string | null | undefined): Asse
 
 function assertPositiveSettlementAmount(amount: Money): void {
   if (amount.isZero() || amount.isNegative()) {
-    throw new InvalidTransactionAmountError(amount.toDecimalString(), amount.currency.toString());
+    throw new InvalidTransactionAmountError(
+      amount.toDecimalString(),
+      amount.currency.toString(),
+    );
   }
 }
 
@@ -123,8 +126,7 @@ export class Transaction {
       occurredAt: snapshot.occurredAt,
       settlementAmount: Money.fromSnapshot(snapshot.settlementAmount),
       assetId: snapshot.assetId,
-      quantity:
-        snapshot.quantity === null ? null : AssetQuantity.fromSnapshot(snapshot.quantity),
+      quantity: snapshot.quantity === null ? null : AssetQuantity.fromSnapshot(snapshot.quantity),
     });
   }
 
