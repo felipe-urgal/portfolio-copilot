@@ -4,10 +4,10 @@ export const ASSET_CLASS_CODES = [
   "CASH",
   "FIXED_INCOME",
   "EQUITY",
-  "ETF",
-  "REAL_ESTATE_FUND",
-  "INVESTMENT_FUND",
+  "REAL_ESTATE",
+  "COMMODITY",
   "CRYPTO_ASSET",
+  "MULTI_ASSET",
 ] as const;
 
 export type AssetClassCode = (typeof ASSET_CLASS_CODES)[number];
