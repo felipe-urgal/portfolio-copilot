@@ -29,6 +29,7 @@ Este arquivo resume decisões. Decisões arquiteturais importantes também ganha
 | D-023 | Limites de concentração por `AssetClass` usam `softMaxWeight` como alerta e `hardMaxWeight` como teto obrigatório; valor bloqueado retorna para a sobra sem redistribuição | Aceita — ADR-0015 |
 | D-024 | Custos conhecidos e impacto tributário reservado consomem o orçamento bruto do destino; se igualarem ou superarem a alocação, o destino é bloqueado e o valor retorna para caixa | Aceita — ADR-0016 |
 | D-025 | O pipeline canônico de aporte é orquestrado sem reimplementar regras e produz snapshot serializável com `methodologyVersion`, reason codes e provenance das etapas | Aceita — ADR-0017 |
+| D-026 | Onboarding financeiro é configuração declarativa separada de `Portfolio`, autenticação e saldos; risco/horizonte são taxonomias explícitas e nunca alteram alocação automaticamente | Aceita — ADR-0018 |
 
 ## Como alterar uma decisão
 
