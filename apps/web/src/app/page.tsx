@@ -7,8 +7,8 @@ export default function Home() {
         <p className="eyebrow">Fundação técnica</p>
         <h1 id="page-title">{APP_NAME}</h1>
         <p>
-          Base técnica pronta para evoluir o motor de carteira com regras financeiras determinísticas,
-          auditáveis e testáveis.
+          Base técnica pronta para evoluir o motor de carteira com regras financeiras
+          determinísticas, auditáveis e testáveis.
         </p>
         <a href="/health">Verificar saúde da aplicação</a>
       </section>
