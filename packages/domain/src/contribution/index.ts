@@ -10,6 +10,15 @@ export type {
   ContributionAllocatorInput,
   ContributionPlan,
 } from "./contribution-allocator";
+export {
+  applyContributionExecutionConstraints,
+} from "./contribution-execution-constraints";
+export type {
+  ContributionExecutionConstraintsInput,
+  ContributionExecutionDestination,
+  ContributionExecutionDestinationInput,
+  ContributionExecutionPlan,
+} from "./contribution-execution-constraints";
 export { applyContributionPolicy } from "./contribution-policy";
 export type { ContributionPolicy, ContributionPolicyApplicationInput } from "./contribution-policy";
 export {
@@ -17,8 +26,12 @@ export {
   AllocationTotalMismatchError,
   ContributionAllocatorPortfolioMismatchError,
   ContributionDomainError,
+  DuplicateContributionExecutionDestinationError,
   DuplicateCurrentAllocationBucketError,
+  InvalidContributionDestinationEligibilityError,
   InvalidMaxDestinationsPerContributionError,
+  InvalidMinimumTradableQuantityError,
+  MissingContributionExecutionDestinationError,
   NegativeAllocationValueError,
 } from "./errors";
 export type { ContributionDomainErrorCode } from "./errors";

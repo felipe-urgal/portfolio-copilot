@@ -4,7 +4,11 @@ export type ContributionDomainErrorCode =
   | "DUPLICATE_CURRENT_ALLOCATION_BUCKET"
   | "NEGATIVE_ALLOCATION_VALUE"
   | "ALLOCATION_TOTAL_MISMATCH"
-  | "INVALID_MAX_DESTINATIONS_PER_CONTRIBUTION";
+  | "INVALID_MAX_DESTINATIONS_PER_CONTRIBUTION"
+  | "DUPLICATE_CONTRIBUTION_EXECUTION_DESTINATION"
+  | "INVALID_MINIMUM_TRADABLE_QUANTITY"
+  | "INVALID_CONTRIBUTION_DESTINATION_ELIGIBILITY"
+  | "MISSING_CONTRIBUTION_EXECUTION_DESTINATION";
 
 export class ContributionDomainError extends Error {
   public constructor(
@@ -81,6 +85,51 @@ export class InvalidMaxDestinationsPerContributionError extends ContributionDoma
     super(
       "INVALID_MAX_DESTINATIONS_PER_CONTRIBUTION",
       `maxDestinationsPerContribution must be a positive safe integer: ${String(value)}`,
+    );
+  }
+}
+
+export class DuplicateContributionExecutionDestinationError extends ContributionDomainError {
+  public constructor(
+    public readonly field: "assetId" | "assetClass",
+    public readonly value: string,
+  ) {
+    super(
+      "DUPLICATE_CONTRIBUTION_EXECUTION_DESTINATION",
+      `Duplicate contribution execution destination ${field}: ${value}`,
+    );
+  }
+}
+
+export class InvalidMinimumTradableQuantityError extends ContributionDomainError {
+  public constructor(
+    public readonly assetId: string,
+    public readonly value: string,
+  ) {
+    super(
+      "INVALID_MINIMUM_TRADABLE_QUANTITY",
+      `Minimum tradable quantity for asset ${assetId} must be greater than zero and use a valid asset quantity: ${JSON.stringify(value)}`,
+    );
+  }
+}
+
+export class InvalidContributionDestinationEligibilityError extends ContributionDomainError {
+  public constructor(
+    public readonly assetId: string,
+    public readonly value: string,
+  ) {
+    super(
+      "INVALID_CONTRIBUTION_DESTINATION_ELIGIBILITY",
+      `Contribution destination eligibility for asset ${assetId} must be boolean: ${JSON.stringify(value)}`,
+    );
+  }
+}
+
+export class MissingContributionExecutionDestinationError extends ContributionDomainError {
+  public constructor(public readonly assetClass: string) {
+    super(
+      "MISSING_CONTRIBUTION_EXECUTION_DESTINATION",
+      `Missing contribution execution destination for positive allocation in asset class: ${assetClass}`,
     );
   }
 }
