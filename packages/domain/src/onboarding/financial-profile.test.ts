@@ -106,9 +106,9 @@ describe("financial onboarding", () => {
         emergencyReserveTarget: Money.fromDecimal("-0.01", "BRL"),
       }),
     ).toThrow(InvalidEmergencyReserveTargetError);
-    expect(() =>
-      FinancialProfile.create({ ...base, emergencyReserveTarget: {} as Money }),
-    ).toThrow(InvalidEmergencyReserveTargetError);
+    expect(() => FinancialProfile.create({ ...base, emergencyReserveTarget: {} as Money })).toThrow(
+      InvalidEmergencyReserveTargetError,
+    );
   });
 
   it("rejects a reserve target in a different currency", () => {
@@ -201,10 +201,7 @@ describe("financial onboarding", () => {
         referenceCurrency: "BRL",
         riskTolerance: "MEDIUM",
         horizon: "LONG",
-        goals: [
-          goal(GOAL_ID_A, "NET_WORTH", "100.00"),
-          goal(GOAL_ID_A, "RETIREMENT", "200.00"),
-        ],
+        goals: [goal(GOAL_ID_A, "NET_WORTH", "100.00"), goal(GOAL_ID_A, "RETIREMENT", "200.00")],
       }),
     ).toThrow(DuplicateFinancialGoalError);
   });
@@ -232,10 +229,7 @@ describe("financial onboarding", () => {
   });
 
   it("copies and orders the goals array instead of sharing caller mutation", () => {
-    const goals = [
-      goal(GOAL_ID_B, "RETIREMENT", "200.00"),
-      goal(GOAL_ID_A, "NET_WORTH", "100.00"),
-    ];
+    const goals = [goal(GOAL_ID_B, "RETIREMENT", "200.00"), goal(GOAL_ID_A, "NET_WORTH", "100.00")];
     const profile = FinancialProfile.create({
       id: PROFILE_ID,
       referenceCurrency: "BRL",
@@ -245,12 +239,7 @@ describe("financial onboarding", () => {
     });
 
     goals.push(
-      goal(
-        "550e8400-e29b-41d4-a716-446655440073",
-        "DATED_PURPOSE",
-        "300.00",
-        "2030-01-01",
-      ),
+      goal("550e8400-e29b-41d4-a716-446655440073", "DATED_PURPOSE", "300.00", "2030-01-01"),
     );
 
     expect(profile.goals).toHaveLength(2);
