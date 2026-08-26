@@ -40,8 +40,7 @@ describe("contribution cost runtime validation", () => {
             {
               assetId: ASSET_ID,
               transactionCost: field === "transactionCost" ? invalid : Money.zero("BRL"),
-              estimatedTaxImpact:
-                field === "estimatedTaxImpact" ? invalid : Money.zero("BRL"),
+              estimatedTaxImpact: field === "estimatedTaxImpact" ? invalid : Money.zero("BRL"),
             },
           ],
         }),

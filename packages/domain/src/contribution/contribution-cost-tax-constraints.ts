@@ -81,7 +81,9 @@ function normalizeConstraints(
   plan: ContributionExecutionPlan,
   inputs: readonly ContributionCostTaxConstraintInput[],
 ): ReadonlyMap<string, NormalizedContributionCostTaxConstraint> {
-  const destinationIds = new Set(plan.destinations.map((destination) => destination.assetId.toString()));
+  const destinationIds = new Set(
+    plan.destinations.map((destination) => destination.assetId.toString()),
+  );
   const constraintsByAssetId = new Map<string, NormalizedContributionCostTaxConstraint>();
 
   for (const input of inputs) {
@@ -118,31 +120,33 @@ export function applyContributionCostTaxConstraints(
   const constraintsByAssetId = normalizeConstraints(input.plan, input.constraints);
   let newlyBlockedMinorUnits = 0n;
 
-  const destinations = input.plan.destinations.map<ContributionCostAdjustedDestination>((destination) => {
-    const constraint = constraintsByAssetId.get(destination.assetId.toString());
-    const transactionCost =
-      constraint?.transactionCost ?? Money.zero(input.plan.contribution.currency);
-    const estimatedTaxImpact =
-      constraint?.estimatedTaxImpact ?? Money.zero(input.plan.contribution.currency);
-    const totalKnownCost = transactionCost.add(estimatedTaxImpact);
-    const isBlocked = totalKnownCost.compare(destination.allocatedAmount) >= 0;
-    const investableAmount = isBlocked
-      ? Money.zero(input.plan.contribution.currency)
-      : destination.allocatedAmount.subtract(totalKnownCost);
+  const destinations = input.plan.destinations.map<ContributionCostAdjustedDestination>(
+    (destination) => {
+      const constraint = constraintsByAssetId.get(destination.assetId.toString());
+      const transactionCost =
+        constraint?.transactionCost ?? Money.zero(input.plan.contribution.currency);
+      const estimatedTaxImpact =
+        constraint?.estimatedTaxImpact ?? Money.zero(input.plan.contribution.currency);
+      const totalKnownCost = transactionCost.add(estimatedTaxImpact);
+      const isBlocked = totalKnownCost.compare(destination.allocatedAmount) >= 0;
+      const investableAmount = isBlocked
+        ? Money.zero(input.plan.contribution.currency)
+        : destination.allocatedAmount.subtract(totalKnownCost);
 
-    if (isBlocked) {
-      newlyBlockedMinorUnits += destination.allocatedAmount.minorUnits;
-    }
+      if (isBlocked) {
+        newlyBlockedMinorUnits += destination.allocatedAmount.minorUnits;
+      }
 
-    return Object.freeze({
-      ...destination,
-      transactionCost,
-      estimatedTaxImpact,
-      totalKnownCost,
-      investableAmount,
-      status: isBlocked ? "BLOCKED_KNOWN_COSTS" : "EXECUTABLE",
-    });
-  });
+      return Object.freeze({
+        ...destination,
+        transactionCost,
+        estimatedTaxImpact,
+        totalKnownCost,
+        investableAmount,
+        status: isBlocked ? "BLOCKED_KNOWN_COSTS" : "EXECUTABLE",
+      });
+    },
+  );
 
   return Object.freeze({
     ...input.plan,
