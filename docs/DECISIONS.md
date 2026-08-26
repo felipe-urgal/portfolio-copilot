@@ -21,6 +21,7 @@ Este arquivo resume decisões. Decisões arquiteturais importantes também ganha
 | D-015 | `Portfolio` guarda somente identidade/configuração; posições e saldos serão projeções do transaction ledger | Aceita — ADR-0007 |
 | D-016 | Transaction Ledger registra fatos imutáveis; direção vem do tipo e quantidade usa 12 casas exatas sem arredondamento silencioso | Aceita — ADR-0008 |
 | D-017 | Posições abertas são projeções puras do ledger; venda acima da posição falha e fatos com timestamp igual preservam a ordem de entrada | Aceita — ADR-0009 |
+| D-018 | `TargetAllocation` é política completa por `AssetClass`: buckets positivos, sem duplicidade e soma exata de 100% | Aceita — ADR-0010 |
 
 ## Como alterar uma decisão
 
