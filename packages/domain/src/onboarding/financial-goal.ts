@@ -86,10 +86,6 @@ function normalizeTargetDate(
     return null;
   }
 
-  if (goalType.code === "NET_WORTH" || goalType.code === "PASSIVE_INCOME_MONTHLY") {
-    throw new InvalidFinancialGoalTargetDateError(goalType.code, value);
-  }
-
   if (!CANONICAL_DATE_PATTERN.test(value)) {
     throw new InvalidFinancialGoalTargetDateError(goalType.code, value);
   }
