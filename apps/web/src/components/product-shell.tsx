@@ -5,7 +5,7 @@ import { APP_NAME } from "@portfolio-copilot/shared";
 
 import styles from "./product-shell.module.css";
 
-type ProductRoute = "/dashboard" | "/onboarding";
+type ProductRoute = "/dashboard" | "/onboarding" | "/portfolio";
 
 type ProductShellProps = Readonly<{
   activeRoute: ProductRoute;
@@ -14,6 +14,7 @@ type ProductShellProps = Readonly<{
 
 const PRIMARY_NAVIGATION: ReadonlyArray<Readonly<{ href: ProductRoute; label: string }>> = [
   { href: "/dashboard", label: "Dashboard" },
+  { href: "/portfolio", label: "Carteira" },
   { href: "/onboarding", label: "Onboarding" },
 ];
 
