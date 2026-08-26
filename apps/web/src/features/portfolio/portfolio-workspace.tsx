@@ -2,11 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 
-import {
-  Money,
-  type PortfolioSnapshot,
-  type TransactionSnapshot,
-} from "@portfolio-copilot/domain";
+import { Money, type PortfolioSnapshot, type TransactionSnapshot } from "@portfolio-copilot/domain";
 
 import {
   createCashTransactionSnapshot,
@@ -151,8 +147,8 @@ export function PortfolioWorkspace({
         <div>
           <h2 id="portfolio-persistence-title">Nada é persistido nesta versão</h2>
           <p>
-            Carteira e movimentações existem somente enquanto esta tela permanecer aberta. Recarregar
-            ou sair desta tela remove todo o estado criado aqui.
+            Carteira e movimentações existem somente enquanto esta tela permanecer aberta.
+            Recarregar ou sair desta tela remove todo o estado criado aqui.
           </p>
         </div>
       </section>
@@ -232,8 +228,8 @@ export function PortfolioWorkspace({
           <aside className={styles.truthRail} aria-labelledby="portfolio-truth-title">
             <h2 id="portfolio-truth-title">Fonte de verdade</h2>
             <p>
-              O cadastro cria apenas o agregado <strong>Portfolio</strong>. Depois, cada movimentação
-              é registrada como um fato separado do Transaction Ledger.
+              O cadastro cria apenas o agregado <strong>Portfolio</strong>. Depois, cada
+              movimentação é registrada como um fato separado do Transaction Ledger.
             </p>
             <div className={styles.ruleList}>
               <div>
@@ -382,7 +378,10 @@ export function PortfolioWorkspace({
                   Registrar movimentação
                 </button>
 
-                <div className={styles.unavailableTrades} aria-label="Operações ainda indisponíveis">
+                <div
+                  className={styles.unavailableTrades}
+                  aria-label="Operações ainda indisponíveis"
+                >
                   <button type="button" disabled>
                     Compra
                   </button>
@@ -399,7 +398,9 @@ export function PortfolioWorkspace({
               <div className={styles.ledgerHistory}>
                 <div className={styles.ledgerHistoryHeading}>
                   <h3>Movimentações desta sessão</h3>
-                  <p>Snapshots validados pelo domínio, do registro mais recente para o mais antigo.</p>
+                  <p>
+                    Snapshots validados pelo domínio, do registro mais recente para o mais antigo.
+                  </p>
                 </div>
 
                 {transactions.length === 0 ? (
