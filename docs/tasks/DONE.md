@@ -378,3 +378,24 @@ Histórico resumido de atividades concluídas.
 - metadata de `/portfolio` passa a descrever também os fluxos de caixa locais;
 - nenhuma dependência externa, lockfile, fórmula financeira, persistência, API, autenticação, Market Data ou IA foi adicionada;
 - `docs/tasks/NEXT.md` promove Asset local + `BUY`/`SELL` como próximo vertical da Fase 3.
+
+## 2026-08-26 — Produto MVP: Asset local, BUY/SELL e posições derivadas
+
+- `/portfolio` passa a manter um catálogo local de `Asset` após existir um `Portfolio` válido na sessão;
+- criação de ativos reutiliza `AssetId`, `AssetClass`, `InstrumentType`, `CurrencyCode` e `Asset.create`, sem ticker, provider ou Asset Master improvisado;
+- UUID de ativo é gerado por `crypto.randomUUID` na camada web e nunca é solicitado como campo primário do usuário;
+- compra e venda selecionam o ativo por nome e classe visíveis, resolvendo `AssetId` internamente;
+- `BUY`/`SELL` reutilizam `Transaction`, `TransactionId`, `TransactionTimestamp`, `AssetQuantity` e `Money`, mantendo quantidade e valor como strings até os Value Objects;
+- cada transação candidata é validada junto do ledger atual por `projectAssetPositions` antes de entrar no estado da sessão;
+- venda acima da posição disponível é rejeitada por `InsufficientAssetPositionError` e traduzida para feedback de quantidade sem gravar fato inválido;
+- o ledger permanece em ordem cronológica de criação e a UI inverte somente a apresentação, preservando a semântica de desempate por ordem de entrada do projetor;
+- `CASH_IN`/`CASH_OUT` continuam disponíveis e não alteram posições de ativos;
+- a seção de posições usa exclusivamente `projectAssetPositions` e mostra somente quantidade aberta por ativo;
+- histórico do ledger formata a quantidade diretamente do `AssetQuantitySnapshot`, sem usar projeção de posição para representar um fato individual;
+- nenhum preço, valor de mercado, patrimônio, custo médio ou P&L é derivado das quantidades;
+- carteira, ativos, ledger e posições permanecem explicitamente locais/efêmeros;
+- testes puros cobrem Asset, taxonomias, BUY/SELL, precisão de quantidade, vínculo portfolio/asset, cash flows, projeção e over-sell;
+- renderização estática cobre seleção humana de ativo, bloqueio sem Asset, histórico, posição derivada e ausência de métricas fictícias;
+- layout preserva acessibilidade, foco e responsividade sem adicionar dependência externa;
+- nenhuma dependência, lockfile, fórmula financeira, persistência, API, autenticação, Market Data ou IA foi adicionada;
+- `docs/tasks/NEXT.md` promove `TargetAllocation` local e baseline do aporte por `AssetClass`, usando base monetária manual explícita até existir Market Data.
