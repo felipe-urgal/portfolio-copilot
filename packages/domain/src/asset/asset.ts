@@ -3,6 +3,7 @@ import { AssetClass } from "./asset-class";
 import { AssetId } from "./asset-id";
 import { DuplicateExternalAssetIdentifierError, InvalidAssetNameError } from "./errors";
 import { ExternalAssetIdentifier } from "./external-asset-identifier";
+import { InstrumentType } from "./instrument-type";
 
 const MAX_ASSET_NAME_LENGTH = 160;
 const CONTROL_CHARACTER_PATTERN = /[\u0000-\u001f\u007f]/;
@@ -11,6 +12,7 @@ export type AssetCreationInput = Readonly<{
   id: AssetId | string;
   name: string;
   assetClass: AssetClass | string;
+  instrumentType: InstrumentType | string;
   referenceCurrency: CurrencyCode | string;
   externalIdentifiers?: readonly ExternalAssetIdentifier[];
 }>;
@@ -35,6 +37,10 @@ function toAssetId(value: AssetId | string): AssetId {
 
 function toAssetClass(value: AssetClass | string): AssetClass {
   return typeof value === "string" ? AssetClass.from(value) : value;
+}
+
+function toInstrumentType(value: InstrumentType | string): InstrumentType {
+  return typeof value === "string" ? InstrumentType.from(value) : value;
 }
 
 function toCurrencyCode(value: CurrencyCode | string): CurrencyCode {
@@ -64,6 +70,7 @@ export class Asset {
     public readonly id: AssetId,
     public readonly name: string,
     public readonly assetClass: AssetClass,
+    public readonly instrumentType: InstrumentType,
     public readonly referenceCurrency: CurrencyCode,
     public readonly externalIdentifiers: readonly ExternalAssetIdentifier[],
   ) {}
@@ -73,6 +80,7 @@ export class Asset {
       toAssetId(input.id),
       normalizeAssetName(input.name),
       toAssetClass(input.assetClass),
+      toInstrumentType(input.instrumentType),
       toCurrencyCode(input.referenceCurrency),
       copyAndValidateIdentifiers(input.externalIdentifiers ?? []),
     );
