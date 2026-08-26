@@ -189,7 +189,9 @@ describe("calculateAllocationGaps", () => {
     expect(gapFor(gaps, "EQUITY").targetValue.toDecimalString()).toBe("0.01");
     expect(gapFor(gaps, "FIXED_INCOME").targetValue.toDecimalString()).toBe("0.00");
     expect(
-      gapFor(gaps, "EQUITY").targetValue.add(gapFor(gaps, "FIXED_INCOME").targetValue).toDecimalString(),
+      gapFor(gaps, "EQUITY")
+        .targetValue.add(gapFor(gaps, "FIXED_INCOME").targetValue)
+        .toDecimalString(),
     ).toBe("0.01");
   });
 
