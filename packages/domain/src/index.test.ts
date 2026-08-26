@@ -1,13 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import {
-  AllocationWeight,
-  AssetClass,
-  AssetId,
-  InstrumentType,
-  Money,
-  Percentage,
-} from "./index";
+import { AllocationWeight, AssetClass, AssetId, InstrumentType, Money, Percentage } from "./index";
 
 describe("domain package boundary", () => {
   it("exports the fundamental financial and asset value objects", () => {
