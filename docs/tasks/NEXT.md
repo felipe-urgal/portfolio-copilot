@@ -1,32 +1,35 @@
-# Próxima Atividade — Portfolio Engine: Transaction Ledger e quantidade de ativo
+# Próxima Atividade — Portfolio Engine: projeção de posições por ativo
 
-**Status:** READY após merge do agregado Portfolio mínimo.
+**Status:** READY após merge do Transaction Ledger.
 
 ## Objetivo
 
-Criar os value objects e eventos mínimos para registrar movimentações de ativos de forma auditável, sem ainda calcular holdings ou custo médio. A etapa deve estabelecer a fonte histórica que futuras projeções de posição consumirão.
+Criar a primeira projeção derivada do ledger: calcular a quantidade atual por `AssetId` dentro de um `PortfolioId` a partir de transações `BUY` e `SELL`, sem persistir posição duplicada e sem calcular custo médio, P&L ou valor de mercado.
 
 ## Escopo
 
-- representação decimal segura de quantidade de ativo, separada de `Money`;
-- política explícita de precisão e arredondamento para quantidade;
-- `TransactionId` interno e estável;
-- eventos/transações imutáveis vinculados a `PortfolioId` e, quando aplicável, `AssetId`;
-- taxonomia mínima de movimentações necessária para compras, vendas e fluxos de caixa, sem antecipar regras tributárias;
-- valor monetário usando `Money` quando semanticamente aplicável;
-- instante/data efetiva da movimentação com contrato determinístico;
-- snapshots persistíveis e erros de domínio tipados;
-- testes de invariantes e documentação das decisões.
+- `AssetPosition`/estrutura equivalente com `AssetId` e quantidade atual;
+- projetor determinístico de posições a partir de uma sequência de `Transaction`;
+- compras aumentam quantidade;
+- vendas reduzem quantidade;
+- `CASH_IN`/`CASH_OUT` não alteram posição de ativo;
+- filtro/isolamento por `PortfolioId`;
+- política explícita para venda acima da posição disponível;
+- ordenação/entrada de eventos documentada quando necessária;
+- resultado sem ticker, preço ou dados externos;
+- testes de invariantes e documentação da decisão.
 
 ## Fora de escopo
 
-- cálculo de holdings/posição atual;
-- custo médio e P&L;
-- preço de mercado/fundamentals;
-- FX automático;
-- impostos e DARF;
-- corporate actions complexas;
-- importação de corretora/Open Finance;
+- custo médio;
+- preço médio tributário;
+- P&L realizado/não realizado;
+- saldo de caixa;
+- valor de mercado;
+- FX;
+- dividendos, taxas e impostos;
+- short selling/margem;
+- persistência de projeções;
 - banco e repositórios;
 - API;
 - UI;
@@ -34,22 +37,24 @@ Criar os value objects e eventos mínimos para registrar movimentações de ativ
 
 ## Critérios de aceite
 
-- quantidade de ativo não reutiliza `Money` nem depende de `number` binário para persistência;
-- identidade da transação é independente de corretora/provedor;
-- transações referenciam `PortfolioId`/`AssetId`, não nomes ou tickers;
-- sinal econômico não é inferido silenciosamente de números negativos quando a taxonomia puder torná-lo explícito;
-- eventos persistíveis possuem representação determinística;
-- nenhum tipo depende de Next.js, banco ou fornecedor externo;
-- `pnpm check` passa integralmente;
-- decisões de precisão e taxonomia ficam registradas em ADR quando necessário.
+- posição é derivada exclusivamente de fatos do ledger;
+- nenhuma posição atual é gravada dentro de `Portfolio` ou `Transaction`;
+- operações de portfolios diferentes não se misturam;
+- resultado usa `AssetId`, não ticker;
+- quantidade mantém a mesma precisão exata de `AssetQuantity`;
+- venda que levaria posição abaixo de zero é tratada explicitamente, sem valor negativo silencioso;
+- execução repetida com a mesma entrada produz o mesmo resultado;
+- `pnpm check` passa integralmente no head final validado.
 
 ## Casos de teste mínimos
 
-- quantidade zero, positiva, precisão fracionária e valores inválidos;
-- criação de compra e venda válidas;
-- IDs inválidos;
-- portfolio/asset inválidos;
-- moeda incompatível quando uma operação combinar valores monetários;
-- datas/instantes inválidos;
-- snapshot round-trip;
-- nenhuma projeção de holding é persistida dentro da transação ou do Portfolio.
+- portfolio sem transações;
+- uma compra;
+- múltiplas compras do mesmo ativo;
+- compra seguida de venda parcial;
+- venda total zerando posição;
+- tentativa de venda acima da posição;
+- múltiplos ativos;
+- transações de portfolios diferentes;
+- fluxos de caixa ignorados na posição de ativo;
+- ordem determinística e resultados reproduzíveis.
