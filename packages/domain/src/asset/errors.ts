@@ -30,7 +30,10 @@ export class InvalidAssetClassError extends AssetDomainError {
 
 export class InvalidInstrumentTypeError extends AssetDomainError {
   public constructor(value: string) {
-    super("INVALID_INSTRUMENT_TYPE", `Unsupported instrument type: ${JSON.stringify(value)}`);
+    super(
+      "INVALID_INSTRUMENT_TYPE",
+      `Unsupported instrument type: ${JSON.stringify(value)}`,
+    );
   }
 }
 
