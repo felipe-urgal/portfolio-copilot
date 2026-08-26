@@ -1,9 +1,8 @@
-import { AssetId } from "../asset";
+import { AssetId, AssetQuantity } from "../asset";
+import type { AssetQuantitySnapshot } from "../asset";
 import { Money } from "../financial";
 import type { MoneySnapshot } from "../financial";
 import { PortfolioId } from "../portfolio";
-import { AssetQuantity } from "./asset-quantity";
-import type { AssetQuantitySnapshot } from "./asset-quantity";
 import { InvalidTransactionAmountError, InvalidTransactionShapeError } from "./errors";
 import { TransactionId } from "./transaction-id";
 import { TransactionTimestamp } from "./transaction-timestamp";
