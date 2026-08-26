@@ -56,10 +56,7 @@ function toAssetQuantity(value: AssetQuantity | string | null | undefined): Asse
 
 function assertPositiveSettlementAmount(amount: Money): void {
   if (amount.isZero() || amount.isNegative()) {
-    throw new InvalidTransactionAmountError(
-      amount.toDecimalString(),
-      amount.currency.toString(),
-    );
+    throw new InvalidTransactionAmountError(amount.toDecimalString(), amount.currency.toString());
   }
 }
 
