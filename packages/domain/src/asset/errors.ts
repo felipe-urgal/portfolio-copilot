@@ -1,6 +1,7 @@
 export type AssetDomainErrorCode =
   | "INVALID_ASSET_ID"
   | "INVALID_ASSET_CLASS"
+  | "INVALID_INSTRUMENT_TYPE"
   | "INVALID_ASSET_NAME"
   | "INVALID_EXTERNAL_ASSET_IDENTIFIER"
   | "DUPLICATE_EXTERNAL_ASSET_IDENTIFIER";
@@ -24,6 +25,12 @@ export class InvalidAssetIdError extends AssetDomainError {
 export class InvalidAssetClassError extends AssetDomainError {
   public constructor(value: string) {
     super("INVALID_ASSET_CLASS", `Unsupported asset class: ${JSON.stringify(value)}`);
+  }
+}
+
+export class InvalidInstrumentTypeError extends AssetDomainError {
+  public constructor(value: string) {
+    super("INVALID_INSTRUMENT_TYPE", `Unsupported instrument type: ${JSON.stringify(value)}`);
   }
 }
 
