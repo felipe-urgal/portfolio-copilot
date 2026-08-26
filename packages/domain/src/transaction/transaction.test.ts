@@ -146,7 +146,15 @@ describe("Transaction", () => {
       quantity: { scaledUnits: "10000000010000" },
     });
     expect(Object.keys(snapshot).sort()).toEqual(
-      ["assetId", "id", "occurredAt", "portfolioId", "quantity", "settlementAmount", "type"].sort(),
+      [
+        "assetId",
+        "id",
+        "occurredAt",
+        "portfolioId",
+        "quantity",
+        "settlementAmount",
+        "type",
+      ].sort(),
     );
     expect(restored.sameIdentityAs(original)).toBe(true);
     expect(restored.toSnapshot()).toEqual(snapshot);
