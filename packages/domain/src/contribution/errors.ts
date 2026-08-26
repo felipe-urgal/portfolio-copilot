@@ -11,7 +11,9 @@ export type ContributionDomainErrorCode =
   | "MISSING_CONTRIBUTION_EXECUTION_DESTINATION"
   | "DUPLICATE_ASSET_CLASS_CONCENTRATION_LIMIT"
   | "INVALID_ASSET_CLASS_CONCENTRATION_WEIGHT"
-  | "INVALID_ASSET_CLASS_CONCENTRATION_RANGE";
+  | "INVALID_ASSET_CLASS_CONCENTRATION_RANGE"
+  | "DUPLICATE_CONTRIBUTION_COST_CONSTRAINT"
+  | "UNKNOWN_CONTRIBUTION_COST_CONSTRAINT_DESTINATION";
 
 export class ContributionDomainError extends Error {
   public constructor(
@@ -168,6 +170,24 @@ export class InvalidAssetClassConcentrationRangeError extends ContributionDomain
     super(
       "INVALID_ASSET_CLASS_CONCENTRATION_RANGE",
       `softMaxWeight must be less than or equal to hardMaxWeight for asset class ${assetClass}: ${softMaxWeight} > ${hardMaxWeight}`,
+    );
+  }
+}
+
+export class DuplicateContributionCostConstraintError extends ContributionDomainError {
+  public constructor(public readonly assetId: string) {
+    super(
+      "DUPLICATE_CONTRIBUTION_COST_CONSTRAINT",
+      `Duplicate contribution cost constraint for asset: ${assetId}`,
+    );
+  }
+}
+
+export class UnknownContributionCostConstraintDestinationError extends ContributionDomainError {
+  public constructor(public readonly assetId: string) {
+    super(
+      "UNKNOWN_CONTRIBUTION_COST_CONSTRAINT_DESTINATION",
+      `Contribution cost constraint references an asset that is not a destination in the execution plan: ${assetId}`,
     );
   }
 }
