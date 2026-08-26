@@ -18,8 +18,7 @@ const SUMMARY_STATES = [
   {
     label: "Reserva de emergência",
     state: "Sem dado persistido",
-    detail:
-      "Uma meta pode ser definida no onboarding, mas ainda não é salva nem lida pelo dashboard.",
+    detail: "Uma meta pode ser definida no onboarding, mas ainda não é salva nem lida pelo dashboard.",
   },
 ] as const;
 
