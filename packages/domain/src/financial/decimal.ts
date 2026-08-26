@@ -45,6 +45,7 @@ export function parseScaledDecimal(value: string, scale: number): bigint {
   const factor = 10n ** BigInt(scale);
   const keptFraction = parts.fraction.slice(0, scale).padEnd(scale, "0");
   const discardedFraction = parts.fraction.slice(scale);
+  const firstDiscardedDigit = discardedFraction.at(0);
 
   let absoluteUnits = BigInt(parts.whole) * factor;
 
@@ -52,7 +53,7 @@ export function parseScaledDecimal(value: string, scale: number): bigint {
     absoluteUnits += BigInt(keptFraction);
   }
 
-  if (discardedFraction.length > 0 && discardedFraction[0] >= "5") {
+  if (firstDiscardedDigit !== undefined && firstDiscardedDigit >= "5") {
     absoluteUnits += 1n;
   }
 
