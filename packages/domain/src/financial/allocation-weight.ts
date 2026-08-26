@@ -1,7 +1,4 @@
-import {
-  isDecimalZero,
-  parseDecimalParts,
-} from "./decimal";
+import { isDecimalZero, parseDecimalParts } from "./decimal";
 import { AllocationWeightOutOfRangeError } from "./errors";
 import { Percentage } from "./percentage";
 
