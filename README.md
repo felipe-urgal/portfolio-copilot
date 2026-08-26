@@ -70,6 +70,14 @@ audit
 
 ## Documentação
 
+Comece por estes três documentos:
+
+- [Project Brief — decisões e ideias preservadas da descoberta](docs/PROJECT-BRIEF.md)
+- [Política de investimentos — base do produto](docs/portfolio/INVESTMENT-POLICY.md)
+- [Catálogo de funcionalidades](docs/product/FEATURE-CATALOG.md)
+
+Documentação de engenharia e governança:
+
 - [Visão](docs/VISION.md)
 - [Produto](docs/PRODUCT.md)
 - [Arquitetura](docs/ARCHITECTURE.md)
