@@ -39,8 +39,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Format check
-        run: pnpm format:check
+      - name: Format preview
+        run: |
+          pnpm format
+          git diff -- packages/domain/src
+          git diff --exit-code
 
       - name: Lint
         run: pnpm lint
