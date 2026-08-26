@@ -101,7 +101,8 @@ export function ContributionBaselinePanel({
             <strong>Base monetária manual</strong>
             <p>
               Estes valores são declarados por você e não representam cotação, valuation ou
-              patrimônio derivado de Market Data.
+              patrimônio derivado de Market Data. TargetAllocation, base e baseline existem apenas
+              nesta sessão.
             </p>
           </div>
 
@@ -123,7 +124,8 @@ export function ContributionBaselinePanel({
                 onChange={(event) => updateField("portfolioValue", event.target.value)}
               />
               <p className={styles.helpText} id="contribution-portfolio-value-help">
-                Precisa reconciliar com a soma dos valores atuais por classe em {portfolio.referenceCurrency}.
+                Precisa reconciliar com a soma dos valores atuais por classe em{" "}
+                {portfolio.referenceCurrency}.
               </p>
               <ErrorText
                 id="contribution-portfolio-value-error"
@@ -146,7 +148,8 @@ export function ContributionBaselinePanel({
                 onChange={(event) => updateField("contribution", event.target.value)}
               />
               <p className={styles.helpText} id="contribution-amount-help">
-                Valor em {portfolio.referenceCurrency}; zero é válido para inspecionar o baseline atual.
+                Valor em {portfolio.referenceCurrency}; zero é válido para inspecionar o baseline
+                atual.
               </p>
               <ErrorText id="contribution-amount-error" message={errors.contribution} />
             </div>
