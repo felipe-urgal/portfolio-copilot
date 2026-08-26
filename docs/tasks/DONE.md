@@ -154,3 +154,21 @@ Histórico resumido de atividades concluídas.
 - testes cobrem alvo exato, under/overweight, classes ausentes, moeda, duplicidade, reconciliação, arredondamento residual, portfolios distintos, negativos e determinismo;
 - ADR-0011 registra a política de reconciliação em centavos e a fronteira com o futuro `ContributionAllocator`;
 - não há nova dependência, lockfile, schema, persistência ou integração externa.
+
+## 2026-08-26 — Portfolio Engine: ContributionAllocator
+
+- `allocateContribution` criado como função pura para transformar política-alvo, estado atual reconciliado e aporte em plano por `AssetClass`;
+- a base monetária do alvo usa explicitamente `portfolioValue + contribution`, evitando aplicar gaps pré-aporte como se fossem pós-aporte;
+- estado atual continua exigindo uma moeda, valores não negativos, buckets sem duplicidade e soma exata igual ao `portfolioValue`;
+- `TargetAllocation` precisa pertencer ao mesmo `PortfolioId` e o aporte precisa usar a mesma moeda da carteira;
+- cálculo monetário usa somente `Money`/`bigint`, sem `number` binário;
+- a política de maiores restos foi extraída para helper interno compartilhado e passou a ser reutilizada tanto por `AllocationGap` quanto pelo allocator;
+- necessidade pós-aporte é `max(0, postContributionTargetValue - currentValue)`;
+- somente necessidades positivas participam da distribuição e buckets overweight recebem zero;
+- o baseline distribui proporcionalmente às necessidades positivas, reconcilia centavos por maiores restos e desempata lexicalmente por `AssetClass`;
+- nenhuma alocação ultrapassa a necessidade do bucket nem a soma do aporte disponível;
+- eventual parcela não distribuível permanece explicitamente em `unallocatedContribution`, sem inventar destino;
+- saída inclui a união entre classes atuais e alvo, ordenada e imutável para auditabilidade;
+- testes cobrem aporte zero, carteira no alvo, necessidade única/múltipla, overweight, pós-aporte, centavos, moedas, portfolio, estado atual inválido, limites e determinismo;
+- ADR-0012 registra fórmula, arredondamento, sobra de caixa e fronteira com políticas futuras;
+- não há nova dependência, lockfile, schema, persistência ou integração externa.
