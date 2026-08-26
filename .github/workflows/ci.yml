@@ -35,7 +35,7 @@ jobs:
         run: corepack prepare pnpm@11.24.0 --activate
 
       - name: Install dependencies
-        run: pnpm install --no-frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: Format check
         run: pnpm format:check
