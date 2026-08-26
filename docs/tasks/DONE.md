@@ -123,3 +123,18 @@ Histórico resumido de atividades concluídas.
 - testes cobrem portfolio vazio, compras, venda parcial/total, over-sell, múltiplos ativos, isolamento entre portfolios, cash flows, precisão e ordenação reproduzível;
 - ADR-0009 registra fonte de verdade, ordem de eventos, política sem short selling e tratamento de posições zeradas;
 - auto code review sênior confirmou fronteira `position` separada para evitar ciclo `portfolio ↔ transaction` e ausência de dependências/supply-chain novas.
+
+## 2026-08-26 — Portfolio Engine: TargetAllocation
+
+- `TargetAllocation` criado como configuração imutável e separada vinculada explicitamente a `PortfolioId`;
+- buckets usam `AssetClass` como identidade econômica e `AllocationWeight` como contrato único de peso;
+- pesos são somados com representação decimal exata e a política exige total de `100.0000%`;
+- buckets presentes exigem peso maior que zero; classe ausente representa alvo zero;
+- duplicidades são rejeitadas após normalização de `AssetClass`;
+- `targetWeightFor` devolve o peso configurado ou `AllocationWeight.zero()` para classe ausente;
+- buckets e snapshots são ordenados lexicalmente por código de classe para resultado determinístico;
+- round-trip de snapshot reaplica as mesmas invariantes da criação;
+- não entram posição atual, preço, ticker, instrumento, geografia, gap, recomendação de aporte, persistência, API ou UI;
+- testes cobrem política de um/múltiplos buckets, soma exata, total abaixo/acima, duplicidade, peso zero, isolamento por portfolio e snapshot determinístico;
+- ADR-0010 registra a escolha inicial por `AssetClass`, soma completa de 100%, semântica de peso zero e limites deliberados da taxonomia;
+- não há nova dependência, lockfile, integração externa ou mudança de supply chain.
