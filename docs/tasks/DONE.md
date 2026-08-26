@@ -25,3 +25,9 @@ Histórico resumido de atividades concluídas.
 - ADR da stack técnica;
 - fluxo obrigatório de PR formalizado: acompanhar CI, auto review sênior, corrigir findings, atualizar docs, validar o head final e só então mergear;
 - handoff pós-merge documentado com comandos locais obrigatórios.
+
+## 2026-08-26 — Higiene de artefatos locais
+
+- `*.tsbuildinfo` adicionado ao `.gitignore` por ser cache incremental do TypeScript;
+- tratamento de `next-env.d.ts`, `*.tsbuildinfo`, `.next/`, `dist/` e `coverage/` documentado em `docs/DEVELOPMENT.md`;
+- regra de `git status` limpo de artefatos locais não intencionais reforçada antes de finalizar PRs.
