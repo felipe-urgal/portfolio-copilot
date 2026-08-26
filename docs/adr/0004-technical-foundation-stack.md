@@ -16,11 +16,13 @@ Adotar:
 - Node.js 24 Active LTS como baseline de desenvolvimento/CI;
 - Next.js 16.3.3 (Active LTS e patch de segurança de agosto/2026);
 - React 19.2.x;
-- TypeScript strict;
+- TypeScript 6.0.3 strict;
 - ESLint com configuração do Next;
 - Prettier;
 - Vitest;
 - GitHub Actions como quality gate.
+
+TypeScript 7.0.2 é o `latest`, porém o `typescript-eslint` usado pelo `eslint-config-next` ainda rejeita TS 7. Para manter lint oficial, typecheck e framework em uma combinação suportada, a fundação fica em TypeScript 6.0.3 até o toolchain declarar suporte a TS 7. O upgrade deverá ser feito em PR próprio com CI completo.
 
 Não adotar Turborepo nesta fase: os workspaces ainda são poucos e os scripts recursivos do pnpm cobrem a necessidade sem uma camada adicional.
 

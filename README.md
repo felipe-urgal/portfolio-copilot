@@ -73,7 +73,7 @@ audit
 - Node.js 24 Active LTS
 - pnpm 11
 - Next.js 16.3.3 / React 19.2
-- TypeScript strict
+- TypeScript 6.0.3 strict
 - ESLint + Prettier
 - Vitest
 - GitHub Actions
@@ -126,17 +126,17 @@ Documentação de engenharia e governança:
 - [Regulatório](docs/REGULATORY.md)
 - [Roadmap](docs/ROADMAP.md)
 - [Decisões](docs/DECISIONS.md)
-- [Desenvolvimento](docs/DEVELOPMENT.md)
+- [Desenvolvimento e regra obrigatória de PR](docs/DEVELOPMENT.md)
 - [Próxima atividade](docs/tasks/NEXT.md)
 - [Backlog](docs/tasks/BACKLOG.md)
 
 ## Fluxo de trabalho
 
 ```text
-NEXT.md -> branch -> implementação -> testes -> self-review -> PR -> review -> merge -> DONE.md -> próximo NEXT.md
+NEXT.md -> branch -> implementação -> testes -> PR -> acompanhar CI -> auto code review sênior -> corrigir findings -> atualizar docs -> CI final verde -> merge -> handoff local
 ```
 
-Nenhuma funcionalidade financeira é considerada concluída sem testes, critérios de aceite e documentação correspondente.
+Nenhuma funcionalidade financeira é considerada concluída sem testes, critérios de aceite e documentação correspondente. Nenhum PR é mergeado enquanto houver CI pendente/falhando ou finding de review em aberto.
 
 ## Aviso
 
