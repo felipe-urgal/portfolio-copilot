@@ -1,0 +1,150 @@
+.pageShell {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 10% -4rem, rgba(79, 70, 229, 0.08), transparent 30rem), #f7f8fb;
+  color: #161922;
+}
+
+.skipLink {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 20;
+  padding: 0.65rem 0.85rem;
+  border-radius: 0.65rem;
+  background: #161922;
+  color: #fff;
+  font-size: 0.82rem;
+  font-weight: 720;
+  text-decoration: none;
+  transform: translateY(-180%);
+}
+
+.skipLink:focus {
+  transform: translateY(0);
+}
+
+.topbar {
+  border-bottom: 1px solid #e4e7ee;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(12px);
+}
+
+.topbarInner {
+  width: min(1180px, calc(100% - 3rem));
+  min-height: 4.5rem;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 1.5rem;
+  margin: 0 auto;
+}
+
+.brand {
+  width: fit-content;
+  color: #161922;
+  font-size: 1rem;
+  font-weight: 760;
+  letter-spacing: -0.02em;
+  text-decoration: none;
+}
+
+.primaryNav {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  border: 1px solid #e1e4eb;
+  border-radius: 0.8rem;
+  background: #f9fafc;
+}
+
+.navLink,
+.navLinkActive,
+.utilityLink {
+  min-height: 2.35rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.58rem;
+  color: #666d7b;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.navLink,
+.navLinkActive {
+  padding: 0.5rem 0.8rem;
+}
+
+.navLinkActive {
+  background: #fff;
+  color: #302b91;
+  box-shadow: 0 1px 3px rgba(30, 33, 47, 0.08);
+}
+
+.utilityLink {
+  justify-self: end;
+  padding: 0.5rem 0.7rem;
+}
+
+.navLink:hover,
+.utilityLink:hover {
+  color: #292d38;
+}
+
+.brand:focus-visible,
+.navLink:focus-visible,
+.navLinkActive:focus-visible,
+.utilityLink:focus-visible,
+.skipLink:focus-visible {
+  outline: 3px solid rgba(79, 70, 229, 0.22);
+  outline-offset: 3px;
+}
+
+.main {
+  width: min(1180px, calc(100% - 3rem));
+  margin: 0 auto;
+  padding: 3.25rem 0 5rem;
+}
+
+@media (max-width: 760px) {
+  .topbarInner {
+    width: min(100% - 2rem, 1180px);
+    grid-template-columns: 1fr auto;
+    gap: 0.75rem 1rem;
+    padding: 0.8rem 0;
+  }
+
+  .primaryNav {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-self: stretch;
+  }
+
+  .navLink,
+  .navLinkActive {
+    flex: 1;
+  }
+
+  .utilityLink {
+    font-size: 0.76rem;
+  }
+
+  .main {
+    width: min(100% - 2rem, 1180px);
+    padding: 2rem 0 3rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .topbarInner {
+    grid-template-columns: 1fr;
+  }
+
+  .utilityLink {
+    grid-row: 3;
+    justify-self: start;
+  }
+}
