@@ -107,3 +107,19 @@ Histórico resumido de atividades concluídas.
 - testes cobrem precisão, IDs, timestamps, taxonomia, shapes inválidos, valores monetários e round-trip;
 - ADR-0008 registra semântica do ledger, precisão, tempo e limites deliberados;
 - fallback local de quality gate por SHA exato foi formalizado para períodos em que GitHub Actions não puder iniciar por billing/infra.
+
+## 2026-08-26 — Portfolio Engine: projeção de posições por ativo
+
+- `AssetPosition` criado como estrutura derivada com somente `AssetId` e `AssetQuantity`;
+- `projectAssetPositions` reconstrói posições abertas exclusivamente a partir dos fatos do Transaction Ledger;
+- fatos são isolados por `PortfolioId` antes de qualquer regra de posição;
+- `BUY` soma e `SELL` subtrai `scaledUnits` exatos, sem `number` binário nem novo arredondamento;
+- `CASH_IN` e `CASH_OUT` não alteram posições de ativos;
+- venda acima da posição disponível lança `InsufficientAssetPositionError` com contexto auditável e nunca produz quantidade negativa;
+- venda total remove o ativo da projeção atual, preservando o histórico somente no ledger;
+- eventos são processados por `occurredAt`; empates preservam a ordem de entrada porque `TransactionId` não representa cronologia;
+- resultado é ordenado por `AssetId` para manter saída estável;
+- não entram ticker, preço, `settlementAmount`, custo médio, P&L, FX, persistência, API ou UI;
+- testes cobrem portfolio vazio, compras, venda parcial/total, over-sell, múltiplos ativos, isolamento entre portfolios, cash flows, precisão e ordenação reproduzível;
+- ADR-0009 registra fonte de verdade, ordem de eventos, política sem short selling e tratamento de posições zeradas;
+- auto code review sênior confirmou fronteira `position` separada para evitar ciclo `portfolio ↔ transaction` e ausência de dependências/supply-chain novas.

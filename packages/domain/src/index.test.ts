@@ -9,13 +9,14 @@ import {
   Money,
   Percentage,
   PortfolioId,
+  projectAssetPositions,
   TransactionId,
   TransactionTimestamp,
   TransactionType,
 } from "./index";
 
 describe("domain package boundary", () => {
-  it("exports financial, asset, portfolio and transaction value objects", () => {
+  it("exports financial, asset, portfolio, position and transaction primitives", () => {
     expect(Money.fromDecimal("1.00", "BRL").toDecimalString()).toBe("1.00");
     expect(Percentage.fromPercent("10").toPercentString()).toBe("10.0000");
     expect(AllocationWeight.fromPercent("50").toPercentString()).toBe("50.0000");
@@ -35,5 +36,6 @@ describe("domain package boundary", () => {
     expect(TransactionTimestamp.from("2026-08-26T12:30:45.123Z").toString()).toBe(
       "2026-08-26T12:30:45.123Z",
     );
+    expect(typeof projectAssetPositions).toBe("function");
   });
 });
