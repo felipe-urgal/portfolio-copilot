@@ -1,7 +1,14 @@
 import { AssetClass, AssetId, AssetQuantity, type AssetClassCode } from "../asset";
 import { Money } from "../financial";
-import { applyAssetClassConcentrationLimits, type AssetClassConcentrationLimitInput } from "./asset-class-concentration-limits";
-import { allocateContribution, type ContributionAllocatorInput, type ContributionPlan } from "./contribution-allocator";
+import {
+  applyAssetClassConcentrationLimits,
+  type AssetClassConcentrationLimitInput,
+} from "./asset-class-concentration-limits";
+import {
+  allocateContribution,
+  type ContributionAllocatorInput,
+  type ContributionPlan,
+} from "./contribution-allocator";
 import {
   applyContributionCostTaxConstraints,
   type ContributionCostAdjustedDestination,
@@ -45,13 +52,24 @@ export type ContributionRecommendationPipelineInput = Readonly<{
   costTaxConstraints: readonly ContributionCostTaxConstraintInput[];
 }>;
 
+export type ContributionRecommendationPolicySnapshot = Readonly<{
+  minimumMeaningfulContribution: string;
+  maxDestinationsPerContribution: number;
+}>;
+
 export type ContributionRecommendationDecisionSnapshot = Readonly<{
   assetClass: string;
   assetId: string | null;
+  currentValue: string;
+  postContributionTargetValue: string;
+  postContributionNeed: string;
   baselineAllocatedAmount: string;
   policyAllocatedAmount: string;
   concentrationAllocatedAmount: string;
   concentrationBlockedAmount: string;
+  softMaxWeightPercent: string | null;
+  hardMaxWeightPercent: string | null;
+  executionEligible: boolean | null;
   minimumTradableQuantity: string | null;
   transactionCost: string;
   estimatedTaxImpact: string;
@@ -69,6 +87,7 @@ export type ContributionRecommendationSnapshot = Readonly<{
   portfolioValue: string;
   contribution: string;
   postContributionValue: string;
+  policy: ContributionRecommendationPolicySnapshot;
   totalInvestableAmount: string;
   totalConsumedKnownCost: string;
   unallocatedContribution: string;
@@ -219,6 +238,9 @@ export function buildContributionRecommendationSnapshot(
       return Object.freeze({
         assetClass: assetClassCode,
         assetId: executionDestination?.assetId.toString() ?? null,
+        currentValue: allocation.currentValue.toDecimalString(),
+        postContributionTargetValue: allocation.postContributionTargetValue.toDecimalString(),
+        postContributionNeed: allocation.postContributionNeed.toDecimalString(),
         baselineAllocatedAmount: moneyString(baselineMinorUnits, baselinePlan.contribution.currency),
         policyAllocatedAmount: moneyString(policyMinorUnits, baselinePlan.contribution.currency),
         concentrationAllocatedAmount: moneyString(
@@ -226,6 +248,9 @@ export function buildContributionRecommendationSnapshot(
           baselinePlan.contribution.currency,
         ),
         concentrationBlockedAmount: allocation.blockedAmount.toDecimalString(),
+        softMaxWeightPercent: allocation.softMaxWeight?.toPercentString() ?? null,
+        hardMaxWeightPercent: allocation.hardMaxWeight?.toPercentString() ?? null,
+        executionEligible: executionDestination?.isEligible ?? null,
         minimumTradableQuantity:
           executionDestination?.minimumTradableQuantity.toDecimalString() ?? null,
         transactionCost: moneyString(
@@ -254,6 +279,10 @@ export function buildContributionRecommendationSnapshot(
     portfolioValue: baselinePlan.portfolioValue.toDecimalString(),
     contribution: baselinePlan.contribution.toDecimalString(),
     postContributionValue: baselinePlan.postContributionValue.toDecimalString(),
+    policy: Object.freeze({
+      minimumMeaningfulContribution: input.policy.minimumMeaningfulContribution.toDecimalString(),
+      maxDestinationsPerContribution: input.policy.maxDestinationsPerContribution,
+    }),
     totalInvestableAmount: moneyString(
       totalInvestableMinorUnits,
       baselinePlan.contribution.currency,

@@ -7,7 +7,10 @@ import {
   buildContributionRecommendationSnapshot,
   type ContributionRecommendationPipelineInput,
 } from "./contribution-recommendation-pipeline";
-import { ContributionAllocatorPortfolioMismatchError, InvalidContributionMethodologyVersionError } from "./errors";
+import {
+  ContributionAllocatorPortfolioMismatchError,
+  InvalidContributionMethodologyVersionError,
+} from "./errors";
 
 const PORTFOLIO_ID = PortfolioId.from("550e8400-e29b-41d4-a716-446655440040");
 const OTHER_PORTFOLIO_ID = PortfolioId.from("550e8400-e29b-41d4-a716-446655440041");
@@ -74,11 +77,21 @@ describe("buildContributionRecommendationSnapshot", () => {
     expect(snapshot.portfolioId).toBe(PORTFOLIO_ID.toString());
     expect(snapshot.currency).toBe("BRL");
     expect(snapshot.contribution).toBe("100.00");
+    expect(snapshot.policy).toEqual({
+      minimumMeaningfulContribution: "0.00",
+      maxDestinationsPerContribution: 2,
+    });
     expect(snapshot.totalInvestableAmount).toBe("100.00");
     expect(snapshot.totalConsumedKnownCost).toBe("0.00");
     expect(snapshot.unallocatedContribution).toBe("0.00");
     expect(snapshot.decisions.map((item) => item.assetClass)).toEqual(["EQUITY", "FIXED_INCOME"]);
     expect(snapshot.decisions.every((item) => item.status === "EXECUTABLE")).toBe(true);
+
+    const equity = decision(snapshot, "EQUITY");
+    expect(equity.currentValue).toBe("50.00");
+    expect(equity.postContributionTargetValue).toBe("100.00");
+    expect(equity.postContributionNeed).toBe("50.00");
+    expect(equity.executionEligible).toBe(true);
   });
 
   it("preserves a contribution policy adjustment in deterministic reason codes", () => {
@@ -108,6 +121,8 @@ describe("buildContributionRecommendationSnapshot", () => {
 
     expect(equity.concentrationAllocatedAmount).toBe("30.00");
     expect(equity.concentrationBlockedAmount).toBe("20.00");
+    expect(equity.softMaxWeightPercent).toBe("35.0000");
+    expect(equity.hardMaxWeightPercent).toBe("40.0000");
     expect(equity.investableAmount).toBe("30.00");
     expect(equity.status).toBe("EXECUTABLE");
     expect(equity.reasonCodes).toEqual([
@@ -131,6 +146,7 @@ describe("buildContributionRecommendationSnapshot", () => {
     const equity = decision(snapshot, "EQUITY");
 
     expect(equity.assetId).toBe(EQUITY_ID.toString());
+    expect(equity.executionEligible).toBe(false);
     expect(equity.minimumTradableQuantity).toBe("1.000000000000");
     expect(equity.investableAmount).toBe("0.00");
     expect(equity.status).toBe("BLOCKED_INELIGIBLE");
@@ -190,6 +206,23 @@ describe("buildContributionRecommendationSnapshot", () => {
     expect(snapshot.unallocatedContribution).toBe("50.00");
   });
 
+  it("reconciles a combination of concentration and execution blocks", () => {
+    const input = baseInput();
+    const snapshot = buildContributionRecommendationSnapshot({
+      ...input,
+      concentrationLimits: [
+        { assetClass: "EQUITY", softMaxWeight: "35", hardMaxWeight: "40" },
+      ],
+      executionDestinations: input.executionDestinations.map((destination) =>
+        destination.assetClass === "EQUITY" ? { ...destination, isEligible: false } : destination,
+      ),
+    });
+
+    expect(snapshot.totalInvestableAmount).toBe("50.00");
+    expect(snapshot.totalConsumedKnownCost).toBe("0.00");
+    expect(snapshot.unallocatedContribution).toBe("50.00");
+  });
+
   it("propagates typed errors from internal layers without generic wrapping", () => {
     const input = baseInput();
 
@@ -217,9 +250,10 @@ describe("buildContributionRecommendationSnapshot", () => {
 
     expect(first).toEqual(second);
     expect(Object.isFrozen(first)).toBe(true);
+    expect(Object.isFrozen(first.policy)).toBe(true);
     expect(Object.isFrozen(first.decisions)).toBe(true);
-    expect(first.decisions.every((item) => Object.isFrozen(item) && Object.isFrozen(item.reasonCodes))).toBe(
-      true,
-    );
+    expect(
+      first.decisions.every((item) => Object.isFrozen(item) && Object.isFrozen(item.reasonCodes)),
+    ).toBe(true);
   });
 });
