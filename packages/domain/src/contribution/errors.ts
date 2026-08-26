@@ -8,7 +8,10 @@ export type ContributionDomainErrorCode =
   | "DUPLICATE_CONTRIBUTION_EXECUTION_DESTINATION"
   | "INVALID_MINIMUM_TRADABLE_QUANTITY"
   | "INVALID_CONTRIBUTION_DESTINATION_ELIGIBILITY"
-  | "MISSING_CONTRIBUTION_EXECUTION_DESTINATION";
+  | "MISSING_CONTRIBUTION_EXECUTION_DESTINATION"
+  | "DUPLICATE_ASSET_CLASS_CONCENTRATION_LIMIT"
+  | "INVALID_ASSET_CLASS_CONCENTRATION_WEIGHT"
+  | "INVALID_ASSET_CLASS_CONCENTRATION_RANGE";
 
 export class ContributionDomainError extends Error {
   public constructor(
@@ -130,6 +133,41 @@ export class MissingContributionExecutionDestinationError extends ContributionDo
     super(
       "MISSING_CONTRIBUTION_EXECUTION_DESTINATION",
       `Missing contribution execution destination for positive allocation in asset class: ${assetClass}`,
+    );
+  }
+}
+
+export class DuplicateAssetClassConcentrationLimitError extends ContributionDomainError {
+  public constructor(public readonly assetClass: string) {
+    super(
+      "DUPLICATE_ASSET_CLASS_CONCENTRATION_LIMIT",
+      `Duplicate asset class concentration limit: ${assetClass}`,
+    );
+  }
+}
+
+export class InvalidAssetClassConcentrationWeightError extends ContributionDomainError {
+  public constructor(
+    public readonly assetClass: string,
+    public readonly field: "softMaxWeight" | "hardMaxWeight",
+    public readonly value: string,
+  ) {
+    super(
+      "INVALID_ASSET_CLASS_CONCENTRATION_WEIGHT",
+      `Invalid ${field} for asset class ${assetClass}: ${JSON.stringify(value)}`,
+    );
+  }
+}
+
+export class InvalidAssetClassConcentrationRangeError extends ContributionDomainError {
+  public constructor(
+    public readonly assetClass: string,
+    public readonly softMaxWeight: string,
+    public readonly hardMaxWeight: string,
+  ) {
+    super(
+      "INVALID_ASSET_CLASS_CONCENTRATION_RANGE",
+      `softMaxWeight must be less than or equal to hardMaxWeight for asset class ${assetClass}: ${softMaxWeight} > ${hardMaxWeight}`,
     );
   }
 }
