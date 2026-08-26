@@ -1,36 +1,38 @@
+import { CurrencyCode } from "./currency-code";
+import { formatScaledDecimal, parseScaledDecimal } from "./decimal";
 import {
   CurrencyMismatchError,
-  InvalidCurrencyCodeError,
+  InvalidFinancialSnapshotError,
 } from "./errors";
-import { formatScaledDecimal, parseScaledDecimal } from "./decimal";
 
 const MONEY_SCALE = 2;
-const CURRENCY_PATTERN = /^[A-Za-z]{3}$/;
 
 export type MoneySnapshot = Readonly<{
   currency: string;
   minorUnits: string;
 }>;
 
-function normalizeCurrency(currency: string): string {
-  if (!CURRENCY_PATTERN.test(currency)) {
-    throw new InvalidCurrencyCodeError(currency);
-  }
-
-  return currency.toUpperCase();
+function toCurrencyCode(currency: CurrencyCode | string): CurrencyCode {
+  return typeof currency === "string" ? CurrencyCode.from(currency) : currency;
 }
 
 export class Money {
   private constructor(
     public readonly minorUnits: bigint,
-    public readonly currency: string,
+    public readonly currency: CurrencyCode,
   ) {}
 
-  public static fromMinorUnits(minorUnits: bigint, currency: string): Money {
-    return new Money(minorUnits, normalizeCurrency(currency));
+  public static fromMinorUnits(
+    minorUnits: bigint,
+    currency: CurrencyCode | string,
+  ): Money {
+    return new Money(minorUnits, toCurrencyCode(currency));
   }
 
-  public static fromDecimal(decimal: string, currency: string): Money {
+  public static fromDecimal(
+    decimal: string,
+    currency: CurrencyCode | string,
+  ): Money {
     return Money.fromMinorUnits(
       parseScaledDecimal(decimal, MONEY_SCALE),
       currency,
@@ -39,13 +41,16 @@ export class Money {
 
   public static fromSnapshot(snapshot: MoneySnapshot): Money {
     if (!/^-?\d+$/.test(snapshot.minorUnits)) {
-      throw new TypeError("Money snapshot minorUnits must be an integer string");
+      throw new InvalidFinancialSnapshotError(
+        "Money.minorUnits",
+        snapshot.minorUnits,
+      );
     }
 
     return Money.fromMinorUnits(BigInt(snapshot.minorUnits), snapshot.currency);
   }
 
-  public static zero(currency: string): Money {
+  public static zero(currency: CurrencyCode | string): Money {
     return Money.fromMinorUnits(0n, currency);
   }
 
@@ -69,7 +74,8 @@ export class Money {
 
   public equals(other: Money): boolean {
     return (
-      this.currency === other.currency && this.minorUnits === other.minorUnits
+      this.currency.equals(other.currency) &&
+      this.minorUnits === other.minorUnits
     );
   }
 
@@ -95,14 +101,17 @@ export class Money {
 
   public toSnapshot(): MoneySnapshot {
     return {
-      currency: this.currency,
+      currency: this.currency.code,
       minorUnits: this.minorUnits.toString(),
     };
   }
 
   private assertSameCurrency(other: Money): void {
-    if (this.currency !== other.currency) {
-      throw new CurrencyMismatchError(this.currency, other.currency);
+    if (!this.currency.equals(other.currency)) {
+      throw new CurrencyMismatchError(
+        this.currency.code,
+        other.currency.code,
+      );
     }
   }
 }
