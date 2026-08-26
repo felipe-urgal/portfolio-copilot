@@ -55,3 +55,19 @@ Histórico resumido de atividades concluídas.
 - teste determinístico de round-trip sobre faixa ampla de centavos sem nova dependência property-based;
 - auto code review sênior extraiu `CurrencyCode`, tipou erros de snapshot e endureceu o helper de arredondamento para `noUncheckedIndexedAccess`;
 - ADR-0005 registra precisão, arredondamento, persistência e separação futura entre dinheiro, preço e quantidade.
+
+## 2026-08-26 — Portfolio Engine: Asset e AssetClass
+
+- `AssetId` criado como identidade interna opaca, estável e independente de ticker/provedor;
+- UUID canônico é validado e normalizado sem gerar identidade dentro do domínio;
+- `AssetClass` criado com taxonomia econômica inicial explícita e sem categoria genérica `OTHER`;
+- `Asset` criado como entidade imutável com nome, classe, moeda de referência e identificadores externos opcionais;
+- `CurrencyCode` do domínio financeiro é reutilizado como contrato único de moeda;
+- `ExternalAssetIdentifier` diferencia `MARKET_SYMBOL`, `ISIN` e `PROVIDER_ID` sem tratá-los como chave primária;
+- símbolos de mercado e namespaces são normalizados; provider IDs preservam case quando necessário;
+- ativos sem ticker são suportados como cidadãos de primeira classe, inclusive renda fixa;
+- identificadores externos duplicados no mesmo ativo são rejeitados;
+- dois ativos com o mesmo ticker continuam distintos quando possuem `AssetId` diferentes;
+- erros específicos do domínio de ativos foram adicionados;
+- testes cobrem identidade, classes, nomes, moedas, identificadores externos e estados inválidos;
+- ADR-0006 registra identidade, taxonomia, limites deliberados de ISIN e separação futura do Asset Master.
