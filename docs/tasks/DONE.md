@@ -326,3 +326,20 @@ Histórico resumido de atividades concluídas.
 - `apps/web` passa a declarar dependência workspace explícita de `@portfolio-copilot/domain`;
 - nenhuma dependência externa, API, autenticação, persistência, Market Data, IA ou fórmula financeira nova foi adicionada;
 - `docs/tasks/NEXT.md` promove o dashboard base com estados vazios honestos como próximo vertical da Fase 3.
+
+## 2026-08-26 — Produto MVP: dashboard base com estados honestos
+
+- rota `/dashboard` adicionada e a raiz passa a direcionar para o dashboard como superfície principal do MVP;
+- shell visual reutilizável criado com marca, navegação para dashboard/onboarding, utilitário de saúde e skip link;
+- dashboard é server-rendered e não adiciona estado cliente, fetch ou dependência externa sem necessidade;
+- patrimônio total, aporte do mês e reserva de emergência aparecem como estados indisponíveis explicados, nunca como zero ou valor demonstrativo;
+- a interface deixa explícito que o onboarding continua local/efêmero e ainda não alimenta o dashboard;
+- região de carteira usa estado vazio sem gráfico, holdings, patrimônio, pesos ou desvios fictícios;
+- objetivos e reserva distinguem indisponibilidade de ausência real, evitando inferir que o usuário não configurou algo;
+- próximos passos seguem a dependência real do MVP: onboarding -> carteira -> aporte;
+- layout reutiliza a linguagem visual clara do onboarding, com uma única superfície principal, separadores e hierarquia responsiva em vez de grade de métricas fake;
+- navegação e ações principais possuem foco visível, `aria-current`, labels semânticas e link para pular ao conteúdo;
+- testes de renderização estática cobrem navegação, copy crítica, estados vazios e ausência de valores monetários/percentuais fictícios;
+- auto review sênior manteve loading/error fora do vertical porque nenhuma fonte assíncrona existe ainda; simular esses estados seria menos honesto que representar indisponibilidade real;
+- nenhuma fórmula financeira, persistência, API, autenticação, Market Data, IA, lockfile ou dependência externa foi adicionada;
+- `docs/tasks/NEXT.md` promove carteira base com cadastro local do agregado `Portfolio` como próximo vertical da Fase 3.
