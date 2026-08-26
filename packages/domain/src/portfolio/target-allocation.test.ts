@@ -25,6 +25,15 @@ describe("TargetAllocation", () => {
     expect(Object.isFrozen(allocation.buckets[0])).toBe(true);
   });
 
+  it("rejects an empty allocation", () => {
+    expect(() =>
+      TargetAllocation.create({
+        portfolioId: FIRST_PORTFOLIO_ID,
+        buckets: [],
+      }),
+    ).toThrowError(InvalidTargetAllocationTotalWeightError);
+  });
+
   it("accepts multiple buckets whose exact weights total 100%", () => {
     const allocation = TargetAllocation.create({
       portfolioId: FIRST_PORTFOLIO_ID,
