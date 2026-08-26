@@ -1,4 +1,5 @@
 import { isDecimalZero, parseDecimalParts } from "../financial/decimal";
+import type { DecimalParts } from "../financial/decimal";
 import { InvalidAssetQuantityError } from "./errors";
 
 const ASSET_QUANTITY_SCALE = 12;
@@ -12,7 +13,7 @@ export class AssetQuantity {
   private constructor(public readonly scaledUnits: bigint) {}
 
   public static fromDecimal(value: string): AssetQuantity {
-    let parts;
+    let parts: DecimalParts;
 
     try {
       parts = parseDecimalParts(value);
