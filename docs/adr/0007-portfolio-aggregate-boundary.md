@@ -26,6 +26,7 @@ O agregado não contém coleção de ativos, holdings, saldo de caixa, custo mé
 - `PortfolioId` é um value object distinto de `AssetId`;
 - ambos usam o mesmo contrato técnico de UUID canônico;
 - a validação/normalização técnica do UUID é compartilhada internamente para evitar drift de regras;
+- o helper técnico de UUID não faz parte da API pública do pacote; consumidores trabalham somente com os value objects semânticos;
 - os tipos permanecem semanticamente separados e possuem erros de domínio próprios;
 - geração do UUID continua fora do domínio.
 
