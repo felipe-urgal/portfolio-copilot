@@ -72,6 +72,16 @@ pnpm dev
 
 Nunca fornecer comandos genéricos se o PR exigir passos específicos adicionais.
 
+## Arquivos gerados localmente
+
+Alguns comandos do Next.js e do TypeScript geram arquivos no workspace local. Eles devem ser tratados de forma explícita para não poluir commits:
+
+- `*.tsbuildinfo`: cache do modo incremental do TypeScript. É artefato local, não deve ser versionado e está coberto pelo `.gitignore`;
+- `apps/web/next-env.d.ts`: arquivo gerado pelo Next.js e mantido versionado. Não editar manualmente. Se ele mudar apenas por executar `dev`, `build` ou `typecheck`, sem alteração deliberada de Next.js/configuração TypeScript que justifique a mudança, restaurar o arquivo antes do commit;
+- `.next/`, `dist/` e `coverage/`: artefatos de build/teste locais e não versionados.
+
+Antes de abrir ou finalizar um PR, `git status` deve estar livre de artefatos locais não intencionais.
+
 ## Definition of Done
 
 Uma atividade só está concluída quando:
