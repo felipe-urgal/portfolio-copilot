@@ -359,3 +359,22 @@ Histórico resumido de atividades concluídas.
 - testes puros cobrem criação, normalização e tradução de erros; renderização estática cobre navegação, formulário, snapshot, posições vazias e ausência de métricas fictícias;
 - nenhuma dependência externa, lockfile, fórmula financeira, persistência, API, autenticação, Market Data ou IA foi adicionada;
 - `docs/tasks/NEXT.md` promove cadastro local do Transaction Ledger, iniciando por `CASH_IN`/`CASH_OUT`, como próximo vertical da Fase 3.
+
+## 2026-08-26 — Produto MVP: Transaction Ledger local com fluxos de caixa
+
+- `/portfolio` passa a registrar `CASH_IN` e `CASH_OUT` somente após existir um `PortfolioSnapshot` validado na sessão;
+- identidade, `PortfolioId`, tipo e timestamp passam por `TransactionId`, `PortfolioId`, `TransactionType` e `TransactionTimestamp` antes da criação;
+- valor monetário permanece texto na UI, aceita vírgula ou ponto decimal e passa por `Money.fromDecimal` sem `number` binário;
+- settlement usa a moeda de referência do portfolio enquanto FX permanece fora de escopo;
+- cada movimentação é criada por `Transaction.create` e a lista apresenta snapshots reais do domínio, com valor, timestamp e identidade auditáveis;
+- `BUY` e `SELL` aparecem explicitamente indisponíveis até existir seleção real de `Asset`, sem pedir UUID interno como atalho de UX;
+- cash flows não carregam `AssetId`/quantidade e a UI mantém posições de ativos vazias mesmo quando o ledger possui movimentações;
+- a interface não calcula saldo, patrimônio, custo médio, P&L ou qualquer outra métrica financeira a partir dos cash flows;
+- carteira e ledger continuam local/efêmeros; recarregar ou sair da tela remove todo o estado da sessão;
+- formulário usa fieldset, radios nativos, feedback por `aria-invalid`/`aria-describedby` e estados desabilitados explícitos;
+- layout do ledger reutiliza o sistema visual da carteira e colapsa para uma coluna em viewports menores;
+- testes puros cobrem `CASH_IN`, `CASH_OUT`, vínculo ao portfolio, normalização decimal, valor inválido/zero e falhas técnicas de ID/timestamp;
+- testes de renderização estática cobrem controles do ledger, estado vazio, snapshots reais e ausência de posições fictícias para cash flows;
+- metadata de `/portfolio` passa a descrever também os fluxos de caixa locais;
+- nenhuma dependência externa, lockfile, fórmula financeira, persistência, API, autenticação, Market Data ou IA foi adicionada;
+- `docs/tasks/NEXT.md` promove Asset local + `BUY`/`SELL` como próximo vertical da Fase 3.

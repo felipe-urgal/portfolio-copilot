@@ -11,8 +11,21 @@ const SNAPSHOT = {
   referenceCurrency: "BRL",
 } as const;
 
+const CASH_IN = {
+  id: "7744df4d-bb41-4a07-b582-a8d8f710a8af",
+  portfolioId: SNAPSHOT.id,
+  type: "CASH_IN",
+  occurredAt: "2026-08-26T21:05:00.000Z",
+  settlementAmount: {
+    currency: "BRL",
+    minorUnits: "125000",
+  },
+  assetId: null,
+  quantity: null,
+} as const;
+
 describe("PortfolioWorkspace", () => {
-  it("renders the local creation form and product navigation", () => {
+  it("renders the local portfolio creation form and product navigation", () => {
     const html = renderToStaticMarkup(
       <ProductShell activeRoute="/portfolio">
         <PortfolioWorkspace />
@@ -33,19 +46,40 @@ describe("PortfolioWorkspace", () => {
     expect(html).toContain("Transaction Ledger");
   });
 
-  it("renders a validated snapshot with honest empty positions", () => {
+  it("renders cash-flow controls only after a validated portfolio exists", () => {
     const html = renderToStaticMarkup(<PortfolioWorkspace initialSnapshot={SNAPSHOT} />);
 
     expect(html).toContain("Carteira criada nesta sessão");
-    expect(html).toContain("Carteira principal");
-    expect(html).toContain("BRL");
-    expect(html).toContain(SNAPSHOT.id);
-    expect(html).toContain("Nenhuma posição disponível");
+    expect(html).toContain("Transaction Ledger");
+    expect(html).toContain("Tipo de movimentação");
+    expect(html).toContain("Entrada");
+    expect(html).toContain("Saída");
+    expect(html).toContain("Registrar movimentação");
+    expect(html).toContain("Ledger sem movimentações");
+    expect(html).toContain("Compra");
+    expect(html).toContain("Venda");
+    expect(html).toContain("Compra e venda exigem um Asset real selecionável");
+    expect(html).toContain("Nenhuma posição de ativo disponível");
     expect(html).toContain("Sem transações");
-    expect(html).toContain("Nenhum holding ou patrimônio é inventado");
+  });
+
+  it("renders real cash transaction snapshots without inventing asset positions", () => {
+    const html = renderToStaticMarkup(
+      <PortfolioWorkspace initialSnapshot={SNAPSHOT} initialTransactions={[CASH_IN]} />,
+    );
+
+    expect(html).toContain("Carteira principal");
+    expect(html).toContain(SNAPSHOT.id);
+    expect(html).toContain("Entrada de caixa");
+    expect(html).toContain("BRL 1250.00");
+    expect(html).toContain(CASH_IN.occurredAt);
+    expect(html).toContain(CASH_IN.id);
+    expect(html).toContain("1 movimentação");
+    expect(html).toContain("Somente fluxos de caixa");
+    expect(html).toContain("CASH_IN e CASH_OUT não carregam AssetId nem quantidade");
+    expect(html).toContain("Nenhuma posição de ativo disponível");
 
     expect(html).not.toMatch(/R\$\s*\d/);
-    expect(html).not.toContain("0,00");
     expect(html).not.toMatch(/>\s*0%\s*</);
   });
 });

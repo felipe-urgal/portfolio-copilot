@@ -315,10 +315,216 @@
   line-height: 1.55;
 }
 
+.sessionStack {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.ledgerSurface {
+  overflow: hidden;
+  border: 1px solid #e1e4eb;
+  border-radius: 1.2rem;
+  background: #fff;
+  box-shadow: 0 22px 65px rgba(36, 40, 56, 0.06);
+}
+
+.ledgerLayout {
+  display: grid;
+  grid-template-columns: minmax(18rem, 0.72fr) minmax(0, 1.28fr);
+}
+
+.cashForm {
+  display: grid;
+  align-content: start;
+  gap: 1.25rem;
+  padding: 1.65rem;
+  border-right: 1px solid #eceef3;
+}
+
+.transactionTypeFieldset {
+  display: grid;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.transactionTypeFieldset legend {
+  margin-bottom: 0.6rem;
+  color: #292d38;
+  font-size: 0.82rem;
+  font-weight: 730;
+}
+
+.transactionTypeOptions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.55rem;
+}
+
+.transactionTypeOptions label {
+  min-height: 2.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid #d9dde6;
+  border-radius: 0.72rem;
+  background: #fff;
+  color: #393e4a;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.transactionTypeOptions label:has(input:checked) {
+  border-color: #b7b2f3;
+  background: #f5f4ff;
+  color: #3730a3;
+}
+
+.transactionTypeOptions input {
+  width: 1rem;
+  height: 1rem;
+  margin: 0;
+  accent-color: #4f46e5;
+}
+
+.transactionTypeOptions input:focus-visible {
+  outline: 3px solid rgba(79, 70, 229, 0.22);
+  outline-offset: 3px;
+}
+
+.unavailableTrades {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.55rem;
+  padding-top: 1rem;
+  border-top: 1px solid #eceef3;
+}
+
+.unavailableTrades button {
+  min-height: 2.55rem;
+  border: 1px solid #e1e4eb;
+  border-radius: 0.68rem;
+  background: #f8f9fb;
+  color: #9298a4;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.unavailableTrades p {
+  grid-column: 1 / -1;
+  margin: 0.15rem 0 0;
+  color: #858b98;
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
+.ledgerHistory {
+  min-width: 0;
+  padding: 1.65rem;
+}
+
+.ledgerHistoryHeading {
+  margin-bottom: 1.15rem;
+}
+
+.ledgerHistoryHeading h3 {
+  margin: 0;
+  color: #2c313d;
+  font-size: 0.92rem;
+  letter-spacing: -0.015em;
+}
+
+.ledgerHistoryHeading p {
+  margin: 0.35rem 0 0;
+  color: #858b98;
+  font-size: 0.77rem;
+  line-height: 1.5;
+}
+
+.ledgerEmptyState {
+  padding: 1.2rem;
+  border: 1px dashed #d8dce5;
+  border-radius: 0.85rem;
+  background: #fafbfc;
+}
+
+.ledgerEmptyState strong {
+  color: #353a46;
+  font-size: 0.84rem;
+}
+
+.ledgerEmptyState p {
+  margin: 0.35rem 0 0;
+  color: #7b8290;
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+.ledgerList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid #eceef3;
+}
+
+.ledgerList li {
+  display: grid;
+  gap: 0.65rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid #eceef3;
+}
+
+.transactionMain {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.transactionMain > div {
+  min-width: 0;
+  display: grid;
+  gap: 0.28rem;
+}
+
+.transactionMain strong {
+  color: #303541;
+  font-size: 0.84rem;
+}
+
+.transactionMain time {
+  color: #858b98;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.7rem;
+}
+
+.transactionAmount {
+  flex: 0 0 auto;
+  color: #282d39;
+  font-size: 0.84rem;
+  font-weight: 760;
+}
+
+.ledgerList code {
+  overflow-wrap: anywhere;
+  color: #9298a4;
+  font-size: 0.68rem;
+}
+
 @media (max-width: 860px) {
   .creationLayout,
-  .snapshotLayout {
+  .snapshotLayout,
+  .ledgerLayout {
     grid-template-columns: 1fr;
+  }
+
+  .cashForm {
+    border-right: 0;
+    border-bottom: 1px solid #eceef3;
   }
 }
 
@@ -339,7 +545,9 @@
 
   .form,
   .truthRail,
-  .sectionHeading {
+  .sectionHeading,
+  .cashForm,
+  .ledgerHistory {
     padding-right: 1.15rem;
     padding-left: 1.15rem;
   }
@@ -360,5 +568,10 @@
   .secondaryAction {
     margin-right: 1.15rem;
     margin-left: 1.15rem;
+  }
+
+  .transactionMain {
+    display: grid;
+    gap: 0.55rem;
   }
 }
