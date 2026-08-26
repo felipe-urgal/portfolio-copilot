@@ -76,8 +76,8 @@ export function PortfolioWorkspace({ initialSnapshot = null }: PortfolioWorkspac
         <div>
           <h2 id="portfolio-persistence-title">Nada é persistido nesta versão</h2>
           <p>
-            A carteira existe somente nesta página enquanto ela estiver aberta. Recarregar a página
-            remove o estado criado aqui.
+            A carteira existe somente enquanto esta tela permanecer aberta. Recarregar ou sair desta
+            tela remove o estado criado aqui.
           </p>
         </div>
       </section>
@@ -137,7 +137,7 @@ export function PortfolioWorkspace({ initialSnapshot = null }: PortfolioWorkspac
                   }
                 />
                 <p className={styles.helpText} id="portfolio-currency-help">
-                  Informe o código ISO de três letras, como BRL, USD ou EUR.
+                  Informe um código de três letras, como BRL, USD ou EUR.
                 </p>
                 <FieldError id="portfolio-currency-error" message={errors.referenceCurrency} />
               </div>
