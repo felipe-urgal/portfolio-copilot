@@ -10,12 +10,15 @@ export type {
   ContributionAllocatorInput,
   ContributionPlan,
 } from "./contribution-allocator";
+export { applyContributionPolicy } from "./contribution-policy";
+export type { ContributionPolicy, ContributionPolicyApplicationInput } from "./contribution-policy";
 export {
   AllocationGapPortfolioMismatchError,
   AllocationTotalMismatchError,
   ContributionAllocatorPortfolioMismatchError,
   ContributionDomainError,
   DuplicateCurrentAllocationBucketError,
+  InvalidMaxDestinationsPerContributionError,
   NegativeAllocationValueError,
 } from "./errors";
 export type { ContributionDomainErrorCode } from "./errors";

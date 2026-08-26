@@ -3,7 +3,8 @@ export type ContributionDomainErrorCode =
   | "CONTRIBUTION_ALLOCATOR_PORTFOLIO_MISMATCH"
   | "DUPLICATE_CURRENT_ALLOCATION_BUCKET"
   | "NEGATIVE_ALLOCATION_VALUE"
-  | "ALLOCATION_TOTAL_MISMATCH";
+  | "ALLOCATION_TOTAL_MISMATCH"
+  | "INVALID_MAX_DESTINATIONS_PER_CONTRIBUTION";
 
 export class ContributionDomainError extends Error {
   public constructor(
@@ -71,6 +72,15 @@ export class AllocationTotalMismatchError extends ContributionDomainError {
     super(
       "ALLOCATION_TOTAL_MISMATCH",
       `Current allocation buckets for portfolio ${portfolioId} total ${bucketTotal} ${currency}, expected ${declaredTotal} ${currency}`,
+    );
+  }
+}
+
+export class InvalidMaxDestinationsPerContributionError extends ContributionDomainError {
+  public constructor(public readonly value: number) {
+    super(
+      "INVALID_MAX_DESTINATIONS_PER_CONTRIBUTION",
+      `maxDestinationsPerContribution must be a positive safe integer: ${String(value)}`,
     );
   }
 }

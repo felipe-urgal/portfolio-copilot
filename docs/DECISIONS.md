@@ -24,6 +24,7 @@ Este arquivo resume decisões. Decisões arquiteturais importantes também ganha
 | D-018 | `TargetAllocation` é política completa por `AssetClass`: buckets positivos, sem duplicidade e soma exata de 100% | Aceita — ADR-0010 |
 | D-019 | `AllocationGap` usa valores atuais reconciliados e maiores restos para converter pesos em centavos sem perder a soma monetária | Aceita — ADR-0011 |
 | D-020 | `ContributionAllocator` calcula necessidades sobre `portfolioValue + contribution` e distribui o aporte proporcionalmente por maiores restos, preservando sobra explícita | Aceita — ADR-0012 |
+| D-021 | Política de aporte limita destinos por maior necessidade pós-aporte e elimina alocações abaixo de um mínimo monetário, redistribuindo por maiores restos | Aceita — ADR-0013 |
 
 ## Como alterar uma decisão
 

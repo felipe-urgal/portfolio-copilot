@@ -172,3 +172,20 @@ Histórico resumido de atividades concluídas.
 - testes cobrem aporte zero, carteira no alvo, necessidade única/múltipla, overweight, pós-aporte, centavos, moedas, portfolio, estado atual inválido, limites e determinismo;
 - ADR-0012 registra fórmula, arredondamento, sobra de caixa e fronteira com políticas futuras;
 - não há nova dependência, lockfile, schema, persistência ou integração externa.
+
+## 2026-08-26 — Portfolio Engine: política de microaporte e limite de destinos
+
+- `applyContributionPolicy` criado como camada pura sobre o `ContributionPlan`, preservando o baseline econômico do `ContributionAllocator`;
+- `minimumMeaningfulContribution` usa `Money`, precisa ser não negativo e da mesma moeda do plano;
+- `maxDestinationsPerContribution` é validado como inteiro positivo seguro e possui erro de domínio tipado;
+- somente classes com necessidade pós-aporte positiva podem ser destinos;
+- quando o limite é restritivo, destinos são priorizados por maior necessidade pós-aporte e desempate lexical por `AssetClass`;
+- distribuição entre destinos selecionados reutiliza maiores restos e unidades monetárias inteiras;
+- alocação positiva abaixo do mínimo remove o destino da rodada e dispara redistribuição entre os restantes;
+- a política nunca infla um microaporte apenas para alcançar o mínimo;
+- nenhuma alocação excede a necessidade do bucket e a soma nunca excede o aporte;
+- valor que não pode ser distribuído sob as restrições permanece em `unallocatedContribution`;
+- mínimo zero e limite não restritivo preservam o resultado baseline;
+- testes cobrem limite amplo, limite de um destino, empate, aporte pequeno, redistribuição, cap por necessidade, combinação de mínimo/limite, moeda, configuração inválida, imutabilidade e determinismo;
+- ADR-0013 registra ordem de seleção, política de mínimo, reconciliação e fronteira com unidade mínima negociável/elegibilidade;
+- não há nova dependência, lockfile, schema, persistência ou integração externa.
