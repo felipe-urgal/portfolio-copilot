@@ -1,34 +1,33 @@
-# Próxima Atividade — Portfolio Engine: limites de concentração por AssetClass
+# Próxima Atividade — Portfolio Engine: custos e impactos tributários como restrições do aporte
 
-**Status:** READY após merge das restrições de execução do aporte.
+**Status:** READY após merge dos limites de concentração por `AssetClass`.
 
 ## Objetivo
 
-Adicionar limites configuráveis de concentração ao fluxo de aporte, começando por `AssetClass`, para impedir que novas alocações ultrapassem limites duros e representar de forma explícita a política de limite suave sem depender de preço, ticker ou dados externos.
+Adicionar contratos determinísticos para representar custos transacionais e impactos tributários materiais já conhecidos como restrições do aporte, sem calcular imposto a partir de regras externas nem buscar tarifas no meio do domínio puro.
 
 ## Escopo
 
-- contrato de concentração por `AssetClass`;
-- `softMaxWeight` e `hardMaxWeight` usando `AllocationWeight`;
-- validação explícita de `softMaxWeight <= hardMaxWeight`;
-- aplicação sobre o estado monetário atual e a alocação de aporte já calculada;
-- cálculo determinístico do peso projetado após o aporte usando unidades inteiras/exatas;
-- `hardMaxWeight` impede nova alocação que viole o limite;
-- semântica explícita para `softMaxWeight` como restrição/alerta do fluxo de novos aportes;
-- tratamento determinístico de valor bloqueado, mantendo sobra em `unallocatedContribution`;
-- nenhuma alocação acima do limite duro;
-- testes de limites, bordas, precisão e determinismo;
-- documentação da fronteira com concentração futura por ativo, setor, emissor, moeda/geografia e grupo econômico.
+- contrato explícito de custo por destino de aporte usando `Money`;
+- representação separada de custo transacional e impacto tributário estimado/fornecido;
+- validação de moeda e valores não negativos;
+- aplicação sobre alocações já filtradas por política, execução e concentração;
+- impedir aporte economicamente inviável quando custo conhecido consumir ou superar o valor destinado;
+- preservação explícita de valor bloqueado em `unallocatedContribution`;
+- sinalização auditável do motivo do bloqueio;
+- nenhuma redistribuição silenciosa sem política própria;
+- testes de borda, moeda, centavos, determinismo e integração com as camadas anteriores;
+- documentação clara de que cálculo fiscal, tabela de corretora e provenance de dados são responsabilidades externas futuras.
 
 ## Fora de escopo
 
-- concentração por ativo individual que dependa de valuation/preço atual;
-- setor, emissor, grupo econômico, moeda e geografia;
+- cálculo de imposto de renda, come-cotas ou regras fiscais específicas;
+- consulta de tarifa de corretora/provedor;
 - preço em tempo real;
 - FX;
-- Quality/Opportunity/Portfolio Fit;
-- custos e impostos;
 - venda/rebalanceamento;
+- concentração por ativo, setor, emissor, moeda/geografia ou grupo econômico;
+- Quality/Opportunity/Portfolio Fit;
 - persistência, banco e repositórios;
 - API;
 - UI;
@@ -36,26 +35,27 @@ Adicionar limites configuráveis de concentração ao fluxo de aporte, começand
 
 ## Critérios de aceite
 
-- pesos usam `AllocationWeight`/representação exata, sem `number` binário financeiro;
-- configuração inválida (`soft > hard`, duplicidade ou shape inválido) é rejeitada por erro tipado;
-- classe sem limite explícito mantém comportamento anterior;
-- limite duro nunca é ultrapassado pela recomendação final;
-- política de limite suave é determinística e documentada;
-- valor bloqueado não é perdido nem forçado silenciosamente para destino inválido;
-- cálculos anteriores de necessidade pós-aporte não são reescritos;
-- execução repetida com a mesma entrada produz o mesmo resultado;
+- custos monetários usam `Money`, sem `number` binário financeiro;
+- moedas incompatíveis são rejeitadas explicitamente;
+- custos negativos ou configurações inválidas falham por erro tipado;
+- custo conhecido não é descontado silenciosamente da posição recomendada;
+- destino inviável não produz recomendação executável incorreta;
+- sobra causada pela restrição permanece explícita e reconciliada;
+- nenhuma regra tributária externa é inventada dentro do domínio;
+- mesma entrada produz mesma saída;
 - `pnpm check` passa integralmente no head final validado.
 
 ## Casos de teste mínimos
 
-- classe sem limite;
-- classe abaixo do limite suave;
-- classe entre limite suave e duro;
-- classe que atingiria/excederia o limite duro;
-- `softMaxWeight == hardMaxWeight`;
-- `softMaxWeight > hardMaxWeight` rejeitado;
-- duplicidade de configuração rejeitada;
-- múltiplas classes com limites distintos;
-- sobra explícita quando parte do aporte é bloqueada;
-- arredondamento/limite em centavos sem float;
-- resultado e ordem reproduzíveis.
+- destino sem custo;
+- custo transacional positivo menor que a alocação;
+- custo igual à alocação;
+- custo maior que a alocação;
+- impacto tributário fornecido separadamente;
+- combinação de custo + impacto tributário;
+- moeda divergente;
+- custo negativo;
+- múltiplos destinos;
+- preservação de sobra upstream;
+- valores em centavos;
+- resultado reproduzível e imutável.
