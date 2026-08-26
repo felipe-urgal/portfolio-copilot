@@ -38,4 +38,5 @@ Histórico resumido de atividades concluídas.
 - decisão anterior de manter `apps/web/next-env.d.ts` versionado corrigida;
 - `next-env.d.ts` removido do repositório e adicionado ao `.gitignore`;
 - `apps/web/tsconfig.json` continua incluindo `next-env.d.ts`, conforme recomendado pelo Next.js;
+- `apps/web` passa a executar `next typegen && tsc --noEmit` no `typecheck`, garantindo que os tipos gerados do Next existam antes da validação TypeScript;
 - documentação de desenvolvimento atualizada para refletir o comportamento correto.
