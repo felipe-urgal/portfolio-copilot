@@ -235,9 +235,7 @@ describe("allocateContribution", () => {
         portfolioId: FIRST_PORTFOLIO_ID,
         targetAllocation,
         portfolioValue: Money.fromDecimal("100.00", "BRL"),
-        currentValues: [
-          { assetClass: "EQUITY", currentValue: Money.fromDecimal("100.00", "BRL") },
-        ],
+        currentValues: [{ assetClass: "EQUITY", currentValue: Money.fromDecimal("100.00", "BRL") }],
         contribution: Money.fromDecimal("10.00", "USD"),
       }),
     ).toThrowError(CurrencyMismatchError);
@@ -254,9 +252,7 @@ describe("allocateContribution", () => {
         portfolioId: FIRST_PORTFOLIO_ID,
         targetAllocation,
         portfolioValue: Money.fromDecimal("100.00", "BRL"),
-        currentValues: [
-          { assetClass: "EQUITY", currentValue: Money.fromDecimal("100.00", "USD") },
-        ],
+        currentValues: [{ assetClass: "EQUITY", currentValue: Money.fromDecimal("100.00", "USD") }],
         contribution: Money.fromDecimal("10.00", "BRL"),
       }),
     ).toThrowError(CurrencyMismatchError);
