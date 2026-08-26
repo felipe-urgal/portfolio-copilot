@@ -6,6 +6,7 @@ import {
 } from "./contribution-execution-constraints";
 import {
   DuplicateContributionCostConstraintError,
+  InvalidContributionCostAmountError,
   NegativeAllocationValueError,
   UnknownContributionCostConstraintDestinationError,
 } from "./errors";
@@ -59,6 +60,10 @@ function validateCost(
   field: "transactionCost" | "estimatedTaxImpact",
   value: Money,
 ): void {
+  if (!(value instanceof Money)) {
+    throw new InvalidContributionCostAmountError(assetId.toString(), field, String(value));
+  }
+
   if (value.isNegative()) {
     throw new NegativeAllocationValueError(
       `${field}:${assetId.toString()}`,

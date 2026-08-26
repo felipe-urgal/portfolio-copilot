@@ -13,7 +13,8 @@ export type ContributionDomainErrorCode =
   | "INVALID_ASSET_CLASS_CONCENTRATION_WEIGHT"
   | "INVALID_ASSET_CLASS_CONCENTRATION_RANGE"
   | "DUPLICATE_CONTRIBUTION_COST_CONSTRAINT"
-  | "UNKNOWN_CONTRIBUTION_COST_CONSTRAINT_DESTINATION";
+  | "UNKNOWN_CONTRIBUTION_COST_CONSTRAINT_DESTINATION"
+  | "INVALID_CONTRIBUTION_COST_AMOUNT";
 
 export class ContributionDomainError extends Error {
   public constructor(
@@ -188,6 +189,19 @@ export class UnknownContributionCostConstraintDestinationError extends Contribut
     super(
       "UNKNOWN_CONTRIBUTION_COST_CONSTRAINT_DESTINATION",
       `Contribution cost constraint references an asset that is not a destination in the execution plan: ${assetId}`,
+    );
+  }
+}
+
+export class InvalidContributionCostAmountError extends ContributionDomainError {
+  public constructor(
+    public readonly assetId: string,
+    public readonly field: "transactionCost" | "estimatedTaxImpact",
+    public readonly value: string,
+  ) {
+    super(
+      "INVALID_CONTRIBUTION_COST_AMOUNT",
+      `Contribution ${field} for asset ${assetId} must be Money: ${JSON.stringify(value)}`,
     );
   }
 }

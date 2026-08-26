@@ -45,6 +45,7 @@ export {
   DuplicateCurrentAllocationBucketError,
   InvalidAssetClassConcentrationRangeError,
   InvalidAssetClassConcentrationWeightError,
+  InvalidContributionCostAmountError,
   InvalidContributionDestinationEligibilityError,
   InvalidMaxDestinationsPerContributionError,
   InvalidMinimumTradableQuantityError,
