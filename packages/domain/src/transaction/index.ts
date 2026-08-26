@@ -1,7 +1,4 @@
-export { AssetQuantity } from "./asset-quantity";
-export type { AssetQuantitySnapshot } from "./asset-quantity";
 export {
-  InvalidAssetQuantityError,
   InvalidTransactionAmountError,
   InvalidTransactionIdError,
   InvalidTransactionShapeError,
