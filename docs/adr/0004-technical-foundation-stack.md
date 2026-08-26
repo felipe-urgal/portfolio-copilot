@@ -30,7 +30,9 @@ O pnpm 11 mantém por padrão uma janela mínima de 24 horas para releases recé
 
 Por isso, `pnpm-workspace.yaml` contém exceções **por pacote e versão exatos** somente para o grafo `16.3.3` do Next que o CI identificou. A proteção global permanece ativa. `minimumReleaseAgeExcludePrune` remove exceções obsoletas em futuras alterações de dependências.
 
-Não usar `trustLockfile: true` nem desabilitar a política global para contornar CI.
+O pnpm 11 também rejeita por padrão scripts de build não revisados. `unrs-resolver@1.12.2`, dependência transitiva do tooling de resolução/lint, possui um `postinstall` para preparar/verificar seu binding nativo e foi revisado antes de entrar em `allowBuilds`. A permissão é limitada à versão exata; qualquer novo pacote ou nova versão com lifecycle script volta a falhar no CI até revisão explícita.
+
+Não usar `trustLockfile: true`, `dangerouslyAllowAllBuilds` nem desabilitar globalmente as políticas para contornar CI.
 
 ## Consequências
 
