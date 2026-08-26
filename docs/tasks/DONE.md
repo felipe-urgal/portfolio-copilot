@@ -15,9 +15,9 @@ Histórico resumido de atividades concluídas.
 - pnpm workspace/monorepo;
 - `apps/web` com Next.js e rota `/health`;
 - `packages/domain` e `packages/shared`;
-- Node.js 24 Active LTS e TypeScript 6.0.3 strict;
-- ESLint e Prettier;
-- Vitest com testes iniciais;
+- Node.js 24 Active LTS, TypeScript 6.0.3 strict e ESLint 9.39.5 em combinação compatível;
+- `.nvmrc` e `engines` para evitar drift involuntário de major do Node;
+- Prettier e Vitest com testes iniciais;
 - scripts raiz de quality gate;
 - CI GitHub Actions com permissões mínimas e Actions pinadas por SHA;
 - políticas de supply chain do pnpm com exceções estreitas e documentadas;

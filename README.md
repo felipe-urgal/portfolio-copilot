@@ -70,11 +70,11 @@ audit
 
 ## Stack atual
 
-- Node.js 24 Active LTS
+- Node.js 24 Active LTS (`.nvmrc` e `engines` restringem o major 24)
 - pnpm 11
 - Next.js 16.3.3 / React 19.2
 - TypeScript 6.0.3 strict
-- ESLint + Prettier
+- ESLint 9.39.5 + Prettier
 - Vitest
 - GitHub Actions
 
@@ -83,6 +83,7 @@ A stack foi mantida deliberadamente pequena. Banco, autenticação, providers de
 ## Desenvolvimento local
 
 ```bash
+nvm use
 corepack enable
 corepack prepare pnpm@11.24.0 --activate
 pnpm install --frozen-lockfile

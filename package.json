@@ -4,7 +4,7 @@
   "private": true,
   "packageManager": "pnpm@11.24.0",
   "engines": {
-    "node": ">=24.0.0"
+    "node": ">=24.0.0 <25.0.0"
   },
   "scripts": {
     "dev": "pnpm --filter @portfolio-copilot/web dev",
@@ -20,7 +20,7 @@
     "@types/node": "24.3.0",
     "@types/react": "19.2.0",
     "@types/react-dom": "19.2.0",
-    "eslint": "10.9.1",
+    "eslint": "9.39.5",
     "eslint-config-next": "16.3.3",
     "prettier": "3.9.6",
     "typescript": "6.0.3",
