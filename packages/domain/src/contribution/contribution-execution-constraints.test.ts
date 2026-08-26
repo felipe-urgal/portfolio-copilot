@@ -57,7 +57,10 @@ function destination(
   };
 }
 
-function destinationAmount(plan: ContributionExecutionPlan, assetClass: string): string | undefined {
+function destinationAmount(
+  plan: ContributionExecutionPlan,
+  assetClass: string,
+): string | undefined {
   return plan.destinations
     .find((candidate) => candidate.assetClass.toString() === assetClass)
     ?.allocatedAmount.toDecimalString();
@@ -82,9 +85,7 @@ describe("applyContributionExecutionConstraints", () => {
     expect(plan.destinations[0]?.assetId.toString()).toBe(EQUITY_ASSET_ID);
     expect(plan.destinations[0]?.assetClass.toString()).toBe("EQUITY");
     expect(plan.destinations[0]?.allocatedAmount.toDecimalString()).toBe("20.00");
-    expect(plan.destinations[0]?.minimumTradableQuantity.toDecimalString()).toBe(
-      "0.001000000000",
-    );
+    expect(plan.destinations[0]?.minimumTradableQuantity.toDecimalString()).toBe("0.001000000000");
     expect(plan.unallocatedContribution.toDecimalString()).toBe("0.00");
   });
 
@@ -163,12 +164,7 @@ describe("applyContributionExecutionConstraints", () => {
         applyContributionExecutionConstraints({
           plan: createBaselinePlan(),
           destinations: [
-            destination(
-              EQUITY_ASSET_ID,
-              "EQUITY",
-              true,
-              minimumTradableQuantity,
-            ),
+            destination(EQUITY_ASSET_ID, "EQUITY", true, minimumTradableQuantity),
             destination(FIXED_INCOME_ASSET_ID, "FIXED_INCOME"),
           ],
         }),

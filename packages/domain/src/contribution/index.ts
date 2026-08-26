@@ -10,9 +10,7 @@ export type {
   ContributionAllocatorInput,
   ContributionPlan,
 } from "./contribution-allocator";
-export {
-  applyContributionExecutionConstraints,
-} from "./contribution-execution-constraints";
+export { applyContributionExecutionConstraints } from "./contribution-execution-constraints";
 export type {
   ContributionExecutionConstraintsInput,
   ContributionExecutionDestination,

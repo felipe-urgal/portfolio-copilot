@@ -1,9 +1,4 @@
-import {
-  AssetClass,
-  AssetId,
-  AssetQuantity,
-  type AssetClassCode,
-} from "../asset";
+import { AssetClass, AssetId, AssetQuantity, type AssetClassCode } from "../asset";
 import { Money } from "../financial";
 import { type PortfolioId } from "../portfolio";
 import { type ContributionPlan } from "./contribution-allocator";
@@ -56,10 +51,7 @@ function toAssetClass(value: AssetClass | string): AssetClass {
   return typeof value === "string" ? AssetClass.from(value) : value;
 }
 
-function toMinimumTradableQuantity(
-  assetId: AssetId,
-  value: AssetQuantity | string,
-): AssetQuantity {
+function toMinimumTradableQuantity(assetId: AssetId, value: AssetQuantity | string): AssetQuantity {
   let quantity: AssetQuantity;
 
   try {
@@ -69,10 +61,7 @@ function toMinimumTradableQuantity(
   }
 
   if (quantity.isZero()) {
-    throw new InvalidMinimumTradableQuantityError(
-      assetId.toString(),
-      quantity.toDecimalString(),
-    );
+    throw new InvalidMinimumTradableQuantityError(assetId.toString(), quantity.toDecimalString());
   }
 
   return quantity;
