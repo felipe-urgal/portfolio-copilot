@@ -24,6 +24,14 @@ Adotar:
 
 Não adotar Turborepo nesta fase: os workspaces ainda são poucos e os scripts recursivos do pnpm cobrem a necessidade sem uma camada adicional.
 
+## Supply chain
+
+O pnpm 11 mantém por padrão uma janela mínima de 24 horas para releases recém-publicados. O Next.js 16.3.3 foi publicado em 25/08/2026 como atualização de segurança e foi explicitamente selecionado para esta fundação antes de completar a janela.
+
+Por isso, `pnpm-workspace.yaml` contém exceções **por pacote e versão exatos** somente para o grafo `16.3.3` do Next que o CI identificou. A proteção global permanece ativa. `minimumReleaseAgeExcludePrune` remove exceções obsoletas em futuras alterações de dependências.
+
+Não usar `trustLockfile: true` nem desabilitar a política global para contornar CI.
+
 ## Consequências
 
 - `apps/web` pode concentrar UI e API inicialmente;
@@ -34,4 +42,4 @@ Não adotar Turborepo nesta fase: os workspaces ainda são poucos e os scripts r
 
 ## Segurança
 
-O CI usa `permissions: contents: read`, não recebe secrets neste milestone e instala dependências por lockfile congelado.
+O CI usa `permissions: contents: read`, não recebe secrets neste milestone, usa Actions oficiais em runtime Node 24 e instala dependências por lockfile congelado.
