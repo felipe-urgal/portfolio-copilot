@@ -1,32 +1,36 @@
-# Próxima Atividade — Portfolio Engine: TargetAllocation
+# Próxima Atividade — Portfolio Engine: AllocationGap
 
-**Status:** READY após merge da projeção de posições por ativo.
+**Status:** READY após merge de TargetAllocation.
 
 ## Objetivo
 
-Modelar a política de alocação-alvo de um `PortfolioId` como configuração determinística e validada, reutilizando `AllocationWeight` e a taxonomia econômica já existente, sem ainda calcular gaps, recomendar aportes ou usar valores de mercado.
+Calcular gaps monetários por `AssetClass` a partir de uma `TargetAllocation` e de valores atuais por bucket já normalizados, com precisão e arredondamento explícitos, sem buscar preços, agregar posições nem distribuir o aporte.
 
 ## Escopo
 
-- estrutura imutável de `TargetAllocation` vinculada a `PortfolioId`;
-- buckets de alocação com identidade/taxonomia explícita e peso-alvo;
-- reutilização de `AllocationWeight`, sem `number` binário;
-- política explícita para soma dos pesos da configuração;
-- rejeição de buckets duplicados;
-- snapshot determinístico somente se fizer sentido para a configuração;
-- testes de invariantes, limites e round-trip quando aplicável;
-- documentação da decisão e das fronteiras com `AllocationGap`.
+- estrutura derivada de `AllocationGap` por `AssetClass`;
+- entrada vinculada ao mesmo `PortfolioId` da `TargetAllocation`;
+- valores atuais por bucket usando `Money` em moeda única;
+- total da carteira/base de cálculo explícito e reconciliado com os buckets de entrada;
+- cálculo determinístico de valor-alvo por peso;
+- política explícita de arredondamento ao aplicar `AllocationWeight` sobre `Money`;
+- gap positivo como diferença entre valor-alvo e valor atual, sem valor negativo silencioso;
+- classes-alvo ausentes na posição atual tratadas como valor atual zero;
+- classes atuais sem peso-alvo tratadas explicitamente como alvo zero;
+- saída ordenada/determinística e testes de invariantes;
+- documentação da fronteira entre `AllocationGap` e o futuro `ContributionAllocator`.
 
 ## Fora de escopo
 
-- cálculo de `AllocationGap`;
-- valor atual da carteira;
-- preço de ativo;
-- FX;
-- recomendação de aporte;
+- buscar preço ou FX;
+- converter `AssetPosition` em valor de mercado;
+- agregar ativos em classes a partir do Asset Master;
+- decidir quanto aportar;
 - `ContributionAllocator`;
-- limites de concentração `softMaxWeight`/`hardMaxWeight`;
+- `minimumMeaningfulContribution`;
+- limite de destinos por aporte;
 - unidade mínima negociável;
+- `softMaxWeight`/`hardMaxWeight`;
 - custos, impostos e rebalanceamento;
 - persistência, banco e repositórios;
 - API;
@@ -35,23 +39,28 @@ Modelar a política de alocação-alvo de um `PortfolioId` como configuração d
 
 ## Critérios de aceite
 
-- a configuração pertence explicitamente a um `PortfolioId`;
-- pesos usam `AllocationWeight` e mantêm precisão determinística;
-- a soma total segue uma política explícita e testada;
-- buckets duplicados não são aceitos silenciosamente;
-- não existe dependência de preço, posição atual ou dado externo;
-- a API não antecipa o cálculo de gap nem recomendação;
-- execução repetida/snapshot, quando houver, é determinística;
+- cálculo pertence inequivocamente ao mesmo `PortfolioId` da política-alvo;
+- todos os valores monetários usam `Money` e a mesma moeda;
+- nenhuma aritmética financeira usa `number` binário;
+- política de aplicação do peso e arredondamento é explícita, auditável e testada;
+- buckets atuais duplicados ou inconsistentes não são aceitos silenciosamente;
+- total informado e valores por bucket seguem uma política de reconciliação explícita;
+- gap nunca fica negativo: bucket acima do alvo possui gap zero;
+- não existe dependência de provedor, preço, ticker ou dado externo dentro do cálculo;
+- execução repetida com a mesma entrada produz a mesma saída;
 - `pnpm check` passa integralmente no head final validado.
 
 ## Casos de teste mínimos
 
-- configuração válida com um bucket;
-- configuração válida com múltiplos buckets;
-- soma válida dos pesos;
-- soma abaixo da política permitida/rejeitada conforme decisão explícita;
-- soma acima da política rejeitada;
-- bucket duplicado;
-- peso zero quando permitido/rejeitado conforme decisão explícita;
-- portfolios diferentes permanecem configurações distintas;
-- snapshot/round-trip determinístico quando aplicável.
+- carteira com um único bucket exatamente no alvo;
+- bucket abaixo do alvo;
+- bucket acima do alvo com gap zero;
+- múltiplos buckets;
+- classe-alvo sem valor atual;
+- classe atual sem peso-alvo;
+- valores em moedas diferentes rejeitados;
+- bucket atual duplicado rejeitado;
+- total/base incompatível com os buckets conforme política definida;
+- caso que force arredondamento monetário de peso;
+- portfolios diferentes rejeitados quando combinados;
+- ordem e resultado reproduzíveis.
