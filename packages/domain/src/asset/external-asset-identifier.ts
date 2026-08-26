@@ -20,8 +20,10 @@ export type ExternalAssetIdentifierSnapshot =
     }>;
 
 const SCOPE_PATTERN = /^[A-Z0-9][A-Z0-9._-]{0,31}$/;
-const MARKET_SYMBOL_PATTERN = /^[A-Z0-9][A-Z0-9._-]{0,31}$/;
 const ISIN_PATTERN = /^[A-Z]{2}[A-Z0-9]{9}[0-9]$/;
+const CONTROL_CHARACTER_PATTERN = /[\u0000-\u001f\u007f]/;
+const MARKET_SYMBOL_MAX_LENGTH = 64;
+const PROVIDER_VALUE_MAX_LENGTH = 128;
 
 function normalizeScope(scope: string): string {
   const normalized = scope.trim().toUpperCase();
@@ -33,10 +35,29 @@ function normalizeScope(scope: string): string {
   return normalized;
 }
 
+function normalizeMarketSymbol(symbol: string): string {
+  const normalized = symbol.trim().toUpperCase();
+
+  if (
+    normalized.length === 0 ||
+    normalized.length > MARKET_SYMBOL_MAX_LENGTH ||
+    CONTROL_CHARACTER_PATTERN.test(normalized) ||
+    /\s/.test(normalized)
+  ) {
+    throw new InvalidExternalAssetIdentifierError("marketSymbol", symbol);
+  }
+
+  return normalized;
+}
+
 function normalizeProviderValue(value: string): string {
   const normalized = value.trim();
 
-  if (normalized.length === 0 || normalized.length > 128 || /[\u0000-\u001f\u007f]/.test(normalized)) {
+  if (
+    normalized.length === 0 ||
+    normalized.length > PROVIDER_VALUE_MAX_LENGTH ||
+    CONTROL_CHARACTER_PATTERN.test(normalized)
+  ) {
     throw new InvalidExternalAssetIdentifierError("value", value);
   }
 
@@ -51,13 +72,11 @@ export class ExternalAssetIdentifier {
   ) {}
 
   public static marketSymbol(market: string, symbol: string): ExternalAssetIdentifier {
-    const normalizedSymbol = symbol.trim().toUpperCase();
-
-    if (!MARKET_SYMBOL_PATTERN.test(normalizedSymbol)) {
-      throw new InvalidExternalAssetIdentifierError("marketSymbol", symbol);
-    }
-
-    return new ExternalAssetIdentifier("MARKET_SYMBOL", normalizeScope(market), normalizedSymbol);
+    return new ExternalAssetIdentifier(
+      "MARKET_SYMBOL",
+      normalizeScope(market),
+      normalizeMarketSymbol(symbol),
+    );
   }
 
   public static isin(value: string): ExternalAssetIdentifier {
