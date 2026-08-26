@@ -22,7 +22,10 @@ Backlog macro. A ordem pode mudar mediante decisão registrada.
 - TargetAllocation;
 - AllocationGap;
 - ContributionAllocator;
+- `minimumMeaningfulContribution` e limite de destinos por aporte;
+- unidade mínima negociável e elegibilidade do aporte;
 - limites de concentração;
+- custos/impactos tributários relevantes como restrições quando disponíveis;
 - rounding/cash remainder;
 - testes property-based.
 
