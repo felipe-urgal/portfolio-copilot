@@ -16,6 +16,7 @@ import {
   ZeroTargetAllocationWeightError,
   allocateContribution,
   type AssetClassCode,
+  type CurrentAllocationBucketInput,
   type MoneySnapshot,
   type PortfolioSnapshot,
   type TargetAllocationSnapshot,
@@ -192,7 +193,7 @@ export function createContributionBaselineSnapshot(
     throw error;
   }
 
-  const currentValues = [];
+  const currentValues: CurrentAllocationBucketInput[] = [];
 
   for (const row of draft.rows) {
     if (row.currentValue.trim() === "") continue;
@@ -266,7 +267,10 @@ export function createContributionBaselineSnapshot(
 
     if (error instanceof NegativeAllocationValueError) {
       if (error.field === "portfolioValue") {
-        return { ok: false, errors: { portfolioValue: "O valor total atual não pode ser negativo." } };
+        return {
+          ok: false,
+          errors: { portfolioValue: "O valor total atual não pode ser negativo." },
+        };
       }
 
       if (error.field === "contribution") {
