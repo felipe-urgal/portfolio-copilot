@@ -5,9 +5,9 @@ import {
   InvalidFinancialGoalError,
 } from "./errors";
 import { FinancialGoal, type FinancialGoalSnapshot } from "./financial-goal";
-import { FinancialHorizon } from "./financial-horizon";
+import { FinancialHorizon, type FinancialHorizonCode } from "./financial-horizon";
 import { FinancialProfileId } from "./financial-profile-id";
-import { RiskTolerance } from "./risk-tolerance";
+import { RiskTolerance, type RiskToleranceCode } from "./risk-tolerance";
 
 export type FinancialProfileCreationInput = Readonly<{
   id: FinancialProfileId | string;
@@ -21,26 +21,26 @@ export type FinancialProfileCreationInput = Readonly<{
 export type FinancialProfileSnapshot = Readonly<{
   id: string;
   referenceCurrency: string;
-  riskTolerance: string;
-  horizon: string;
+  riskTolerance: RiskToleranceCode;
+  horizon: FinancialHorizonCode;
   emergencyReserveTarget: MoneySnapshot | null;
   goals: readonly FinancialGoalSnapshot[];
 }>;
 
 function toFinancialProfileId(value: FinancialProfileId | string): FinancialProfileId {
-  return typeof value === "string" ? FinancialProfileId.from(value) : value;
+  return value instanceof FinancialProfileId ? value : FinancialProfileId.from(String(value));
 }
 
 function toCurrencyCode(value: CurrencyCode | string): CurrencyCode {
-  return typeof value === "string" ? CurrencyCode.from(value) : value;
+  return value instanceof CurrencyCode ? value : CurrencyCode.from(String(value));
 }
 
 function toRiskTolerance(value: RiskTolerance | string): RiskTolerance {
-  return typeof value === "string" ? RiskTolerance.from(value) : value;
+  return value instanceof RiskTolerance ? value : RiskTolerance.from(String(value));
 }
 
 function toFinancialHorizon(value: FinancialHorizon | string): FinancialHorizon {
-  return typeof value === "string" ? FinancialHorizon.from(value) : value;
+  return value instanceof FinancialHorizon ? value : FinancialHorizon.from(String(value));
 }
 
 function assertCurrency(referenceCurrency: CurrencyCode, money: Money): void {
@@ -67,6 +67,10 @@ function normalizeGoals(
   goals: readonly FinancialGoal[],
   referenceCurrency: CurrencyCode,
 ): readonly FinancialGoal[] {
+  if (!Array.isArray(goals)) {
+    throw new InvalidFinancialGoalError(String(goals));
+  }
+
   const goalIds = new Set<string>();
   const normalized = goals.map((goal) => {
     if (!(goal instanceof FinancialGoal)) {
@@ -121,7 +125,7 @@ export class FinancialProfile {
         snapshot.emergencyReserveTarget === null
           ? null
           : Money.fromSnapshot(snapshot.emergencyReserveTarget),
-      goals: snapshot.goals.map(FinancialGoal.fromSnapshot),
+      goals: snapshot.goals.map((goal) => FinancialGoal.fromSnapshot(goal)),
     });
   }
 
