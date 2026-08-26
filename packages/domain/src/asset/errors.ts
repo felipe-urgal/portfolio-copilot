@@ -30,10 +30,7 @@ export class InvalidAssetClassError extends AssetDomainError {
 
 export class InvalidInstrumentTypeError extends AssetDomainError {
   public constructor(value: string) {
-    super(
-      "INVALID_INSTRUMENT_TYPE",
-      `Unsupported instrument type: ${JSON.stringify(value)}`,
-    );
+    super("INVALID_INSTRUMENT_TYPE", `Unsupported instrument type: ${JSON.stringify(value)}`);
   }
 }
 
@@ -54,9 +51,6 @@ export class InvalidExternalAssetIdentifierError extends AssetDomainError {
 
 export class DuplicateExternalAssetIdentifierError extends AssetDomainError {
   public constructor(key: string) {
-    super(
-      "DUPLICATE_EXTERNAL_ASSET_IDENTIFIER",
-      `Duplicate external asset identifier: ${key}`,
-    );
+    super("DUPLICATE_EXTERNAL_ASSET_IDENTIFIER", `Duplicate external asset identifier: ${key}`);
   }
 }
