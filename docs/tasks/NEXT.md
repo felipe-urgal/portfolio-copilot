@@ -1,59 +1,63 @@
-# Próxima Atividade — Portfolio Engine: testes de invariantes do pipeline de aporte
+# Próxima Atividade — Produto MVP: onboarding financeiro básico
 
-**Status:** READY após merge da orquestração e snapshot auditável.
+**Status:** READY após fechamento dos testes de invariantes do Portfolio Engine.
 
 ## Objetivo
 
-Fechar a fundação do pipeline de aporte com testes de invariantes em uma matriz determinística ampla de cenários, validando reconciliação monetária, limites, ordenação e reprodutibilidade sem adicionar novas regras financeiras.
+Iniciar a Fase 3 do roadmap com contratos de domínio simples e explícitos para representar as informações financeiras mínimas que o produto precisa conhecer antes de orientar carteira e aportes, sem acoplar autenticação, persistência ou UI ao modelo.
 
 ## Escopo
 
-- suíte de invariantes sobre `buildContributionRecommendationSnapshot` e as camadas que ele compõe;
-- geração determinística de cenários com diferentes aportes em centavos, valores atuais e distribuições-alvo válidas;
-- combinações de política de microaporte, limites soft/hard, elegibilidade e custos conhecidos;
-- verificar sempre `contribution = totalInvestableAmount + totalConsumedKnownCost + unallocatedContribution`;
-- nenhum valor investível ou sobra final negativos;
-- destino bloqueado nunca possui valor investível positivo;
-- hard limit nunca deixa novo aporte acima do teto na granularidade monetária definida;
-- custo consumido nunca excede o orçamento bruto do destino executável;
-- reason codes e decisões mantêm ordem determinística;
-- mesma entrada produz snapshot equivalente em execuções repetidas;
-- snapshots permanecem serializáveis sem `bigint`, classes ou objetos de infraestrutura;
-- priorizar corpus gerado deterministicamente com Vitest já existente; nova dependência property-based só entra se houver ganho claro e revisão de supply chain;
-- documentar qualquer bug de domínio revelado pelos invariantes e corrigi-lo no mesmo vertical.
+- definir o contrato mínimo do perfil financeiro usado pelo onboarding;
+- representar tolerância a risco por taxonomia explícita e validada, sem score criado por IA;
+- representar horizonte financeiro de forma coerente com curto, médio e longo prazo documentados;
+- registrar configuração da reserva de emergência necessária ao produto, incluindo base/objetivo monetário quando aplicável;
+- definir objetivos financeiros mínimos e suas restrições essenciais sem misturá-los com posições da carteira;
+- manter identidade/configuração separadas de projeções, saldos e dados de mercado;
+- contratos imutáveis e serializáveis para futura persistência/API;
+- erros de configuração tipados;
+- testes de criação, estados inválidos, snapshot/round-trip, imutabilidade e determinismo;
+- atualizar documentação de produto/metodologia quando a modelagem exigir decisão explícita.
 
 ## Fora de escopo
 
-- novas fórmulas de alocação;
-- preço em tempo real;
-- FX;
-- cálculo fiscal;
-- ranking de ativos;
+- autenticação e autorização;
+- banco de dados ou migrations;
+- API/Server Actions;
+- formulário/telas de onboarding;
+- dashboard;
+- importação de carteira;
+- preço, FX ou Market Data;
+- recomendação de ativos;
 - Quality Score, Opportunity Score ou Portfolio Fit;
-- venda/rebalanceamento;
-- persistência, API ou UI;
-- adapters de dados;
-- IA.
+- IA;
+- alteração automática da política de alocação a partir do perfil.
 
 ## Critérios de aceite
 
-- corpus cobre centenas de combinações reproduzíveis sem aleatoriedade não controlada;
-- reconciliação monetária é provada para todos os casos válidos do corpus;
-- nenhum hard limit, bloqueio de elegibilidade ou custo conhecido é violado;
-- snapshots podem passar por `JSON.stringify` de forma determinística;
-- falhas apresentam cenário mínimo/reproduzível suficiente para diagnóstico;
-- nenhuma dependência nova é adicionada sem justificativa explícita;
+- o domínio consegue representar de forma determinística o conjunto mínimo de dados financeiros do onboarding;
+- tolerância a risco e horizonte não usam strings livres sem validação;
+- valores monetários reutilizam `Money` e preservam moeda explícita;
+- objetivos/reserva não são confundidos com holdings ou saldo corrente do `Portfolio`;
+- snapshots não expõem classes, `bigint` ou objetos de infraestrutura;
+- configuração inválida falha por erro de domínio tipado;
+- nenhuma regra de recomendação financeira é inferida silenciosamente do perfil;
+- nenhuma dependência externa nova entra sem necessidade explícita;
 - `pnpm check` passa integralmente no head final validado.
 
 ## Casos mínimos
 
-- aporte zero e aportes de poucos centavos;
-- uma e múltiplas classes;
-- pesos com restos monetários;
-- política sem restrição e política concentradora;
-- hard limit exato, parcial e bloqueio total;
-- destino elegível e inelegível;
-- custo zero, menor, igual e maior que a alocação;
-- sobra originada em cada etapa do pipeline;
-- combinações de dois ou mais bloqueios;
-- repetição do mesmo cenário e serialização JSON estável.
+- perfil com horizonte curto, médio e longo;
+- tolerâncias de risco válidas e valor desconhecido/inválido;
+- reserva configurada com valores monetários válidos;
+- objetivo com e sem data-alvo quando a taxonomia permitir;
+- valores zero/limites definidos pela regra de domínio;
+- moeda incompatível quando dois valores relacionados precisarem reconciliar;
+- snapshot determinístico e round-trip;
+- duas configurações distintas não compartilham estado mutável.
+
+## Referências canônicas
+
+- `docs/ROADMAP.md` — Fase 3 começa por onboarding financeiro básico;
+- `docs/PRODUCT.md` — jornada inicia com objetivos, horizonte, reserva e tolerância a risco;
+- `docs/PROJECT-BRIEF.md` — preferências e restrições devem ser explícitas e não alteradas silenciosamente por IA.
