@@ -133,7 +133,7 @@ Histórico resumido de atividades concluídas.
 - duplicidades são rejeitadas após normalização de `AssetClass`;
 - `targetWeightFor` devolve o peso configurado ou `AllocationWeight.zero()` para classe ausente;
 - buckets e snapshots são ordenados lexicalmente por código de classe para resultado determinístico;
-- round-trip de snapshot reaplica as mesmas invariantes de criação;
+- round-trip de snapshot reaplica as mesmas invariantes da criação;
 - não entram posição atual, preço, ticker, instrumento, geografia, gap, recomendação de aporte, persistência, API ou UI;
 - testes cobrem política de um/múltiplos buckets, soma exata, total abaixo/acima, duplicidade, peso zero, isolamento por portfolio e snapshot determinístico;
 - ADR-0010 registra a escolha inicial por `AssetClass`, soma completa de 100%, semântica de peso zero e limites deliberados da taxonomia;
