@@ -58,6 +58,8 @@ export function projectAssetPositions(
       continue;
     }
 
+    if (transaction.type.code !== "SELL") continue;
+
     if (transaction.quantity.compare(currentQuantity) > 0) {
       throw new InsufficientAssetPositionError(
         targetPortfolioId.toString(),

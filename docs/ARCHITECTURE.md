@@ -181,3 +181,5 @@ Registrar métricas de:
 - divergência de reconciliação;
 - recomendações bloqueadas por dado insuficiente;
 - versão da metodologia em uso.
+
+Nunca enviar informações financeiras pessoais desnecessárias para logs.
