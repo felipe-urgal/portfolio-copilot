@@ -27,6 +27,7 @@ Este arquivo resume decisões. Decisões arquiteturais importantes também ganha
 | D-021 | Política de aporte limita destinos por maior necessidade pós-aporte e elimina alocações abaixo de um mínimo monetário, redistribuindo por maiores restos | Aceita — ADR-0013 |
 | D-022 | Restrições de execução do aporte usam `AssetId`, elegibilidade explícita e `AssetQuantity` mínima; bloqueios retornam valor para caixa sem redistribuir a decisão econômica | Aceita — ADR-0014 |
 | D-023 | Limites de concentração por `AssetClass` usam `softMaxWeight` como alerta e `hardMaxWeight` como teto obrigatório; valor bloqueado retorna para a sobra sem redistribuição | Aceita — ADR-0015 |
+| D-024 | Custos conhecidos e impacto tributário reservado consomem o orçamento bruto do destino; se igualarem ou superarem a alocação, o destino é bloqueado e o valor retorna para caixa | Aceita — ADR-0016 |
 
 ## Como alterar uma decisão
 

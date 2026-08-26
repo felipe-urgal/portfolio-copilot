@@ -1,33 +1,34 @@
-# Próxima Atividade — Portfolio Engine: custos e impactos tributários como restrições do aporte
+# Próxima Atividade — Portfolio Engine: orquestração do pipeline de aporte e snapshot auditável
 
-**Status:** READY após merge dos limites de concentração por `AssetClass`.
+**Status:** READY após merge das restrições de custo e impacto tributário.
 
 ## Objetivo
 
-Adicionar contratos determinísticos para representar custos transacionais e impactos tributários materiais já conhecidos como restrições do aporte, sem calcular imposto a partir de regras externas nem buscar tarifas no meio do domínio puro.
+Compor as camadas já existentes do Portfolio Engine em um fluxo único e determinístico de recomendação de aporte, produzindo um snapshot final auditável sem adicionar novas regras financeiras.
 
 ## Escopo
 
-- contrato explícito de custo por destino de aporte usando `Money`;
-- representação separada de custo transacional e impacto tributário estimado/fornecido;
-- validação de moeda e valores não negativos;
-- aplicação sobre alocações já filtradas por política, execução e concentração;
-- impedir aporte economicamente inviável quando custo conhecido consumir ou superar o valor destinado;
-- preservação explícita de valor bloqueado em `unallocatedContribution`;
-- sinalização auditável do motivo do bloqueio;
-- nenhuma redistribuição silenciosa sem política própria;
-- testes de borda, moeda, centavos, determinismo e integração com as camadas anteriores;
-- documentação clara de que cálculo fiscal, tabela de corretora e provenance de dados são responsabilidades externas futuras.
+- função/orquestrador puro para executar o pipeline canônico de aporte;
+- ordem explícita: allocator -> política de microaporte -> concentração por `AssetClass` -> restrições de execução -> custos/impacto tributário;
+- entrada composta reutilizando os contratos já existentes, sem duplicar validações financeiras;
+- saída final com destinos, valores brutos, valor investível, custos conhecidos, unidade mínima e sobra explícita;
+- reason/status codes determinísticos para decisões materiais de bloqueio ou alerta que sobrevivam ao pipeline;
+- preservação de `PortfolioId`, moeda e identidades `AssetId`/`AssetClass`;
+- snapshot imutável e reproduzível;
+- campo explícito de `methodologyVersion` fornecido pela camada chamadora, sem inventar versão em runtime;
+- testes end-to-end do domínio cobrindo composição e reconciliação monetária;
+- documentação da fronteira entre motor puro e futuros adapters de dados/provenance.
 
 ## Fora de escopo
 
-- cálculo de imposto de renda, come-cotas ou regras fiscais específicas;
-- consulta de tarifa de corretora/provedor;
+- novas fórmulas de alocação;
+- Quality Score, Opportunity Score ou Portfolio Fit;
+- ranking de ativos;
 - preço em tempo real;
 - FX;
+- cálculo fiscal;
+- consulta de tarifas;
 - venda/rebalanceamento;
-- concentração por ativo, setor, emissor, moeda/geografia ou grupo econômico;
-- Quality/Opportunity/Portfolio Fit;
 - persistência, banco e repositórios;
 - API;
 - UI;
@@ -35,27 +36,27 @@ Adicionar contratos determinísticos para representar custos transacionais e imp
 
 ## Critérios de aceite
 
-- custos monetários usam `Money`, sem `number` binário financeiro;
-- moedas incompatíveis são rejeitadas explicitamente;
-- custos negativos ou configurações inválidas falham por erro tipado;
-- custo conhecido não é descontado silenciosamente da posição recomendada;
-- destino inviável não produz recomendação executável incorreta;
-- sobra causada pela restrição permanece explícita e reconciliada;
-- nenhuma regra tributária externa é inventada dentro do domínio;
-- mesma entrada produz mesma saída;
+- o orquestrador reutiliza as funções existentes em vez de reimplementar regras;
+- nenhuma etapa posterior perde silenciosamente a provenance de bloqueios/alertas anteriores;
+- soma entre valores investíveis, custos consumidos e sobra final reconcilia com o aporte sob as semânticas já definidas;
+- `methodologyVersion` é explícita e estável na saída;
+- ordem dos destinos e reason codes é determinística;
+- erros tipados das camadas internas continuam observáveis sem wrapping genérico;
+- nenhuma dependência externa é chamada pelo domínio puro;
+- execução repetida com a mesma entrada produz snapshot equivalente;
 - `pnpm check` passa integralmente no head final validado.
 
 ## Casos de teste mínimos
 
-- destino sem custo;
-- custo transacional positivo menor que a alocação;
-- custo igual à alocação;
-- custo maior que a alocação;
-- impacto tributário fornecido separadamente;
-- combinação de custo + impacto tributário;
-- moeda divergente;
-- custo negativo;
-- múltiplos destinos;
-- preservação de sobra upstream;
-- valores em centavos;
-- resultado reproduzível e imutável.
+- fluxo sem restrições adicionais;
+- microaporte concentrado;
+- hard limit bloqueando parte da alocação;
+- destino inelegível;
+- custo reduzindo valor investível;
+- custo bloqueando destino;
+- combinação de múltiplas restrições;
+- sobra upstream preservada entre etapas;
+- múltiplos destinos com ordem estável;
+- erro de uma camada interna propagado tipado;
+- `methodologyVersion` preservada;
+- resultado imutável e reproduzível.
