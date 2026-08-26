@@ -11,23 +11,13 @@ describe("CurrencyCode", () => {
   });
 
   it("compares normalized codes by value", () => {
-    expect(CurrencyCode.from("brl").equals(CurrencyCode.from("BRL"))).toBe(
-      true,
-    );
-    expect(CurrencyCode.from("BRL").equals(CurrencyCode.from("USD"))).toBe(
-      false,
-    );
+    expect(CurrencyCode.from("brl").equals(CurrencyCode.from("BRL"))).toBe(true);
+    expect(CurrencyCode.from("BRL").equals(CurrencyCode.from("USD"))).toBe(false);
   });
 
   it("rejects malformed currency codes", () => {
-    expect(() => CurrencyCode.from("R$")).toThrowError(
-      InvalidCurrencyCodeError,
-    );
-    expect(() => CurrencyCode.from("REAL")).toThrowError(
-      InvalidCurrencyCodeError,
-    );
-    expect(() => CurrencyCode.from("12A")).toThrowError(
-      InvalidCurrencyCodeError,
-    );
+    expect(() => CurrencyCode.from("R$")).toThrowError(InvalidCurrencyCodeError);
+    expect(() => CurrencyCode.from("REAL")).toThrowError(InvalidCurrencyCodeError);
+    expect(() => CurrencyCode.from("12A")).toThrowError(InvalidCurrencyCodeError);
   });
 });
