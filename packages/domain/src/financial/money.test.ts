@@ -26,18 +26,10 @@ describe("Money", () => {
   });
 
   it("rounds half away from zero deterministically", () => {
-    expect(Money.fromDecimal("10.004", "BRL").toDecimalString()).toBe(
-      "10.00",
-    );
-    expect(Money.fromDecimal("10.005", "BRL").toDecimalString()).toBe(
-      "10.01",
-    );
-    expect(Money.fromDecimal("-10.004", "BRL").toDecimalString()).toBe(
-      "-10.00",
-    );
-    expect(Money.fromDecimal("-10.005", "BRL").toDecimalString()).toBe(
-      "-10.01",
-    );
+    expect(Money.fromDecimal("10.004", "BRL").toDecimalString()).toBe("10.00");
+    expect(Money.fromDecimal("10.005", "BRL").toDecimalString()).toBe("10.01");
+    expect(Money.fromDecimal("-10.004", "BRL").toDecimalString()).toBe("-10.00");
+    expect(Money.fromDecimal("-10.005", "BRL").toDecimalString()).toBe("-10.01");
   });
 
   it("adds repeatedly without binary floating-point drift", () => {
@@ -53,9 +45,7 @@ describe("Money", () => {
   });
 
   it("supports signed results required by differences and cash flows", () => {
-    const result = Money.fromDecimal("10.00", "BRL").subtract(
-      Money.fromDecimal("12.50", "BRL"),
-    );
+    const result = Money.fromDecimal("10.00", "BRL").subtract(Money.fromDecimal("12.50", "BRL"));
 
     expect(result.isNegative()).toBe(true);
     expect(result.toDecimalString()).toBe("-2.50");
@@ -86,9 +76,9 @@ describe("Money", () => {
   });
 
   it("rejects malformed snapshots with a typed financial error", () => {
-    expect(() =>
-      Money.fromSnapshot({ currency: "BRL", minorUnits: "12.34" }),
-    ).toThrowError(InvalidFinancialSnapshotError);
+    expect(() => Money.fromSnapshot({ currency: "BRL", minorUnits: "12.34" })).toThrowError(
+      InvalidFinancialSnapshotError,
+    );
   });
 
   it("round-trips a broad range of minor-unit values exactly", () => {
