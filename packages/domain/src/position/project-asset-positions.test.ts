@@ -63,9 +63,7 @@ describe("projectAssetPositions", () => {
       createTrade({ quantity: "0.123456789012" }),
     ]);
 
-    expect(snapshot(result)).toEqual([
-      { assetId: ASSET_ID, quantity: "0.123456789012" },
-    ]);
+    expect(snapshot(result)).toEqual([{ assetId: ASSET_ID, quantity: "0.123456789012" }]);
   });
 
   it("adds multiple buys of the same asset without floating-point drift", () => {
@@ -75,9 +73,7 @@ describe("projectAssetPositions", () => {
       createTrade({ id: transactionId(22), quantity: "0.2" }),
     ]);
 
-    expect(snapshot(result)).toEqual([
-      { assetId: ASSET_ID, quantity: "0.300000000001" },
-    ]);
+    expect(snapshot(result)).toEqual([{ assetId: ASSET_ID, quantity: "0.300000000001" }]);
   });
 
   it("subtracts a partial sell from the current position", () => {
