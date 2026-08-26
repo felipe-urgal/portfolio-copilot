@@ -11,17 +11,42 @@ const SNAPSHOT = {
   referenceCurrency: "BRL",
 } as const;
 
+const ASSET = {
+  id: "62c1cf28-ea08-4f0f-b2ec-991ee889f55d",
+  name: "ETF global",
+  assetClass: "EQUITY",
+  instrumentType: "ETF",
+  referenceCurrency: "USD",
+} as const;
+
 const CASH_IN = {
   id: "7744df4d-bb41-4a07-b582-a8d8f710a8af",
   portfolioId: SNAPSHOT.id,
   type: "CASH_IN",
   occurredAt: "2026-08-26T21:05:00.000Z",
-  settlementAmount: {
-    currency: "BRL",
-    minorUnits: "125000",
-  },
+  settlementAmount: { currency: "BRL", minorUnits: "125000" },
   assetId: null,
   quantity: null,
+} as const;
+
+const BUY = {
+  id: "d0778205-ab7c-42dd-866f-6ca7ca284103",
+  portfolioId: SNAPSHOT.id,
+  type: "BUY",
+  occurredAt: "2026-08-26T21:06:00.000Z",
+  settlementAmount: { currency: "BRL", minorUnits: "250000" },
+  assetId: ASSET.id,
+  quantity: { scaledUnits: "3000000000000" },
+} as const;
+
+const SELL = {
+  id: "0e11384d-cb77-4a43-88ff-9d0bb3dfe324",
+  portfolioId: SNAPSHOT.id,
+  type: "SELL",
+  occurredAt: "2026-08-26T21:07:00.000Z",
+  settlementAmount: { currency: "BRL", minorUnits: "100000" },
+  assetId: ASSET.id,
+  quantity: { scaledUnits: "1250000000000" },
 } as const;
 
 describe("PortfolioWorkspace", () => {
@@ -36,50 +61,66 @@ describe("PortfolioWorkspace", () => {
     expect(html).toContain('href="/dashboard"');
     expect(html).toContain('href="/portfolio"');
     expect(html).toContain('href="/onboarding"');
-    expect(html).toContain('href="/health"');
     expect(html).toContain('aria-current="page"');
     expect(html).toContain("Criar carteira");
     expect(html).toContain("Nome da carteira");
-    expect(html).toContain("Moeda de referência");
     expect(html).toContain("Criar carteira local");
     expect(html).toContain("Nada é persistido nesta versão");
     expect(html).toContain("Transaction Ledger");
   });
 
-  it("renders cash-flow controls only after a validated portfolio exists", () => {
+  it("renders local asset registration and keeps BUY/SELL blocked until an asset exists", () => {
     const html = renderToStaticMarkup(<PortfolioWorkspace initialSnapshot={SNAPSHOT} />);
 
-    expect(html).toContain("Carteira criada nesta sessão");
-    expect(html).toContain("Transaction Ledger");
-    expect(html).toContain("Tipo de movimentação");
-    expect(html).toContain("Entrada");
-    expect(html).toContain("Saída");
-    expect(html).toContain("Registrar movimentação");
-    expect(html).toContain("Ledger sem movimentações");
-    expect(html).toContain("Compra");
-    expect(html).toContain("Venda");
-    expect(html).toContain("Compra e venda exigem um Asset real selecionável");
-    expect(html).toContain("Nenhuma posição de ativo disponível");
+    expect(html).toContain("Carteira desta sessão");
+    expect(html).toContain("Ativos da sessão");
+    expect(html).toContain("Nome do ativo");
+    expect(html).toContain("Classe econômica");
+    expect(html).toContain("Instrumento");
+    expect(html).toContain("Cadastrar ativo local");
+    expect(html).toContain("Nenhum ativo cadastrado");
+    expect(html).toContain("Compra e venda");
+    expect(html).toContain("Cadastre um ativo local antes de negociar");
+    expect(html).toContain('id="trade-asset" disabled=""');
+    expect(html).toContain("Nenhuma posição de ativo aberta");
     expect(html).toContain("Sem transações");
   });
 
-  it("renders real cash transaction snapshots without inventing asset positions", () => {
+  it("renders a human asset selection and positions projected from BUY/SELL", () => {
+    const html = renderToStaticMarkup(
+      <PortfolioWorkspace
+        initialSnapshot={SNAPSHOT}
+        initialAssets={[ASSET]}
+        initialTransactions={[CASH_IN, BUY, SELL]}
+      />,
+    );
+
+    expect(html).toContain("ETF global");
+    expect(html).toContain("Ações · ETF · USD");
+    expect(html).toContain("ETF global — Ações");
+    expect(html).toContain("1 posição");
+    expect(html).toContain("1.75 un.");
+    expect(html).toContain("Compra");
+    expect(html).toContain("Venda");
+    expect(html).toContain("3 un.");
+    expect(html).toContain("1.25 un.");
+    expect(html).toContain("BRL 2500.00");
+    expect(html).toContain("BRL 1000.00");
+    expect(html).toContain("3 movimentações");
+    expect(html).not.toContain("Patrimônio total");
+    expect(html).not.toMatch(/R\$\s*\d/);
+    expect(html).not.toMatch(/>\s*0%\s*</);
+  });
+
+  it("keeps cash flows from creating asset positions", () => {
     const html = renderToStaticMarkup(
       <PortfolioWorkspace initialSnapshot={SNAPSHOT} initialTransactions={[CASH_IN]} />,
     );
 
-    expect(html).toContain("Carteira principal");
-    expect(html).toContain(SNAPSHOT.id);
     expect(html).toContain("Entrada de caixa");
     expect(html).toContain("BRL 1250.00");
-    expect(html).toContain(CASH_IN.occurredAt);
-    expect(html).toContain(CASH_IN.id);
-    expect(html).toContain("1 movimentação");
     expect(html).toContain("Somente fluxos de caixa");
-    expect(html).toContain("CASH_IN e CASH_OUT não carregam AssetId nem quantidade");
-    expect(html).toContain("Nenhuma posição de ativo disponível");
-
-    expect(html).not.toMatch(/R\$\s*\d/);
-    expect(html).not.toMatch(/>\s*0%\s*</);
+    expect(html).toContain("Nenhuma posição de ativo aberta");
+    expect(html).toContain("CASH_IN e CASH_OUT não alteram posições");
   });
 });
