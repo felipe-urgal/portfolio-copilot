@@ -33,7 +33,6 @@ export type AllocationGap = Readonly<{
 }>;
 
 type NormalizedCurrentBucket = Readonly<{
-  assetClass: AssetClass;
   currentValue: Money;
 }>;
 
@@ -94,7 +93,7 @@ function normalizeCurrentValues(
       );
     }
 
-    buckets.set(assetClass.code, Object.freeze({ assetClass, currentValue: input.currentValue }));
+    buckets.set(assetClass.code, Object.freeze({ currentValue: input.currentValue }));
     bucketTotalMinorUnits += input.currentValue.minorUnits;
   }
 
@@ -171,12 +170,7 @@ export function calculateAllocationGaps(
     .map<AllocationGap>((assetClassCode) => {
       const currentBucket = currentByClass.get(assetClassCode);
       const targetBucket = targetByClass.get(assetClassCode);
-      const assetClass = targetBucket?.assetClass ?? currentBucket?.assetClass;
-
-      if (assetClass === undefined) {
-        throw new Error(`Missing allocation bucket for asset class ${assetClassCode}`);
-      }
-
+      const assetClass = AssetClass.from(assetClassCode);
       const currentValue = currentBucket?.currentValue ?? Money.zero(input.totalValue.currency);
       const targetValue = Money.fromMinorUnits(
         targetBucket?.minorUnits ?? 0n,
