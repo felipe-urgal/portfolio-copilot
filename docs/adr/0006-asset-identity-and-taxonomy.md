@@ -5,7 +5,9 @@
 
 ## Contexto
 
-O Portfolio Copilot precisa representar ações, renda fixa, ETFs, FIIs, fundos, caixa e cripto sem acoplar a identidade do ativo a um ticker, bolsa, corretora ou provedor de market data.
+O Portfolio Copilot precisa representar ações, renda fixa, ETFs, FIIs, fundos, caixa, commodities e cripto sem acoplar a identidade do ativo a ticker, bolsa, corretora ou provedor de market data.
+
+Também precisamos evitar uma ambiguidade estrutural importante: **classe econômica** e **veículo de investimento** não são a mesma dimensão. Um ETF pode carregar exposição a ações, renda fixa, commodities ou cripto; da mesma forma, um fundo de investimento pode ser multimercado ou especializado. Se `ETF` fosse tratado como `AssetClass`, o futuro `TargetAllocation` misturaria exposição econômica com embalagem jurídica/operacional do produto.
 
 Tickers e códigos externos podem mudar, ser reutilizados, variar por mercado ou ter formatos diferentes conforme o fornecedor. Usá-los como chave primária tornaria holdings, transações e snapshots históricos frágeis.
 
@@ -19,27 +21,54 @@ Tickers e códigos externos podem mudar, ser reutilizados, variar por mercado ou
 - geração do UUID pertence à camada de aplicação/infraestrutura; o domínio apenas valida e normaliza a identidade recebida;
 - ticker, ISIN, CNPJ ou provider ID nunca substituem o `AssetId`.
 
-### AssetClass
+### AssetClass — exposição econômica
 
-A taxonomia inicial é econômica e deliberadamente ampla:
+A taxonomia inicial representa a exposição econômica predominante do ativo:
 
 - `CASH`;
 - `FIXED_INCOME`;
 - `EQUITY`;
+- `REAL_ESTATE`;
+- `COMMODITY`;
+- `CRYPTO_ASSET`;
+- `MULTI_ASSET`.
+
+Não existe `OTHER` nesta etapa. Uma classe nova deve ser adicionada conscientemente, com impacto em regras, dados e UX avaliado.
+
+Exemplos:
+
+- Tesouro Selic, Tesouro IPCA+, CDB, LCI e LCA usam `FIXED_INCOME`;
+- uma ação usa `EQUITY`;
+- um FII de tijolo ou papel permanece economicamente em `REAL_ESTATE` nesta primeira taxonomia;
+- um ETF de ações usa `EQUITY`, não `ETF`;
+- um ETF de renda fixa usa `FIXED_INCOME`, não `ETF`;
+- um fundo multimercado pode usar `MULTI_ASSET` quando não houver uma exposição predominante suficientemente clara.
+
+Indexador, emissor, vencimento, liquidez, setor, região geográfica e demais dimensões não entram em `AssetClass`.
+
+### InstrumentType — veículo/instrumento
+
+O veículo é modelado separadamente por `InstrumentType`:
+
+- `CASH_BALANCE`;
+- `FIXED_INCOME_INSTRUMENT`;
+- `STOCK`;
 - `ETF`;
 - `REAL_ESTATE_FUND`;
 - `INVESTMENT_FUND`;
 - `CRYPTO_ASSET`.
 
-Não existe `OTHER` nesta etapa. Uma classe nova deve ser adicionada conscientemente, com impacto em regras, dados e UX avaliado.
+Essa dimensão descreve como o investidor acessa a exposição, não qual risco econômico o ativo representa.
 
-Subtipos não entram em `AssetClass`. Exemplos:
+Exemplos:
 
-- Tesouro Selic, Tesouro IPCA+, CDB, LCI e LCA continuam em `FIXED_INCOME`;
-- indexador, emissor, vencimento, liquidez e garantias serão metadados/tipos específicos de renda fixa;
-- ações ordinárias/preferenciais continuam em `EQUITY`;
-- setor econômico não é `AssetClass` e será tratado separadamente quando necessário;
-- FII brasileiro entra em `REAL_ESTATE_FUND`, preservando uma taxonomia que não depende do nome local do produto.
+- ação brasileira: `AssetClass=EQUITY`, `InstrumentType=STOCK`;
+- ETF de S&P 500: `AssetClass=EQUITY`, `InstrumentType=ETF`;
+- ETF de títulos: `AssetClass=FIXED_INCOME`, `InstrumentType=ETF`;
+- Tesouro/CDB: `AssetClass=FIXED_INCOME`, `InstrumentType=FIXED_INCOME_INSTRUMENT`;
+- FII: `AssetClass=REAL_ESTATE`, `InstrumentType=REAL_ESTATE_FUND`.
+
+Combinações economicamente estranhas não são bloqueadas nesta etapa porque essa compatibilidade poderá depender de subtipos e metadados ainda inexistentes. A validação cruzada deve ser adicionada quando houver informação suficiente para fazê-la sem regras artificiais.
 
 ### Moeda de referência
 
@@ -61,7 +90,8 @@ Um mesmo ticker pode aparecer em dois `Asset` distintos sem torná-los a mesma e
 
 - identidade interna;
 - nome;
-- classe;
+- classe econômica;
+- tipo de instrumento;
 - moeda de referência;
 - identificadores externos opcionais.
 
@@ -72,12 +102,14 @@ Preço, quantidade, posição, custo médio, setor, fundamentals, vencimento e d
 - mudança de ticker não quebra histórico;
 - provedores podem ser substituídos sem migração da identidade do domínio;
 - holdings e transações futuras poderão referenciar `AssetId` estável;
-- classes permanecem pequenas e compreensíveis;
+- `TargetAllocation` poderá trabalhar com classes econômicas sem confundir ETF/fundo com exposição;
+- o motor poderá analisar veículo e risco em dimensões independentes;
 - ativos sem ticker, como parte da renda fixa, são cidadãos de primeira classe.
 
 ## Trade-offs
 
 - será necessário manter um Asset Master que reconcilie identificadores externos com `AssetId`;
 - validações profundas de ISIN/CNPJ/provider IDs pertencem a adapters ou evoluções específicas;
-- subtipos e metadados por classe exigirão modelos próprios posteriormente;
+- subtipos e metadados por classe/instrumento exigirão modelos próprios posteriormente;
+- algumas combinações `AssetClass` + `InstrumentType` só poderão ser validadas quando o domínio tiver metadados suficientes;
 - UUID é uma decisão de identidade interna, não um identificador amigável para o usuário.
