@@ -4,9 +4,7 @@ export type {
   AllocationGapCalculationInput,
   CurrentAllocationBucketInput,
 } from "./allocation-gap";
-export {
-  applyAssetClassConcentrationLimits,
-} from "./asset-class-concentration-limits";
+export { applyAssetClassConcentrationLimits } from "./asset-class-concentration-limits";
 export type {
   AssetClassConcentrationLimitInput,
   ContributionConcentrationAllocation,

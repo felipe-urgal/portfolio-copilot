@@ -76,9 +76,7 @@ function allocationByClass(
   plan: ContributionConcentrationPlan,
   assetClass: string,
 ): ContributionConcentrationAllocation {
-  const allocation = plan.allocations.find(
-    (candidate) => candidate.assetClass.code === assetClass,
-  );
+  const allocation = plan.allocations.find((candidate) => candidate.assetClass.code === assetClass);
 
   if (allocation === undefined) {
     throw new Error(`Missing allocation for ${assetClass}`);

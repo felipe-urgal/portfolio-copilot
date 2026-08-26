@@ -54,11 +54,7 @@ function toAllocationWeight(
   if (value instanceof AllocationWeight) return value;
 
   if (typeof value !== "string") {
-    throw new InvalidAssetClassConcentrationWeightError(
-      assetClass.code,
-      field,
-      String(value),
-    );
+    throw new InvalidAssetClassConcentrationWeightError(assetClass.code, field, String(value));
   }
 
   try {
@@ -109,8 +105,7 @@ function maximumAllowedClassValueMinorUnits(
   hardMaxWeight: AllocationWeight,
 ): bigint {
   return (
-    (postContributionValueMinorUnits * hardMaxWeight.percentage.scaledUnits) /
-    FULL_WEIGHT_UNITS
+    (postContributionValueMinorUnits * hardMaxWeight.percentage.scaledUnits) / FULL_WEIGHT_UNITS
   );
 }
 
@@ -121,9 +116,7 @@ function exceedsWeight(
 ): boolean {
   if (totalMinorUnits === 0n) return false;
 
-  return (
-    valueMinorUnits * FULL_WEIGHT_UNITS > totalMinorUnits * weight.percentage.scaledUnits
-  );
+  return valueMinorUnits * FULL_WEIGHT_UNITS > totalMinorUnits * weight.percentage.scaledUnits;
 }
 
 export function applyAssetClassConcentrationLimits(
@@ -132,54 +125,60 @@ export function applyAssetClassConcentrationLimits(
   const limitsByClass = normalizeLimits(input.limits);
   let blockedMinorUnits = 0n;
 
-  const allocations = input.plan.allocations.map<ContributionConcentrationAllocation>((allocation) => {
-    const limit = limitsByClass.get(allocation.assetClass.code);
+  const allocations = input.plan.allocations.map<ContributionConcentrationAllocation>(
+    (allocation) => {
+      const limit = limitsByClass.get(allocation.assetClass.code);
 
-    if (limit === undefined) {
+      if (limit === undefined) {
+        return Object.freeze({
+          ...allocation,
+          softMaxWeight: null,
+          hardMaxWeight: null,
+          softLimitExceeded: false,
+          hardLimitApplied: false,
+          blockedAmount: Money.zero(input.plan.contribution.currency),
+        });
+      }
+
+      const maximumClassValueMinorUnits = maximumAllowedClassValueMinorUnits(
+        input.plan.postContributionValue.minorUnits,
+        limit.hardMaxWeight,
+      );
+      const availableMinorUnits =
+        maximumClassValueMinorUnits > allocation.currentValue.minorUnits
+          ? maximumClassValueMinorUnits - allocation.currentValue.minorUnits
+          : 0n;
+      const allocatedMinorUnits =
+        allocation.allocatedAmount.minorUnits < availableMinorUnits
+          ? allocation.allocatedAmount.minorUnits
+          : availableMinorUnits;
+      const blockedAmountMinorUnits = allocation.allocatedAmount.minorUnits - allocatedMinorUnits;
+      const projectedClassValueMinorUnits =
+        allocation.currentValue.minorUnits + allocatedMinorUnits;
+
+      blockedMinorUnits += blockedAmountMinorUnits;
+
       return Object.freeze({
         ...allocation,
-        softMaxWeight: null,
-        hardMaxWeight: null,
-        softLimitExceeded: false,
-        hardLimitApplied: false,
-        blockedAmount: Money.zero(input.plan.contribution.currency),
+        allocatedAmount: Money.fromMinorUnits(
+          allocatedMinorUnits,
+          input.plan.contribution.currency,
+        ),
+        softMaxWeight: limit.softMaxWeight,
+        hardMaxWeight: limit.hardMaxWeight,
+        softLimitExceeded: exceedsWeight(
+          projectedClassValueMinorUnits,
+          input.plan.postContributionValue.minorUnits,
+          limit.softMaxWeight,
+        ),
+        hardLimitApplied: blockedAmountMinorUnits > 0n,
+        blockedAmount: Money.fromMinorUnits(
+          blockedAmountMinorUnits,
+          input.plan.contribution.currency,
+        ),
       });
-    }
-
-    const maximumClassValueMinorUnits = maximumAllowedClassValueMinorUnits(
-      input.plan.postContributionValue.minorUnits,
-      limit.hardMaxWeight,
-    );
-    const availableMinorUnits =
-      maximumClassValueMinorUnits > allocation.currentValue.minorUnits
-        ? maximumClassValueMinorUnits - allocation.currentValue.minorUnits
-        : 0n;
-    const allocatedMinorUnits =
-      allocation.allocatedAmount.minorUnits < availableMinorUnits
-        ? allocation.allocatedAmount.minorUnits
-        : availableMinorUnits;
-    const blockedAmountMinorUnits = allocation.allocatedAmount.minorUnits - allocatedMinorUnits;
-    const projectedClassValueMinorUnits = allocation.currentValue.minorUnits + allocatedMinorUnits;
-
-    blockedMinorUnits += blockedAmountMinorUnits;
-
-    return Object.freeze({
-      ...allocation,
-      allocatedAmount: Money.fromMinorUnits(allocatedMinorUnits, input.plan.contribution.currency),
-      softMaxWeight: limit.softMaxWeight,
-      hardMaxWeight: limit.hardMaxWeight,
-      softLimitExceeded: exceedsWeight(
-        projectedClassValueMinorUnits,
-        input.plan.postContributionValue.minorUnits,
-        limit.softMaxWeight,
-      ),
-      hardLimitApplied: blockedAmountMinorUnits > 0n,
-      blockedAmount: Money.fromMinorUnits(
-        blockedAmountMinorUnits,
-        input.plan.contribution.currency,
-      ),
-    });
-  });
+    },
+  );
 
   return Object.freeze({
     ...input.plan,
