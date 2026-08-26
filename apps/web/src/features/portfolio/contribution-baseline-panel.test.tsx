@@ -37,6 +37,7 @@ describe("ContributionBaselinePanel", () => {
     expect(html).toContain("Calcular baseline do aporte");
     expect(html).toContain("Baseline ainda não calculado");
     expect(html).toContain("não representam cotação, valuation ou patrimônio");
+    expect(html).toContain("TargetAllocation, base e baseline existem apenas nesta sessão");
     expect(html).not.toMatch(/R\$\s*\d/);
   });
 
