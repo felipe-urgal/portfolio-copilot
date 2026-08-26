@@ -189,3 +189,20 @@ Histórico resumido de atividades concluídas.
 - testes cobrem limite amplo, limite de um destino, empate, aporte pequeno, redistribuição, cap por necessidade, combinação de mínimo/limite, moeda, configuração inválida, imutabilidade e determinismo;
 - ADR-0013 registra ordem de seleção, política de mínimo, reconciliação e fronteira com unidade mínima negociável/elegibilidade;
 - não há nova dependência, lockfile, schema, persistência ou integração externa.
+
+## 2026-08-26 — Portfolio Engine: restrições de execução do aporte
+
+- `applyContributionExecutionConstraints` criado como camada pura posterior ao `ContributionPlan` e à política de microaporte;
+- cada `AssetClass` com alocação monetária positiva exige exatamente um destino previamente escolhido, evitando introduzir ranking de ativos nesta etapa;
+- destinos usam `AssetId` como identidade e não dependem de ticker/provider;
+- elegibilidade é explícita e validada em runtime;
+- `minimumTradableQuantity` reutiliza `AssetQuantity`, com `bigint` escalado em 12 casas e exigência adicional de valor estritamente positivo;
+- zero, negativo e shape inválido de quantidade mínima são rejeitados por erro tipado;
+- destino elegível preserva exatamente a alocação monetária já calculada;
+- destino inelegível não recebe recomendação por ativo e seu valor retorna para `unallocatedContribution`;
+- valores bloqueados não são redistribuídos, preservando a decisão econômica anterior;
+- nenhuma conversão `Money ↔ AssetQuantity` ocorre sem preço;
+- testes cobrem elegível/inelegível, mistura de destinos, ausência de destino, quantidade mínima, duplicidades, shape de elegibilidade, identidade por `AssetId`, integração com microaporte, imutabilidade e determinismo;
+- `FINANCIAL-METHODOLOGY.md` diferencia quantidade mínima negociável de futuro valor monetário mínimo derivado de preço;
+- ADR-0014 registra a fronteira entre decisão econômica, restrição operacional e futura etapa de preço/quantidade;
+- não há nova dependência, lockfile, schema, persistência ou integração externa.
