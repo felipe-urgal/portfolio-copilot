@@ -63,7 +63,10 @@ function baseInput(): ContributionRecommendationPipelineInput {
   };
 }
 
-function decision(snapshot: ReturnType<typeof buildContributionRecommendationSnapshot>, assetClass: string) {
+function decision(
+  snapshot: ReturnType<typeof buildContributionRecommendationSnapshot>,
+  assetClass: string,
+) {
   const found = snapshot.decisions.find((candidate) => candidate.assetClass === assetClass);
   if (found === undefined) throw new Error(`Missing decision for ${assetClass}`);
   return found;
@@ -127,9 +130,7 @@ describe("buildContributionRecommendationSnapshot", () => {
     const input = baseInput();
     const snapshot = buildContributionRecommendationSnapshot({
       ...input,
-      concentrationLimits: [
-        { assetClass: "EQUITY", softMaxWeight: "35", hardMaxWeight: "40" },
-      ],
+      concentrationLimits: [{ assetClass: "EQUITY", softMaxWeight: "35", hardMaxWeight: "40" }],
     });
     const equity = decision(snapshot, "EQUITY");
 
@@ -151,9 +152,7 @@ describe("buildContributionRecommendationSnapshot", () => {
     const input = baseInput();
     const snapshot = buildContributionRecommendationSnapshot({
       ...input,
-      concentrationLimits: [
-        { assetClass: "EQUITY", softMaxWeight: "35", hardMaxWeight: "40" },
-      ],
+      concentrationLimits: [{ assetClass: "EQUITY", softMaxWeight: "35", hardMaxWeight: "40" }],
       executionDestinations: input.executionDestinations.map((destination) =>
         destination.assetClass === "EQUITY" ? { ...destination, isEligible: false } : destination,
       ),
@@ -229,9 +228,7 @@ describe("buildContributionRecommendationSnapshot", () => {
     const input = baseInput();
     const snapshot = buildContributionRecommendationSnapshot({
       ...input,
-      concentrationLimits: [
-        { assetClass: "EQUITY", softMaxWeight: "35", hardMaxWeight: "40" },
-      ],
+      concentrationLimits: [{ assetClass: "EQUITY", softMaxWeight: "35", hardMaxWeight: "40" }],
       executionDestinations: input.executionDestinations.map((destination) =>
         destination.assetClass === "EQUITY" ? { ...destination, isEligible: false } : destination,
       ),

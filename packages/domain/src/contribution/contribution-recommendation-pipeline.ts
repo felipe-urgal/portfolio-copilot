@@ -124,7 +124,8 @@ function normalizeExecutionDestinations(
 ): ReadonlyMap<AssetClassCode, NormalizedExecutionDestination> {
   return new Map(
     inputs.map((input) => {
-      const assetId = typeof input.assetId === "string" ? AssetId.from(input.assetId) : input.assetId;
+      const assetId =
+        typeof input.assetId === "string" ? AssetId.from(input.assetId) : input.assetId;
       const assetClass =
         typeof input.assetClass === "string" ? AssetClass.from(input.assetClass) : input.assetClass;
       const minimumTradableQuantity =
@@ -254,7 +255,10 @@ export function buildContributionRecommendationSnapshot(
         currentValue: allocation.currentValue.toDecimalString(),
         postContributionTargetValue: allocation.postContributionTargetValue.toDecimalString(),
         postContributionNeed: allocation.postContributionNeed.toDecimalString(),
-        baselineAllocatedAmount: moneyString(baselineMinorUnits, baselinePlan.contribution.currency),
+        baselineAllocatedAmount: moneyString(
+          baselineMinorUnits,
+          baselinePlan.contribution.currency,
+        ),
         policyAllocatedAmount: moneyString(policyMinorUnits, baselinePlan.contribution.currency),
         concentrationAllocatedAmount: moneyString(
           concentrationMinorUnits,
@@ -266,10 +270,7 @@ export function buildContributionRecommendationSnapshot(
         executionEligible: executionDestination?.isEligible ?? null,
         minimumTradableQuantity:
           executionDestination?.minimumTradableQuantity.toDecimalString() ?? null,
-        transactionCost: moneyString(
-          transactionCostMinorUnits,
-          baselinePlan.contribution.currency,
-        ),
+        transactionCost: moneyString(transactionCostMinorUnits, baselinePlan.contribution.currency),
         estimatedTaxImpact: moneyString(
           estimatedTaxImpactMinorUnits,
           baselinePlan.contribution.currency,
