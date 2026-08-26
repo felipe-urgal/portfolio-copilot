@@ -25,7 +25,6 @@ export type TargetValueBucket = Readonly<{
 
 type WeightedMinorUnitBucket = {
   assetClass: AssetClass;
-  weightUnits: bigint;
   minorUnits: bigint;
   remainder: bigint;
 };
@@ -98,6 +97,10 @@ export function apportionMinorUnitsByAssetClass(
     throw new RangeError("Cannot apportion negative minor units");
   }
 
+  if (weights.some((bucket) => bucket.weightUnits < 0n)) {
+    throw new RangeError("Cannot apportion negative weight units");
+  }
+
   const positiveWeights = weights.filter((bucket) => bucket.weightUnits > 0n);
 
   if (totalMinorUnits === 0n || positiveWeights.length === 0) {
@@ -110,7 +113,6 @@ export function apportionMinorUnitsByAssetClass(
 
     return {
       assetClass: bucket.assetClass,
-      weightUnits: bucket.weightUnits,
       minorUnits: numerator / totalWeightUnits,
       remainder: numerator % totalWeightUnits,
     };
@@ -148,13 +150,16 @@ export function apportionTargetValues(
   );
 
   return new Map<AssetClassCode, TargetValueBucket>(
-    targetAllocation.buckets.map((bucket) => [
-      bucket.assetClass.code,
-      Object.freeze({
-        assetClass: bucket.assetClass,
-        targetWeight: bucket.targetWeight,
-        minorUnits: apportionedMinorUnits.get(bucket.assetClass.code) ?? 0n,
-      }),
-    ]),
+    targetAllocation.buckets.map(
+      (bucket) =>
+        [
+          bucket.assetClass.code,
+          Object.freeze({
+            assetClass: bucket.assetClass,
+            targetWeight: bucket.targetWeight,
+            minorUnits: apportionedMinorUnits.get(bucket.assetClass.code) ?? 0n,
+          }),
+        ] as const,
+    ),
   );
 }
