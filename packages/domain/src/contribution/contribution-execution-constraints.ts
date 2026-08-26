@@ -129,6 +129,7 @@ export function applyContributionExecutionConstraints(
 ): ContributionExecutionPlan {
   const destinationsByClass = normalizeDestinations(input.destinations);
   const destinations: ContributionExecutionDestination[] = [];
+  let blockedMinorUnits = 0n;
 
   for (const allocation of input.plan.allocations) {
     if (allocation.allocatedAmount.isZero()) continue;
@@ -139,7 +140,10 @@ export function applyContributionExecutionConstraints(
       throw new MissingContributionExecutionDestinationError(allocation.assetClass.code);
     }
 
-    if (!destination.isEligible) continue;
+    if (!destination.isEligible) {
+      blockedMinorUnits += allocation.allocatedAmount.minorUnits;
+      continue;
+    }
 
     destinations.push(
       Object.freeze({
@@ -152,17 +156,12 @@ export function applyContributionExecutionConstraints(
     );
   }
 
-  const allocatedMinorUnits = destinations.reduce(
-    (sum, destination) => sum + destination.allocatedAmount.minorUnits,
-    0n,
-  );
-
   return Object.freeze({
     portfolioId: input.plan.portfolioId,
     contribution: input.plan.contribution,
     destinations: Object.freeze(destinations),
     unallocatedContribution: Money.fromMinorUnits(
-      input.plan.contribution.minorUnits - allocatedMinorUnits,
+      input.plan.unallocatedContribution.minorUnits + blockedMinorUnits,
       input.plan.contribution.currency,
     ),
   });
