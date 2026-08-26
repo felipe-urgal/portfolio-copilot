@@ -101,7 +101,7 @@ export function createInitialOnboardingState(): OnboardingState {
       horizon: "",
       reserveEnabled: false,
       reserveTarget: "",
-      goals: [createGoalDraft("goal-1")],
+      goals: [],
     },
     errors: {},
     snapshot: null,

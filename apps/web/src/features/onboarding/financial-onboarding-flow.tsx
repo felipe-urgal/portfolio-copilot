@@ -557,7 +557,7 @@ function ReviewStep({
 
 export function FinancialOnboardingFlow() {
   const [state, dispatch] = useReducer(onboardingReducer, undefined, createInitialOnboardingState);
-  const nextGoalSequence = useRef(2);
+  const nextGoalSequence = useRef(1);
   const activeIndex = ONBOARDING_STEPS.indexOf(state.step);
   const activeCopy = STEP_COPY[state.step];
   const errorMessage = firstErrorMessage(state.errors);
@@ -658,7 +658,7 @@ export function FinancialOnboardingFlow() {
                 snapshot={state.snapshot}
                 onEdit={() => dispatch({ type: "go-to-step", step: "profile" })}
                 onReset={() => {
-                  nextGoalSequence.current = 2;
+                  nextGoalSequence.current = 1;
                   dispatch({ type: "reset" });
                 }}
               />

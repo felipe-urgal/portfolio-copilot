@@ -44,23 +44,24 @@ describe("financial onboarding form model", () => {
     expect(normalizeUiDecimal("1.000,50")).toBe("1.000,50");
   });
 
-  it("adds, edits and removes goals through the reducer", () => {
+  it("starts without goals and adds, edits and removes them through the reducer", () => {
     const initial = createInitialOnboardingState();
-    const added = onboardingReducer(initial, { type: "add-goal", clientId: "goal-2" });
+    const added = onboardingReducer(initial, { type: "add-goal", clientId: "goal-1" });
     const edited = onboardingReducer(added, {
       type: "update-goal",
-      clientId: "goal-2",
+      clientId: "goal-1",
       patch: { type: "RETIREMENT", targetAmount: "2000000,00" },
     });
     const removed = onboardingReducer(edited, { type: "remove-goal", clientId: "goal-1" });
 
-    expect(added.draft.goals).toHaveLength(2);
-    expect(edited.draft.goals[1]).toMatchObject({
-      clientId: "goal-2",
+    expect(initial.draft.goals).toEqual([]);
+    expect(added.draft.goals).toHaveLength(1);
+    expect(edited.draft.goals[0]).toMatchObject({
+      clientId: "goal-1",
       type: "RETIREMENT",
       targetAmount: "2000000,00",
     });
-    expect(removed.draft.goals.map((goal) => goal.clientId)).toEqual(["goal-2"]);
+    expect(removed.draft.goals).toEqual([]);
   });
 
   it("maps profile domain errors to the corresponding fields", () => {
