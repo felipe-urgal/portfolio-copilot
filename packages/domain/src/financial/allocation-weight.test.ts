@@ -1,10 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import {
-  AllocationWeight,
-  AllocationWeightOutOfRangeError,
-  Percentage,
-} from "./index";
+import { AllocationWeight, AllocationWeightOutOfRangeError, Percentage } from "./index";
 
 describe("AllocationWeight", () => {
   it("accepts the inclusive 0% and 100% boundaries", () => {
@@ -13,9 +9,7 @@ describe("AllocationWeight", () => {
   });
 
   it("accepts valid fractional weights", () => {
-    expect(AllocationWeight.fromPercent("22.5").toPercentString()).toBe(
-      "22.5000",
-    );
+    expect(AllocationWeight.fromPercent("22.5").toPercentString()).toBe("22.5000");
   });
 
   it("rejects values below 0%", () => {
@@ -34,15 +28,13 @@ describe("AllocationWeight", () => {
   });
 
   it("allows signed zero but normalizes it to zero", () => {
-    expect(AllocationWeight.fromPercent("-0.0000").toPercentString()).toBe(
-      "0.0000",
-    );
+    expect(AllocationWeight.fromPercent("-0.0000").toPercentString()).toBe("0.0000");
   });
 
   it("rejects an out-of-range Percentage when converting", () => {
-    expect(() =>
-      AllocationWeight.fromPercentage(Percentage.fromPercent("120")),
-    ).toThrowError(AllocationWeightOutOfRangeError);
+    expect(() => AllocationWeight.fromPercentage(Percentage.fromPercent("120"))).toThrowError(
+      AllocationWeightOutOfRangeError,
+    );
   });
 
   it("compares weights deterministically", () => {
