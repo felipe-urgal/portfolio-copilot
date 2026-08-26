@@ -4,6 +4,7 @@ import {
   AllocationWeight,
   allocateContribution,
   applyAssetClassConcentrationLimits,
+  applyContributionCostTaxConstraints,
   applyContributionExecutionConstraints,
   applyContributionPolicy,
   AssetClass,
@@ -49,5 +50,6 @@ describe("domain package boundary", () => {
     expect(typeof applyContributionPolicy).toBe("function");
     expect(typeof applyContributionExecutionConstraints).toBe("function");
     expect(typeof applyAssetClassConcentrationLimits).toBe("function");
+    expect(typeof applyContributionCostTaxConstraints).toBe("function");
   });
 });

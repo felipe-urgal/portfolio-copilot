@@ -206,6 +206,25 @@ Comportamento conceitual:
 
 Isso evita falsa diversificação e reduz complexidade operacional para aportes recorrentes como R$ 1.000/mês.
 
+### Custos conhecidos e impacto tributário reservado
+
+Depois que um destino por `AssetId` já foi escolhido, custos monetários conhecidos podem ser aplicados como restrição final do orçamento daquele destino.
+
+O `allocatedAmount` recebido das etapas anteriores é o orçamento **bruto**. Custos não são somados por fora dele. Para um destino executável:
+
+```text
+totalKnownCost = transactionCost + estimatedTaxImpact
+investableAmount = allocatedAmount - totalKnownCost
+```
+
+`transactionCost` e `estimatedTaxImpact` usam `Money`, precisam ser não negativos e ter a mesma moeda do aporte. Ausência de configuração significa custo conhecido zero.
+
+`estimatedTaxImpact` não é imposto calculado pelo Portfolio Engine. É um impacto monetário fornecido externamente que o chamador decidiu reservar contra o aporte. O domínio não inventa alíquota, faixa de isenção, regime fiscal, come-cotas, compensação, vencimento ou jurisdição.
+
+Se `totalKnownCost >= allocatedAmount`, não existe valor positivo para investir: o destino é bloqueado, `investableAmount` fica zero e o orçamento bruto inteiro retorna para `unallocatedContribution`. Como a operação não ocorre, o custo hipotético não é debitado.
+
+A camada não redistribui automaticamente orçamento bloqueado nem recalcula regras fiscais. Descoberta de tarifas, cálculo tributário e provenance desses dados pertencem a componentes externos futuros.
+
 ## Limites
 
 A política deve suportar:

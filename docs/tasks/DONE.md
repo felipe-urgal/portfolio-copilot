@@ -223,3 +223,21 @@ Histórico resumido de atividades concluídas.
 - testes cobrem soft/hard, igualdade de limites, centavos, configuração inválida, múltiplas classes, sobra upstream, imutabilidade e determinismo;
 - ADR-0015/D-023 registram fórmula, precisão, semântica soft/hard e fronteira com concentração futura mais granular;
 - não há nova dependência, lockfile, schema, persistência ou integração externa.
+
+## 2026-08-26 — Portfolio Engine: custos e impactos tributários do aporte
+
+- `applyContributionCostTaxConstraints` criado como camada pura posterior ao `ContributionExecutionPlan`;
+- configuração de custo é vinculada a `AssetId` já presente no plano de execução, sem ticker/provider;
+- `transactionCost` e `estimatedTaxImpact` permanecem campos monetários separados e usam `Money`;
+- valores precisam ser não negativos e usar a mesma moeda do aporte;
+- ausência de configuração para um destino significa custo conhecido zero;
+- configuração duplicada ou para `AssetId` fora do plano é rejeitada por erro tipado;
+- `allocatedAmount` permanece como orçamento bruto para provenance;
+- destino executável expõe `totalKnownCost` e `investableAmount = allocatedAmount - totalKnownCost`;
+- quando custos conhecidos igualam ou superam a alocação, o destino recebe `BLOCKED_KNOWN_COSTS`, valor investível zero e o orçamento bruto retorna para `unallocatedContribution`;
+- custo hipotético de operação bloqueada não é debitado;
+- `estimatedTaxImpact` é somente valor fornecido/reservado pelo chamador: o domínio não calcula imposto nem inventa regra fiscal;
+- não existe redistribuição automática após bloqueio por custo;
+- testes cobrem custo zero/positivo, impacto tributário, combinação, igualdade/excesso, moedas, negativos, duplicidade, custo órfão, múltiplos destinos, centavos, integração, imutabilidade e determinismo;
+- ADR-0016/D-024 registram reconciliação, semântica tributária e fronteira com adapters externos;
+- não há nova dependência, lockfile, schema, persistência ou integração externa.

@@ -17,6 +17,14 @@ export type {
   ContributionAllocatorInput,
   ContributionPlan,
 } from "./contribution-allocator";
+export { applyContributionCostTaxConstraints } from "./contribution-cost-tax-constraints";
+export type {
+  ContributionCostAdjustedDestination,
+  ContributionCostAdjustedPlan,
+  ContributionCostDestinationStatus,
+  ContributionCostTaxConstraintInput,
+  ContributionCostTaxConstraintsInput,
+} from "./contribution-cost-tax-constraints";
 export { applyContributionExecutionConstraints } from "./contribution-execution-constraints";
 export type {
   ContributionExecutionConstraintsInput,
@@ -32,14 +40,17 @@ export {
   ContributionAllocatorPortfolioMismatchError,
   ContributionDomainError,
   DuplicateAssetClassConcentrationLimitError,
+  DuplicateContributionCostConstraintError,
   DuplicateContributionExecutionDestinationError,
   DuplicateCurrentAllocationBucketError,
   InvalidAssetClassConcentrationRangeError,
   InvalidAssetClassConcentrationWeightError,
+  InvalidContributionCostAmountError,
   InvalidContributionDestinationEligibilityError,
   InvalidMaxDestinationsPerContributionError,
   InvalidMinimumTradableQuantityError,
   MissingContributionExecutionDestinationError,
   NegativeAllocationValueError,
+  UnknownContributionCostConstraintDestinationError,
 } from "./errors";
 export type { ContributionDomainErrorCode } from "./errors";
