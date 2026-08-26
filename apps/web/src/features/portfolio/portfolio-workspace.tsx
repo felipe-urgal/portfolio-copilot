@@ -22,6 +22,7 @@ import {
   type CashTransactionDraft,
   type CashTransactionFieldErrors,
 } from "./cash-transaction-form";
+import { ContributionBaselinePanel } from "./contribution-baseline-panel";
 import {
   assetClassLabel,
   createInitialLocalAssetDraft,
@@ -745,6 +746,8 @@ export function PortfolioWorkspace({
               </div>
             </div>
           </section>
+
+          <ContributionBaselinePanel portfolio={snapshot} />
         </div>
       )}
     </>

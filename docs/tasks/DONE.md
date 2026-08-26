@@ -399,3 +399,23 @@ Histórico resumido de atividades concluídas.
 - layout preserva acessibilidade, foco e responsividade sem adicionar dependência externa;
 - nenhuma dependência, lockfile, fórmula financeira, persistência, API, autenticação, Market Data ou IA foi adicionada;
 - `docs/tasks/NEXT.md` promove `TargetAllocation` local e baseline do aporte por `AssetClass`, usando base monetária manual explícita até existir Market Data.
+
+## 2026-08-26 — Produto MVP: TargetAllocation local e baseline do aporte
+
+- `/portfolio` passa a incluir um painel local de aporte vinculado ao `PortfolioId` da carteira atual;
+- pesos-alvo são strings por `AssetClass` e passam por `TargetAllocation.create`, mantendo duplicidade, range, peso zero e soma exata de 100% no domínio;
+- valores atuais por classe são declarados manualmente e permanecem explicitamente separados das quantidades projetadas pelo Transaction Ledger;
+- `portfolioValue`, valores atuais e aporte passam por `Money` na moeda de referência do Portfolio, sem `number` binário;
+- valores atuais precisam reconciliar exatamente com a base total pelas invariantes do domínio;
+- `allocateContribution` é a única fonte para valor pós-aporte, necessidade por classe, baseline alocado e `unallocatedContribution`;
+- o estado cliente armazena somente snapshots serializáveis do resultado, sem Value Objects ou `bigint`;
+- a UI mostra base, aporte, total pós-aporte, necessidade, baseline e sobra reais, sem escolher Asset destino;
+- quantidade, preço, valor de mercado, patrimônio, custo médio, P&L ou conversão `Money ↔ AssetQuantity` não são inferidos;
+- `TargetAllocation`, base monetária manual e baseline permanecem locais/efêmeros e a limitação é explícita no painel;
+- o painel é um componente isolado do `PortfolioWorkspace`, recebendo apenas o `PortfolioSnapshot` e não o ledger/posições;
+- formulários usam labels semânticas, tabela acessível, estados de erro e navegação por teclado; tabelas têm scroll horizontal responsivo;
+- testes puros cobrem alvo válido/inválido, reconciliação, negativos, aporte zero/positivo, moeda BRL/USD e baseline determinístico;
+- renderização estática cobre estado manual vazio e resultado real sem métricas/valuation fictícios;
+- metadata de `/portfolio` passa a descrever o baseline local com base manual;
+- nenhuma dependência, lockfile, fórmula financeira, persistência, API, autenticação, Market Data ou IA foi adicionada;
+- `docs/tasks/NEXT.md` promove a política local de microaporte e limite de destinos por `AssetClass` usando `applyContributionPolicy`.

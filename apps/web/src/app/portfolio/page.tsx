@@ -8,7 +8,7 @@ import { PortfolioWorkspace } from "@/features/portfolio/portfolio-workspace";
 export const metadata: Metadata = {
   title: `Carteira | ${APP_NAME}`,
   description:
-    "Portfolio, ativos e Transaction Ledger locais com BUY/SELL e posições derivadas sem dados inventados.",
+    "Portfolio, ledger e baseline local de aporte por AssetClass com base monetária manual e sem Market Data inventado.",
 };
 
 export default function PortfolioPage() {

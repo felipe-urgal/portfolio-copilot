@@ -69,7 +69,7 @@ describe("PortfolioWorkspace", () => {
     expect(html).toContain("Transaction Ledger");
   });
 
-  it("renders local asset registration and keeps BUY/SELL blocked until an asset exists", () => {
+  it("renders local asset registration and the manual contribution baseline after portfolio creation", () => {
     const html = renderToStaticMarkup(<PortfolioWorkspace initialSnapshot={SNAPSHOT} />);
 
     expect(html).toContain("Carteira desta sessão");
@@ -84,6 +84,9 @@ describe("PortfolioWorkspace", () => {
     expect(html).toContain('id="trade-asset" disabled=""');
     expect(html).toContain("Nenhuma posição de ativo aberta");
     expect(html).toContain("Sem transações");
+    expect(html).toContain("Baseline do aporte");
+    expect(html).toContain("Base monetária manual");
+    expect(html).toContain("Baseline ainda não calculado");
   });
 
   it("renders a human asset selection and positions projected from BUY/SELL", () => {

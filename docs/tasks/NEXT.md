@@ -1,58 +1,58 @@
-# Próxima Atividade — Produto MVP: TargetAllocation local e baseline do aporte por AssetClass
+# Próxima Atividade — Produto MVP: política local do aporte por AssetClass
 
-**Status:** READY após merge de Asset local + `BUY`/`SELL` + posições derivadas.
+**Status:** READY após merge de `TargetAllocation` local + baseline determinístico do aporte.
 
 ## Objetivo
 
-Adicionar o primeiro fluxo de aporte do MVP sobre a carteira local, configurando uma `TargetAllocation` por `AssetClass` e calculando um baseline determinístico com `allocateContribution` a partir de valores monetários atuais declarados explicitamente pelo usuário. Enquanto não houver Market Data, quantidade de posição não será convertida em valor de mercado nem usada para inventar valuation.
+Evoluir o aporte local para aplicar a primeira política operacional sobre o baseline já validado, usando `applyContributionPolicy` para tratar microaportes e limitar a quantidade de classes destinatárias sem introduzir preço, seleção de ativo, execução ou nova fórmula financeira na camada web.
 
 ## Escopo
 
-- evoluir a sessão local de `/portfolio` com uma seção de aporte vinculada ao `PortfolioId` atual;
-- criar `TargetAllocation` reutilizando `TargetAllocation`, `AssetClass` e `AllocationWeight` existentes no domínio;
-- permitir configurar pesos-alvo por `AssetClass` como strings e deixar `TargetAllocation.create` validar duplicidade, pesos positivos e soma exata de 100%;
-- receber valores monetários atuais por `AssetClass` como entrada manual e explicitamente declarada, separados das quantidades projetadas pelo Transaction Ledger;
-- receber `portfolioValue` e valor do novo aporte na moeda de referência do Portfolio usando `Money`;
-- exigir que os valores atuais reconciliem com `portfolioValue` pelas invariantes já existentes no domínio;
-- executar `allocateContribution` como única fonte do baseline de distribuição do aporte por `AssetClass`;
-- mostrar necessidade pós-aporte, valor baseline alocado e eventual `unallocatedContribution` sem reinterpretar as fórmulas na camada web;
-- deixar visualmente explícito que os valores atuais são uma base monetária manual temporária, não valuation derivado de preço;
-- manter Portfolio, Asset, Transaction Ledger, TargetAllocation e aporte exclusivamente locais/efêmeros;
+- evoluir o painel de aporte em `/portfolio` a partir do mesmo `PortfolioId`, `TargetAllocation`, base monetária manual e `ContributionPlan` já existentes;
+- receber `minimumMeaningfulContribution` como string monetária na moeda de referência do Portfolio e convertê-la por `Money`;
+- receber `maxDestinationsPerContribution` como configuração inteira explícita da política;
+- reutilizar `applyContributionPolicy` como única fonte para seleção/priorização de classes, redistribuição e sobra após a política;
+- mostrar lado a lado o baseline do allocator e o resultado após a política, preservando provenance suficiente para entender o que mudou;
+- mostrar classes removidas por microaporte/limite de destinos sem escolher um `Asset` dentro da classe;
+- manter `unallocatedContribution` explícito e nunca inventar destino para a sobra;
+- traduzir erros tipados de valor mínimo, moeda e limite de destinos para feedback acessível;
+- manter toda a configuração e resultado exclusivamente local/efêmero;
 - preservar acessibilidade, foco, semântica e responsividade desktop/mobile;
-- adicionar testes para pesos-alvo, reconciliação monetária, moedas, aporte zero/positivo, baseline e estados honestos.
+- adicionar testes para mínimo zero/positivo, limite amplo/restritivo, redistribuição, sobra e configurações inválidas.
 
 ## Fora de escopo
 
-- derivar valor de mercado de `AssetQuantity` sem preço;
-- Market Data, preço, cotação, FX ou benchmarks;
-- conversão de `Money` em `AssetQuantity` ou quantidade recomendada;
-- escolha/ranking de ativo destino dentro de uma classe;
-- restrições de execução, unidade mínima negociável, custos ou impacto tributário na UI;
-- orquestração completa do pipeline de recomendação de aporte;
+- escolher/rankear `Asset` destino dentro de uma classe;
+- converter `Money` em `AssetQuantity`;
+- preço, Market Data, FX ou valuation;
+- unidade mínima negociável e elegibilidade por ativo;
+- limites de concentração;
+- custos ou impactos tributários;
+- pipeline completo de `ContributionRecommendationSnapshot`;
 - persistência/API/Server Actions;
 - autenticação/autorização;
 - recomendação por IA.
 
 ## Critérios de aceite
 
-- a `TargetAllocation` pertence ao `PortfolioId` atual e seus pesos são validados pelo domínio;
-- pesos-alvo não são somados ou validados por regra financeira duplicada na camada web;
-- `portfolioValue`, valores atuais e aporte usam `Money`, sem `number` binário;
-- a interface identifica os valores atuais como declarados manualmente e nunca como valor de mercado das posições;
-- valores atuais reconciliam exatamente com `portfolioValue` pelas invariantes existentes;
-- `allocateContribution` produz o baseline exibido por `AssetClass` e a sobra não alocada;
-- nenhuma quantidade, preço, patrimônio ou valuation é inferido sem Market Data;
+- a política é aplicada somente sobre um `ContributionPlan` válido produzido pelo allocator;
+- `minimumMeaningfulContribution` usa `Money` e não passa por `number` binário;
+- `maxDestinationsPerContribution` chega ao contrato do domínio como inteiro seguro válido;
+- `applyContributionPolicy` é a única fonte de seleção de classes, redistribuição e sobra pós-política;
+- o baseline original continua visível para comparação auditável;
+- nenhuma classe sem necessidade positiva recebe aporte por invenção da UI;
+- toda parcela não distribuída permanece em `unallocatedContribution`;
+- nenhuma quantidade, preço, ativo destino ou valuation é inferido;
 - erros tipados do domínio são traduzidos para feedback acessível;
-- todo o estado continua local/efêmero e essa limitação permanece explícita;
-- testes cobrem sucesso, pesos inválidos, moeda/reconciliação, aporte e ausência de valuation fictício;
-- nenhuma nova fórmula financeira, persistência, API ou integração externa é introduzida;
+- estado continua local/efêmero e isso permanece explícito;
+- nenhuma fórmula financeira, persistência, API ou integração externa é adicionada;
 - `pnpm check` passa integralmente no head final validado.
 
 ## Referências canônicas
 
-- `docs/ROADMAP.md` — Fase 3: cadastro de transações -> aporte do mês;
-- `docs/FINANCIAL-METHODOLOGY.md` — metodologia financeira e fronteiras do aporte;
-- `docs/adr/0010-target-allocation.md` — política-alvo por `AssetClass`;
-- `docs/adr/0012-contribution-allocator.md` — baseline determinístico do aporte;
-- `packages/domain/src/portfolio/target-allocation.ts` — contrato atual de `TargetAllocation`;
-- `packages/domain/src/contribution/contribution-allocator.ts` — contrato atual de `allocateContribution`.
+- `docs/ROADMAP.md` — Fase 3: aporte do mês;
+- `docs/FINANCIAL-METHODOLOGY.md` — metodologia financeira do aporte;
+- `docs/adr/0012-contribution-allocator.md` — baseline determinístico;
+- `docs/adr/0013-contribution-policy.md` — microaporte e limite de destinos;
+- `packages/domain/src/contribution/contribution-allocator.ts` — `ContributionPlan`;
+- `packages/domain/src/contribution/contribution-policy.ts` — `applyContributionPolicy`.
