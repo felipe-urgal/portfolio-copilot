@@ -9,21 +9,30 @@ O Portfolio Engine precisa calcular aportes, gaps e valores históricos sem herd
 
 ## Decisão
 
+### CurrencyCode
+
+- moeda é um value object reutilizável (`CurrencyCode`), e não uma string validada apenas dentro de `Money`;
+- nesta etapa o contrato valida a forma de três letras ASCII e normaliza para maiúsculas;
+- o domínio não mantém ainda uma tabela completa ISO-4217; esse catálogo poderá entrar em uma camada própria quando houver necessidade de metadados de moeda;
+- `Asset` e outros tipos de domínio poderão reutilizar o mesmo contrato sem duplicar validação.
+
 ### Money
 
 - `Money` representa valor monetário liquidado/contábil, não quantidade de ativo;
 - usa `bigint` em unidades mínimas com **2 casas decimais** nesta primeira versão;
 - entradas decimais são `string`, nunca `number`;
-- a moeda é explícita e normalizada para três letras ASCII maiúsculas;
+- a moeda é explícita por `CurrencyCode`;
 - soma, subtração e comparação exigem a mesma moeda;
 - valores negativos são permitidos no value object porque diferenças e fluxos de caixa podem ser negativos; entidades com semântica não negativa deverão impor a restrição na própria fronteira;
-- snapshots persistíveis serializam `bigint` como string inteira (`minorUnits`) para não depender de JSON com bigint nem float.
+- snapshots persistíveis serializam `bigint` como string inteira (`minorUnits`) para não depender de JSON com bigint nem float;
+- snapshots inválidos geram erro financeiro tipado, não `TypeError` genérico.
 
 ### Percentage
 
 - `Percentage` usa `bigint` com quatro casas decimais de **pontos percentuais**;
 - `Percentage` pode ser negativo ou maior que 100%, pois retorno, variação e outros indicadores possuem esses valores legitimamente;
-- entrada e saída decimal usam string.
+- entrada e saída decimal usam string;
+- snapshots persistem unidades escaladas como string inteira e falham com erro financeiro tipado quando inválidos.
 
 ### AllocationWeight
 
@@ -48,11 +57,12 @@ A implementação opera somente sobre dígitos decimais e inteiros; não convert
 - a escala monetária fixa de 2 casas atende os valores contábeis BRL/USD usados no MVP, mas não pretende modelar todas as moedas ISO com escalas diferentes;
 - preços unitários de mercado que exijam precisão maior terão tipo próprio;
 - quantidade de ações, cotas, títulos ou cripto terá tipo próprio e não reutilizará `Money`;
-- conversão cambial não pertence a `Money`; exigirá taxa, fonte, `asOf` e política de arredondamento explícitos.
+- conversão cambial não pertence a `Money`; exigirá taxa, fonte, `asOf` e política de arredondamento explícitos;
+- `CurrencyCode` valida forma, não existência em um catálogo oficial de moedas nesta fase.
 
 ## Testes
 
-Os testes cobrem limites, moedas incompatíveis, snapshots, arredondamento, valores assinados e soma repetida sem drift. Nesta etapa não adicionamos biblioteca property-based: os invariantes são pequenos e podem ser exercitados deterministicamente, evitando ampliar a supply chain sem benefício material. A decisão pode ser revista quando o domínio de cálculo crescer.
+Os testes cobrem limites, moedas incompatíveis, snapshots, arredondamento, valores assinados, normalização de moeda e soma repetida sem drift. Nesta etapa não adicionamos biblioteca property-based: os invariantes são pequenos e podem ser exercitados deterministicamente, evitando ampliar a supply chain sem benefício material. A decisão pode ser revista quando o domínio de cálculo crescer.
 
 ## Consequências
 
@@ -61,7 +71,9 @@ Os testes cobrem limites, moedas incompatíveis, snapshots, arredondamento, valo
 - cálculos monetários não dependem de IEEE-754;
 - persistência futura recebe representação explícita e auditável;
 - conceitos com ranges diferentes não são confundidos;
-- política de arredondamento é centralizada e testada.
+- moeda possui contrato único reutilizável no domínio;
+- política de arredondamento é centralizada e testada;
+- falhas de snapshot permanecem classificáveis por código de domínio.
 
 ### Trade-offs
 
