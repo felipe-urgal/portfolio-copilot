@@ -12,11 +12,16 @@ import {
   AssetQuantity,
   buildContributionRecommendationSnapshot,
   calculateAllocationGaps,
+  FinancialGoal,
+  FinancialHorizon,
+  FinancialProfile,
+  FinancialProfileId,
   InstrumentType,
   Money,
   Percentage,
   PortfolioId,
   projectAssetPositions,
+  RiskTolerance,
   TargetAllocation,
   TransactionId,
   TransactionTimestamp,
@@ -24,7 +29,7 @@ import {
 } from "./index";
 
 describe("domain package boundary", () => {
-  it("exports financial, asset, portfolio, position, contribution and transaction primitives", () => {
+  it("exports financial, asset, portfolio, onboarding, position, contribution and transaction primitives", () => {
     expect(Money.fromDecimal("1.00", "BRL").toDecimalString()).toBe("1.00");
     expect(Percentage.fromPercent("10").toPercentString()).toBe("10.0000");
     expect(AllocationWeight.fromPercent("50").toPercentString()).toBe("50.0000");
@@ -44,6 +49,13 @@ describe("domain package boundary", () => {
     expect(TransactionTimestamp.from("2026-08-26T12:30:45.123Z").toString()).toBe(
       "2026-08-26T12:30:45.123Z",
     );
+    expect(FinancialProfileId.from("550e8400-e29b-41d4-a716-446655440030").toString()).toBe(
+      "550e8400-e29b-41d4-a716-446655440030",
+    );
+    expect(FinancialHorizon.from("LONG").toString()).toBe("LONG");
+    expect(RiskTolerance.from("MEDIUM").toString()).toBe("MEDIUM");
+    expect(typeof FinancialGoal.create).toBe("function");
+    expect(typeof FinancialProfile.create).toBe("function");
     expect(typeof projectAssetPositions).toBe("function");
     expect(typeof TargetAllocation.create).toBe("function");
     expect(typeof calculateAllocationGaps).toBe("function");

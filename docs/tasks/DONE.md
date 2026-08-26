@@ -276,7 +276,28 @@ Histórico resumido de atividades concluídas.
 - mesma entrada é executada novamente e precisa produzir snapshot estruturalmente idêntico e JSON byte-for-byte estável;
 - `JSON.stringify`/`JSON.parse` validam que o snapshot final não depende de `bigint` ou value objects na fronteira serializada;
 - falha do corpus inclui seed e parâmetros primitivos suficientes para reprodução;
-- auto review do gerador identificou e corrigiu correlação entre quantidade de classes e modo de concentração, garantindo cobertura estrutural de hard limit exato/parcial/total;
+- auto code review do gerador identificou e corrigiu correlação entre quantidade de classes e modo de concentração, garantindo cobertura estrutural de hard limit exato/parcial/total;
 - a suíte exige cobertura observada de aporte zero, poucos centavos, uma/múltiplas classes, ajuste de política, hard limit exato/parcial/total, inelegibilidade e custos executáveis/bloqueados;
 - nenhum código de produção, fórmula financeira, lockfile ou dependência externa foi alterado;
 - nenhum ADR novo foi necessário porque o vertical apenas verifica contratos já aceitos, sem criar decisão arquitetural/financeira nova.
+
+## 2026-08-26 — Produto MVP: contratos de domínio do onboarding financeiro
+
+- módulo `onboarding` adicionado ao pacote de domínio sem dependência de `Portfolio`, autenticação, persistência ou UI;
+- `FinancialProfileId` e `FinancialGoalId` usam UUID canônico fornecido pelo caller e permanecem identidades distintas;
+- `FinancialProfile` registra moeda de referência, tolerância a risco, horizonte, alvo opcional da reserva e objetivos;
+- tolerância a risco usa taxonomia explícita `LOW`/`MEDIUM`/`HIGH`, sem score ou suitability implícito;
+- horizonte usa taxonomia explícita `SHORT`/`MEDIUM`/`LONG`, sem converter anos automaticamente;
+- alvo de reserva usa `Money`, é opcional, estritamente positivo e não representa saldo atual;
+- objetivos usam tipos `NET_WORTH`, `PASSIVE_INCOME_MONTHLY`, `RETIREMENT` e `DATED_PURPOSE`;
+- `PASSIVE_INCOME_MONTHLY` explicita a periodicidade da meta monetária;
+- todo objetivo exige `targetAmount` positivo e moeda compatível com o perfil;
+- `targetDate` usa data civil canônica `YYYY-MM-DD`; `DATED_PURPOSE` exige data e os demais tipos podem tê-la opcionalmente;
+- datas não são comparadas com o relógio do processo, preservando determinismo;
+- objetivos duplicados por identidade normalizada são rejeitados e a coleção é copiada/ordenada por ID sem tratar ordem de entrada como prioridade;
+- snapshots usam somente strings/arrays/snapshots de `Money`, suportam round-trip e JSON determinístico sem `bigint` exposto;
+- entradas runtime malformadas relevantes falham com erros tipados em vez de `TypeError` acidental;
+- testes cobrem horizontes/risco, IDs, reserva nula/positiva/inválida, moeda, tipos de objetivo, datas, duplicidade, snapshot, round-trip e isolamento de mutabilidade;
+- ADR-0018/D-026 registram a separação entre perfil declarativo, carteira, saldos e recomendação;
+- `docs/tasks/NEXT.md` promove o fluxo web de onboarding como próximo vertical do MVP;
+- nenhuma dependência, lockfile, schema, autenticação, persistência, API ou regra de recomendação foi adicionada.
