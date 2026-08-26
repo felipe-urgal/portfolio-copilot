@@ -343,3 +343,19 @@ Histórico resumido de atividades concluídas.
 - auto review sênior manteve loading/error fora do vertical porque nenhuma fonte assíncrona existe ainda; simular esses estados seria menos honesto que representar indisponibilidade real;
 - nenhuma fórmula financeira, persistência, API, autenticação, Market Data, IA, lockfile ou dependência externa foi adicionada;
 - `docs/tasks/NEXT.md` promove carteira base com cadastro local do agregado `Portfolio` como próximo vertical da Fase 3.
+
+## 2026-08-26 — Produto MVP: carteira base com cadastro local do Portfolio
+
+- rota `/portfolio` adicionada ao shell do produto e a navegação passa a cobrir dashboard, carteira e onboarding;
+- formulário mínimo recebe somente nome e moeda de referência, sem holdings, patrimônio, preço ou alocação inventados;
+- IDs locais são gerados por `crypto.randomUUID` na camada web e validados por `PortfolioId`;
+- moeda passa por `CurrencyCode` e a criação final passa por `Portfolio.create`, mantendo o domínio como fonte de verdade;
+- erros tipados de nome, moeda e identidade são traduzidos para feedback acessível sem duplicar invariantes no componente;
+- estado permanece local/efêmero e a interface informa explicitamente que recarregar a página remove a carteira;
+- após criação, a UI apresenta somente o `PortfolioSnapshot` validado: identidade, nome e moeda de referência;
+- posições permanecem em estado vazio explícito e são descritas como projeção futura do Transaction Ledger, nunca como holdings editáveis;
+- dashboard passa a oferecer acesso à carteira, mas continua informando corretamente que não recebe esse estado enquanto não houver persistência;
+- layout segue o shell visual existente, com formulário principal, rail explicativo e estado validado responsivo;
+- testes puros cobrem criação, normalização e tradução de erros; renderização estática cobre navegação, formulário, snapshot, posições vazias e ausência de métricas fictícias;
+- nenhuma dependência externa, lockfile, fórmula financeira, persistência, API, autenticação, Market Data ou IA foi adicionada;
+- `docs/tasks/NEXT.md` promove cadastro local do Transaction Ledger, iniciando por `CASH_IN`/`CASH_OUT`, como próximo vertical da Fase 3.
