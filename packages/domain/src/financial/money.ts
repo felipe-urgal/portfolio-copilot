@@ -1,9 +1,6 @@
 import { CurrencyCode } from "./currency-code";
 import { formatScaledDecimal, parseScaledDecimal } from "./decimal";
-import {
-  CurrencyMismatchError,
-  InvalidFinancialSnapshotError,
-} from "./errors";
+import { CurrencyMismatchError, InvalidFinancialSnapshotError } from "./errors";
 
 const MONEY_SCALE = 2;
 
@@ -22,29 +19,17 @@ export class Money {
     public readonly currency: CurrencyCode,
   ) {}
 
-  public static fromMinorUnits(
-    minorUnits: bigint,
-    currency: CurrencyCode | string,
-  ): Money {
+  public static fromMinorUnits(minorUnits: bigint, currency: CurrencyCode | string): Money {
     return new Money(minorUnits, toCurrencyCode(currency));
   }
 
-  public static fromDecimal(
-    decimal: string,
-    currency: CurrencyCode | string,
-  ): Money {
-    return Money.fromMinorUnits(
-      parseScaledDecimal(decimal, MONEY_SCALE),
-      currency,
-    );
+  public static fromDecimal(decimal: string, currency: CurrencyCode | string): Money {
+    return Money.fromMinorUnits(parseScaledDecimal(decimal, MONEY_SCALE), currency);
   }
 
   public static fromSnapshot(snapshot: MoneySnapshot): Money {
     if (!/^-?\d+$/.test(snapshot.minorUnits)) {
-      throw new InvalidFinancialSnapshotError(
-        "Money.minorUnits",
-        snapshot.minorUnits,
-      );
+      throw new InvalidFinancialSnapshotError("Money.minorUnits", snapshot.minorUnits);
     }
 
     return Money.fromMinorUnits(BigInt(snapshot.minorUnits), snapshot.currency);
@@ -73,10 +58,7 @@ export class Money {
   }
 
   public equals(other: Money): boolean {
-    return (
-      this.currency.equals(other.currency) &&
-      this.minorUnits === other.minorUnits
-    );
+    return this.currency.equals(other.currency) && this.minorUnits === other.minorUnits;
   }
 
   public negate(): Money {
@@ -108,10 +90,7 @@ export class Money {
 
   private assertSameCurrency(other: Money): void {
     if (!this.currency.equals(other.currency)) {
-      throw new CurrencyMismatchError(
-        this.currency.code,
-        other.currency.code,
-      );
+      throw new CurrencyMismatchError(this.currency.code, other.currency.code);
     }
   }
 }
