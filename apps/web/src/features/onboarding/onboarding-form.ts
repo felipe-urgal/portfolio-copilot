@@ -319,9 +319,7 @@ function buildGoals(
 
     try {
       goals.push(
-        FinancialGoal.create(
-          targetDate.length === 0 ? baseInput : { ...baseInput, targetDate },
-        ),
+        FinancialGoal.create(targetDate.length === 0 ? baseInput : { ...baseInput, targetDate }),
       );
     } catch (error) {
       if (error instanceof InvalidFinancialGoalTargetAmountError) {

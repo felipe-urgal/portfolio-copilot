@@ -98,7 +98,11 @@ function firstErrorMessage(errors: FieldErrors): string | null {
   return Object.values(errors)[0] ?? null;
 }
 
-function describedBy(helpId: string | null, errorId: string, hasError: boolean): string | undefined {
+function describedBy(
+  helpId: string | null,
+  errorId: string,
+  hasError: boolean,
+): string | undefined {
   const ids = [helpId, hasError ? errorId : null].filter((id): id is string => id !== null);
   return ids.length === 0 ? undefined : ids.join(" ");
 }
@@ -155,7 +159,11 @@ function ProfileStep({
           autoCapitalize="characters"
           autoComplete="off"
           aria-invalid={currencyError !== undefined}
-          aria-describedby={describedBy("currency-help", "currency-error", currencyError !== undefined)}
+          aria-describedby={describedBy(
+            "currency-help",
+            "currency-error",
+            currencyError !== undefined,
+          )}
           onChange={(event) =>
             dispatch({
               type: "update-profile",
@@ -211,7 +219,8 @@ function ProfileStep({
       <fieldset className={styles.fieldset}>
         <legend className={styles.legend}>Horizonte financeiro</legend>
         <p className={styles.helpText}>
-          Escolha a categoria que melhor representa seu horizonte, sem converter automaticamente para anos.
+          Escolha a categoria que melhor representa seu horizonte, sem converter automaticamente
+          para anos.
         </p>
         <div className={styles.segmentedChoices}>
           {FINANCIAL_HORIZON_CODES.map((horizon) => (
@@ -283,7 +292,11 @@ function ReserveStep({
             placeholder="10000,00"
             value={draft.reserveTarget}
             aria-invalid={reserveError !== undefined}
-            aria-describedby={describedBy("reserve-help", "reserve-error", reserveError !== undefined)}
+            aria-describedby={describedBy(
+              "reserve-help",
+              "reserve-error",
+              reserveError !== undefined,
+            )}
             onChange={(event) => dispatch({ type: "update-reserve", value: event.target.value })}
           />
           <p className={styles.helpText} id="reserve-help">
@@ -377,7 +390,9 @@ function GoalEditor({
             placeholder="50000,00"
             value={goal.targetAmount}
             aria-invalid={amountError !== undefined}
-            aria-describedby={amountError === undefined ? undefined : `${goal.clientId}-amount-error`}
+            aria-describedby={
+              amountError === undefined ? undefined : `${goal.clientId}-amount-error`
+            }
             onChange={(event) =>
               dispatch({
                 type: "update-goal",

@@ -9,7 +9,7 @@ describe("FinancialOnboardingFlow accessibility shell", () => {
 
     expect(html).toContain('aria-label="Progresso do onboarding"');
     expect(html).toContain('aria-current="step"');
-    expect(html).toContain('<fieldset');
+    expect(html).toContain("<fieldset");
     expect(html).toContain('name="riskTolerance"');
     expect(html).toContain('name="horizon"');
     expect(html).toContain('id="reference-currency"');

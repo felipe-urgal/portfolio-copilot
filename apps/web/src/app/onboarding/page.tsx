@@ -6,7 +6,8 @@ import { FinancialOnboardingFlow } from "@/features/onboarding/financial-onboard
 
 export const metadata: Metadata = {
   title: `Onboarding financeiro | ${APP_NAME}`,
-  description: "Defina seu perfil financeiro, reserva e objetivos para revisar um snapshot validado.",
+  description:
+    "Defina seu perfil financeiro, reserva e objetivos para revisar um snapshot validado.",
 };
 
 export default function OnboardingPage() {
