@@ -48,5 +48,5 @@ Criar a primeira superfície de carteira do MVP em `apps/web`, reutilizando o ag
 - `docs/ROADMAP.md` — Fase 3: dashboard -> carteira -> cadastro de transações;
 - `docs/PRODUCT.md` — jornada principal e tela de carteira;
 - `docs/ARCHITECTURE.md` — `Portfolio` separado de posições e Transaction Ledger como fonte histórica;
-- `docs/adr/0007-portfolio-aggregate.md` — agregado Portfolio mínimo;
+- `docs/adr/0007-portfolio-aggregate-boundary.md` — agregado Portfolio mínimo;
 - `docs/adr/0009-asset-position-projection.md` — posições derivadas do ledger.
