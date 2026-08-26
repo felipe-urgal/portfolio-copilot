@@ -52,6 +52,8 @@ A moeda da movimentação pode ser diferente da `referenceCurrency` do Portfolio
 
 `AssetQuantity` usa inteiro `bigint` escalado em **12 casas decimais**.
 
+O value object pertence à fronteira de `asset`, e não à de `transaction`, porque quantidade é conceito compartilhado por transações, posições e futuras projeções. Isso evita que módulos de posição dependam do ledger apenas para reutilizar um tipo numérico.
+
 Regras:
 
 - zero é uma quantidade válida como value object, útil para projeções futuras;
@@ -94,7 +96,8 @@ O snapshot é determinístico e contém somente:
 - sem drift de ponto flutuante em quantidade;
 - direção econômica explícita;
 - transações multimoeda podem ser preservadas sem conversão prematura;
-- futuras holdings podem ser reconstruídas a partir dos fatos.
+- futuras holdings podem ser reconstruídas a partir dos fatos;
+- quantidade pode ser reutilizada por ledger e posições sem acoplamento invertido.
 
 ## Trade-offs
 
