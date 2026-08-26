@@ -1,5 +1,4 @@
 export type TransactionDomainErrorCode =
-  | "INVALID_ASSET_QUANTITY"
   | "INVALID_TRANSACTION_ID"
   | "INVALID_TRANSACTION_TYPE"
   | "INVALID_TRANSACTION_TIMESTAMP"
@@ -13,12 +12,6 @@ export class TransactionDomainError extends Error {
   ) {
     super(message);
     this.name = new.target.name;
-  }
-}
-
-export class InvalidAssetQuantityError extends TransactionDomainError {
-  public constructor(value: string) {
-    super("INVALID_ASSET_QUANTITY", `Invalid asset quantity: ${JSON.stringify(value)}`);
   }
 }
 
