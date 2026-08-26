@@ -206,8 +206,7 @@ function buildScenario(seed: number): Scenario {
 
     const transactionCostCents = Math.floor(totalCostCents / 2);
     const estimatedTaxImpactCents = totalCostCents - transactionCostCents;
-    costModes[destination.assetClass.code] =
-      ["ZERO", "LESS", "EQUAL", "GREATER"][mode] ?? "ZERO";
+    costModes[destination.assetClass.code] = ["ZERO", "LESS", "EQUAL", "GREATER"][mode] ?? "ZERO";
 
     return {
       assetId: destination.assetId,
