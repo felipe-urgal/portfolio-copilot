@@ -41,7 +41,7 @@ Classificação inicial:
 
 ## Autenticação
 
-A escolha de provedor será feita na fundação técnica. Requisitos:
+A escolha de provedor será feita quando autenticação entrar no roadmap. Requisitos:
 
 - sessão segura;
 - cookies `HttpOnly`, `Secure` e política `SameSite` adequada quando aplicável;
@@ -108,13 +108,16 @@ Dados externos são não confiáveis até validação. Validar schema, moeda, es
 
 ## Supply chain
 
-- lockfile obrigatório;
-- atualizações automáticas revisadas;
-- secret scanning;
-- dependency scanning;
-- CI com permissões mínimas;
-- GitHub Actions pinadas de forma segura conforme decisão técnica;
-- branch protection quando o fluxo estiver configurado.
+- lockfile obrigatório e instalação de CI com `--frozen-lockfile`;
+- política de idade mínima de releases do pnpm permanece ativa;
+- exceções de idade são estreitas, por pacote/versão e documentadas;
+- lifecycle scripts de dependências são deny-by-default e exigem allowlist versionada após revisão;
+- GitHub Actions de CI são pinadas por SHA imutável, com comentário da versão humana;
+- checkout de CI não persiste credenciais quando não há necessidade de escrita;
+- workflows usam permissões mínimas;
+- atualizações automáticas devem ser revisadas;
+- secret scanning e dependency scanning entram conforme a infraestrutura do repositório evoluir;
+- branch protection deve exigir o quality gate quando o fluxo estiver configurado.
 
 ## Web
 

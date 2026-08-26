@@ -85,7 +85,7 @@ A stack foi mantida deliberadamente pequena. Banco, autenticação, providers de
 ```bash
 corepack enable
 corepack prepare pnpm@11.24.0 --activate
-pnpm install
+pnpm install --frozen-lockfile
 pnpm dev
 ```
 
@@ -105,7 +105,7 @@ O comando executa, na mesma ordem usada pelo CI:
 4. `test`;
 5. `build`.
 
-Não há secrets necessários nesta fase. Use `.env.example` apenas como catálogo de variáveis documentadas.
+Não há variáveis de ambiente obrigatórias nesta fase. `.env.example` permanece como catálogo seguro para configurações futuras.
 
 ## Documentação
 

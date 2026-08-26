@@ -15,10 +15,13 @@ Histórico resumido de atividades concluídas.
 - pnpm workspace/monorepo;
 - `apps/web` com Next.js e rota `/health`;
 - `packages/domain` e `packages/shared`;
-- TypeScript strict;
+- Node.js 24 Active LTS e TypeScript 6.0.3 strict;
 - ESLint e Prettier;
 - Vitest com testes iniciais;
 - scripts raiz de quality gate;
-- CI GitHub Actions com permissões mínimas;
+- CI GitHub Actions com permissões mínimas e Actions pinadas por SHA;
+- políticas de supply chain do pnpm com exceções estreitas e documentadas;
 - `.env.example` e `.gitignore` seguros;
-- ADR da stack técnica.
+- ADR da stack técnica;
+- fluxo obrigatório de PR formalizado: acompanhar CI, auto review sênior, corrigir findings, atualizar docs, validar o head final e só então mergear;
+- handoff pós-merge documentado com comandos locais obrigatórios.
