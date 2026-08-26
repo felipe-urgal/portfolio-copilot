@@ -24,10 +24,7 @@ export class Percentage {
 
   public static fromSnapshot(snapshot: PercentageSnapshot): Percentage {
     if (!/^-?\d+$/.test(snapshot.scaledUnits)) {
-      throw new InvalidFinancialSnapshotError(
-        "Percentage.scaledUnits",
-        snapshot.scaledUnits,
-      );
+      throw new InvalidFinancialSnapshotError("Percentage.scaledUnits", snapshot.scaledUnits);
     }
 
     return Percentage.fromScaledUnits(BigInt(snapshot.scaledUnits));
