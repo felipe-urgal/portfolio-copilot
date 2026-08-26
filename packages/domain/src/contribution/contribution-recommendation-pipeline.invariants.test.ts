@@ -135,8 +135,9 @@ function buildScenario(seed: number): Scenario {
           : contributionCents + 1;
   const maxDestinationsPerContribution = (seed % classCount) + 1;
 
+  const concentrationCycle = Math.floor(seed / ASSET_CLASSES.length);
   const concentrationLimits = assetClasses.flatMap((assetClass, index) => {
-    const mode = (seed + index) % 4;
+    const mode = (concentrationCycle + index) % 4;
     if (mode === 0) return [];
     if (mode === 1) {
       return [{ assetClass, softMaxWeight: "40", hardMaxWeight: "100" }];
@@ -205,7 +206,8 @@ function buildScenario(seed: number): Scenario {
 
     const transactionCostCents = Math.floor(totalCostCents / 2);
     const estimatedTaxImpactCents = totalCostCents - transactionCostCents;
-    costModes[destination.assetClass.code] = ["ZERO", "LESS", "EQUAL", "GREATER"][mode] ?? "ZERO";
+    costModes[destination.assetClass.code] =
+      ["ZERO", "LESS", "EQUAL", "GREATER"][mode] ?? "ZERO";
 
     return {
       assetId: destination.assetId,
@@ -370,7 +372,10 @@ function assertScenarioInvariants(
   expect(JSON.parse(serialized)).toEqual(snapshot);
 
   if (scenario.input.allocation.contribution.isZero()) coverage.zeroContribution += 1;
-  if (scenario.input.allocation.contribution.minorUnits > 0n && scenario.input.allocation.contribution.minorUnits <= 7n) {
+  if (
+    scenario.input.allocation.contribution.minorUnits > 0n &&
+    scenario.input.allocation.contribution.minorUnits <= 7n
+  ) {
     coverage.tinyContribution += 1;
   }
   if (scenario.input.allocation.targetAllocation.buckets.length === 1) coverage.oneClass += 1;
@@ -400,10 +405,9 @@ describe("contribution recommendation pipeline invariants", () => {
         const snapshot = buildContributionRecommendationSnapshot(scenario.input);
         assertScenarioInvariants(scenario, snapshot, coverage);
       } catch (error) {
-        throw new Error(
-          `Invariant corpus failed for ${JSON.stringify(scenario.diagnostic)}`,
-          { cause: error },
-        );
+        throw new Error(`Invariant corpus failed for ${JSON.stringify(scenario.diagnostic)}`, {
+          cause: error,
+        });
       }
     }
 
