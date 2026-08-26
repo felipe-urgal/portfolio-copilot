@@ -14,7 +14,7 @@
 }
 
 .pageHeader p {
-  max-width: 44rem;
+  max-width: 46rem;
   margin: 0.9rem 0 0;
   color: #666d7b;
   font-size: 1rem;
@@ -41,6 +41,12 @@
   padding: 0.42rem 0.72rem;
 }
 
+.validState,
+.emptyStatus {
+  padding: 0.36rem 0.62rem;
+  background: #f8f9fb;
+}
+
 .persistenceNotice {
   margin-bottom: 1.25rem;
   padding: 1.2rem 1.4rem;
@@ -54,13 +60,8 @@
 .truthRail h2 {
   margin: 0;
   color: #1b1e29;
-  letter-spacing: -0.025em;
-}
-
-.persistenceNotice h2,
-.sectionHeading h2,
-.truthRail h2 {
   font-size: 1rem;
+  letter-spacing: -0.025em;
 }
 
 .persistenceNotice p,
@@ -82,7 +83,9 @@
 .formSurface,
 .truthRail,
 .snapshotSurface,
-.positionsSurface {
+.positionsSurface,
+.assetSurface,
+.ledgerSurface {
   border: 1px solid #e1e4eb;
   border-radius: 1.2rem;
   background: #fff;
@@ -91,7 +94,9 @@
 
 .formSurface,
 .snapshotSurface,
-.positionsSurface {
+.positionsSurface,
+.assetSurface,
+.ledgerSurface {
   overflow: hidden;
 }
 
@@ -108,16 +113,19 @@
   border-bottom: 1px solid #eceef3;
 }
 
-.validState,
-.emptyStatus {
-  padding: 0.36rem 0.62rem;
-  background: #f8f9fb;
-}
-
-.form {
+.form,
+.assetForm,
+.transactionForm {
   display: grid;
+  align-content: start;
   gap: 1.25rem;
   padding: 1.65rem;
+}
+
+.fieldRow {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.85rem;
 }
 
 .fieldGroup {
@@ -125,13 +133,15 @@
   gap: 0.48rem;
 }
 
-.fieldGroup label {
+.fieldGroup label,
+.transactionTypeFieldset legend {
   color: #292d38;
   font-size: 0.82rem;
   font-weight: 730;
 }
 
-.fieldGroup input {
+.fieldGroup input,
+.fieldGroup select {
   min-height: 2.9rem;
   width: 100%;
   padding: 0.7rem 0.8rem;
@@ -144,17 +154,26 @@
   outline: none;
 }
 
-.fieldGroup input:hover {
+.fieldGroup input:hover,
+.fieldGroup select:hover {
   border-color: #c5cad5;
 }
 
-.fieldGroup input:focus-visible {
+.fieldGroup input:focus-visible,
+.fieldGroup select:focus-visible {
   border-color: #8179ee;
   box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
 }
 
-.fieldGroup input[aria-invalid="true"] {
+.fieldGroup input[aria-invalid="true"],
+.fieldGroup select[aria-invalid="true"] {
   border-color: #c45c66;
+}
+
+.fieldGroup select:disabled {
+  cursor: not-allowed;
+  background: #f5f6f8;
+  color: #9298a4;
 }
 
 .helpText,
@@ -203,15 +222,22 @@
   color: #fff;
 }
 
+.primaryAction:hover:not(:disabled) {
+  background: #4338ca;
+}
+
+.primaryAction:disabled {
+  cursor: not-allowed;
+  border-color: #d9dce5;
+  background: #e9ebf0;
+  color: #8b919d;
+}
+
 .secondaryAction {
   margin: 0 1.65rem 1.65rem;
   border: 1px solid #d8dce5;
   background: #fff;
   color: #3d4350;
-}
-
-.primaryAction:hover {
-  background: #4338ca;
 }
 
 .secondaryAction:hover {
@@ -320,25 +346,104 @@
   gap: 1.25rem;
 }
 
-.ledgerSurface {
-  overflow: hidden;
-  border: 1px solid #e1e4eb;
-  border-radius: 1.2rem;
-  background: #fff;
-  box-shadow: 0 22px 65px rgba(36, 40, 56, 0.06);
+.positionList,
+.assetList,
+.ledgerList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
 
+.positionList {
+  padding: 0 1.65rem 0.55rem;
+}
+
+.positionList li,
+.assetList li {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid #eceef3;
+}
+
+.positionList li > div,
+.assetList li {
+  min-width: 0;
+}
+
+.positionList strong,
+.assetList strong {
+  display: block;
+  color: #303541;
+  font-size: 0.84rem;
+}
+
+.positionList li > div > span,
+.assetList span {
+  display: block;
+  margin-top: 0.28rem;
+  color: #858b98;
+  font-size: 0.75rem;
+  line-height: 1.45;
+}
+
+.positionQuantity {
+  flex: 0 0 auto;
+  color: #282d39;
+  font-size: 0.84rem;
+  font-weight: 760;
+}
+
+.assetLayout,
 .ledgerLayout {
   display: grid;
-  grid-template-columns: minmax(18rem, 0.72fr) minmax(0, 1.28fr);
+  grid-template-columns: minmax(19rem, 0.78fr) minmax(0, 1.22fr);
 }
 
-.cashForm {
-  display: grid;
-  align-content: start;
-  gap: 1.25rem;
-  padding: 1.65rem;
+.assetForm,
+.transactionForms {
   border-right: 1px solid #eceef3;
+}
+
+.assetCatalog,
+.ledgerHistory {
+  min-width: 0;
+  padding: 1.65rem;
+}
+
+.assetList {
+  border-top: 1px solid #eceef3;
+}
+
+.assetList li {
+  display: grid;
+  justify-content: stretch;
+}
+
+.transactionForms {
+  min-width: 0;
+}
+
+.transactionForm + .transactionForm {
+  border-top: 1px solid #eceef3;
+}
+
+.formHeading h3,
+.ledgerHistoryHeading h3 {
+  margin: 0;
+  color: #2c313d;
+  font-size: 0.92rem;
+  letter-spacing: -0.015em;
+}
+
+.formHeading p,
+.ledgerHistoryHeading p {
+  margin: 0.35rem 0 0;
+  color: #858b98;
+  font-size: 0.77rem;
+  line-height: 1.5;
 }
 
 .transactionTypeFieldset {
@@ -351,9 +456,6 @@
 
 .transactionTypeFieldset legend {
   margin-bottom: 0.6rem;
-  color: #292d38;
-  font-size: 0.82rem;
-  font-weight: 730;
 }
 
 .transactionTypeOptions {
@@ -395,54 +497,8 @@
   outline-offset: 3px;
 }
 
-.unavailableTrades {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.55rem;
-  padding-top: 1rem;
-  border-top: 1px solid #eceef3;
-}
-
-.unavailableTrades button {
-  min-height: 2.55rem;
-  border: 1px solid #e1e4eb;
-  border-radius: 0.68rem;
-  background: #f8f9fb;
-  color: #9298a4;
-  font: inherit;
-  font-size: 0.78rem;
-  font-weight: 700;
-}
-
-.unavailableTrades p {
-  grid-column: 1 / -1;
-  margin: 0.15rem 0 0;
-  color: #858b98;
-  font-size: 0.75rem;
-  line-height: 1.5;
-}
-
-.ledgerHistory {
-  min-width: 0;
-  padding: 1.65rem;
-}
-
 .ledgerHistoryHeading {
   margin-bottom: 1.15rem;
-}
-
-.ledgerHistoryHeading h3 {
-  margin: 0;
-  color: #2c313d;
-  font-size: 0.92rem;
-  letter-spacing: -0.015em;
-}
-
-.ledgerHistoryHeading p {
-  margin: 0.35rem 0 0;
-  color: #858b98;
-  font-size: 0.77rem;
-  line-height: 1.5;
 }
 
 .ledgerEmptyState {
@@ -465,9 +521,6 @@
 }
 
 .ledgerList {
-  list-style: none;
-  margin: 0;
-  padding: 0;
   border-top: 1px solid #eceef3;
 }
 
@@ -496,6 +549,12 @@
   font-size: 0.84rem;
 }
 
+.transactionContext {
+  color: #666d7b;
+  font-size: 0.76rem;
+  line-height: 1.4;
+}
+
 .transactionMain time {
   color: #858b98;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
@@ -518,11 +577,13 @@
 @media (max-width: 860px) {
   .creationLayout,
   .snapshotLayout,
+  .assetLayout,
   .ledgerLayout {
     grid-template-columns: 1fr;
   }
 
-  .cashForm {
+  .assetForm,
+  .transactionForms {
     border-right: 0;
     border-bottom: 1px solid #eceef3;
   }
@@ -546,19 +607,33 @@
   .form,
   .truthRail,
   .sectionHeading,
-  .cashForm,
+  .assetForm,
+  .assetCatalog,
+  .transactionForm,
   .ledgerHistory {
     padding-right: 1.15rem;
     padding-left: 1.15rem;
   }
 
-  .snapshotList {
-    padding: 0 1.15rem;
+  .fieldRow {
+    grid-template-columns: 1fr;
+  }
+
+  .snapshotList,
+  .positionList {
+    padding-right: 1.15rem;
+    padding-left: 1.15rem;
   }
 
   .snapshotList > div {
     grid-template-columns: 1fr;
     gap: 0.4rem;
+  }
+
+  .positionList li,
+  .transactionMain {
+    display: grid;
+    gap: 0.55rem;
   }
 
   .emptyState {
@@ -568,10 +643,5 @@
   .secondaryAction {
     margin-right: 1.15rem;
     margin-left: 1.15rem;
-  }
-
-  .transactionMain {
-    display: grid;
-    gap: 0.55rem;
   }
 }
