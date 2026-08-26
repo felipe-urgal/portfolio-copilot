@@ -138,3 +138,19 @@ Histórico resumido de atividades concluídas.
 - testes cobrem política de um/múltiplos buckets, soma exata, total abaixo/acima, duplicidade, peso zero, isolamento por portfolio e snapshot determinístico;
 - ADR-0010 registra a escolha inicial por `AssetClass`, soma completa de 100%, semântica de peso zero e limites deliberados da taxonomia;
 - não há nova dependência, lockfile, integração externa ou mudança de supply chain.
+
+## 2026-08-26 — Portfolio Engine: AllocationGap
+
+- módulo `contribution` iniciado com `calculateAllocationGaps` como cálculo puro e derivado;
+- entrada associa explicitamente a base atual ao mesmo `PortfolioId` da `TargetAllocation`;
+- valores atuais usam `Money`, precisam ser não negativos, de moeda única, sem buckets duplicados e reconciliados exatamente com `totalValue`;
+- valores-alvo são calculados somente com `bigint` a partir de `AllocationWeight`;
+- arredondamento monetário usa maiores restos e desempate lexical por `AssetClass`, garantindo que a soma dos valores-alvo seja exatamente igual ao total em centavos;
+- classe-alvo sem posição atual usa valor atual zero; classe atual sem alvo permanece visível com peso/valor-alvo zero;
+- gap é `max(0, targetValue - currentValue)` e nunca produz valor negativo silencioso;
+- saída é imutável e ordenada lexicalmente por `AssetClass`;
+- o cálculo representa o estado atual e não incorpora aporte futuro, preço, FX, valuation, Asset Master ou recomendação;
+- erros de portfolio, duplicidade, valor negativo e reconciliação são tipados; divergência de moeda reutiliza `CurrencyMismatchError`;
+- testes cobrem alvo exato, under/overweight, classes ausentes, moeda, duplicidade, reconciliação, arredondamento residual, portfolios distintos, negativos e determinismo;
+- ADR-0011 registra a política de reconciliação em centavos e a fronteira com o futuro `ContributionAllocator`;
+- não há nova dependência, lockfile, schema, persistência ou integração externa.

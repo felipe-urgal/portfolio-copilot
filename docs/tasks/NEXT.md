@@ -1,37 +1,37 @@
-# Próxima Atividade — Portfolio Engine: AllocationGap
+# Próxima Atividade — Portfolio Engine: ContributionAllocator
 
-**Status:** READY após merge de TargetAllocation.
+**Status:** READY após merge de AllocationGap.
 
 ## Objetivo
 
-Calcular gaps monetários por `AssetClass` a partir de uma `TargetAllocation` e de valores atuais por bucket já normalizados, com precisão e arredondamento explícitos, sem buscar preços, agregar posições nem distribuir o aporte.
+Distribuir deterministicamente um aporte monetário entre `AssetClass` usando a política-alvo e o estado atual já normalizado, priorizando necessidades pós-aporte sem ultrapassar o valor disponível, sem ainda aplicar limites de concentração, lote mínimo ou heurísticas de microaporte.
 
 ## Escopo
 
-- estrutura derivada de `AllocationGap` por `AssetClass`;
-- entrada vinculada ao mesmo `PortfolioId` da `TargetAllocation`;
-- valores atuais por bucket usando `Money` em moeda única;
-- total da carteira/base de cálculo explícito e reconciliado com os buckets de entrada;
-- cálculo determinístico de valor-alvo por peso;
-- política explícita de arredondamento ao aplicar `AllocationWeight` sobre `Money`;
-- gap positivo como diferença entre valor-alvo e valor atual, sem valor negativo silencioso;
-- classes-alvo ausentes na posição atual tratadas como valor atual zero;
-- classes atuais sem peso-alvo tratadas explicitamente como alvo zero;
+- estrutura derivada de `ContributionAllocation` por `AssetClass`;
+- aporte disponível usando `Money` e a mesma moeda da carteira;
+- entrada vinculada a um único `PortfolioId`;
+- reutilização de `TargetAllocation`/`AllocationGap` ou de seus contratos normalizados sem buscar dados externos;
+- cálculo da necessidade pós-aporte usando `portfolioValue + contribution` como nova base-alvo;
+- reutilização da política de maiores restos para converter pesos em unidades monetárias mínimas;
+- seleção somente de buckets com necessidade positiva pós-aporte;
+- distribuição-base proporcional às necessidades positivas, com política explícita de arredondamento e reconciliação;
+- soma das alocações nunca maior que o aporte disponível;
+- nenhum bucket recebe mais que sua necessidade pós-aporte;
 - saída ordenada/determinística e testes de invariantes;
-- documentação da fronteira entre `AllocationGap` e o futuro `ContributionAllocator`.
+- documentação da fronteira com políticas futuras de microaporte, concentração e unidade mínima negociável.
 
 ## Fora de escopo
 
-- buscar preço ou FX;
-- converter `AssetPosition` em valor de mercado;
-- agregar ativos em classes a partir do Asset Master;
-- decidir quanto aportar;
-- `ContributionAllocator`;
 - `minimumMeaningfulContribution`;
-- limite de destinos por aporte;
-- unidade mínima negociável;
+- `maxDestinationsPerContribution`;
+- unidade mínima negociável de ativo;
 - `softMaxWeight`/`hardMaxWeight`;
-- custos, impostos e rebalanceamento;
+- elegibilidade por ativo;
+- preço, FX ou valuation;
+- seleção de ticker/ativo específico dentro da classe;
+- custos e impostos;
+- venda/rebalanceamento;
 - persistência, banco e repositórios;
 - API;
 - UI;
@@ -39,28 +39,28 @@ Calcular gaps monetários por `AssetClass` a partir de uma `TargetAllocation` e 
 
 ## Critérios de aceite
 
-- cálculo pertence inequivocamente ao mesmo `PortfolioId` da política-alvo;
-- todos os valores monetários usam `Money` e a mesma moeda;
-- nenhuma aritmética financeira usa `number` binário;
-- política de aplicação do peso e arredondamento é explícita, auditável e testada;
-- buckets atuais duplicados ou inconsistentes não são aceitos silenciosamente;
-- total informado e valores por bucket seguem uma política de reconciliação explícita;
-- gap nunca fica negativo: bucket acima do alvo possui gap zero;
-- não existe dependência de provedor, preço, ticker ou dado externo dentro do cálculo;
+- aporte, valores atuais e alocações usam `Money` e uma única moeda;
+- nenhum cálculo financeiro usa `number` binário;
+- necessidade pós-aporte considera explicitamente `portfolioValue + contribution`;
+- buckets sem necessidade positiva não recebem aporte;
+- soma das alocações é reconciliada em unidades mínimas e nunca ultrapassa o aporte;
+- nenhuma alocação ultrapassa a necessidade calculada para o bucket;
+- portfolio/moeda/estado atual inconsistentes são rejeitados explicitamente;
+- caso sem destino elegível pelo baseline possui política explícita para sobra de caixa;
 - execução repetida com a mesma entrada produz a mesma saída;
 - `pnpm check` passa integralmente no head final validado.
 
 ## Casos de teste mínimos
 
-- carteira com um único bucket exatamente no alvo;
-- bucket abaixo do alvo;
-- bucket acima do alvo com gap zero;
-- múltiplos buckets;
-- classe-alvo sem valor atual;
-- classe atual sem peso-alvo;
-- valores em moedas diferentes rejeitados;
-- bucket atual duplicado rejeitado;
-- total/base incompatível com os buckets conforme política definida;
-- caso que force arredondamento monetário de peso;
-- portfolios diferentes rejeitados quando combinados;
+- aporte zero;
+- carteira inicialmente no alvo recebendo novo aporte;
+- um único bucket com necessidade;
+- múltiplos buckets com necessidades positivas;
+- bucket acima do alvo não recebe aporte;
+- aporte menor que a soma das necessidades;
+- aporte maior/igual às necessidades conforme política de sobra definida;
+- caso que force arredondamento de centavos;
+- moedas diferentes rejeitadas;
+- portfolios diferentes rejeitados;
+- resultado nunca excede aporte nem necessidade por bucket;
 - ordem e resultado reproduzíveis.
