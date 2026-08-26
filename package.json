@@ -1,0 +1,29 @@
+{
+  "name": "portfolio-copilot",
+  "version": "0.0.0",
+  "private": true,
+  "packageManager": "pnpm@11.24.0",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "dev": "pnpm --filter @portfolio-copilot/web dev",
+    "format": "prettier --write \"apps/**/*.{ts,tsx,css,json}\" \"packages/**/*.{ts,json}\" \"*.{json,yaml,yml,mjs}\" \".github/**/*.yml\"",
+    "format:check": "prettier --check \"apps/**/*.{ts,tsx,css,json}\" \"packages/**/*.{ts,json}\" \"*.{json,yaml,yml,mjs}\" \".github/**/*.yml\"",
+    "lint": "eslint apps packages --max-warnings=0",
+    "typecheck": "pnpm -r --if-present run typecheck",
+    "test": "vitest run",
+    "build": "pnpm -r --if-present run build",
+    "check": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build"
+  },
+  "devDependencies": {
+    "@types/node": "24.3.0",
+    "@types/react": "19.2.0",
+    "@types/react-dom": "19.2.0",
+    "eslint": "10.9.1",
+    "eslint-config-next": "16.3.3",
+    "prettier": "3.9.6",
+    "typescript": "7.0.2",
+    "vitest": "4.1.11"
+  }
+}

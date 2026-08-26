@@ -1,19 +1,24 @@
 # Done
 
+Histórico resumido de atividades concluídas.
+
 ## 2026-08-26 — Fundação documental
 
-Entrega planejada no PR inicial:
+- visão, produto e Project Brief;
+- arquitetura e ADRs iniciais;
+- metodologia e política de investimentos;
+- segurança, dados e regulatório;
+- roadmap, backlog e processo de trabalho.
 
-- visão do produto;
-- especificação de produto;
-- arquitetura;
-- metodologia financeira;
-- segurança;
-- fontes de dados;
-- fronteira regulatória;
-- roadmap;
-- ADRs iniciais;
-- processo de desenvolvimento;
-- backlog e próxima atividade.
+## 2026-08-26 — Fundação técnica
 
-Status definitivo: atualizar para **MERGED** após merge do PR correspondente.
+- pnpm workspace/monorepo;
+- `apps/web` com Next.js e rota `/health`;
+- `packages/domain` e `packages/shared`;
+- TypeScript strict;
+- ESLint e Prettier;
+- Vitest com testes iniciais;
+- scripts raiz de quality gate;
+- CI GitHub Actions com permissões mínimas;
+- `.env.example` e `.gitignore` seguros;
+- ADR da stack técnica.
