@@ -1,53 +1,52 @@
-# Próxima Atividade — Portfolio Engine: Asset e AssetClass
+# Próxima Atividade — Portfolio Engine: Portfolio agregado mínimo
 
-**Status:** READY após merge dos tipos financeiros fundamentais.
+**Status:** READY após merge de Asset e AssetClass.
 
 ## Objetivo
 
-Criar a identidade mínima dos ativos que o Portfolio Engine usará sem acoplar o domínio a provedores de mercado, corretoras ou símbolos específicos de uma única bolsa.
+Criar a identidade e os invariantes mínimos de `Portfolio` sem antecipar holdings, transações, preços ou algoritmo de alocação. O agregado deve ser uma raiz estável para os próximos componentes do Portfolio Engine.
 
 ## Escopo
 
-- `AssetId` estável e independente de ticker/provedor;
-- `AssetClass` explícita para as classes suportadas inicialmente;
-- `Asset` com identidade, nome, classe e moeda de referência;
-- identificadores de mercado opcionais e tipados quando necessários;
-- regras para diferenciar identidade interna de ticker/símbolo negociado;
-- invariantes e erros de domínio tipados;
+- `PortfolioId` interno e estável;
+- `Portfolio` com identidade, nome e moeda de referência/consolidação;
+- regras explícitas de criação e normalização;
+- erros de domínio tipados;
+- snapshot persistível mínimo quando houver decisão clara de contrato;
 - testes unitários abrangentes;
-- documentação da taxonomia inicial e decisões de identidade.
+- documentação das fronteiras do agregado e de sua relação futura com ledger/holdings.
 
 ## Fora de escopo
 
-- preço de mercado;
-- quantidade/posição;
-- holdings;
-- transações;
-- Portfolio agregado;
+- usuário/autenticação/ownership;
+- holdings e posições;
+- transações e ledger;
+- saldo de caixa;
+- preço de mercado e FX;
 - target allocation;
-- APIs externas e adapters de market data;
-- banco;
+- allocation gap;
+- algoritmo de aporte/rebalanceamento;
+- banco e repositórios;
+- API;
 - UI;
 - IA.
 
 ## Critérios de aceite
 
-- identidade interna de um ativo não depende de ticker mutável;
-- ativos de classes diferentes são representáveis sem campos artificiais obrigatórios;
-- moeda de referência usa contrato compatível com os tipos financeiros já definidos;
-- símbolos/identificadores externos não são tratados como chave primária do domínio;
-- estados inválidos são rejeitados na criação;
+- identidade do portfolio não depende de nome, usuário ou infraestrutura;
+- nome inválido é rejeitado na fronteira do domínio;
+- moeda de referência reutiliza `CurrencyCode`;
+- o agregado não guarda posições derivadas nem duplica responsabilidades do futuro transaction ledger;
 - nenhum tipo depende de Next.js, banco ou fornecedor externo;
 - `pnpm check` passa integralmente;
-- decisões de taxonomia/identidade ficam registradas em documentação/ADR quando necessário.
+- decisões arquiteturais relevantes ficam registradas em documentação/ADR.
 
 ## Casos de teste mínimos
 
-- criação de ativo válido;
+- criação de portfolio válido;
 - ID vazio/inválido;
-- nome vazio;
-- classe inválida na fronteira;
+- nome vazio, somente espaços, excessivamente longo ou com caracteres de controle;
 - moeda inválida;
-- ativo sem ticker quando a classe não exigir ticker;
-- dois ativos com ticker semelhante continuam distintos por `AssetId`;
-- normalização de identificadores externos quando houver regra explícita.
+- normalização de ID/nome/moeda quando aplicável;
+- dois portfolios com mesmo nome permanecem entidades distintas por ID;
+- fronteira pública do pacote exporta os novos tipos sem acoplamento à infraestrutura.

@@ -55,3 +55,24 @@ Histórico resumido de atividades concluídas.
 - teste determinístico de round-trip sobre faixa ampla de centavos sem nova dependência property-based;
 - auto code review sênior extraiu `CurrencyCode`, tipou erros de snapshot e endureceu o helper de arredondamento para `noUncheckedIndexedAccess`;
 - ADR-0005 registra precisão, arredondamento, persistência e separação futura entre dinheiro, preço e quantidade.
+
+## 2026-08-26 — Portfolio Engine: Asset e taxonomias
+
+- `AssetId` criado como identidade interna opaca, estável e independente de ticker/provedor;
+- UUID canônico é validado e normalizado sem gerar identidade dentro do domínio;
+- `AssetClass` representa exposição econômica e não o veículo de investimento;
+- `InstrumentType` representa o veículo/instrumento separadamente de `AssetClass`;
+- taxonomia econômica inicial inclui caixa, renda fixa, ações, real estate, commodities, cripto e multi-asset;
+- taxonomia de instrumentos inicial inclui caixa, renda fixa, ação, ETF, fundo imobiliário, fundo de investimento e cripto;
+- um ETF de ações é `EQUITY + ETF`; um ETF de renda fixa é `FIXED_INCOME + ETF`;
+- `Asset` criado como entidade imutável com nome, classe econômica, tipo de instrumento, moeda de referência e identificadores externos opcionais;
+- `CurrencyCode` do domínio financeiro é reutilizado como contrato único de moeda;
+- `ExternalAssetIdentifier` diferencia `MARKET_SYMBOL`, `ISIN` e `PROVIDER_ID` sem tratá-los como chave primária;
+- símbolos de mercado e namespaces são normalizados; provider IDs preservam case quando necessário;
+- ativos sem ticker são suportados como cidadãos de primeira classe, inclusive renda fixa;
+- identificadores externos duplicados no mesmo ativo são rejeitados;
+- dois ativos com o mesmo ticker continuam distintos quando possuem `AssetId` diferentes;
+- erros específicos do domínio de ativos foram adicionados;
+- testes cobrem identidade, classes, instrumentos, nomes, moedas, identificadores externos e estados inválidos;
+- auto code review sênior identificou e corrigiu a mistura conceitual entre classe econômica e veículo de investimento;
+- ADR-0006 registra identidade, taxonomias, limites deliberados de ISIN e separação futura do Asset Master.
