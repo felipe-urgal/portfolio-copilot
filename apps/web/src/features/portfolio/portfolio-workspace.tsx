@@ -12,6 +12,10 @@ import {
 } from "./portfolio-form";
 import styles from "./portfolio-workspace.module.css";
 
+type PortfolioWorkspaceProps = Readonly<{
+  initialSnapshot?: PortfolioSnapshot | null;
+}>;
+
 function FieldError({ id, message }: Readonly<{ id: string; message: string | undefined }>) {
   if (message === undefined) return null;
 
@@ -22,10 +26,10 @@ function FieldError({ id, message }: Readonly<{ id: string; message: string | un
   );
 }
 
-export function PortfolioWorkspace() {
+export function PortfolioWorkspace({ initialSnapshot = null }: PortfolioWorkspaceProps) {
   const [draft, setDraft] = useState<PortfolioDraft>(createInitialPortfolioDraft);
   const [errors, setErrors] = useState<PortfolioFieldErrors>({});
-  const [snapshot, setSnapshot] = useState<PortfolioSnapshot | null>(null);
+  const [snapshot, setSnapshot] = useState<PortfolioSnapshot | null>(initialSnapshot);
 
   function updateDraft(field: keyof PortfolioDraft, value: string): void {
     setDraft((current) => ({
