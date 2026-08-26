@@ -8,7 +8,7 @@ import { PortfolioWorkspace } from "@/features/portfolio/portfolio-workspace";
 export const metadata: Metadata = {
   title: `Carteira | ${APP_NAME}`,
   description:
-    "Cadastro local do Portfolio com snapshot validado e posições vazias sem dados inventados.",
+    "Portfolio e fluxos de caixa locais com snapshots validados e posições sem dados inventados.",
 };
 
 export default function PortfolioPage() {
