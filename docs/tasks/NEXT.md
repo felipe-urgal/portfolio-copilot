@@ -1,27 +1,28 @@
-# Próxima Atividade — Produto MVP: carteira base com cadastro local do Portfolio
+# Próxima Atividade — Produto MVP: cadastro local do Transaction Ledger
 
-**Status:** READY após merge do dashboard base com estados honestos.
+**Status:** READY após merge da carteira base com cadastro local do Portfolio.
 
 ## Objetivo
 
-Criar a primeira superfície de carteira do MVP em `apps/web`, reutilizando o agregado `Portfolio` existente como fonte de verdade para identidade, nome e moeda de referência, sem inventar posições, patrimônio ou cotação antes do cadastro de transações.
+Adicionar o primeiro fluxo de transações do MVP sobre o `Portfolio` criado localmente, mantendo o Transaction Ledger como fonte histórica de verdade e sem transformar posições, saldos ou holdings em estado editável paralelo.
 
 ## Escopo
 
-- criar rota/tela de carteira integrada ao shell de produto;
-- permitir criar o `Portfolio` mínimo com nome e moeda de referência usando os contratos existentes do domínio;
-- manter o estado local/efêmero explícito enquanto persistência não existir;
-- após criar o portfolio, exibir seu snapshot real e um estado vazio honesto para posições;
-- deixar claro que posições serão derivadas do Transaction Ledger e não cadastradas como uma segunda fonte de verdade;
-- manter dashboard e onboarding acessíveis pela navegação do produto;
-- preservar acessibilidade, foco, semântica e responsividade desktop/mobile;
-- adicionar testes para criação, validação, estado vazio, navegação e ausência de holdings/métricas fictícias;
-- não duplicar validações já pertencentes ao domínio na camada web.
+- evoluir a experiência local de `/portfolio` para registrar transações vinculadas ao `PortfolioId` criado na mesma sessão;
+- reutilizar `Transaction`, `TransactionId`, `TransactionType`, `TransactionTimestamp` e `Money` existentes no domínio;
+- começar por `CASH_IN` e `CASH_OUT`, que não dependem de catálogo/cadastro de ativos;
+- manter `BUY` e `SELL` explicitamente indisponíveis enquanto não houver uma forma de selecionar um `AssetId` real sem expor UUID interno como UX principal;
+- manter a lista de transações local/efêmera e deixar essa limitação explícita;
+- renderizar snapshots reais do ledger criado, sem recalcular ou reinterpretar fatos na camada web;
+- preservar o estado de posições como vazio quando existirem apenas fluxos de caixa;
+- traduzir erros tipados do domínio para feedback acessível sem duplicar invariantes de transação;
+- preservar navegação, foco, semântica e responsividade desktop/mobile;
+- adicionar testes para criação de cash flows, validação, associação ao portfolio, estado local e ausência de posições fictícias.
 
 ## Fora de escopo
 
-- cadastro de transações;
-- holdings editáveis diretamente;
+- `BUY`/`SELL` antes de existir seleção real de `Asset`;
+- cadastro manual de holdings ou posições;
 - custo médio, P&L, patrimônio de mercado, preço ou cotação;
 - TargetAllocation e comparação atual versus alvo;
 - cálculo de aporte;
@@ -32,21 +33,22 @@ Criar a primeira superfície de carteira do MVP em `apps/web`, reutilizando o ag
 
 ## Critérios de aceite
 
-- `/portfolio` usa o shell reutilizável do produto e possui hierarquia clara;
-- criação do portfolio reutiliza `Portfolio`, `PortfolioId` e `CurrencyCode` existentes;
-- erros tipados do domínio são traduzidos para feedback acessível sem regra financeira paralela;
-- o snapshot mostrado corresponde ao objeto validado pelo domínio;
-- ausência de transações produz estado vazio explícito para posições, nunca holdings ou patrimônio fictícios;
-- a interface explica que o estado ainda não é persistido;
-- dashboard, onboarding e carteira permanecem navegáveis em desktop e mobile;
-- testes cobrem estrutura, validação, navegação, estado local e ausência de dados inventados;
+- um `Portfolio` validado na sessão pode receber `CASH_IN` e `CASH_OUT` locais;
+- cada transação reutiliza os contratos de domínio e pertence ao `PortfolioId` correto;
+- valor monetário permanece baseado em `Money`, sem conversão por `number` binário;
+- timestamp e identidade passam pelos Value Objects existentes;
+- snapshots apresentados correspondem às `Transaction` validadas pelo domínio;
+- `BUY`/`SELL` não pedem UUID interno de ativo como fluxo de usuário e aparecem como capacidade ainda indisponível;
+- cash flows não produzem posições de ativos nem holdings fictícios;
+- a interface informa que portfolio e ledger continuam sem persistência;
+- testes cobrem sucesso, erros, vínculo com portfolio, cash flows e estados honestos;
 - nenhuma nova fórmula financeira, persistência, API ou integração externa é introduzida;
 - `pnpm check` passa integralmente no head final validado.
 
 ## Referências canônicas
 
-- `docs/ROADMAP.md` — Fase 3: dashboard -> carteira -> cadastro de transações;
-- `docs/PRODUCT.md` — jornada principal e tela de carteira;
-- `docs/ARCHITECTURE.md` — `Portfolio` separado de posições e Transaction Ledger como fonte histórica;
-- `docs/adr/0007-portfolio-aggregate-boundary.md` — agregado Portfolio mínimo;
-- `docs/adr/0009-asset-position-projection.md` — posições derivadas do ledger.
+- `docs/ROADMAP.md` — Fase 3: carteira -> cadastro de transações -> aporte do mês;
+- `docs/ARCHITECTURE.md` — Transaction Ledger como fonte histórica de verdade;
+- `docs/adr/0008-transaction-ledger-facts-and-precision.md` — semântica, precisão e shape das transações;
+- `docs/adr/0009-asset-position-projection.md` — posições derivadas do ledger, não editáveis diretamente;
+- `packages/domain/src/transaction/transaction.ts` — contrato atual de `Transaction`.
