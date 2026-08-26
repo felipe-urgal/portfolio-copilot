@@ -124,9 +124,9 @@ describe("financial onboarding", () => {
     ).toThrow(CurrencyMismatchError);
   });
 
-  it("supports undated, optionally dated retirement and required dated-purpose goals", () => {
-    const netWorth = goal(GOAL_ID_A, "NET_WORTH", "1000000.00");
-    const retirement = goal(GOAL_ID_B, "RETIREMENT", "2000000.00", "2045-12-31");
+  it("supports goals with and without target dates and requires one for dated purpose", () => {
+    const netWorth = goal(GOAL_ID_A, "NET_WORTH", "1000000.00", "2040-12-31");
+    const retirement = goal(GOAL_ID_B, "RETIREMENT", "2000000.00");
     const datedPurpose = FinancialGoal.create({
       id: "550e8400-e29b-41d4-a716-446655440073",
       type: "DATED_PURPOSE",
@@ -134,8 +134,8 @@ describe("financial onboarding", () => {
       targetDate: "2030-06-30",
     });
 
-    expect(netWorth.targetDate).toBeNull();
-    expect(retirement.targetDate).toBe("2045-12-31");
+    expect(netWorth.targetDate).toBe("2040-12-31");
+    expect(retirement.targetDate).toBeNull();
     expect(datedPurpose.targetDate).toBe("2030-06-30");
   });
 
@@ -166,14 +166,6 @@ describe("financial onboarding", () => {
         id: GOAL_ID_A,
         type: "DATED_PURPOSE",
         targetAmount: Money.fromDecimal("1.00", "BRL"),
-      }),
-    ).toThrow(InvalidFinancialGoalTargetDateError);
-    expect(() =>
-      FinancialGoal.create({
-        id: GOAL_ID_A,
-        type: "NET_WORTH",
-        targetAmount: Money.fromDecimal("1.00", "BRL"),
-        targetDate: "2030-01-01",
       }),
     ).toThrow(InvalidFinancialGoalTargetDateError);
     expect(() =>
