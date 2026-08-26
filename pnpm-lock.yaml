@@ -35,6 +35,9 @@ importers:
 
   apps/web:
     dependencies:
+      '@portfolio-copilot/domain':
+        specifier: workspace:*
+        version: link:../../packages/domain
       '@portfolio-copilot/shared':
         specifier: workspace:*
         version: link:../../packages/shared

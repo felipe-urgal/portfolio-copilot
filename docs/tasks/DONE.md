@@ -301,3 +301,28 @@ Histórico resumido de atividades concluídas.
 - ADR-0018/D-026 registram a separação entre perfil declarativo, carteira, saldos e recomendação;
 - `docs/tasks/NEXT.md` promove o fluxo web de onboarding como próximo vertical do MVP;
 - nenhuma dependência, lockfile, schema, autenticação, persistência, API ou regra de recomendação foi adicionada.
+
+## 2026-08-26 — Produto MVP: fluxo web do onboarding financeiro
+
+- rota `/onboarding` adicionada como primeiro fluxo utilizável do MVP;
+- fluxo dividido em perfil, reserva, objetivos e revisão, com progresso explícito;
+- moeda de referência permanece texto na UI; valores monetários não passam por `number` ou `parseFloat`;
+- vírgula decimal da entrada brasileira é normalizada apenas como representação textual antes de `Money.fromDecimal`;
+- tolerância a risco e horizonte reutilizam as taxonomias fechadas exportadas pelo domínio;
+- meta da reserva é opcional e a interface deixa explícito que representa alvo, não saldo atual;
+- objetivos podem ser adicionados/removidos e usam tipo, valor-alvo e data-alvo;
+- `DATED_PURPOSE` apresenta data como obrigatória, mas a regra continua sendo validada por `FinancialGoal.create`;
+- `FinancialProfile.create` e `FinancialGoal.create` permanecem fonte de verdade das invariantes financeiras;
+- erros tipados do domínio são traduzidos para feedback de campo sem duplicar regras financeiras no componente;
+- IDs são gerados na camada web por `crypto.randomUUID`, nunca dentro do domínio;
+- etapa final renderiza `FinancialProfileSnapshot` validado pelo domínio;
+- estado permanece exclusivamente local/efêmero e a interface informa que não existe salvamento automático;
+- home passa a oferecer o onboarding como ação principal e mantém `/health` como utilitário secundário;
+- layout possui stepper lateral no desktop e compacto no mobile, sem dashboard ou métricas fictícias;
+- controles possuem labels semânticas, fieldsets, foco visível, `aria-invalid`, `aria-describedby` e resumo acessível de erros;
+- auto review sênior removeu anúncios duplicados de erros, reforçou foco por teclado e ajustou microcopy para não confundir tolerância declarada com suitability;
+- testes puros cobrem reducer, adicionar/remover objetivos, dinheiro, reserva, datas, erros e geração do snapshot;
+- renderização estática testa estrutura acessível, labels, grupos de escolha, progresso e aviso de estado local;
+- `apps/web` passa a declarar dependência workspace explícita de `@portfolio-copilot/domain`;
+- nenhuma dependência externa, API, autenticação, persistência, Market Data, IA ou fórmula financeira nova foi adicionada;
+- `docs/tasks/NEXT.md` promove o dashboard base com estados vazios honestos como próximo vertical da Fase 3.
