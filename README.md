@@ -70,7 +70,7 @@ audit
 
 ## Stack atual
 
-- Node.js 22+
+- Node.js 24 Active LTS
 - pnpm 11
 - Next.js 16.3.3 / React 19.2
 - TypeScript strict

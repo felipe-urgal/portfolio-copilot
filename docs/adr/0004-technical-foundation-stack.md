@@ -13,7 +13,7 @@ O projeto precisa de uma base web simples, testável e evolutiva para o Portfoli
 Adotar:
 
 - monorepo com pnpm workspaces;
-- Node.js 22 como baseline de desenvolvimento/CI;
+- Node.js 24 Active LTS como baseline de desenvolvimento/CI;
 - Next.js 16.3.3 (Active LTS e patch de segurança de agosto/2026);
 - React 19.2.x;
 - TypeScript strict;
