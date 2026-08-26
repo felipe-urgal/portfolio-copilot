@@ -1,54 +1,52 @@
-# Próxima Atividade — Produto MVP: fluxo web do onboarding financeiro
+# Próxima Atividade — Produto MVP: dashboard base com estados honestos
 
-**Status:** READY após merge dos contratos de domínio do onboarding financeiro.
+**Status:** READY após merge do fluxo web de onboarding financeiro.
 
 ## Objetivo
 
-Tornar o primeiro vertical da Fase 3 utilizável no `apps/web`, coletando as informações do `FinancialProfile` em um fluxo simples, acessível e validado pelo domínio, sem introduzir autenticação ou persistência.
+Criar a primeira superfície de dashboard do MVP em `apps/web` como um shell de produto navegável e responsivo, apresentando somente informações que realmente existem no estado disponível e usando estados vazios explícitos para capacidades ainda não implementadas.
 
 ## Escopo
 
-- criar rota/tela de onboarding financeiro no app web;
-- coletar moeda de referência, tolerância a risco e horizonte usando as taxonomias exportadas pelo domínio;
-- permitir configurar ou deixar pendente o alvo da reserva de emergência;
-- permitir adicionar/remover objetivos com tipo, valor-alvo e data-alvo quando aplicável;
-- manter valores monetários como strings na UI e construir `Money` somente na fronteira de submissão, sem `number` binário para dinheiro;
-- gerar `FinancialProfileId` e `FinancialGoalId` na camada de aplicação, nunca dentro do domínio;
-- usar `FinancialProfile.create`/`FinancialGoal.create` como fonte de verdade da validação;
-- mapear erros de domínio para feedback de campo/fluxo sem duplicar regras financeiras no componente;
-- após validação, exibir uma etapa de revisão baseada em `FinancialProfileSnapshot`;
-- estado permanece local/efêmero nesta primeira versão;
-- testes de interação e acessibilidade para o caminho principal e erros relevantes.
+- criar rota/tela principal de dashboard no app web;
+- estabelecer shell visual reutilizável para as próximas superfícies do MVP, sem transformar o onboarding em dashboard;
+- apresentar claramente o estado de configuração disponível e os próximos passos do usuário;
+- quando um dado de carteira, aporte, objetivo ou reserva ainda não estiver disponível, usar estado vazio/CTA explícito em vez de valor fictício;
+- preparar regiões/componentes para resumo de carteira, aporte do mês e objetivos sem acoplar fórmulas financeiras à UI;
+- manter navegação simples entre dashboard, onboarding e rotas já existentes;
+- preservar acessibilidade, foco, semântica e responsividade desktop/mobile;
+- adicionar testes para estrutura, estados vazios, navegação e copy crítica;
+- reutilizar contratos/tipos existentes quando houver dado real; não criar um segundo modelo financeiro na camada web.
 
 ## Fora de escopo
 
+- inventar patrimônio, rentabilidade, alocação, preço ou qualquer métrica demonstrativa como se fosse dado real;
+- carteira/holdings completos;
+- cadastro de transações;
+- cálculo do aporte do mês;
+- persistência de perfil ou carteira;
 - autenticação/autorização;
-- banco de dados, migrations ou persistência de sessão;
-- API/Server Actions para salvar perfil;
-- dashboard;
-- carteira/holdings/transações;
-- transformação automática do perfil em `TargetAllocation`;
-- suitability regulatório ou score de risco;
+- Market Data, preço, FX ou benchmarks;
+- transformação automática de tolerância/horizonte em `TargetAllocation`;
 - recomendação de ativos;
-- Market Data, preço ou FX;
+- suitability regulatório;
 - IA.
 
 ## Critérios de aceite
 
-- usuário consegue preencher e revisar um `FinancialProfileSnapshot` válido pelo domínio;
-- horizonte e risco não são strings livres;
-- valores monetários não passam por `number`/`parseFloat`;
-- objetivo `DATED_PURPOSE` exige data e datas inválidas são explicadas ao usuário;
-- reserva opcional não é confundida com saldo atual;
-- nenhum perfil é salvo remotamente;
-- refresh pode perder o estado nesta versão e isso deve estar claro no código/escopo;
-- componentes não reimplementam validações do pacote de domínio;
-- fluxo funciona em desktop e mobile e possui labels/foco/erros acessíveis;
-- testes cobrem submissão válida, erro monetário, erro de data, adicionar/remover objetivo e revisão;
+- dashboard possui hierarquia clara e funciona como superfície principal do MVP;
+- nenhum card ou métrica apresenta número financeiro inventado;
+- dados indisponíveis aparecem como estados vazios acionáveis e semanticamente corretos;
+- onboarding permanece acessível como ação/configuração, sem duplicar seu formulário dentro do dashboard;
+- shell e componentes são reutilizáveis pelos próximos verticais de carteira/transações/aporte;
+- layout funciona em desktop e mobile sem overflow ou conteúdo crítico cortado;
+- navegação e controles principais possuem foco visível e labels adequados;
+- testes cobrem estrutura do dashboard, estados vazios, navegação e ausência de métricas fake;
+- nenhuma nova fórmula financeira, persistência, API ou integração externa é introduzida;
 - `pnpm check` passa integralmente no head final validado.
 
 ## Referências canônicas
 
-- `docs/adr/0018-basic-financial-onboarding-domain.md`;
-- `docs/PRODUCT.md` — jornada principal começa com objetivos, horizonte, reserva e tolerância a risco;
-- `docs/ROADMAP.md` — Fase 3 inicia pelo onboarding financeiro básico.
+- `docs/ROADMAP.md` — Fase 3: onboarding financeiro básico -> dashboard -> carteira;
+- `docs/PRODUCT.md` — jornada principal do produto;
+- `docs/ARCHITECTURE.md` — separação entre domínio determinístico e camada de apresentação.
