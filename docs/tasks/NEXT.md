@@ -1,31 +1,31 @@
-# Próxima Atividade — Portfolio Engine: política de microaporte e limite de destinos
+# Próxima Atividade — Portfolio Engine: unidade mínima negociável e elegibilidade do aporte
 
-**Status:** READY após merge de ContributionAllocator.
+**Status:** READY após merge da política de microaporte e limite de destinos.
 
 ## Objetivo
 
-Adicionar uma camada determinística de política sobre o baseline do `ContributionAllocator` para evitar microaportes artificiais e limitar a quantidade de destinos de um aporte, preservando as invariantes monetárias e a prioridade por necessidade pós-aporte.
+Adicionar contratos determinísticos para representar se um destino de aporte pode ser executado e qual é sua unidade mínima negociável, sem buscar preço, lote ou dados de mercado dentro das funções puras do domínio.
 
 ## Escopo
 
-- `minimumMeaningfulContribution` como valor monetário mínimo configurável para uma alocação sugerida;
-- `maxDestinationsPerContribution` como limite inteiro positivo configurável;
-- aplicação da política sobre necessidades/alocações produzidas pelo baseline do `ContributionAllocator`;
-- priorização determinística das classes com maior necessidade pós-aporte quando nem todos os destinos puderem ser atendidos;
-- desempate determinístico por `AssetClass`;
-- redistribuição/reconciliação do aporte somente entre destinos selecionados, sem exceder a necessidade de nenhum bucket;
-- sobra explícita em caixa quando as restrições impedirem distribuir todo o aporte;
-- contratos e erros tipados para configurações inválidas;
-- testes de invariantes, bordas e determinismo;
-- documentação clara da relação entre baseline proporcional e política de concentração do aporte.
+- contrato explícito de elegibilidade para destinos de aporte;
+- representação da unidade mínima negociável usando tipo exato adequado, sem `number` binário para quantidade;
+- associação da restrição ao destino/ativo correspondente sem usar ticker como identidade;
+- aplicação da elegibilidade após a seleção econômica por `AssetClass` e antes de qualquer recomendação executável por ativo;
+- rejeição explícita de configurações inválidas;
+- tratamento determinístico de destinos inelegíveis;
+- preservação de `unallocatedContribution` quando restrições de execução impedirem alocação integral;
+- testes de precisão, bordas, identidade e determinismo;
+- documentação da fronteira entre regra de domínio e dados externos que futuramente alimentarão a regra.
 
 ## Fora de escopo
 
-- unidade mínima negociável de ativo;
-- preço, FX ou valuation;
-- escolha de ticker/ativo específico dentro da classe;
-- `softMaxWeight`/`hardMaxWeight` e demais limites de concentração da carteira;
-- elegibilidade por ativo;
+- consulta de preço em tempo real;
+- FX;
+- seleção/ranking de ticker dentro da classe;
+- integração com corretora;
+- execução de ordens;
+- `softMaxWeight`/`hardMaxWeight` e demais limites de concentração;
 - custos e impostos;
 - venda/rebalanceamento;
 - persistência, banco e repositórios;
@@ -35,29 +35,25 @@ Adicionar uma camada determinística de política sobre o baseline do `Contribut
 
 ## Critérios de aceite
 
-- configuração não usa `number` para valores monetários;
-- `minimumMeaningfulContribution` é não negativo e usa a mesma moeda do aporte/plano;
-- `maxDestinationsPerContribution` é validado explicitamente como inteiro positivo;
-- destinos com necessidade pós-aporte zero continuam inelegíveis;
-- quando houver mais destinos elegíveis que o limite, a seleção segue maior necessidade e desempate lexical;
-- alocações abaixo do mínimo configurado não são emitidas como microaportes artificiais;
-- qualquer redistribuição continua reconciliada em unidades mínimas;
-- nenhuma alocação ultrapassa a necessidade do bucket;
-- soma alocada nunca ultrapassa o aporte;
-- sobra não distribuível permanece explícita e não é forçada para um destino inválido;
+- nenhuma quantidade financeira relevante usa `number` binário;
+- identidade de ativo usa `AssetId`, não ticker/provedor;
+- elegibilidade é explícita e determinística;
+- unidade mínima inválida é rejeitada por erro tipado;
+- destino inelegível não recebe recomendação executável;
+- restrições não alteram silenciosamente os cálculos de necessidade pós-aporte já estabelecidos;
+- sobra causada por restrição permanece explícita;
+- nenhuma chamada externa ocorre no meio do cálculo puro;
 - execução repetida com a mesma entrada produz o mesmo resultado;
 - `pnpm check` passa integralmente no head final validado.
 
 ## Casos de teste mínimos
 
-- mínimo igual a zero preserva comportamento baseline;
-- limite maior que a quantidade de destinos elegíveis preserva comportamento baseline;
-- limite de um destino seleciona a maior necessidade;
-- empate de necessidade usa ordem lexical;
-- aporte pequeno demais para qualquer destino fica como sobra;
-- bucket que receberia valor abaixo do mínimo é removido e o valor é redistribuído quando possível;
-- redistribuição não excede a necessidade dos destinos restantes;
-- combinação de mínimo e limite de destinos;
-- configuração monetária em moeda diferente é rejeitada;
-- limite zero, negativo, fracionário ou inválido é rejeitado;
-- ordem e resultado reproduzíveis.
+- destino elegível;
+- destino inelegível;
+- unidade mínima válida com precisão exata;
+- unidade mínima zero/negativa ou shape inválido rejeitado conforme contrato definido;
+- ativos distintos com ticker potencialmente igual continuam separados por `AssetId`;
+- combinação de destinos elegíveis e inelegíveis;
+- sobra quando nenhum destino pode executar o aporte;
+- resultado reproduzível;
+- nenhuma regressão nas políticas de microaporte e limite de destinos.
