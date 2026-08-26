@@ -40,8 +40,10 @@ export {
   CONTRIBUTION_RECOMMENDATION_STATUSES,
 } from "./contribution-recommendation-pipeline";
 export type {
+  ContributionRecommendationCashRemainderSnapshot,
   ContributionRecommendationDecisionSnapshot,
   ContributionRecommendationPipelineInput,
+  ContributionRecommendationPolicySnapshot,
   ContributionRecommendationReasonCode,
   ContributionRecommendationSnapshot,
   ContributionRecommendationStatus,

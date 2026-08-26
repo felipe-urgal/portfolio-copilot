@@ -57,9 +57,18 @@ export type ContributionRecommendationPolicySnapshot = Readonly<{
   maxDestinationsPerContribution: number;
 }>;
 
+export type ContributionRecommendationCashRemainderSnapshot = Readonly<{
+  afterAllocator: string;
+  afterPolicy: string;
+  afterConcentration: string;
+  afterExecution: string;
+  afterCosts: string;
+}>;
+
 export type ContributionRecommendationDecisionSnapshot = Readonly<{
   assetClass: string;
   assetId: string | null;
+  targetWeightPercent: string;
   currentValue: string;
   postContributionTargetValue: string;
   postContributionNeed: string;
@@ -88,6 +97,7 @@ export type ContributionRecommendationSnapshot = Readonly<{
   contribution: string;
   postContributionValue: string;
   policy: ContributionRecommendationPolicySnapshot;
+  cashRemainder: ContributionRecommendationCashRemainderSnapshot;
   totalInvestableAmount: string;
   totalConsumedKnownCost: string;
   unallocatedContribution: string;
@@ -238,6 +248,9 @@ export function buildContributionRecommendationSnapshot(
       return Object.freeze({
         assetClass: assetClassCode,
         assetId: executionDestination?.assetId.toString() ?? null,
+        targetWeightPercent: input.allocation.targetAllocation
+          .targetWeightFor(allocation.assetClass)
+          .toPercentString(),
         currentValue: allocation.currentValue.toDecimalString(),
         postContributionTargetValue: allocation.postContributionTargetValue.toDecimalString(),
         postContributionNeed: allocation.postContributionNeed.toDecimalString(),
@@ -282,6 +295,13 @@ export function buildContributionRecommendationSnapshot(
     policy: Object.freeze({
       minimumMeaningfulContribution: input.policy.minimumMeaningfulContribution.toDecimalString(),
       maxDestinationsPerContribution: input.policy.maxDestinationsPerContribution,
+    }),
+    cashRemainder: Object.freeze({
+      afterAllocator: baselinePlan.unallocatedContribution.toDecimalString(),
+      afterPolicy: policyPlan.unallocatedContribution.toDecimalString(),
+      afterConcentration: concentrationPlan.unallocatedContribution.toDecimalString(),
+      afterExecution: executionPlan.unallocatedContribution.toDecimalString(),
+      afterCosts: costAdjustedPlan.unallocatedContribution.toDecimalString(),
     }),
     totalInvestableAmount: moneyString(
       totalInvestableMinorUnits,

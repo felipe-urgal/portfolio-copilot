@@ -81,6 +81,13 @@ describe("buildContributionRecommendationSnapshot", () => {
       minimumMeaningfulContribution: "0.00",
       maxDestinationsPerContribution: 2,
     });
+    expect(snapshot.cashRemainder).toEqual({
+      afterAllocator: "0.00",
+      afterPolicy: "0.00",
+      afterConcentration: "0.00",
+      afterExecution: "0.00",
+      afterCosts: "0.00",
+    });
     expect(snapshot.totalInvestableAmount).toBe("100.00");
     expect(snapshot.totalConsumedKnownCost).toBe("0.00");
     expect(snapshot.unallocatedContribution).toBe("0.00");
@@ -88,13 +95,14 @@ describe("buildContributionRecommendationSnapshot", () => {
     expect(snapshot.decisions.every((item) => item.status === "EXECUTABLE")).toBe(true);
 
     const equity = decision(snapshot, "EQUITY");
+    expect(equity.targetWeightPercent).toBe("50.0000");
     expect(equity.currentValue).toBe("50.00");
     expect(equity.postContributionTargetValue).toBe("100.00");
     expect(equity.postContributionNeed).toBe("50.00");
     expect(equity.executionEligible).toBe(true);
   });
 
-  it("preserves a contribution policy adjustment in deterministic reason codes", () => {
+  it("preserves a contribution policy adjustment and its cash remainder stage", () => {
     const input = baseInput();
     const snapshot = buildContributionRecommendationSnapshot({
       ...input,
@@ -106,7 +114,13 @@ describe("buildContributionRecommendationSnapshot", () => {
     expect(fixedIncome.policyAllocatedAmount).toBe("0.00");
     expect(fixedIncome.status).toBe("NOT_SELECTED_BY_POLICY");
     expect(fixedIncome.reasonCodes).toEqual(["CONTRIBUTION_POLICY_ADJUSTED"]);
-    expect(snapshot.unallocatedContribution).toBe("50.00");
+    expect(snapshot.cashRemainder).toEqual({
+      afterAllocator: "0.00",
+      afterPolicy: "50.00",
+      afterConcentration: "50.00",
+      afterExecution: "50.00",
+      afterCosts: "50.00",
+    });
   });
 
   it("preserves soft and hard concentration provenance while keeping the allowed amount executable", () => {
@@ -129,6 +143,7 @@ describe("buildContributionRecommendationSnapshot", () => {
       "SOFT_CONCENTRATION_LIMIT_EXCEEDED",
       "HARD_CONCENTRATION_LIMIT_APPLIED",
     ]);
+    expect(snapshot.cashRemainder.afterConcentration).toBe("20.00");
     expect(snapshot.unallocatedContribution).toBe("20.00");
   });
 
@@ -155,6 +170,8 @@ describe("buildContributionRecommendationSnapshot", () => {
       "HARD_CONCENTRATION_LIMIT_APPLIED",
       "EXECUTION_DESTINATION_INELIGIBLE",
     ]);
+    expect(snapshot.cashRemainder.afterConcentration).toBe("20.00");
+    expect(snapshot.cashRemainder.afterExecution).toBe("50.00");
     expect(snapshot.unallocatedContribution).toBe("50.00");
   });
 
@@ -203,6 +220,8 @@ describe("buildContributionRecommendationSnapshot", () => {
     expect(equity.reasonCodes).toEqual(["KNOWN_COSTS_BLOCKED_DESTINATION"]);
     expect(snapshot.totalInvestableAmount).toBe("50.00");
     expect(snapshot.totalConsumedKnownCost).toBe("0.00");
+    expect(snapshot.cashRemainder.afterExecution).toBe("0.00");
+    expect(snapshot.cashRemainder.afterCosts).toBe("50.00");
     expect(snapshot.unallocatedContribution).toBe("50.00");
   });
 
@@ -221,6 +240,13 @@ describe("buildContributionRecommendationSnapshot", () => {
     expect(snapshot.totalInvestableAmount).toBe("50.00");
     expect(snapshot.totalConsumedKnownCost).toBe("0.00");
     expect(snapshot.unallocatedContribution).toBe("50.00");
+    expect(snapshot.cashRemainder).toEqual({
+      afterAllocator: "0.00",
+      afterPolicy: "0.00",
+      afterConcentration: "20.00",
+      afterExecution: "50.00",
+      afterCosts: "50.00",
+    });
   });
 
   it("propagates typed errors from internal layers without generic wrapping", () => {
@@ -243,14 +269,17 @@ describe("buildContributionRecommendationSnapshot", () => {
     },
   );
 
-  it("returns deeply frozen deterministic snapshot structures", () => {
+  it("returns deeply frozen, serializable and deterministic snapshot structures", () => {
     const input = baseInput();
     const first = buildContributionRecommendationSnapshot(input);
     const second = buildContributionRecommendationSnapshot(input);
 
     expect(first).toEqual(second);
+    expect(JSON.stringify(first)).toBe(JSON.stringify(second));
+    expect(() => JSON.stringify(first)).not.toThrow();
     expect(Object.isFrozen(first)).toBe(true);
     expect(Object.isFrozen(first.policy)).toBe(true);
+    expect(Object.isFrozen(first.cashRemainder)).toBe(true);
     expect(Object.isFrozen(first.decisions)).toBe(true);
     expect(
       first.decisions.every((item) => Object.isFrozen(item) && Object.isFrozen(item.reasonCodes)),
