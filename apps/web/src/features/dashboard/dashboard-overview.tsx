@@ -18,7 +18,8 @@ const SUMMARY_STATES = [
   {
     label: "Reserva de emergência",
     state: "Sem dado persistido",
-    detail: "Uma meta pode ser definida no onboarding, mas ainda não é salva nem lida pelo dashboard.",
+    detail:
+      "Uma meta pode ser definida no onboarding, mas ainda não é salva nem lida pelo dashboard.",
   },
 ] as const;
 
@@ -48,7 +49,7 @@ export function DashboardOverview() {
             que ainda precisa ser configurado.
           </p>
         </div>
-        <span className={styles.dataMode}>Dados locais e incompletos</span>
+        <span className={styles.dataMode}>Sem fonte persistida</span>
       </header>
 
       <section className={styles.persistenceBanner} aria-labelledby="persistence-title">
