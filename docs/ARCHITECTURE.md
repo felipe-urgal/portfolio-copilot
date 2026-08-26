@@ -60,7 +60,7 @@ Cadastro canônico de ativos, classes, setores, moedas, identificadores e elegib
 
 ### portfolio
 
-Portfolio, Transaction, TargetAllocation e políticas de configuração da carteira.
+Portfolio, Transaction, TargetAllocation e políticas de configuração da carteira. `TargetAllocation` é configuração separada vinculada por `PortfolioId`, usa `AssetClass` como bucket econômico inicial e não contém posição atual, preço ou gap.
 
 ### position
 

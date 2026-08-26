@@ -62,6 +62,8 @@ alternativos      5%
 
 Os valores não são hard-coded no domínio. São configuração versionada por carteira.
 
+Na primeira versão do domínio, `TargetAllocation` usa `AssetClass` como granularidade econômica do bucket. Os rótulos mais finos do exemplo acima, como geografia ou veículo, são referência metodológica futura e não significam que `InstrumentType`, ticker ou país já façam parte do contrato de alocação-alvo. Essa granularidade deve evoluir por taxonomia explícita quando necessário.
+
 ## Gap de alocação
 
 Para cada bucket:

@@ -10,6 +10,7 @@ import {
   Percentage,
   PortfolioId,
   projectAssetPositions,
+  TargetAllocation,
   TransactionId,
   TransactionTimestamp,
   TransactionType,
@@ -37,5 +38,6 @@ describe("domain package boundary", () => {
       "2026-08-26T12:30:45.123Z",
     );
     expect(typeof projectAssetPositions).toBe("function");
+    expect(typeof TargetAllocation.create).toBe("function");
   });
 });
