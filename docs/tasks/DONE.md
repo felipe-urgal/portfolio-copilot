@@ -206,3 +206,20 @@ Histórico resumido de atividades concluídas.
 - `FINANCIAL-METHODOLOGY.md` diferencia quantidade mínima negociável de futuro valor monetário mínimo derivado de preço;
 - ADR-0014 registra a fronteira entre decisão econômica, restrição operacional e futura etapa de preço/quantidade;
 - não há nova dependência, lockfile, schema, persistência ou integração externa.
+
+## 2026-08-26 — Portfolio Engine: limites de concentração por AssetClass
+
+- `applyAssetClassConcentrationLimits` criado como camada pura sobre `ContributionPlan`;
+- `softMaxWeight` e `hardMaxWeight` usam `AllocationWeight` e configuração duplicada por `AssetClass` é rejeitada;
+- a política exige `softMaxWeight <= hardMaxWeight` e erros de configuração são tipados no domínio de contribuição;
+- o denominador de concentração é o `postContributionValue` já calculado pelo allocator;
+- limite duro é convertido em teto monetário usando somente `bigint` e unidades escaladas de peso;
+- a camada preserva a parcela da alocação que cabe no hard limit e bloqueia apenas o excedente;
+- classe já acima do hard limit não recebe novo aporte, sem venda ou rebalanceamento implícito;
+- `softMaxWeight` é alert-only na primeira versão e sinaliza `softLimitExceeded` sem reduzir valor sozinho;
+- `blockedAmount` registra por classe a parcela cortada pelo hard limit;
+- valor bloqueado é somado ao `unallocatedContribution` upstream sem redistribuição silenciosa;
+- classes sem limite preservam exatamente o comportamento anterior;
+- testes cobrem soft/hard, igualdade de limites, centavos, configuração inválida, múltiplas classes, sobra upstream, imutabilidade e determinismo;
+- ADR-0015/D-023 registram fórmula, precisão, semântica soft/hard e fronteira com concentração futura mais granular;
+- não há nova dependência, lockfile, schema, persistência ou integração externa.
