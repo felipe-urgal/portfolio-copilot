@@ -135,7 +135,9 @@ function apportionTargetValues(
     residualMinorUnits -= 1n;
   }
 
-  return new Map(apportioned.map((bucket) => [bucket.assetClass.code, bucket]));
+  return new Map<AssetClassCode, MutableTargetApportionment>(
+    apportioned.map((bucket) => [bucket.assetClass.code, bucket] as const),
+  );
 }
 
 export function calculateAllocationGaps(
