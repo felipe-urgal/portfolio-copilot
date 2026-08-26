@@ -71,7 +71,7 @@ targetValueAfterContribution = (portfolioValue + contribution) * targetWeight
 gap = max(0, targetValueAfterContribution - currentValue)
 ```
 
-O aporte-base pode ser normalizado pelos gaps positivos. Regras adicionais podem limitar concentração, lote mínimo ou elegibilidade.
+O aporte-base pode ser normalizado pelos gaps positivos. Regras adicionais podem limitar concentração, aporte mínimo significativo, custos, elegibilidade e unidade mínima negociável.
 
 ## Diversificação
 
@@ -88,6 +88,8 @@ Avaliar no mínimo:
 - concentração por grupo econômico quando disponível.
 
 Ter quatro bancos não equivale a quatro riscos independentes.
+
+A política de diversificação é um objetivo de carteira, não uma obrigação de comprar todos os ativos todos os meses.
 
 ## Asset Quality Score
 
@@ -146,12 +148,13 @@ Entradas mínimas:
 - limites de risco;
 - horizonte;
 - liquidez;
+- custos e impactos tributários relevantes quando conhecidos;
 - restrições pessoais.
 
 Conceitualmente:
 
 ```text
-portfolioFit = f(quality, opportunity, allocationNeed, diversificationBenefit, riskPenalty)
+portfolioFit = f(quality, opportunity, allocationNeed, diversificationBenefit, riskPenalty, costPenalty)
 ```
 
 A fórmula exata será versionada e testada. Não será criada por prompt em tempo de execução.
@@ -167,14 +170,42 @@ Invariantes:
 - hard limit de concentração nunca é ultrapassado;
 - recomendação de risco não usa dinheiro reservado para objetivo incompatível;
 - valores são arredondados com política explícita;
+- custo/transação não pode tornar um microaporte economicamente irracional;
 - sobra de caixa é aceitável quando não há destino elegível.
+
+### Aporte mínimo significativo
+
+Pesos-alvo são metas de longo prazo. O motor **não deve fragmentar automaticamente um aporte pequeno entre todos os ativos da carteira**.
+
+Exemplo: com R$ 1.000 disponíveis e uma carteira com 15 posições, não existe obrigação de gerar 15 compras de R$ 20–R$ 100.
+
+A política deverá suportar parâmetros como:
+
+```text
+minimumMeaningfulContribution
+maxDestinationsPerContribution
+minimumTradableAmount
+```
+
+O algoritmo poderá escolher apenas os melhores destinos elegíveis do mês, priorizando gaps e Portfolio Fit, enquanto mantém os demais pesos como meta futura.
+
+Comportamento conceitual:
+
+1. eliminar destinos proibidos ou acima de limites;
+2. ordenar candidatos por necessidade da carteira e Portfolio Fit;
+3. respeitar unidade mínima/custo;
+4. selecionar um subconjunto de destinos com aporte significativo;
+5. recalcular o efeito do aporte sobre a carteira;
+6. manter eventual sobra em caixa elegível quando não houver destino racional.
+
+Isso evita falsa diversificação e reduz complexidade operacional para aportes recorrentes como R$ 1.000/mês.
 
 ## Limites
 
 A política deve suportar:
 
 - `targetWeight`;
-- `softMaxWeight` — bloqueia novos aportes ou gera alerta;
+- `softMaxWeight` — bloqueia novos aportes ou gera alerta conforme regra configurada;
 - `hardMaxWeight` — impede recomendação;
 - limites por classe/setor/moeda/emissor.
 
