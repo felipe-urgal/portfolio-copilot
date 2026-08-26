@@ -8,7 +8,8 @@ const SUMMARY_STATES = [
   {
     label: "Patrimônio total",
     state: "Dado indisponível",
-    detail: "O dashboard ainda não recebe carteira persistida nem preços para calcular este resumo.",
+    detail:
+      "O dashboard ainda não recebe carteira persistida nem preços para calcular este resumo.",
   },
   {
     label: "Aporte do mês",
