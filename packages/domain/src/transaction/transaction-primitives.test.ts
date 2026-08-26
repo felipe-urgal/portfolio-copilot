@@ -52,7 +52,9 @@ describe("TransactionTimestamp", () => {
       "2026-02-30T12:30:45.123Z",
       "not-a-date",
     ]) {
-      expect(() => TransactionTimestamp.from(value)).toThrowError(InvalidTransactionTimestampError);
+      expect(() => TransactionTimestamp.from(value)).toThrowError(
+        InvalidTransactionTimestampError,
+      );
     }
   });
 });
