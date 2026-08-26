@@ -2,7 +2,7 @@
 
 Copiloto inteligente de investimentos para organizar patrimônio, orientar aportes e tornar decisões financeiras explicáveis, auditáveis e disciplinadas.
 
-> Status: **fundação do projeto**. A primeira entrega é documentação, arquitetura e metodologia. Nenhuma recomendação automatizada de investimento está implementada.
+> Status: **fundação técnica em construção**. Nenhuma recomendação automatizada de investimento está implementada.
 
 ## Problema que queremos resolver
 
@@ -31,7 +31,7 @@ O Portfolio Copilot não nasce como corretora nem como robô de trade. Ele nasce
 
 ## Arquitetura planejada
 
-O sistema começará como **monólito modular**, evitando microserviços prematuros.
+O sistema começa como **monólito modular**, evitando microserviços prematuros.
 
 ```text
 apps/web
@@ -68,6 +68,46 @@ alerts
 audit
 ```
 
+## Stack atual
+
+- Node.js 24 Active LTS (`.nvmrc` e `engines` restringem o major 24)
+- pnpm 11
+- Next.js 16.3.3 / React 19.2
+- TypeScript 6.0.3 strict
+- ESLint 9.39.5 + Prettier
+- Vitest
+- GitHub Actions
+
+A stack foi mantida deliberadamente pequena. Banco, autenticação, providers de mercado, IA e deploy entram somente nas fases em que houver necessidade concreta.
+
+## Desenvolvimento local
+
+```bash
+nvm use
+corepack enable
+corepack prepare pnpm@11.24.0 --activate
+pnpm install --frozen-lockfile
+pnpm dev
+```
+
+A aplicação fica em `http://localhost:3000` e a página de saúde em `http://localhost:3000/health`.
+
+### Quality gate
+
+```bash
+pnpm check
+```
+
+O comando executa, na mesma ordem usada pelo CI:
+
+1. `format:check`;
+2. `lint`;
+3. `typecheck`;
+4. `test`;
+5. `build`.
+
+Não há variáveis de ambiente obrigatórias nesta fase. `.env.example` permanece como catálogo seguro para configurações futuras.
+
 ## Documentação
 
 Comece por estes três documentos:
@@ -87,17 +127,17 @@ Documentação de engenharia e governança:
 - [Regulatório](docs/REGULATORY.md)
 - [Roadmap](docs/ROADMAP.md)
 - [Decisões](docs/DECISIONS.md)
-- [Desenvolvimento](docs/DEVELOPMENT.md)
+- [Desenvolvimento e regra obrigatória de PR](docs/DEVELOPMENT.md)
 - [Próxima atividade](docs/tasks/NEXT.md)
 - [Backlog](docs/tasks/BACKLOG.md)
 
 ## Fluxo de trabalho
 
 ```text
-NEXT.md -> branch -> implementação -> testes -> self-review -> PR -> review -> merge -> DONE.md -> próximo NEXT.md
+NEXT.md -> branch -> implementação -> testes -> PR -> acompanhar CI -> auto code review sênior -> corrigir findings -> atualizar docs -> CI final verde -> merge -> handoff local
 ```
 
-Nenhuma funcionalidade financeira é considerada concluída sem testes, critérios de aceite e documentação correspondente.
+Nenhuma funcionalidade financeira é considerada concluída sem testes, critérios de aceite e documentação correspondente. Nenhum PR é mergeado enquanto houver CI pendente/falhando ou finding de review em aberto.
 
 ## Aviso
 

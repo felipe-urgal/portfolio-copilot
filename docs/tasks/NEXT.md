@@ -1,70 +1,50 @@
-# Próxima Atividade — Fundação Técnica
+# Próxima Atividade — Portfolio Engine: tipos financeiros fundamentais
 
-**Status:** READY após merge da documentação de fundação.
+**Status:** READY após merge da fundação técnica.
 
 ## Objetivo
 
-Criar o esqueleto técnico mínimo e profissional do Portfolio Copilot sem implementar ainda regras financeiras de produção.
-
-## Contexto
-
-A arquitetura e metodologia estão documentadas. O próximo passo é estabelecer uma base compilável, testável e segura sobre a qual o Portfolio Engine será construído.
+Criar os value objects e invariantes mínimos que permitirão representar dinheiro, percentuais e pesos de alocação sem erros de ponto flutuante ou estados inválidos.
 
 ## Escopo
 
-- criar workspace/monorepo;
-- criar `apps/web` como app web preparado para PWA futura;
-- criar packages iniciais de domínio/shared;
-- habilitar TypeScript strict;
-- configurar lint e format;
-- configurar framework de testes;
-- adicionar scripts únicos de `lint`, `typecheck`, `test` e `build` na raiz;
-- criar CI GitHub Actions executando os checks;
-- criar `.env.example` sem segredos;
-- criar `.gitignore` adequado;
-- adicionar health page/rota mínima, sem dashboard de investimento;
-- documentar como rodar localmente.
+- `Money` com moeda explícita e representação segura;
+- `Percentage`;
+- `AllocationWeight` restrito ao intervalo válido;
+- operações mínimas de soma/subtração/comparação necessárias ao motor;
+- política explícita de arredondamento;
+- erros de domínio tipados;
+- testes unitários abrangentes;
+- property-based tests para invariantes quando a dependência escolhida for justificada;
+- documentação das decisões de precisão/arredondamento.
 
 ## Fora de escopo
 
-- banco de dados;
-- autenticação;
-- Portfolio Engine;
-- UI final;
-- design system completo;
-- API de preço;
-- IA;
-- deploy;
-- recomendação financeira.
+- Portfolio completo;
+- holdings/transações;
+- alocação por classes;
+- algoritmo de aporte;
+- banco;
+- API;
+- UI financeira;
+- preço de mercado;
+- IA.
 
 ## Critérios de aceite
 
-- clone limpo instala dependências com um único comando documentado;
-- `lint` passa;
-- `typecheck` passa;
-- `test` passa;
-- `build` passa;
-- CI executa os mesmos checks;
-- TypeScript está em modo strict;
-- nenhum segredo commitado;
-- estrutura respeita a decisão de monólito modular;
-- README contém comandos locais atualizados.
+- valores monetários persistíveis não dependem de `float` binário;
+- moedas incompatíveis não podem ser somadas silenciosamente;
+- pesos inválidos são rejeitados na fronteira do domínio;
+- arredondamento tem comportamento determinístico e testado;
+- nenhum tipo financeiro depende de Next.js ou infraestrutura;
+- `pnpm check` passa integralmente;
+- documentação e ADR são atualizados se a representação escolhida criar trade-off arquitetural.
 
-## Testes esperados
+## Casos de teste mínimos
 
-- pelo menos um teste unitário simples no package de domínio/shared para validar a pipeline;
-- pelo menos um smoke test apropriado para a aplicação, se o framework escolhido permitir sem complexidade excessiva.
-
-## Segurança
-
-- workflows com permissões mínimas;
-- não imprimir environment em CI;
-- dependências mínimas;
-- nenhuma chave real em arquivos de exemplo.
-
-## Entregáveis
-
-- código base;
-- CI;
-- atualização do README;
-- `DONE.md` e próximo `NEXT.md` preparados no final do PR.
+- zero e valores positivos;
+- valores negativos somente onde semanticamente permitido;
+- moedas diferentes;
+- percentuais 0%, 100% e fora da faixa;
+- precisão e arredondamento em centavos;
+- soma repetida sem drift de ponto flutuante.
