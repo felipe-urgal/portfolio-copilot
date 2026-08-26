@@ -115,6 +115,26 @@ describe("applyContributionExecutionConstraints", () => {
     expect(plan.unallocatedContribution.toDecimalString()).toBe("10.00");
   });
 
+  it("preserves an upstream remainder before adding blocked execution amounts", () => {
+    const policyPlan = applyContributionPolicy({
+      plan: createBaselinePlan("30.00"),
+      policy: {
+        minimumMeaningfulContribution: Money.zero("BRL"),
+        maxDestinationsPerContribution: 1,
+      },
+    });
+
+    expect(policyPlan.unallocatedContribution.toDecimalString()).toBe("5.00");
+
+    const plan = applyContributionExecutionConstraints({
+      plan: policyPlan,
+      destinations: [destination(EQUITY_ASSET_ID, "EQUITY", false)],
+    });
+
+    expect(plan.destinations).toEqual([]);
+    expect(plan.unallocatedContribution.toDecimalString()).toBe("30.00");
+  });
+
   it("keeps the whole contribution unallocated when no selected destination is eligible", () => {
     const plan = applyContributionExecutionConstraints({
       plan: createBaselinePlan(),
