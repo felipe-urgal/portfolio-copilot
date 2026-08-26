@@ -1,8 +1,10 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  CurrencyCode,
   CurrencyMismatchError,
   InvalidCurrencyCodeError,
+  InvalidFinancialSnapshotError,
   Money,
 } from "./index";
 
@@ -11,8 +13,16 @@ describe("Money", () => {
     const money = Money.fromDecimal("123.45", "brl");
 
     expect(money.minorUnits).toBe(12345n);
-    expect(money.currency).toBe("BRL");
+    expect(money.currency.code).toBe("BRL");
     expect(money.toDecimalString()).toBe("123.45");
+  });
+
+  it("accepts a reusable CurrencyCode value object", () => {
+    const brl = CurrencyCode.from("brl");
+    const money = Money.fromDecimal("10.00", brl);
+
+    expect(money.currency).toBe(brl);
+    expect(money.currency.toString()).toBe("BRL");
   });
 
   it("rounds half away from zero deterministically", () => {
@@ -73,6 +83,12 @@ describe("Money", () => {
 
     expect(snapshot).toEqual({ currency: "USD", minorUnits: "-12345" });
     expect(restored.equals(original)).toBe(true);
+  });
+
+  it("rejects malformed snapshots with a typed financial error", () => {
+    expect(() =>
+      Money.fromSnapshot({ currency: "BRL", minorUnits: "12.34" }),
+    ).toThrowError(InvalidFinancialSnapshotError);
   });
 
   it("round-trips a broad range of minor-unit values exactly", () => {
