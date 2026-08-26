@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { Percentage } from "./index";
+import { InvalidFinancialSnapshotError, Percentage } from "./index";
 
 describe("Percentage", () => {
   it("keeps four decimal places of percentage precision without floats", () => {
@@ -45,5 +45,11 @@ describe("Percentage", () => {
 
     expect(snapshot).toEqual({ scaledUnits: "-123456" });
     expect(restored.equals(original)).toBe(true);
+  });
+
+  it("rejects malformed snapshots with a typed financial error", () => {
+    expect(() => Percentage.fromSnapshot({ scaledUnits: "12.34" })).toThrowError(
+      InvalidFinancialSnapshotError,
+    );
   });
 });
