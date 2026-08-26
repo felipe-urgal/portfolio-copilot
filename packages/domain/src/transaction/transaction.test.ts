@@ -3,11 +3,7 @@ import { describe, expect, it } from "vitest";
 import { InvalidAssetIdError } from "../asset";
 import { Money } from "../financial";
 import { InvalidPortfolioIdError } from "../portfolio";
-import {
-  InvalidTransactionAmountError,
-  InvalidTransactionShapeError,
-  Transaction,
-} from "./index";
+import { InvalidTransactionAmountError, InvalidTransactionShapeError, Transaction } from "./index";
 
 const TRANSACTION_ID = "550e8400-e29b-41d4-a716-446655440020";
 const SECOND_TRANSACTION_ID = "550e8400-e29b-41d4-a716-446655440021";
@@ -146,15 +142,7 @@ describe("Transaction", () => {
       quantity: { scaledUnits: "10000000010000" },
     });
     expect(Object.keys(snapshot).sort()).toEqual(
-      [
-        "assetId",
-        "id",
-        "occurredAt",
-        "portfolioId",
-        "quantity",
-        "settlementAmount",
-        "type",
-      ].sort(),
+      ["assetId", "id", "occurredAt", "portfolioId", "quantity", "settlementAmount", "type"].sort(),
     );
     expect(restored.sameIdentityAs(original)).toBe(true);
     expect(restored.toSnapshot()).toEqual(snapshot);
