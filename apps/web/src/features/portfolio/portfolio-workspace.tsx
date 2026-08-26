@@ -48,6 +48,12 @@ function transactionAmount(transaction: TransactionSnapshot): string {
   return `${amount.currency.toString()} ${amount.toDecimalString()}`;
 }
 
+function ledgerStatus(count: number): string {
+  if (count === 0) return "Ledger vazio";
+  if (count === 1) return "1 movimentação";
+  return `${count} movimentações`;
+}
+
 export function PortfolioWorkspace({
   initialSnapshot = null,
   initialTransactions = [],
@@ -71,11 +77,13 @@ export function PortfolioWorkspace({
     setErrors({});
   }
 
-  function updateCashDraft(field: keyof CashTransactionDraft, value: string): void {
-    setCashDraft((current) => ({
-      ...current,
-      [field]: value,
-    }) as CashTransactionDraft);
+  function updateCashType(type: CashTransactionDraft["type"]): void {
+    setCashDraft((current) => ({ ...current, type }));
+    setCashErrors({});
+  }
+
+  function updateCashAmount(amount: string): void {
+    setCashDraft((current) => ({ ...current, amount }));
     setCashErrors({});
   }
 
@@ -309,13 +317,7 @@ export function PortfolioWorkspace({
                   saldo, patrimônio ou posição por conta própria.
                 </p>
               </div>
-              <span className={styles.emptyStatus}>
-                {transactions.length === 0
-                  ? "Ledger vazio"
-                  : transactions.length === 1
-                    ? "1 movimentação"
-                    : `${transactions.length} movimentações`}
-              </span>
+              <span className={styles.emptyStatus}>{ledgerStatus(transactions.length)}</span>
             </div>
 
             <div className={styles.ledgerLayout}>
@@ -329,7 +331,7 @@ export function PortfolioWorkspace({
                         name="cashTransactionType"
                         value="CASH_IN"
                         checked={cashDraft.type === "CASH_IN"}
-                        onChange={() => updateCashDraft("type", "CASH_IN")}
+                        onChange={() => updateCashType("CASH_IN")}
                       />
                       <span>Entrada</span>
                     </label>
@@ -339,7 +341,7 @@ export function PortfolioWorkspace({
                         name="cashTransactionType"
                         value="CASH_OUT"
                         checked={cashDraft.type === "CASH_OUT"}
-                        onChange={() => updateCashDraft("type", "CASH_OUT")}
+                        onChange={() => updateCashType("CASH_OUT")}
                       />
                       <span>Saída</span>
                     </label>
@@ -361,7 +363,7 @@ export function PortfolioWorkspace({
                         ? "cash-transaction-amount-help"
                         : "cash-transaction-amount-help cash-transaction-amount-error"
                     }
-                    onChange={(event) => updateCashDraft("amount", event.target.value)}
+                    onChange={(event) => updateCashAmount(event.target.value)}
                   />
                   <p className={styles.helpText} id="cash-transaction-amount-help">
                     Valor positivo em {snapshot.referenceCurrency}; vírgula ou ponto decimal são
