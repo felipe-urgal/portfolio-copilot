@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   AllocationWeight,
   allocateContribution,
+  applyContributionExecutionConstraints,
   applyContributionPolicy,
   AssetClass,
   AssetId,
@@ -45,5 +46,6 @@ describe("domain package boundary", () => {
     expect(typeof calculateAllocationGaps).toBe("function");
     expect(typeof allocateContribution).toBe("function");
     expect(typeof applyContributionPolicy).toBe("function");
+    expect(typeof applyContributionExecutionConstraints).toBe("function");
   });
 });

@@ -189,6 +189,10 @@ maxDestinationsPerContribution
 minimumTradableAmount
 ```
 
+Na camada atual do domínio, a restrição operacional disponível por ativo é `minimumTradableQuantity`, representada por `AssetQuantity` com precisão exata. Ela descreve a menor quantidade negociável, não um valor monetário mínimo.
+
+`minimumTradableAmount` só pode ser derivado quando houver preço aplicável e moeda compatível. Portanto, o Portfolio Engine não converte `Money` em quantidade dentro da camada pura de elegibilidade; preço/FX devem ser fornecidos por uma etapa posterior e auditável.
+
 O algoritmo poderá escolher apenas os melhores destinos elegíveis do mês, priorizando gaps e Portfolio Fit, enquanto mantém os demais pesos como meta futura.
 
 Comportamento conceitual:

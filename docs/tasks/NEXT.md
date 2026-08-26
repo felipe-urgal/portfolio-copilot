@@ -1,31 +1,32 @@
-# Próxima Atividade — Portfolio Engine: unidade mínima negociável e elegibilidade do aporte
+# Próxima Atividade — Portfolio Engine: limites de concentração por AssetClass
 
-**Status:** READY após merge da política de microaporte e limite de destinos.
+**Status:** READY após merge das restrições de execução do aporte.
 
 ## Objetivo
 
-Adicionar contratos determinísticos para representar se um destino de aporte pode ser executado e qual é sua unidade mínima negociável, sem buscar preço, lote ou dados de mercado dentro das funções puras do domínio.
+Adicionar limites configuráveis de concentração ao fluxo de aporte, começando por `AssetClass`, para impedir que novas alocações ultrapassem limites duros e representar de forma explícita a política de limite suave sem depender de preço, ticker ou dados externos.
 
 ## Escopo
 
-- contrato explícito de elegibilidade para destinos de aporte;
-- representação da unidade mínima negociável usando tipo exato adequado, sem `number` binário para quantidade;
-- associação da restrição ao destino/ativo correspondente sem usar ticker como identidade;
-- aplicação da elegibilidade após a seleção econômica por `AssetClass` e antes de qualquer recomendação executável por ativo;
-- rejeição explícita de configurações inválidas;
-- tratamento determinístico de destinos inelegíveis;
-- preservação de `unallocatedContribution` quando restrições de execução impedirem alocação integral;
-- testes de precisão, bordas, identidade e determinismo;
-- documentação da fronteira entre regra de domínio e dados externos que futuramente alimentarão a regra.
+- contrato de concentração por `AssetClass`;
+- `softMaxWeight` e `hardMaxWeight` usando `AllocationWeight`;
+- validação explícita de `softMaxWeight <= hardMaxWeight`;
+- aplicação sobre o estado monetário atual e a alocação de aporte já calculada;
+- cálculo determinístico do peso projetado após o aporte usando unidades inteiras/exatas;
+- `hardMaxWeight` impede nova alocação que viole o limite;
+- semântica explícita para `softMaxWeight` como restrição/alerta do fluxo de novos aportes;
+- tratamento determinístico de valor bloqueado, mantendo sobra em `unallocatedContribution`;
+- nenhuma alocação acima do limite duro;
+- testes de limites, bordas, precisão e determinismo;
+- documentação da fronteira com concentração futura por ativo, setor, emissor, moeda/geografia e grupo econômico.
 
 ## Fora de escopo
 
-- consulta de preço em tempo real;
+- concentração por ativo individual que dependa de valuation/preço atual;
+- setor, emissor, grupo econômico, moeda e geografia;
+- preço em tempo real;
 - FX;
-- seleção/ranking de ticker dentro da classe;
-- integração com corretora;
-- execução de ordens;
-- `softMaxWeight`/`hardMaxWeight` e demais limites de concentração;
+- Quality/Opportunity/Portfolio Fit;
 - custos e impostos;
 - venda/rebalanceamento;
 - persistência, banco e repositórios;
@@ -35,25 +36,26 @@ Adicionar contratos determinísticos para representar se um destino de aporte po
 
 ## Critérios de aceite
 
-- nenhuma quantidade financeira relevante usa `number` binário;
-- identidade de ativo usa `AssetId`, não ticker/provedor;
-- elegibilidade é explícita e determinística;
-- unidade mínima inválida é rejeitada por erro tipado;
-- destino inelegível não recebe recomendação executável;
-- restrições não alteram silenciosamente os cálculos de necessidade pós-aporte já estabelecidos;
-- sobra causada por restrição permanece explícita;
-- nenhuma chamada externa ocorre no meio do cálculo puro;
+- pesos usam `AllocationWeight`/representação exata, sem `number` binário financeiro;
+- configuração inválida (`soft > hard`, duplicidade ou shape inválido) é rejeitada por erro tipado;
+- classe sem limite explícito mantém comportamento anterior;
+- limite duro nunca é ultrapassado pela recomendação final;
+- política de limite suave é determinística e documentada;
+- valor bloqueado não é perdido nem forçado silenciosamente para destino inválido;
+- cálculos anteriores de necessidade pós-aporte não são reescritos;
 - execução repetida com a mesma entrada produz o mesmo resultado;
 - `pnpm check` passa integralmente no head final validado.
 
 ## Casos de teste mínimos
 
-- destino elegível;
-- destino inelegível;
-- unidade mínima válida com precisão exata;
-- unidade mínima zero/negativa ou shape inválido rejeitado conforme contrato definido;
-- ativos distintos com ticker potencialmente igual continuam separados por `AssetId`;
-- combinação de destinos elegíveis e inelegíveis;
-- sobra quando nenhum destino pode executar o aporte;
-- resultado reproduzível;
-- nenhuma regressão nas políticas de microaporte e limite de destinos.
+- classe sem limite;
+- classe abaixo do limite suave;
+- classe entre limite suave e duro;
+- classe que atingiria/excederia o limite duro;
+- `softMaxWeight == hardMaxWeight`;
+- `softMaxWeight > hardMaxWeight` rejeitado;
+- duplicidade de configuração rejeitada;
+- múltiplas classes com limites distintos;
+- sobra explícita quando parte do aporte é bloqueada;
+- arredondamento/limite em centavos sem float;
+- resultado e ordem reproduzíveis.
