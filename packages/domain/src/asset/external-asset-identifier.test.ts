@@ -13,6 +13,16 @@ describe("ExternalAssetIdentifier", () => {
     });
   });
 
+  it("accepts safe punctuation instead of assuming one exchange symbol grammar", () => {
+    const symbol = ExternalAssetIdentifier.marketSymbol("GLOBAL", "abc/def");
+
+    expect(symbol.toSnapshot()).toEqual({
+      kind: "MARKET_SYMBOL",
+      scope: "GLOBAL",
+      value: "ABC/DEF",
+    });
+  });
+
   it("normalizes ISIN casing without claiming checksum validation", () => {
     const isin = ExternalAssetIdentifier.isin("britubacnpr1");
 
@@ -35,6 +45,9 @@ describe("ExternalAssetIdentifier", () => {
 
   it("rejects malformed identifiers", () => {
     expect(() => ExternalAssetIdentifier.marketSymbol("B3", "")).toThrowError(
+      InvalidExternalAssetIdentifierError,
+    );
+    expect(() => ExternalAssetIdentifier.marketSymbol("B3", "ABC DEF")).toThrowError(
       InvalidExternalAssetIdentifierError,
     );
     expect(() => ExternalAssetIdentifier.isin("BR123")).toThrowError(
