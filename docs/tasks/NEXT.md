@@ -1,50 +1,53 @@
-# Próxima Atividade — Portfolio Engine: tipos financeiros fundamentais
+# Próxima Atividade — Portfolio Engine: Asset e AssetClass
 
-**Status:** READY após merge da fundação técnica.
+**Status:** READY após merge dos tipos financeiros fundamentais.
 
 ## Objetivo
 
-Criar os value objects e invariantes mínimos que permitirão representar dinheiro, percentuais e pesos de alocação sem erros de ponto flutuante ou estados inválidos.
+Criar a identidade mínima dos ativos que o Portfolio Engine usará sem acoplar o domínio a provedores de mercado, corretoras ou símbolos específicos de uma única bolsa.
 
 ## Escopo
 
-- `Money` com moeda explícita e representação segura;
-- `Percentage`;
-- `AllocationWeight` restrito ao intervalo válido;
-- operações mínimas de soma/subtração/comparação necessárias ao motor;
-- política explícita de arredondamento;
-- erros de domínio tipados;
+- `AssetId` estável e independente de ticker/provedor;
+- `AssetClass` explícita para as classes suportadas inicialmente;
+- `Asset` com identidade, nome, classe e moeda de referência;
+- identificadores de mercado opcionais e tipados quando necessários;
+- regras para diferenciar identidade interna de ticker/símbolo negociado;
+- invariantes e erros de domínio tipados;
 - testes unitários abrangentes;
-- property-based tests para invariantes quando a dependência escolhida for justificada;
-- documentação das decisões de precisão/arredondamento.
+- documentação da taxonomia inicial e decisões de identidade.
 
 ## Fora de escopo
 
-- Portfolio completo;
-- holdings/transações;
-- alocação por classes;
-- algoritmo de aporte;
-- banco;
-- API;
-- UI financeira;
 - preço de mercado;
+- quantidade/posição;
+- holdings;
+- transações;
+- Portfolio agregado;
+- target allocation;
+- APIs externas e adapters de market data;
+- banco;
+- UI;
 - IA.
 
 ## Critérios de aceite
 
-- valores monetários persistíveis não dependem de `float` binário;
-- moedas incompatíveis não podem ser somadas silenciosamente;
-- pesos inválidos são rejeitados na fronteira do domínio;
-- arredondamento tem comportamento determinístico e testado;
-- nenhum tipo financeiro depende de Next.js ou infraestrutura;
+- identidade interna de um ativo não depende de ticker mutável;
+- ativos de classes diferentes são representáveis sem campos artificiais obrigatórios;
+- moeda de referência usa contrato compatível com os tipos financeiros já definidos;
+- símbolos/identificadores externos não são tratados como chave primária do domínio;
+- estados inválidos são rejeitados na criação;
+- nenhum tipo depende de Next.js, banco ou fornecedor externo;
 - `pnpm check` passa integralmente;
-- documentação e ADR são atualizados se a representação escolhida criar trade-off arquitetural.
+- decisões de taxonomia/identidade ficam registradas em documentação/ADR quando necessário.
 
 ## Casos de teste mínimos
 
-- zero e valores positivos;
-- valores negativos somente onde semanticamente permitido;
-- moedas diferentes;
-- percentuais 0%, 100% e fora da faixa;
-- precisão e arredondamento em centavos;
-- soma repetida sem drift de ponto flutuante.
+- criação de ativo válido;
+- ID vazio/inválido;
+- nome vazio;
+- classe inválida na fronteira;
+- moeda inválida;
+- ativo sem ticker quando a classe não exigir ticker;
+- dois ativos com ticker semelhante continuam distintos por `AssetId`;
+- normalização de identificadores externos quando houver regra explícita.
