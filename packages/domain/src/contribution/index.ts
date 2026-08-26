@@ -4,6 +4,13 @@ export type {
   AllocationGapCalculationInput,
   CurrentAllocationBucketInput,
 } from "./allocation-gap";
+export { applyAssetClassConcentrationLimits } from "./asset-class-concentration-limits";
+export type {
+  AssetClassConcentrationLimitInput,
+  ContributionConcentrationAllocation,
+  ContributionConcentrationLimitsInput,
+  ContributionConcentrationPlan,
+} from "./asset-class-concentration-limits";
 export { allocateContribution } from "./contribution-allocator";
 export type {
   ContributionAllocation,
@@ -24,8 +31,11 @@ export {
   AllocationTotalMismatchError,
   ContributionAllocatorPortfolioMismatchError,
   ContributionDomainError,
+  DuplicateAssetClassConcentrationLimitError,
   DuplicateContributionExecutionDestinationError,
   DuplicateCurrentAllocationBucketError,
+  InvalidAssetClassConcentrationRangeError,
+  InvalidAssetClassConcentrationWeightError,
   InvalidContributionDestinationEligibilityError,
   InvalidMaxDestinationsPerContributionError,
   InvalidMinimumTradableQuantityError,

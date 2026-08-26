@@ -211,9 +211,18 @@ Isso evita falsa diversificação e reduz complexidade operacional para aportes 
 A política deve suportar:
 
 - `targetWeight`;
-- `softMaxWeight` — bloqueia novos aportes ou gera alerta conforme regra configurada;
-- `hardMaxWeight` — impede recomendação;
+- `softMaxWeight`;
+- `hardMaxWeight`;
 - limites por classe/setor/moeda/emissor.
+
+Na primeira implementação de concentração por `AssetClass`:
+
+- `softMaxWeight` é um alerta determinístico: se o peso projetado após o aporte exceder o limite suave, o resultado sinaliza `softLimitExceeded`, mas não reduz valor sozinho;
+- `hardMaxWeight` é um teto obrigatório para **novos aportes**: somente a parcela que cabe até o teto permanece alocada;
+- se a classe já estiver acima do hard limit, a camada bloqueia novos aportes para ela, mas não vende nem rebalanceia a posição existente;
+- o denominador é `postContributionValue`, já definido pelo `ContributionAllocator`;
+- a comparação usa unidades inteiras de `Money` e `AllocationWeight`, sem `number` binário;
+- valor bloqueado volta para `unallocatedContribution` e não é redistribuído silenciosamente para outra classe.
 
 Exemplo conceitual para ativo de alto risco:
 
@@ -223,7 +232,7 @@ soft max 6%
 hard max 8%
 ```
 
-Os números são configuração, não recomendação universal.
+Os números são configuração, não recomendação universal. Concentração futura por ativo, setor, emissor, moeda/geografia e grupo econômico exige contratos próprios e, quando depender de valor de mercado, inputs de preço/FX auditáveis.
 
 ## Rebalanceamento
 

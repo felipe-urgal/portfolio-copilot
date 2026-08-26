@@ -26,6 +26,7 @@ Este arquivo resume decisões. Decisões arquiteturais importantes também ganha
 | D-020 | `ContributionAllocator` calcula necessidades sobre `portfolioValue + contribution` e distribui o aporte proporcionalmente por maiores restos, preservando sobra explícita | Aceita — ADR-0012 |
 | D-021 | Política de aporte limita destinos por maior necessidade pós-aporte e elimina alocações abaixo de um mínimo monetário, redistribuindo por maiores restos | Aceita — ADR-0013 |
 | D-022 | Restrições de execução do aporte usam `AssetId`, elegibilidade explícita e `AssetQuantity` mínima; bloqueios retornam valor para caixa sem redistribuir a decisão econômica | Aceita — ADR-0014 |
+| D-023 | Limites de concentração por `AssetClass` usam `softMaxWeight` como alerta e `hardMaxWeight` como teto obrigatório; valor bloqueado retorna para a sobra sem redistribuição | Aceita — ADR-0015 |
 
 ## Como alterar uma decisão
 
