@@ -37,6 +37,12 @@ select {
   -webkit-tap-highlight-color: transparent;
 }
 
+[data-onboarding-choice]:focus-within,
+[data-onboarding-segment]:focus-within {
+  outline: 3px solid rgba(79, 70, 229, 0.22);
+  outline-offset: 3px;
+}
+
 .shell {
   min-height: 100vh;
   display: grid;
