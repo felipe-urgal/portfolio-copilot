@@ -162,36 +162,31 @@ export function calculateAllocationGaps(
 
   const currentByClass = normalizeCurrentValues(portfolioId, input.totalValue, input.currentValues);
   const targetByClass = apportionTargetValues(input.targetAllocation, input.totalValue);
-  const classCodes = new Set<AssetClassCode>([
-    ...targetByClass.keys(),
-    ...currentByClass.keys(),
-  ]);
+  const classCodes = new Set<AssetClassCode>([...targetByClass.keys(), ...currentByClass.keys()]);
 
-  const gaps = [...classCodes]
-    .sort()
-    .map<AllocationGap>((assetClassCode) => {
-      const currentBucket = currentByClass.get(assetClassCode);
-      const targetBucket = targetByClass.get(assetClassCode);
-      const assetClass = AssetClass.from(assetClassCode);
-      const currentValue = currentBucket?.currentValue ?? Money.zero(input.totalValue.currency);
-      const targetValue = Money.fromMinorUnits(
-        targetBucket?.minorUnits ?? 0n,
-        input.totalValue.currency,
-      );
-      const gap =
-        targetValue.compare(currentValue) > 0
-          ? targetValue.subtract(currentValue)
-          : Money.zero(input.totalValue.currency);
+  const gaps = [...classCodes].sort().map<AllocationGap>((assetClassCode) => {
+    const currentBucket = currentByClass.get(assetClassCode);
+    const targetBucket = targetByClass.get(assetClassCode);
+    const assetClass = AssetClass.from(assetClassCode);
+    const currentValue = currentBucket?.currentValue ?? Money.zero(input.totalValue.currency);
+    const targetValue = Money.fromMinorUnits(
+      targetBucket?.minorUnits ?? 0n,
+      input.totalValue.currency,
+    );
+    const gap =
+      targetValue.compare(currentValue) > 0
+        ? targetValue.subtract(currentValue)
+        : Money.zero(input.totalValue.currency);
 
-      return Object.freeze({
-        portfolioId,
-        assetClass,
-        targetWeight: targetBucket?.targetWeight ?? ZERO_WEIGHT,
-        currentValue,
-        targetValue,
-        gap,
-      });
+    return Object.freeze({
+      portfolioId,
+      assetClass,
+      targetWeight: targetBucket?.targetWeight ?? ZERO_WEIGHT,
+      currentValue,
+      targetValue,
+      gap,
     });
+  });
 
   return Object.freeze(gaps);
 }

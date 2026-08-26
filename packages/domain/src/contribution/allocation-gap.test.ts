@@ -123,9 +123,7 @@ describe("calculateAllocationGaps", () => {
         portfolioId: FIRST_PORTFOLIO_ID,
         targetAllocation,
         totalValue: Money.fromDecimal("100.00", "BRL"),
-        currentValues: [
-          { assetClass: "EQUITY", currentValue: Money.fromDecimal("100.00", "USD") },
-        ],
+        currentValues: [{ assetClass: "EQUITY", currentValue: Money.fromDecimal("100.00", "USD") }],
       }),
     ).toThrowError(CurrencyMismatchError);
   });
