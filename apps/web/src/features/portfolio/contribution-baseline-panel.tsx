@@ -127,10 +127,7 @@ export function ContributionBaselinePanel({
                 Precisa reconciliar com a soma dos valores atuais por classe em{" "}
                 {portfolio.referenceCurrency}.
               </p>
-              <ErrorText
-                id="contribution-portfolio-value-error"
-                message={errors.portfolioValue}
-              />
+              <ErrorText id="contribution-portfolio-value-error" message={errors.portfolioValue} />
             </div>
 
             <div className={styles.fieldGroup}>
@@ -212,7 +209,9 @@ export function ContributionBaselinePanel({
                           autoComplete="off"
                           value={row.currentValue}
                           aria-invalid={errors.currentValues !== undefined}
-                          aria-describedby={errors.currentValues ? "current-values-error" : undefined}
+                          aria-describedby={
+                            errors.currentValues ? "current-values-error" : undefined
+                          }
                           onChange={(event) =>
                             updateRow(row.assetClass, "currentValue", event.target.value)
                           }

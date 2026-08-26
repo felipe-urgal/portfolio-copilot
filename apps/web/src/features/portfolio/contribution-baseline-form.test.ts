@@ -168,7 +168,9 @@ describe("contribution baseline form adapter", () => {
     });
     expect(duplicate).toEqual({
       ok: false,
-      errors: { targetAllocation: "A mesma classe econômica não pode aparecer duas vezes no alvo." },
+      errors: {
+        targetAllocation: "A mesma classe econômica não pode aparecer duas vezes no alvo.",
+      },
     });
   });
 
