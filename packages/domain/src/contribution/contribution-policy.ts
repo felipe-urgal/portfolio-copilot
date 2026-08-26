@@ -2,10 +2,7 @@ import { type AssetClassCode } from "../asset";
 import { CurrencyMismatchError, Money } from "../financial";
 import { apportionMinorUnitsByAssetClass } from "./allocation-state";
 import { type ContributionAllocation, type ContributionPlan } from "./contribution-allocator";
-import {
-  InvalidMaxDestinationsPerContributionError,
-  NegativeAllocationValueError,
-} from "./errors";
+import { InvalidMaxDestinationsPerContributionError, NegativeAllocationValueError } from "./errors";
 
 export type ContributionPolicy = Readonly<{
   minimumMeaningfulContribution: Money;
@@ -68,9 +65,7 @@ function apportionSelectedBuckets(
 
   const totalNeedMinorUnits = buckets.reduce((sum, bucket) => sum + bucket.needMinorUnits, 0n);
   const allocatableMinorUnits =
-    contribution.minorUnits < totalNeedMinorUnits
-      ? contribution.minorUnits
-      : totalNeedMinorUnits;
+    contribution.minorUnits < totalNeedMinorUnits ? contribution.minorUnits : totalNeedMinorUnits;
 
   return apportionMinorUnitsByAssetClass(
     allocatableMinorUnits,
@@ -98,9 +93,7 @@ export function applyContributionPolicy(
   let allocatedByClass = new Map<AssetClassCode, bigint>();
 
   while (selectedBuckets.length > 0) {
-    allocatedByClass = new Map(
-      apportionSelectedBuckets(input.plan.contribution, selectedBuckets),
-    );
+    allocatedByClass = new Map(apportionSelectedBuckets(input.plan.contribution, selectedBuckets));
 
     if (minimumMinorUnits === 0n) break;
 

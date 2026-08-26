@@ -11,10 +11,7 @@ export type {
   ContributionPlan,
 } from "./contribution-allocator";
 export { applyContributionPolicy } from "./contribution-policy";
-export type {
-  ContributionPolicy,
-  ContributionPolicyApplicationInput,
-} from "./contribution-policy";
+export type { ContributionPolicy, ContributionPolicyApplicationInput } from "./contribution-policy";
 export {
   AllocationGapPortfolioMismatchError,
   AllocationTotalMismatchError,
