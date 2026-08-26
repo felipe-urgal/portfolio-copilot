@@ -23,6 +23,7 @@ Este arquivo resume decisões. Decisões arquiteturais importantes também ganha
 | D-017 | Posições abertas são projeções puras do ledger; venda acima da posição falha e fatos com timestamp igual preservam a ordem de entrada | Aceita — ADR-0009 |
 | D-018 | `TargetAllocation` é política completa por `AssetClass`: buckets positivos, sem duplicidade e soma exata de 100% | Aceita — ADR-0010 |
 | D-019 | `AllocationGap` usa valores atuais reconciliados e maiores restos para converter pesos em centavos sem perder a soma monetária | Aceita — ADR-0011 |
+| D-020 | `ContributionAllocator` calcula necessidades sobre `portfolioValue + contribution` e distribui o aporte proporcionalmente por maiores restos, preservando sobra explícita | Aceita — ADR-0012 |
 
 ## Como alterar uma decisão
 
