@@ -76,3 +76,16 @@ Histórico resumido de atividades concluídas.
 - testes cobrem identidade, classes, instrumentos, nomes, moedas, identificadores externos e estados inválidos;
 - auto code review sênior identificou e corrigiu a mistura conceitual entre classe econômica e veículo de investimento;
 - ADR-0006 registra identidade, taxonomias, limites deliberados de ISIN e separação futura do Asset Master.
+
+## 2026-08-26 — Portfolio Engine: agregado Portfolio mínimo
+
+- `PortfolioId` criado como identidade interna estável e semanticamente distinta de `AssetId`;
+- validação/normalização de UUID foi centralizada em helper interno para evitar drift entre IDs do domínio;
+- `Portfolio` criado com somente identidade, nome e moeda de referência/consolidação;
+- nome é normalizado e rejeita vazio, excesso de tamanho e caracteres de controle;
+- `CurrencyCode` é reutilizado para a moeda de referência;
+- portfolios com o mesmo nome permanecem entidades distintas por `PortfolioId`;
+- `PortfolioSnapshot` persiste apenas campos próprios do agregado e hidrata passando pelas mesmas invariantes de criação;
+- holdings, saldo de caixa, custo médio, valor de mercado e alocação não são armazenados no agregado;
+- ADR-0007 define o futuro transaction ledger como fonte histórica para projeções de posições e saldos;
+- testes cobrem identidade, normalização, limites, moeda, snapshot e separação por ID.

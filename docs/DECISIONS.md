@@ -18,6 +18,7 @@ Este arquivo resume decisões. Decisões arquiteturais importantes também ganha
 | D-012 | Sem microaportes artificiais: o motor pode concentrar o aporte do mês em menos destinos para corrigir gaps | Aceita |
 | D-013 | Valores financeiros fundamentais usam representação decimal inteira; `Money` não usa float e quantidade/preço terão tipos próprios | Aceita — ADR-0005 |
 | D-014 | `AssetId` é independente de ticker/provedor e classe econômica (`AssetClass`) é separada do veículo (`InstrumentType`) | Aceita — ADR-0006 |
+| D-015 | `Portfolio` guarda somente identidade/configuração; posições e saldos serão projeções do transaction ledger | Aceita — ADR-0007 |
 
 ## Como alterar uma decisão
 

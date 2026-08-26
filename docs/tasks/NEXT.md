@@ -1,31 +1,32 @@
-# Próxima Atividade — Portfolio Engine: Portfolio agregado mínimo
+# Próxima Atividade — Portfolio Engine: Transaction Ledger e quantidade de ativo
 
-**Status:** READY após merge de Asset e AssetClass.
+**Status:** READY após merge do agregado Portfolio mínimo.
 
 ## Objetivo
 
-Criar a identidade e os invariantes mínimos de `Portfolio` sem antecipar holdings, transações, preços ou algoritmo de alocação. O agregado deve ser uma raiz estável para os próximos componentes do Portfolio Engine.
+Criar os value objects e eventos mínimos para registrar movimentações de ativos de forma auditável, sem ainda calcular holdings ou custo médio. A etapa deve estabelecer a fonte histórica que futuras projeções de posição consumirão.
 
 ## Escopo
 
-- `PortfolioId` interno e estável;
-- `Portfolio` com identidade, nome e moeda de referência/consolidação;
-- regras explícitas de criação e normalização;
-- erros de domínio tipados;
-- snapshot persistível mínimo quando houver decisão clara de contrato;
-- testes unitários abrangentes;
-- documentação das fronteiras do agregado e de sua relação futura com ledger/holdings.
+- representação decimal segura de quantidade de ativo, separada de `Money`;
+- política explícita de precisão e arredondamento para quantidade;
+- `TransactionId` interno e estável;
+- eventos/transações imutáveis vinculados a `PortfolioId` e, quando aplicável, `AssetId`;
+- taxonomia mínima de movimentações necessária para compras, vendas e fluxos de caixa, sem antecipar regras tributárias;
+- valor monetário usando `Money` quando semanticamente aplicável;
+- instante/data efetiva da movimentação com contrato determinístico;
+- snapshots persistíveis e erros de domínio tipados;
+- testes de invariantes e documentação das decisões.
 
 ## Fora de escopo
 
-- usuário/autenticação/ownership;
-- holdings e posições;
-- transações e ledger;
-- saldo de caixa;
-- preço de mercado e FX;
-- target allocation;
-- allocation gap;
-- algoritmo de aporte/rebalanceamento;
+- cálculo de holdings/posição atual;
+- custo médio e P&L;
+- preço de mercado/fundamentals;
+- FX automático;
+- impostos e DARF;
+- corporate actions complexas;
+- importação de corretora/Open Finance;
 - banco e repositórios;
 - API;
 - UI;
@@ -33,20 +34,22 @@ Criar a identidade e os invariantes mínimos de `Portfolio` sem antecipar holdin
 
 ## Critérios de aceite
 
-- identidade do portfolio não depende de nome, usuário ou infraestrutura;
-- nome inválido é rejeitado na fronteira do domínio;
-- moeda de referência reutiliza `CurrencyCode`;
-- o agregado não guarda posições derivadas nem duplica responsabilidades do futuro transaction ledger;
+- quantidade de ativo não reutiliza `Money` nem depende de `number` binário para persistência;
+- identidade da transação é independente de corretora/provedor;
+- transações referenciam `PortfolioId`/`AssetId`, não nomes ou tickers;
+- sinal econômico não é inferido silenciosamente de números negativos quando a taxonomia puder torná-lo explícito;
+- eventos persistíveis possuem representação determinística;
 - nenhum tipo depende de Next.js, banco ou fornecedor externo;
 - `pnpm check` passa integralmente;
-- decisões arquiteturais relevantes ficam registradas em documentação/ADR.
+- decisões de precisão e taxonomia ficam registradas em ADR quando necessário.
 
 ## Casos de teste mínimos
 
-- criação de portfolio válido;
-- ID vazio/inválido;
-- nome vazio, somente espaços, excessivamente longo ou com caracteres de controle;
-- moeda inválida;
-- normalização de ID/nome/moeda quando aplicável;
-- dois portfolios com mesmo nome permanecem entidades distintas por ID;
-- fronteira pública do pacote exporta os novos tipos sem acoplamento à infraestrutura.
+- quantidade zero, positiva, precisão fracionária e valores inválidos;
+- criação de compra e venda válidas;
+- IDs inválidos;
+- portfolio/asset inválidos;
+- moeda incompatível quando uma operação combinar valores monetários;
+- datas/instantes inválidos;
+- snapshot round-trip;
+- nenhuma projeção de holding é persistida dentro da transação ou do Portfolio.

@@ -1,20 +1,20 @@
 import { normalizeUuid } from "../identity/uuid";
-import { InvalidAssetIdError } from "./errors";
+import { InvalidPortfolioIdError } from "./errors";
 
-export class AssetId {
+export class PortfolioId {
   private constructor(public readonly value: string) {}
 
-  public static from(value: string): AssetId {
+  public static from(value: string): PortfolioId {
     const normalized = normalizeUuid(value);
 
     if (normalized === null) {
-      throw new InvalidAssetIdError(value);
+      throw new InvalidPortfolioIdError(value);
     }
 
-    return new AssetId(normalized);
+    return new PortfolioId(normalized);
   }
 
-  public equals(other: AssetId): boolean {
+  public equals(other: PortfolioId): boolean {
     return this.value === other.value;
   }
 
