@@ -11,15 +11,9 @@ describe("Percentage", () => {
   });
 
   it("rounds half away from zero deterministically", () => {
-    expect(Percentage.fromPercent("22.12344").toPercentString()).toBe(
-      "22.1234",
-    );
-    expect(Percentage.fromPercent("22.12345").toPercentString()).toBe(
-      "22.1235",
-    );
-    expect(Percentage.fromPercent("-22.12345").toPercentString()).toBe(
-      "-22.1235",
-    );
+    expect(Percentage.fromPercent("22.12344").toPercentString()).toBe("22.1234");
+    expect(Percentage.fromPercent("22.12345").toPercentString()).toBe("22.1235");
+    expect(Percentage.fromPercent("-22.12345").toPercentString()).toBe("-22.1235");
   });
 
   it("allows signed and greater-than-100 values because returns are not allocation weights", () => {
