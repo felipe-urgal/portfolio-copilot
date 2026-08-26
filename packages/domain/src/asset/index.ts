@@ -10,9 +10,12 @@ export {
   InvalidAssetIdError,
   InvalidAssetNameError,
   InvalidExternalAssetIdentifierError,
+  InvalidInstrumentTypeError,
 } from "./errors";
 export { ExternalAssetIdentifier } from "./external-asset-identifier";
 export type {
   ExternalAssetIdentifierKind,
   ExternalAssetIdentifierSnapshot,
 } from "./external-asset-identifier";
+export { InstrumentType, INSTRUMENT_TYPE_CODES } from "./instrument-type";
+export type { InstrumentTypeCode } from "./instrument-type";
