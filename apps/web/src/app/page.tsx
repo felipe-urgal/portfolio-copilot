@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { APP_NAME } from "@portfolio-copilot/shared";
 
 export default function Home() {
@@ -10,7 +12,7 @@ export default function Home() {
           Base técnica pronta para evoluir o motor de carteira com regras financeiras
           determinísticas, auditáveis e testáveis.
         </p>
-        <a href="/health">Verificar saúde da aplicação</a>
+        <Link href="/health">Verificar saúde da aplicação</Link>
       </section>
     </main>
   );
