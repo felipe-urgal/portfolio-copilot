@@ -279,7 +279,9 @@ export function PortfolioWorkspace({
                   autoComplete="off"
                   value={draft.referenceCurrency}
                   aria-invalid={errors.referenceCurrency !== undefined}
-                  aria-describedby={errors.referenceCurrency ? "portfolio-currency-error" : undefined}
+                  aria-describedby={
+                    errors.referenceCurrency ? "portfolio-currency-error" : undefined
+                  }
                   onChange={(event) =>
                     updateDraft("referenceCurrency", event.target.value.toUpperCase())
                   }
@@ -311,7 +313,9 @@ export function PortfolioWorkspace({
               </div>
               <div>
                 <strong>Posições derivadas</strong>
-                <span>BUY/SELL alimentam `projectAssetPositions`; cash flows não alteram quantidade.</span>
+                <span>
+                  BUY/SELL alimentam `projectAssetPositions`; cash flows não alteram quantidade.
+                </span>
               </div>
               <div>
                 <strong>Sem Market Data</strong>
@@ -502,7 +506,8 @@ export function PortfolioWorkspace({
                       <li key={asset.id}>
                         <strong>{asset.name}</strong>
                         <span>
-                          {assetClassLabel(asset.assetClass)} · {instrumentTypeLabel(asset.instrumentType)}
+                          {assetClassLabel(asset.assetClass)} ·{" "}
+                          {instrumentTypeLabel(asset.instrumentType)}
                           {" · "}
                           {asset.referenceCurrency}
                         </span>
@@ -518,7 +523,9 @@ export function PortfolioWorkspace({
             <div className={styles.sectionHeading}>
               <div>
                 <h2 id="ledger-title">Transaction Ledger</h2>
-                <p>Transações são fatos históricos; posições são projeções, não campos editáveis.</p>
+                <p>
+                  Transações são fatos históricos; posições são projeções, não campos editáveis.
+                </p>
               </div>
               <span className={styles.emptyStatus}>
                 {countLabel(transactions.length, "movimentação", "movimentações", "Ledger vazio")}
@@ -560,7 +567,9 @@ export function PortfolioWorkspace({
                       autoComplete="off"
                       value={cashDraft.amount}
                       aria-invalid={cashErrors.amount !== undefined}
-                      aria-describedby={cashErrors.amount ? "cash-amount-error" : "cash-amount-help"}
+                      aria-describedby={
+                        cashErrors.amount ? "cash-amount-error" : "cash-amount-help"
+                      }
                       onChange={(event) => {
                         setCashDraft((current) => ({ ...current, amount: event.target.value }));
                         setCashErrors({});
@@ -610,7 +619,9 @@ export function PortfolioWorkspace({
                       value={tradeDraft.assetId}
                       disabled={assets.length === 0}
                       aria-invalid={tradeErrors.assetId !== undefined}
-                      aria-describedby={tradeErrors.assetId ? "trade-asset-error" : "trade-asset-help"}
+                      aria-describedby={
+                        tradeErrors.assetId ? "trade-asset-error" : "trade-asset-help"
+                      }
                       onChange={(event) => updateTradeDraft("assetId", event.target.value)}
                     >
                       <option value="">Selecione um ativo</option>
@@ -661,12 +672,17 @@ export function PortfolioWorkspace({
                             ? "trade-settlement-error"
                             : "trade-settlement-help"
                         }
-                        onChange={(event) => updateTradeDraft("settlementAmount", event.target.value)}
+                        onChange={(event) =>
+                          updateTradeDraft("settlementAmount", event.target.value)
+                        }
                       />
                       <p className={styles.helpText} id="trade-settlement-help">
                         Valor positivo em {snapshot.referenceCurrency}; não é preço de mercado.
                       </p>
-                      <FieldError id="trade-settlement-error" message={tradeErrors.settlementAmount} />
+                      <FieldError
+                        id="trade-settlement-error"
+                        message={tradeErrors.settlementAmount}
+                      />
                     </div>
                   </div>
                   {tradeErrors.form ? (
@@ -674,7 +690,11 @@ export function PortfolioWorkspace({
                       {tradeErrors.form}
                     </p>
                   ) : null}
-                  <button className={styles.primaryAction} type="submit" disabled={assets.length === 0}>
+                  <button
+                    className={styles.primaryAction}
+                    type="submit"
+                    disabled={assets.length === 0}
+                  >
                     Registrar {tradeDraft.type === "BUY" ? "compra" : "venda"}
                   </button>
                 </form>
@@ -693,7 +713,9 @@ export function PortfolioWorkspace({
                 ) : (
                   <ol className={styles.ledgerList}>
                     {displayTransactions.map((transaction) => {
-                      const asset = transaction.assetId ? assetsById.get(transaction.assetId) : undefined;
+                      const asset = transaction.assetId
+                        ? assetsById.get(transaction.assetId)
+                        : undefined;
                       const quantity = transactionQuantity(transaction);
                       return (
                         <li key={transaction.id}>
@@ -702,10 +724,13 @@ export function PortfolioWorkspace({
                               <strong>{transactionLabel(transaction.type)}</strong>
                               {quantity ? (
                                 <span className={styles.transactionContext}>
-                                  {asset?.name ?? "Ativo não disponível nesta sessão"} · {quantity} un.
+                                  {asset?.name ?? "Ativo não disponível nesta sessão"} · {quantity}{" "}
+                                  un.
                                 </span>
                               ) : null}
-                              <time dateTime={transaction.occurredAt}>{transaction.occurredAt}</time>
+                              <time dateTime={transaction.occurredAt}>
+                                {transaction.occurredAt}
+                              </time>
                             </div>
                             <span className={styles.transactionAmount}>
                               {transactionAmount(transaction)}

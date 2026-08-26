@@ -108,12 +108,14 @@ describe("asset trade form adapter", () => {
     expect(sell.ok).toBe(true);
     if (!sell.ok) return;
 
-    expect(projectLocalAssetPositions(PORTFOLIO.id, [buy.snapshot, cashIn, sell.snapshot])).toEqual([
-      {
-        assetId: ASSET_ID,
-        quantity: "1.750000000000",
-      },
-    ]);
+    expect(projectLocalAssetPositions(PORTFOLIO.id, [buy.snapshot, cashIn, sell.snapshot])).toEqual(
+      [
+        {
+          assetId: ASSET_ID,
+          quantity: "1.750000000000",
+        },
+      ],
+    );
   });
 
   it("rejects a SELL above the position available from the existing ledger", () => {
