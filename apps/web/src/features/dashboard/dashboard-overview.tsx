@@ -18,7 +18,8 @@ const SUMMARY_STATES = [
   {
     label: "Reserva de emergência",
     state: "Sem dado persistido",
-    detail: "Uma meta pode ser definida no onboarding, mas ainda não é salva nem lida pelo dashboard.",
+    detail:
+      "Uma meta pode ser definida no onboarding, mas ainda não é salva nem lida pelo dashboard.",
   },
 ] as const;
 
@@ -56,7 +57,8 @@ export function DashboardOverview() {
           <h2 id="persistence-title">Sem persistência nesta versão</h2>
           <p>
             O onboarding já valida um perfil financeiro, mas esse estado vive somente na própria
-            página. Por isso, o dashboard ainda não recebe perfil, reserva ou objetivos configurados.
+            página. Por isso, o dashboard ainda não recebe perfil, reserva ou objetivos
+            configurados.
           </p>
         </div>
         <Link className={styles.primaryAction} href="/onboarding">
@@ -142,7 +144,9 @@ export function DashboardOverview() {
             <span className={styles.stepNumber}>1</span>
             <div>
               <strong>Defina seu contexto financeiro</strong>
-              <p>Perfil, reserva e objetivos já podem ser validados no fluxo local de onboarding.</p>
+              <p>
+                Perfil, reserva e objetivos já podem ser validados no fluxo local de onboarding.
+              </p>
               <Link href="/onboarding">Ir para o onboarding</Link>
             </div>
           </li>
@@ -150,7 +154,9 @@ export function DashboardOverview() {
             <span className={styles.stepNumber}>2</span>
             <div>
               <strong>Cadastre sua carteira</strong>
-              <p>Esta capacidade ainda não está disponível na interface e será o próximo vertical.</p>
+              <p>
+                Esta capacidade ainda não está disponível na interface e será o próximo vertical.
+              </p>
             </div>
           </li>
           <li>
