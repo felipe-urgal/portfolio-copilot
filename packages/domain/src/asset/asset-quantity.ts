@@ -21,16 +21,12 @@ export class AssetQuantity {
       throw new InvalidAssetQuantityError(value);
     }
 
-    if (
-      (parts.negative && !isDecimalZero(parts)) ||
-      parts.fraction.length > ASSET_QUANTITY_SCALE
-    ) {
+    if ((parts.negative && !isDecimalZero(parts)) || parts.fraction.length > ASSET_QUANTITY_SCALE) {
       throw new InvalidAssetQuantityError(value);
     }
 
     const fraction = parts.fraction.padEnd(ASSET_QUANTITY_SCALE, "0");
-    const scaledUnits =
-      BigInt(parts.whole) * ASSET_QUANTITY_FACTOR + BigInt(fraction || "0");
+    const scaledUnits = BigInt(parts.whole) * ASSET_QUANTITY_FACTOR + BigInt(fraction || "0");
 
     return new AssetQuantity(scaledUnits);
   }
