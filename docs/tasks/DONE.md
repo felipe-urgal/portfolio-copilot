@@ -260,3 +260,23 @@ Histórico resumido de atividades concluídas.
 - `methodologyVersion` vazia ou com whitespace periférico é rejeitada por erro tipado;
 - ADR-0017/D-025 registram ordem do pipeline, reason codes, reconciliação e fronteira com provenance externo;
 - não há nova dependência, lockfile, schema, persistência, API, UI ou integração externa.
+
+## 2026-08-26 — Portfolio Engine: testes de invariantes do pipeline de aporte
+
+- suíte property-style determinística adicionada sobre `buildContributionRecommendationSnapshot` sem dependência nova;
+- corpus executa 512 cenários reproduzíveis identificados por seed explícita;
+- cenários variam de uma a quatro classes, distribuição atual reconciliada, pesos-alvo positivos somando exatamente 100%, aporte zero/centavos/valores maiores, política de microaporte, concentração, elegibilidade e custos;
+- gerador de custos cria apenas constraints para destinos que realmente sobreviveram às camadas anteriores, mantendo o corpus válido sem mascarar erros do pipeline final;
+- custos exercitam regimes zero, menor, igual e maior que o orçamento bruto do destino;
+- invariantes provam reconciliação `contribution = investable + consumedKnownCost + unallocated`, valores não negativos e agregados por decisão;
+- sobra cumulativa é validada como monotônica entre allocator, política, concentração, execução e custos;
+- hard limits são recalculados independentemente a partir do snapshot e nunca permitem novo aporte positivo acima do teto monetário;
+- destino bloqueado nunca possui valor investível positivo e custo consumido nunca supera o orçamento de concentração;
+- decisões e reason codes preservam ordenação estável;
+- mesma entrada é executada novamente e precisa produzir snapshot estruturalmente idêntico e JSON byte-for-byte estável;
+- `JSON.stringify`/`JSON.parse` validam que o snapshot final não depende de `bigint` ou value objects na fronteira serializada;
+- falha do corpus inclui seed e parâmetros primitivos suficientes para reprodução;
+- auto review do gerador identificou e corrigiu correlação entre quantidade de classes e modo de concentração, garantindo cobertura estrutural de hard limit exato/parcial/total;
+- a suíte exige cobertura observada de aporte zero, poucos centavos, uma/múltiplas classes, ajuste de política, hard limit exato/parcial/total, inelegibilidade e custos executáveis/bloqueados;
+- nenhum código de produção, fórmula financeira, lockfile ou dependência externa foi alterado;
+- nenhum ADR novo foi necessário porque o vertical apenas verifica contratos já aceitos, sem criar decisão arquitetural/financeira nova.
