@@ -64,6 +64,7 @@ No topo, preserva:
 - aporte;
 - valor pós-aporte;
 - política de microaporte aplicada;
+- sobra cumulativa após allocator, política, concentração, execução e custos;
 - total investível;
 - custo conhecido efetivamente consumido;
 - sobra final.
@@ -71,6 +72,7 @@ No topo, preserva:
 Por decisão material, preserva:
 
 - `AssetClass` e eventual `AssetId`;
+- `targetWeightPercent` da política-alvo;
 - valor atual, alvo pós-aporte e necessidade;
 - alocação baseline;
 - alocação após política;
@@ -81,6 +83,8 @@ Por decisão material, preserva:
 - custo conhecido total e custo efetivamente consumido;
 - valor investível final;
 - status e reason codes.
+
+A sobra por etapa é cumulativa, não incremental. Isso permite localizar em qual transição o caixa aumentou sem duplicar a lógica interna de cada camada.
 
 ## Reason codes
 
@@ -133,6 +137,7 @@ Erros tipados das camadas internas propagam sem wrapping genérico. O caller con
 - existe um único pipeline canônico para callers futuros;
 - a ordem das restrições deixa de ser convenção implícita;
 - decisões intermediárias permanecem auditáveis mesmo quando a saída operacional posterior é menor;
+- a origem cumulativa da sobra em caixa pode ser observada por etapa;
 - snapshot é adequado para futura persistência/API sem acoplar infraestrutura ao domínio;
 - testes end-to-end podem validar reconciliação e determinismo do motor completo;
 - explicações futuras podem consumir reason codes estruturados em vez de inferir regras por texto.
@@ -162,7 +167,7 @@ Rejeitada porque criaria duas fontes de verdade e risco de drift entre testes un
 
 ### Expor apenas o plano final de custo
 
-Rejeitada porque apagaria decisões anteriores, especialmente soft/hard concentration e inelegibilidade.
+Rejeitada porque apagaria decisões anteriores, especialmente soft/hard concentration, inelegibilidade e a origem da sobra em caixa.
 
 ### Colocar mensagens humanas no snapshot como fonte de verdade
 
