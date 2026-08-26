@@ -13,10 +13,11 @@ Liste explicitamente o que não faz parte deste PR.
 ## Como testar
 
 ```bash
+pnpm install --frozen-lockfile
 pnpm check
 ```
 
-Inclua passos adicionais quando necessários.
+Inclua passos adicionais quando necessários e registre o SHA exato validado.
 
 ## Riscos e impacto
 
@@ -30,7 +31,8 @@ Liste os `.md`, ADRs e tarefas alterados.
 
 - [ ] critérios de aceite atendidos;
 - [ ] testes/edge cases adequados;
-- [ ] CI do **head final** integralmente verde;
+- [ ] quality gate do **head final** integralmente verde via CI ou fallback local documentado quando Actions não puder iniciar por billing/infra;
+- [ ] SHA exato validado registrado no PR;
 - [ ] auto code review completo em nível sênior realizado;
 - [ ] findings do review aplicados ou adiamentos explicitamente registrados;
 - [ ] arquitetura e escopo revisados;
@@ -40,4 +42,4 @@ Liste os `.md`, ADRs e tarefas alterados.
 - [ ] diff final revisado sem arquivos temporários;
 - [ ] nenhum finding pendente.
 
-> Um push novo invalida a checagem final: acompanhe o novo CI antes de mergear.
+> Um push novo invalida a checagem final. CI continua preferido. Se o GitHub Actions estiver impedido de iniciar por billing/infra, o fallback local deve executar `pnpm install --frozen-lockfile` e `pnpm check` no SHA exato do head, registrar o resultado no PR e repetir após qualquer novo push.

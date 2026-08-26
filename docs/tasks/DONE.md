@@ -89,3 +89,21 @@ Histórico resumido de atividades concluídas.
 - holdings, saldo de caixa, custo médio, valor de mercado e alocação não são armazenados no agregado;
 - ADR-0007 define o futuro transaction ledger como fonte histórica para projeções de posições e saldos;
 - testes cobrem identidade, normalização, limites, moeda, snapshot e separação por ID.
+
+## 2026-08-26 — Portfolio Engine: Transaction Ledger e quantidade de ativo
+
+- `AssetQuantity` criado com `bigint` escalado em 12 casas decimais, separado de `Money`;
+- quantidade decimal é recebida por `string`, nunca por `number` binário;
+- excesso de 12 casas é rejeitado sem arredondamento silencioso;
+- quantidade negativa é inválida; zero é permitido no value object, mas compra/venda exige valor maior que zero;
+- `TransactionId` criado como identidade interna UUID e independente de corretora/provedor;
+- `TransactionTimestamp` exige instante UTC canônico com milissegundos;
+- taxonomia inicial contém apenas `BUY`, `SELL`, `CASH_IN` e `CASH_OUT`;
+- `Transaction` é imutável e referencia `PortfolioId`/`AssetId`, nunca nomes ou tickers;
+- compras/vendas exigem ativo e quantidade; fluxos de caixa proíbem esses campos;
+- `settlementAmount` usa `Money`, é sempre positivo e preserva a moeda original da movimentação;
+- direção econômica é dada pelo tipo da transação, não por números negativos;
+- snapshots são determinísticos e não armazenam holdings, custo médio, P&L ou valor de mercado;
+- testes cobrem precisão, IDs, timestamps, taxonomia, shapes inválidos, valores monetários e round-trip;
+- ADR-0008 registra semântica do ledger, precisão, tempo e limites deliberados;
+- fallback local de quality gate por SHA exato foi formalizado para períodos em que GitHub Actions não puder iniciar por billing/infra.

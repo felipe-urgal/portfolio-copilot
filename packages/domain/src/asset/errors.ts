@@ -3,6 +3,7 @@ export type AssetDomainErrorCode =
   | "INVALID_ASSET_CLASS"
   | "INVALID_INSTRUMENT_TYPE"
   | "INVALID_ASSET_NAME"
+  | "INVALID_ASSET_QUANTITY"
   | "INVALID_EXTERNAL_ASSET_IDENTIFIER"
   | "DUPLICATE_EXTERNAL_ASSET_IDENTIFIER";
 
@@ -37,6 +38,12 @@ export class InvalidInstrumentTypeError extends AssetDomainError {
 export class InvalidAssetNameError extends AssetDomainError {
   public constructor(value: string) {
     super("INVALID_ASSET_NAME", `Invalid asset name: ${JSON.stringify(value)}`);
+  }
+}
+
+export class InvalidAssetQuantityError extends AssetDomainError {
+  public constructor(value: string) {
+    super("INVALID_ASSET_QUANTITY", `Invalid asset quantity: ${JSON.stringify(value)}`);
   }
 }
 

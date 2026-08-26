@@ -23,16 +23,16 @@ Este fluxo é uma regra do projeto. Nenhum PR deve ser mergeado antes de complet
 5. criar/atualizar testes e tratar edge cases;
 6. atualizar os `.md` afetados pela implementação, decisões ou novos aprendizados;
 7. abrir o PR com problema, solução, riscos, como testar e documentação alterada;
-8. acompanhar o CI do **head atual do PR** até conclusão;
-9. se qualquer job falhar, ler o log, corrigir a causa raiz e acompanhar o novo CI;
+8. acompanhar o CI do **head atual do PR** até conclusão quando o GitHub Actions puder executar;
+9. se qualquer job funcional falhar, ler o log, corrigir a causa raiz e acompanhar o novo quality gate;
 10. executar auto code review completo em nível sênior sobre o diff integral;
 11. revisar arquitetura, legibilidade, coesão, acoplamento, tipos, erros, testes, segurança, supply chain, desempenho e aderência ao escopo;
 12. para mudanças financeiras, revisar fórmulas, unidades, precisão, arredondamento, invariantes e auditabilidade;
 13. aplicar todos os ajustes encontrados no auto review;
 14. atualizar novamente documentação, ADRs, `NEXT.md`, `DONE.md` e backlog quando o review alterar decisões ou escopo;
-15. acompanhar novamente o CI após o **último push**; resultado verde antigo não vale para um head novo;
+15. executar novamente o quality gate após o **último push**; resultado verde antigo não vale para um head novo;
 16. fazer uma checagem final do diff e confirmar que não há findings pendentes nem arquivos temporários;
-17. mergear somente quando o CI do head final estiver integralmente verde e o review estiver encerrado sem findings abertos;
+17. mergear somente quando o quality gate do head final estiver integralmente verde e o review estiver encerrado sem findings abertos;
 18. confirmar o merge em `main`;
 19. entregar ao usuário os comandos exatos para sincronizar o repositório e rodar/validar localmente;
 20. usar o `NEXT.md` já promovido para iniciar a próxima atividade somente depois do fechamento correto da atual.
@@ -40,10 +40,40 @@ Este fluxo é uma regra do projeto. Nenhum PR deve ser mergeado antes de complet
 ### Regra de ouro
 
 ```text
-CI verde + auto review sênior + findings corrigidos + docs atualizados + diff final revisado = elegível para merge
+quality gate verde + auto review sênior + findings corrigidos + docs atualizados + diff final revisado = elegível para merge
 ```
 
-Qualquer push novo invalida a checagem final anterior e exige acompanhar o novo CI.
+Qualquer push novo invalida a checagem final anterior e exige validar novamente o novo head.
+
+## Quality gate: CI preferido e fallback local controlado
+
+O GitHub Actions continua sendo o caminho preferido porque fornece validação reproduzível fora da máquina do desenvolvedor.
+
+Quando o Actions **não consegue iniciar o job** por motivo externo confirmado, como billing/limite de minutos ou indisponibilidade de infraestrutura antes de qualquer step, é permitido usar fallback local temporário. Esse fallback não pode ser usado para esconder ou contornar um erro funcional que o CI realmente executou e encontrou.
+
+O fallback local obrigatório é:
+
+```bash
+git fetch origin
+git switch <branch-do-pr>
+git pull --ff-only origin <branch-do-pr>
+git rev-parse HEAD
+corepack enable
+corepack prepare pnpm@11.24.0 --activate
+pnpm install --frozen-lockfile
+pnpm check
+git status --short
+```
+
+Regras do fallback:
+
+- validar exatamente o SHA atual do head do PR;
+- registrar esse SHA na descrição/comentário do PR;
+- registrar que `install --frozen-lockfile`, `format:check`, `lint`, `typecheck`, `test` e `build` passaram;
+- `git status --short` não pode revelar artefatos ou alterações inesperadas;
+- qualquer push posterior invalida a validação local anterior;
+- se o Actions voltar a executar normalmente antes do merge, o CI volta a ser a evidência preferida;
+- falha real de lint, typecheck, teste ou build deve ser corrigida no PR, nunca ignorada por causa do fallback.
 
 ## Handoff obrigatório após merge
 
@@ -88,7 +118,9 @@ Uma atividade só está concluída quando:
 
 - critérios de aceite atendidos;
 - testes adequados existem e passam;
-- format, lint, typecheck, testes e build passam no CI do commit final;
+- format, lint, typecheck, testes e build passam no quality gate do commit final;
+- CI é usado quando disponível; fallback local só é aceito nas condições externas documentadas acima;
+- SHA exato validado fica registrado quando houver fallback local;
 - erros e edge cases tratados;
 - sem segredo/PII em código/log;
 - mudanças de domínio documentadas;
@@ -185,5 +217,7 @@ typecheck
 test
 build
 ```
+
+O fallback local executa o mesmo conjunto via `pnpm check`, precedido por `pnpm install --frozen-lockfile`.
 
 Security checks entram gradualmente, sem transformar warnings irrelevantes em ruído permanente. Proteções de supply chain do pnpm devem permanecer ativas; exceções precisam ser estreitas, versionadas e documentadas.
