@@ -29,7 +29,10 @@ export class InvalidTransactionTypeError extends TransactionDomainError {
 
 export class InvalidTransactionTimestampError extends TransactionDomainError {
   public constructor(value: string) {
-    super("INVALID_TRANSACTION_TIMESTAMP", `Invalid transaction timestamp: ${JSON.stringify(value)}`);
+    super(
+      "INVALID_TRANSACTION_TIMESTAMP",
+      `Invalid transaction timestamp: ${JSON.stringify(value)}`,
+    );
   }
 }
 
