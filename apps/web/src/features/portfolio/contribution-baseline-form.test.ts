@@ -84,6 +84,30 @@ describe("contribution baseline form adapter", () => {
     });
   });
 
+  it("propagates the portfolio reference currency through every Money value", () => {
+    const result = createContributionBaselineSnapshot(
+      {
+        portfolioValue: "1000",
+        contribution: "250,50",
+        rows: [{ assetClass: "EQUITY", targetWeight: "100", currentValue: "1000" }],
+      },
+      { ...PORTFOLIO, referenceCurrency: "USD" },
+    );
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+
+    expect(result.snapshot.portfolioValue).toEqual({ currency: "USD", minorUnits: "100000" });
+    expect(result.snapshot.contribution).toEqual({ currency: "USD", minorUnits: "25050" });
+    expect(result.snapshot.postContributionValue).toEqual({
+      currency: "USD",
+      minorUnits: "125050",
+    });
+    expect(result.snapshot.allocations[0]?.currentValue.currency).toBe("USD");
+    expect(result.snapshot.allocations[0]?.allocatedAmount.currency).toBe("USD");
+    expect(result.snapshot.unallocatedContribution.currency).toBe("USD");
+  });
+
   it("accepts a zero contribution without inventing a destination", () => {
     const result = createContributionBaselineSnapshot(draftWith({ contribution: "0" }), PORTFOLIO);
 
@@ -91,10 +115,9 @@ describe("contribution baseline form adapter", () => {
     if (!result.ok) return;
 
     expect(result.snapshot.contribution.minorUnits).toBe("0");
-    expect(result.snapshot.allocations.map((allocation) => allocation.allocatedAmount.minorUnits)).toEqual([
-      "0",
-      "0",
-    ]);
+    expect(
+      result.snapshot.allocations.map((allocation) => allocation.allocatedAmount.minorUnits),
+    ).toEqual(["0", "0"]);
     expect(result.snapshot.unallocatedContribution.minorUnits).toBe("0");
   });
 
