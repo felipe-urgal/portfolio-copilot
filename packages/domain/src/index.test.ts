@@ -1,6 +1,13 @@
 import { describe, expect, it } from "vitest";
 
-import { AllocationWeight, AssetClass, AssetId, Money, Percentage } from "./index";
+import {
+  AllocationWeight,
+  AssetClass,
+  AssetId,
+  InstrumentType,
+  Money,
+  Percentage,
+} from "./index";
 
 describe("domain package boundary", () => {
   it("exports the fundamental financial and asset value objects", () => {
@@ -8,6 +15,7 @@ describe("domain package boundary", () => {
     expect(Percentage.fromPercent("10").toPercentString()).toBe("10.0000");
     expect(AllocationWeight.fromPercent("50").toPercentString()).toBe("50.0000");
     expect(AssetClass.from("EQUITY").toString()).toBe("EQUITY");
+    expect(InstrumentType.from("ETF").toString()).toBe("ETF");
     expect(AssetId.from("550e8400-e29b-41d4-a716-446655440000").toString()).toBe(
       "550e8400-e29b-41d4-a716-446655440000",
     );
