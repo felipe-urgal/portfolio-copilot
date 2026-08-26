@@ -1,5 +1,6 @@
 export type ContributionDomainErrorCode =
   | "ALLOCATION_GAP_PORTFOLIO_MISMATCH"
+  | "CONTRIBUTION_ALLOCATOR_PORTFOLIO_MISMATCH"
   | "DUPLICATE_CURRENT_ALLOCATION_BUCKET"
   | "NEGATIVE_ALLOCATION_VALUE"
   | "ALLOCATION_TOTAL_MISMATCH";
@@ -22,6 +23,18 @@ export class AllocationGapPortfolioMismatchError extends ContributionDomainError
     super(
       "ALLOCATION_GAP_PORTFOLIO_MISMATCH",
       `Cannot calculate allocation gaps across portfolios: target ${targetPortfolioId}, current ${currentPortfolioId}`,
+    );
+  }
+}
+
+export class ContributionAllocatorPortfolioMismatchError extends ContributionDomainError {
+  public constructor(
+    public readonly targetPortfolioId: string,
+    public readonly currentPortfolioId: string,
+  ) {
+    super(
+      "CONTRIBUTION_ALLOCATOR_PORTFOLIO_MISMATCH",
+      `Cannot allocate a contribution across portfolios: target ${targetPortfolioId}, current ${currentPortfolioId}`,
     );
   }
 }

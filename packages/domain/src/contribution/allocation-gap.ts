@@ -1,20 +1,16 @@
 import { AssetClass, type AssetClassCode } from "../asset";
-import { AllocationWeight, CurrencyMismatchError, Money } from "../financial";
+import { AllocationWeight, Money } from "../financial";
 import { PortfolioId, TargetAllocation } from "../portfolio";
 import {
-  AllocationGapPortfolioMismatchError,
-  AllocationTotalMismatchError,
-  DuplicateCurrentAllocationBucketError,
-  NegativeAllocationValueError,
-} from "./errors";
+  apportionTargetValues,
+  normalizeCurrentValues,
+  type CurrentAllocationBucketInput,
+} from "./allocation-state";
+import { AllocationGapPortfolioMismatchError, NegativeAllocationValueError } from "./errors";
+
+export type { CurrentAllocationBucketInput } from "./allocation-state";
 
 const ZERO_WEIGHT = AllocationWeight.zero();
-const FULL_WEIGHT_SCALED_UNITS = AllocationWeight.full().percentage.scaledUnits;
-
-export type CurrentAllocationBucketInput = Readonly<{
-  assetClass: AssetClass | string;
-  currentValue: Money;
-}>;
 
 export type AllocationGapCalculationInput = Readonly<{
   portfolioId: PortfolioId | string;
@@ -32,112 +28,8 @@ export type AllocationGap = Readonly<{
   gap: Money;
 }>;
 
-type NormalizedCurrentBucket = Readonly<{
-  currentValue: Money;
-}>;
-
-type MutableTargetApportionment = {
-  assetClass: AssetClass;
-  targetWeight: AllocationWeight;
-  minorUnits: bigint;
-  remainder: bigint;
-};
-
 function toPortfolioId(value: PortfolioId | string): PortfolioId {
   return typeof value === "string" ? PortfolioId.from(value) : value;
-}
-
-function toAssetClass(value: AssetClass | string): AssetClass {
-  return typeof value === "string" ? AssetClass.from(value) : value;
-}
-
-function compareAssetClasses(left: AssetClass, right: AssetClass): number {
-  if (left.code < right.code) return -1;
-  if (left.code > right.code) return 1;
-  return 0;
-}
-
-function compareRemainders(
-  left: MutableTargetApportionment,
-  right: MutableTargetApportionment,
-): number {
-  if (left.remainder > right.remainder) return -1;
-  if (left.remainder < right.remainder) return 1;
-  return compareAssetClasses(left.assetClass, right.assetClass);
-}
-
-function normalizeCurrentValues(
-  portfolioId: PortfolioId,
-  totalValue: Money,
-  inputs: readonly CurrentAllocationBucketInput[],
-): ReadonlyMap<AssetClassCode, NormalizedCurrentBucket> {
-  const buckets = new Map<AssetClassCode, NormalizedCurrentBucket>();
-  let bucketTotalMinorUnits = 0n;
-
-  for (const input of inputs) {
-    const assetClass = toAssetClass(input.assetClass);
-
-    if (buckets.has(assetClass.code)) {
-      throw new DuplicateCurrentAllocationBucketError(assetClass.code);
-    }
-
-    if (!input.currentValue.currency.equals(totalValue.currency)) {
-      throw new CurrencyMismatchError(totalValue.currency.code, input.currentValue.currency.code);
-    }
-
-    if (input.currentValue.isNegative()) {
-      throw new NegativeAllocationValueError(
-        `currentValues.${assetClass.code}`,
-        input.currentValue.toDecimalString(),
-        input.currentValue.currency.code,
-      );
-    }
-
-    buckets.set(assetClass.code, Object.freeze({ currentValue: input.currentValue }));
-    bucketTotalMinorUnits += input.currentValue.minorUnits;
-  }
-
-  if (bucketTotalMinorUnits !== totalValue.minorUnits) {
-    const bucketTotal = Money.fromMinorUnits(bucketTotalMinorUnits, totalValue.currency);
-    throw new AllocationTotalMismatchError(
-      portfolioId.toString(),
-      totalValue.toDecimalString(),
-      bucketTotal.toDecimalString(),
-      totalValue.currency.code,
-    );
-  }
-
-  return buckets;
-}
-
-function apportionTargetValues(
-  targetAllocation: TargetAllocation,
-  totalValue: Money,
-): ReadonlyMap<AssetClassCode, MutableTargetApportionment> {
-  const apportioned = targetAllocation.buckets.map<MutableTargetApportionment>((bucket) => {
-    const numerator = totalValue.minorUnits * bucket.targetWeight.percentage.scaledUnits;
-
-    return {
-      assetClass: bucket.assetClass,
-      targetWeight: bucket.targetWeight,
-      minorUnits: numerator / FULL_WEIGHT_SCALED_UNITS,
-      remainder: numerator % FULL_WEIGHT_SCALED_UNITS,
-    };
-  });
-
-  const assignedMinorUnits = apportioned.reduce((sum, bucket) => sum + bucket.minorUnits, 0n);
-  let residualMinorUnits = totalValue.minorUnits - assignedMinorUnits;
-
-  for (const bucket of [...apportioned].sort(compareRemainders)) {
-    if (residualMinorUnits === 0n) break;
-
-    bucket.minorUnits += 1n;
-    residualMinorUnits -= 1n;
-  }
-
-  return new Map<AssetClassCode, MutableTargetApportionment>(
-    apportioned.map((bucket) => [bucket.assetClass.code, bucket] as const),
-  );
 }
 
 export function calculateAllocationGaps(

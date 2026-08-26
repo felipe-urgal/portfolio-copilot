@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   AllocationWeight,
+  allocateContribution,
   AssetClass,
   AssetId,
   AssetQuantity,
@@ -41,5 +42,6 @@ describe("domain package boundary", () => {
     expect(typeof projectAssetPositions).toBe("function");
     expect(typeof TargetAllocation.create).toBe("function");
     expect(typeof calculateAllocationGaps).toBe("function");
+    expect(typeof allocateContribution).toBe("function");
   });
 });

@@ -4,9 +4,16 @@ export type {
   AllocationGapCalculationInput,
   CurrentAllocationBucketInput,
 } from "./allocation-gap";
+export { allocateContribution } from "./contribution-allocator";
+export type {
+  ContributionAllocation,
+  ContributionAllocatorInput,
+  ContributionPlan,
+} from "./contribution-allocator";
 export {
   AllocationGapPortfolioMismatchError,
   AllocationTotalMismatchError,
+  ContributionAllocatorPortfolioMismatchError,
   ContributionDomainError,
   DuplicateCurrentAllocationBucketError,
   NegativeAllocationValueError,
