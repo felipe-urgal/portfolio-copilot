@@ -8,7 +8,7 @@ const SUMMARY_STATES = [
   {
     label: "Patrimônio total",
     state: "Dado indisponível",
-    detail: "Ainda não existe uma carteira cadastrada para calcular este resumo.",
+    detail: "O dashboard ainda não recebe carteira persistida nem preços para calcular este resumo.",
   },
   {
     label: "Aporte do mês",
@@ -56,8 +56,8 @@ export function DashboardOverview() {
         <div>
           <h2 id="persistence-title">Sem persistência nesta versão</h2>
           <p>
-            O onboarding já valida um perfil financeiro, mas esse estado vive somente na própria
-            página. Por isso, o dashboard ainda não recebe perfil, reserva ou objetivos
+            Onboarding e carteira já possuem fluxos locais, mas cada estado vive somente na própria
+            página. Por isso, o dashboard ainda não recebe perfil, reserva, objetivos ou portfolio
             configurados.
           </p>
         </div>
@@ -92,21 +92,25 @@ export function DashboardOverview() {
             <div className={styles.detailHeading}>
               <div>
                 <h2 id="portfolio-title">Carteira</h2>
-                <p>Resumo de posições e alocação quando esses dados existirem.</p>
+                <p>Cadastro local disponível; posições continuam dependentes de transações.</p>
               </div>
-              <span>Próximo vertical</span>
+              <span>Cadastro disponível</span>
             </div>
 
             <div className={styles.emptyState}>
               <span className={styles.emptyMark} aria-hidden="true" />
               <div>
-                <strong>Carteira ainda não cadastrada</strong>
+                <strong>Carteira não disponível no dashboard</strong>
                 <p>
-                  Não há patrimônio, posições, pesos ou desvios para mostrar. Esta região fica vazia
-                  até existir estado real de carteira.
+                  O cadastro local existe na tela de carteira, mas ainda não é persistido nem
+                  compartilhado com esta visão geral.
                 </p>
               </div>
             </div>
+
+            <Link className={styles.secondaryAction} href="/portfolio">
+              Abrir carteira
+            </Link>
           </section>
 
           <section className={styles.detailRegion} aria-labelledby="configuration-title">
@@ -154,18 +158,17 @@ export function DashboardOverview() {
             <span className={styles.stepNumber}>2</span>
             <div>
               <strong>Cadastre sua carteira</strong>
-              <p>
-                Esta capacidade ainda não está disponível na interface e será o próximo vertical.
-              </p>
+              <p>Crie localmente a identidade, o nome e a moeda de referência do Portfolio.</p>
+              <Link href="/portfolio">Ir para a carteira</Link>
             </div>
           </li>
           <li>
             <span className={styles.stepNumber}>3</span>
             <div>
-              <strong>Planeje o aporte</strong>
+              <strong>Registre transações</strong>
               <p>
-                O aporte do mês só será apresentado quando houver carteira e entrada suficiente para
-                o motor determinístico.
+                Posições só poderão aparecer quando o Transaction Ledger tiver fatos suficientes
+                para projetá-las.
               </p>
             </div>
           </li>
