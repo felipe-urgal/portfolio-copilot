@@ -2,6 +2,8 @@
 
 import { useState, type FormEvent } from "react";
 
+import type { PortfolioSnapshot } from "@portfolio-copilot/domain";
+
 import {
   createInitialPortfolioDraft,
   createPortfolioSnapshot,
@@ -23,11 +25,7 @@ function FieldError({ id, message }: Readonly<{ id: string; message: string | un
 export function PortfolioWorkspace() {
   const [draft, setDraft] = useState<PortfolioDraft>(createInitialPortfolioDraft);
   const [errors, setErrors] = useState<PortfolioFieldErrors>({});
-  const [snapshot, setSnapshot] = useState<ReturnType<typeof createPortfolioSnapshot> extends infer R
-    ? R extends { ok: true; snapshot: infer S }
-      ? S | null
-      : never
-    : never>(null);
+  const [snapshot, setSnapshot] = useState<PortfolioSnapshot | null>(null);
 
   function updateDraft(field: keyof PortfolioDraft, value: string): void {
     setDraft((current) => ({
@@ -101,7 +99,11 @@ export function PortfolioWorkspace() {
                   maxLength={120}
                   value={draft.name}
                   aria-invalid={errors.name !== undefined}
-                  aria-describedby={errors.name === undefined ? "portfolio-name-help" : "portfolio-name-help portfolio-name-error"}
+                  aria-describedby={
+                    errors.name === undefined
+                      ? "portfolio-name-help"
+                      : "portfolio-name-help portfolio-name-error"
+                  }
                   onChange={(event) => updateDraft("name", event.target.value)}
                 />
                 <p className={styles.helpText} id="portfolio-name-help">
