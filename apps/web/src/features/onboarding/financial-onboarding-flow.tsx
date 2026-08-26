@@ -109,7 +109,7 @@ function describedBy(
 
 function focusFirstInvalidField(): void {
   requestAnimationFrame(() => {
-    document.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus();
+    document.querySelector<HTMLElement>('[aria-invalid="true"], [data-invalid="true"]')?.focus();
   });
 }
 
@@ -178,13 +178,16 @@ function ProfileStep({
         <FieldError id="currency-error" message={currencyError} />
       </div>
 
-      <fieldset className={styles.fieldset}>
+      <fieldset
+        className={styles.fieldset}
+        aria-describedby={describedBy("risk-help", "risk-error", riskError !== undefined)}
+      >
         <legend className={styles.legend}>Tolerância a risco</legend>
-        <p className={styles.helpText}>
+        <p className={styles.helpText} id="risk-help">
           Esta é uma preferência declarada e não substitui uma avaliação regulatória de perfil.
         </p>
         <div className={styles.choiceGrid}>
-          {RISK_TOLERANCE_CODES.map((risk) => {
+          {RISK_TOLERANCE_CODES.map((risk, index) => {
             const content = RISK_LABELS[risk];
             const checked = draft.riskTolerance === risk;
 
@@ -200,8 +203,7 @@ function ProfileStep({
                   name="riskTolerance"
                   value={risk}
                   checked={checked}
-                  aria-invalid={riskError !== undefined}
-                  aria-describedby={riskError === undefined ? undefined : "risk-error"}
+                  data-invalid={index === 0 && riskError !== undefined ? "true" : undefined}
                   onChange={() =>
                     dispatch({ type: "update-profile", field: "riskTolerance", value: risk })
                   }
@@ -216,14 +218,17 @@ function ProfileStep({
         <FieldError id="risk-error" message={riskError} />
       </fieldset>
 
-      <fieldset className={styles.fieldset}>
+      <fieldset
+        className={styles.fieldset}
+        aria-describedby={describedBy("horizon-help", "horizon-error", horizonError !== undefined)}
+      >
         <legend className={styles.legend}>Horizonte financeiro</legend>
-        <p className={styles.helpText}>
+        <p className={styles.helpText} id="horizon-help">
           Escolha a categoria que melhor representa seu horizonte, sem converter automaticamente
           para anos.
         </p>
         <div className={styles.segmentedChoices}>
-          {FINANCIAL_HORIZON_CODES.map((horizon) => (
+          {FINANCIAL_HORIZON_CODES.map((horizon, index) => (
             <label
               className={draft.horizon === horizon ? styles.segmentSelected : styles.segment}
               data-onboarding-segment
@@ -235,8 +240,7 @@ function ProfileStep({
                 name="horizon"
                 value={horizon}
                 checked={draft.horizon === horizon}
-                aria-invalid={horizonError !== undefined}
-                aria-describedby={horizonError === undefined ? undefined : "horizon-error"}
+                data-invalid={index === 0 && horizonError !== undefined ? "true" : undefined}
                 onChange={() =>
                   dispatch({ type: "update-profile", field: "horizon", value: horizon })
                 }

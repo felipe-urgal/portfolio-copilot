@@ -12,6 +12,10 @@ describe("FinancialOnboardingFlow accessibility shell", () => {
     expect(html).toContain("<fieldset");
     expect(html).toContain('name="riskTolerance"');
     expect(html).toContain('name="horizon"');
+    expect(html).toContain('aria-describedby="risk-help"');
+    expect(html).toContain('aria-describedby="horizon-help"');
+    expect(html).toContain('id="risk-help"');
+    expect(html).toContain('id="horizon-help"');
     expect(html).toContain('id="reference-currency"');
     expect(html).toContain("Sem salvamento automático");
     expect(html).toContain("Os dados vivem somente nesta página durante este MVP.");
