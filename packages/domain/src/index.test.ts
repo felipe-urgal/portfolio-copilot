@@ -10,6 +10,7 @@ import {
   AssetClass,
   AssetId,
   AssetQuantity,
+  buildContributionRecommendationSnapshot,
   calculateAllocationGaps,
   InstrumentType,
   Money,
@@ -51,5 +52,6 @@ describe("domain package boundary", () => {
     expect(typeof applyContributionExecutionConstraints).toBe("function");
     expect(typeof applyAssetClassConcentrationLimits).toBe("function");
     expect(typeof applyContributionCostTaxConstraints).toBe("function");
+    expect(typeof buildContributionRecommendationSnapshot).toBe("function");
   });
 });

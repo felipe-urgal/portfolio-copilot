@@ -14,7 +14,8 @@ export type ContributionDomainErrorCode =
   | "INVALID_ASSET_CLASS_CONCENTRATION_RANGE"
   | "DUPLICATE_CONTRIBUTION_COST_CONSTRAINT"
   | "UNKNOWN_CONTRIBUTION_COST_CONSTRAINT_DESTINATION"
-  | "INVALID_CONTRIBUTION_COST_AMOUNT";
+  | "INVALID_CONTRIBUTION_COST_AMOUNT"
+  | "INVALID_CONTRIBUTION_METHODOLOGY_VERSION";
 
 export class ContributionDomainError extends Error {
   public constructor(
@@ -202,6 +203,15 @@ export class InvalidContributionCostAmountError extends ContributionDomainError 
     super(
       "INVALID_CONTRIBUTION_COST_AMOUNT",
       `Contribution ${field} for asset ${assetId} must be Money: ${JSON.stringify(value)}`,
+    );
+  }
+}
+
+export class InvalidContributionMethodologyVersionError extends ContributionDomainError {
+  public constructor(public readonly value: string) {
+    super(
+      "INVALID_CONTRIBUTION_METHODOLOGY_VERSION",
+      `Contribution methodologyVersion must be a non-empty canonical string: ${JSON.stringify(value)}`,
     );
   }
 }

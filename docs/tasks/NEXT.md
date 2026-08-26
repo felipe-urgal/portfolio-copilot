@@ -1,62 +1,59 @@
-# Próxima Atividade — Portfolio Engine: orquestração do pipeline de aporte e snapshot auditável
+# Próxima Atividade — Portfolio Engine: testes de invariantes do pipeline de aporte
 
-**Status:** READY após merge das restrições de custo e impacto tributário.
+**Status:** READY após merge da orquestração e snapshot auditável.
 
 ## Objetivo
 
-Compor as camadas já existentes do Portfolio Engine em um fluxo único e determinístico de recomendação de aporte, produzindo um snapshot final auditável sem adicionar novas regras financeiras.
+Fechar a fundação do pipeline de aporte com testes de invariantes em uma matriz determinística ampla de cenários, validando reconciliação monetária, limites, ordenação e reprodutibilidade sem adicionar novas regras financeiras.
 
 ## Escopo
 
-- função/orquestrador puro para executar o pipeline canônico de aporte;
-- ordem explícita: allocator -> política de microaporte -> concentração por `AssetClass` -> restrições de execução -> custos/impacto tributário;
-- entrada composta reutilizando os contratos já existentes, sem duplicar validações financeiras;
-- saída final com destinos, valores brutos, valor investível, custos conhecidos, unidade mínima e sobra explícita;
-- reason/status codes determinísticos para decisões materiais de bloqueio ou alerta que sobrevivam ao pipeline;
-- preservação de `PortfolioId`, moeda e identidades `AssetId`/`AssetClass`;
-- snapshot imutável e reproduzível;
-- campo explícito de `methodologyVersion` fornecido pela camada chamadora, sem inventar versão em runtime;
-- testes end-to-end do domínio cobrindo composição e reconciliação monetária;
-- documentação da fronteira entre motor puro e futuros adapters de dados/provenance.
+- suíte de invariantes sobre `buildContributionRecommendationSnapshot` e as camadas que ele compõe;
+- geração determinística de cenários com diferentes aportes em centavos, valores atuais e distribuições-alvo válidas;
+- combinações de política de microaporte, limites soft/hard, elegibilidade e custos conhecidos;
+- verificar sempre `contribution = totalInvestableAmount + totalConsumedKnownCost + unallocatedContribution`;
+- nenhum valor investível ou sobra final negativos;
+- destino bloqueado nunca possui valor investível positivo;
+- hard limit nunca deixa novo aporte acima do teto na granularidade monetária definida;
+- custo consumido nunca excede o orçamento bruto do destino executável;
+- reason codes e decisões mantêm ordem determinística;
+- mesma entrada produz snapshot equivalente em execuções repetidas;
+- snapshots permanecem serializáveis sem `bigint`, classes ou objetos de infraestrutura;
+- priorizar corpus gerado deterministicamente com Vitest já existente; nova dependência property-based só entra se houver ganho claro e revisão de supply chain;
+- documentar qualquer bug de domínio revelado pelos invariantes e corrigi-lo no mesmo vertical.
 
 ## Fora de escopo
 
 - novas fórmulas de alocação;
-- Quality Score, Opportunity Score ou Portfolio Fit;
-- ranking de ativos;
 - preço em tempo real;
 - FX;
 - cálculo fiscal;
-- consulta de tarifas;
+- ranking de ativos;
+- Quality Score, Opportunity Score ou Portfolio Fit;
 - venda/rebalanceamento;
-- persistência, banco e repositórios;
-- API;
-- UI;
+- persistência, API ou UI;
+- adapters de dados;
 - IA.
 
 ## Critérios de aceite
 
-- o orquestrador reutiliza as funções existentes em vez de reimplementar regras;
-- nenhuma etapa posterior perde silenciosamente a provenance de bloqueios/alertas anteriores;
-- soma entre valores investíveis, custos consumidos e sobra final reconcilia com o aporte sob as semânticas já definidas;
-- `methodologyVersion` é explícita e estável na saída;
-- ordem dos destinos e reason codes é determinística;
-- erros tipados das camadas internas continuam observáveis sem wrapping genérico;
-- nenhuma dependência externa é chamada pelo domínio puro;
-- execução repetida com a mesma entrada produz snapshot equivalente;
+- corpus cobre centenas de combinações reproduzíveis sem aleatoriedade não controlada;
+- reconciliação monetária é provada para todos os casos válidos do corpus;
+- nenhum hard limit, bloqueio de elegibilidade ou custo conhecido é violado;
+- snapshots podem passar por `JSON.stringify` de forma determinística;
+- falhas apresentam cenário mínimo/reproduzível suficiente para diagnóstico;
+- nenhuma dependência nova é adicionada sem justificativa explícita;
 - `pnpm check` passa integralmente no head final validado.
 
-## Casos de teste mínimos
+## Casos mínimos
 
-- fluxo sem restrições adicionais;
-- microaporte concentrado;
-- hard limit bloqueando parte da alocação;
-- destino inelegível;
-- custo reduzindo valor investível;
-- custo bloqueando destino;
-- combinação de múltiplas restrições;
-- sobra upstream preservada entre etapas;
-- múltiplos destinos com ordem estável;
-- erro de uma camada interna propagado tipado;
-- `methodologyVersion` preservada;
-- resultado imutável e reproduzível.
+- aporte zero e aportes de poucos centavos;
+- uma e múltiplas classes;
+- pesos com restos monetários;
+- política sem restrição e política concentradora;
+- hard limit exato, parcial e bloqueio total;
+- destino elegível e inelegível;
+- custo zero, menor, igual e maior que a alocação;
+- sobra originada em cada etapa do pipeline;
+- combinações de dois ou mais bloqueios;
+- repetição do mesmo cenário e serialização JSON estável.

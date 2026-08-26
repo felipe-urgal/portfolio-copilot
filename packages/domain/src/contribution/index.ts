@@ -35,6 +35,20 @@ export type {
 export { applyContributionPolicy } from "./contribution-policy";
 export type { ContributionPolicy, ContributionPolicyApplicationInput } from "./contribution-policy";
 export {
+  buildContributionRecommendationSnapshot,
+  CONTRIBUTION_RECOMMENDATION_REASON_CODES,
+  CONTRIBUTION_RECOMMENDATION_STATUSES,
+} from "./contribution-recommendation-pipeline";
+export type {
+  ContributionRecommendationCashRemainderSnapshot,
+  ContributionRecommendationDecisionSnapshot,
+  ContributionRecommendationPipelineInput,
+  ContributionRecommendationPolicySnapshot,
+  ContributionRecommendationReasonCode,
+  ContributionRecommendationSnapshot,
+  ContributionRecommendationStatus,
+} from "./contribution-recommendation-pipeline";
+export {
   AllocationGapPortfolioMismatchError,
   AllocationTotalMismatchError,
   ContributionAllocatorPortfolioMismatchError,
@@ -47,6 +61,7 @@ export {
   InvalidAssetClassConcentrationWeightError,
   InvalidContributionCostAmountError,
   InvalidContributionDestinationEligibilityError,
+  InvalidContributionMethodologyVersionError,
   InvalidMaxDestinationsPerContributionError,
   InvalidMinimumTradableQuantityError,
   MissingContributionExecutionDestinationError,

@@ -241,3 +241,22 @@ Histórico resumido de atividades concluídas.
 - testes cobrem custo zero/positivo, impacto tributário, combinação, igualdade/excesso, moedas, negativos, duplicidade, custo órfão, múltiplos destinos, centavos, integração, imutabilidade e determinismo;
 - ADR-0016/D-024 registram reconciliação, semântica tributária e fronteira com adapters externos;
 - não há nova dependência, lockfile, schema, persistência ou integração externa.
+
+## 2026-08-26 — Portfolio Engine: orquestração e snapshot auditável do aporte
+
+- `buildContributionRecommendationSnapshot` criado como orquestrador puro do pipeline canônico de aporte;
+- ordem fixa: allocator -> política de microaporte -> concentração por `AssetClass` -> restrições de execução -> custos/impacto tributário;
+- o orquestrador reutiliza as funções existentes e não reimplementa fórmulas financeiras;
+- entrada composta reutiliza os contratos das cinco camadas e recebe `methodologyVersion` explicitamente;
+- snapshot final usa somente strings/números/booleanos/enums serializáveis, sem `bigint` ou value objects expostos;
+- por decisão material, preserva valores atual/alvo/need, alocação baseline, após política e após concentração;
+- thresholds soft/hard, valor bloqueado, elegibilidade, unidade mínima, custos e valor investível permanecem auditáveis;
+- reason codes têm ordem estável e sobrevivem a bloqueios posteriores;
+- status final diferencia política, concentração, inelegibilidade, custo e destino executável;
+- custo conhecido bloqueado permanece visível, mas `consumedKnownCost` fica zero porque a operação não ocorre;
+- agregado reconcilia aporte como valor investível + custos efetivamente consumidos + sobra final;
+- erros tipados das camadas internas propagam sem wrapping genérico;
+- snapshot e coleções internas são congelados e reproduzíveis para a mesma entrada;
+- `methodologyVersion` vazia ou com whitespace periférico é rejeitada por erro tipado;
+- ADR-0017/D-025 registram ordem do pipeline, reason codes, reconciliação e fronteira com provenance externo;
+- não há nova dependência, lockfile, schema, persistência, API, UI ou integração externa.

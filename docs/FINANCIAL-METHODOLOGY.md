@@ -225,6 +225,35 @@ Se `totalKnownCost >= allocatedAmount`, não existe valor positivo para investir
 
 A camada não redistribui automaticamente orçamento bloqueado nem recalcula regras fiscais. Descoberta de tarifas, cálculo tributário e provenance desses dados pertencem a componentes externos futuros.
 
+### Pipeline canônico e snapshot auditável
+
+O fluxo canônico de aporte compõe as regras existentes nesta ordem:
+
+```text
+allocateContribution
+  -> applyContributionPolicy
+  -> applyAssetClassConcentrationLimits
+  -> applyContributionExecutionConstraints
+  -> applyContributionCostTaxConstraints
+  -> ContributionRecommendationSnapshot
+```
+
+O orquestrador não redefine fórmulas. Ele preserva resultados intermediários para que uma decisão posterior não apague a provenance de uma etapa anterior.
+
+O snapshot registra, por decisão material, valores atual/alvo/need, alocação baseline, alocação após política e concentração, thresholds soft/hard, eventual destino por `AssetId`, elegibilidade, unidade mínima, custos conhecidos, valor investível, status final e reason codes estruturados.
+
+`methodologyVersion` é input obrigatório da camada chamadora. O domínio não inventa versão ou timestamp durante a execução, mantendo o mesmo input reproduzível.
+
+A reconciliação agregada usa apenas custos efetivamente consumidos:
+
+```text
+contribution = totalInvestableAmount + totalConsumedKnownCost + unallocatedContribution
+```
+
+Quando um destino é bloqueado por custo, `totalKnownCost` continua visível na decisão, mas `consumedKnownCost = 0`, pois nenhuma operação ocorreu. Reason codes são contratos estruturados para explicações futuras; texto humano não é fonte de verdade do motor.
+
+O snapshot atual não declara provenance de dados externos, `asOf`, preço ou freshness. Esses campos deverão ser adicionados quando adapters de dados entrarem no fluxo e existirem fontes materiais a registrar.
+
 ## Limites
 
 A política deve suportar:
