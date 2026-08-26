@@ -30,6 +30,19 @@ hardMaxWeight
 
 Duplicidade por `AssetClass` normalizada é inválida.
 
+## Ordem no pipeline
+
+A ordem canônica das camadas já disponíveis passa a ser:
+
+```text
+allocateContribution
+  -> applyContributionPolicy
+  -> applyAssetClassConcentrationLimits
+  -> applyContributionExecutionConstraints
+```
+
+Concentração opera por `AssetClass` antes da seleção/restrição operacional por `AssetId`. Assim, risco por classe não passa a depender de ticker, ativo escolhido ou dado de mercado.
+
 ## Denominador
 
 O peso projetado usa o `postContributionValue` já calculado pelo `ContributionAllocator`:
