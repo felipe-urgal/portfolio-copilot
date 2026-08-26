@@ -1,4 +1,5 @@
 import { formatScaledDecimal, parseScaledDecimal } from "./decimal";
+import { InvalidFinancialSnapshotError } from "./errors";
 
 const PERCENT_SCALE = 4;
 
@@ -23,8 +24,9 @@ export class Percentage {
 
   public static fromSnapshot(snapshot: PercentageSnapshot): Percentage {
     if (!/^-?\d+$/.test(snapshot.scaledUnits)) {
-      throw new TypeError(
-        "Percentage snapshot scaledUnits must be an integer string",
+      throw new InvalidFinancialSnapshotError(
+        "Percentage.scaledUnits",
+        snapshot.scaledUnits,
       );
     }
 
