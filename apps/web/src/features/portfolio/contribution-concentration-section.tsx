@@ -280,6 +280,7 @@ export function ContributionConcentrationSection({
 
           <ContributionExecutionSection
             baseline={baseline}
+            policy={policy}
             concentration={concentration}
             assets={assets}
           />
