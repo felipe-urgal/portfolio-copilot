@@ -63,7 +63,9 @@ export function ContributionExecutionSection({
     createInitialContributionExecutionDraft(policy),
   );
   const [errors, setErrors] = useState<ContributionExecutionFieldErrors>({});
-  const [execution, setExecution] = useState<ContributionExecutionSnapshot | null>(initialExecution);
+  const [execution, setExecution] = useState<ContributionExecutionSnapshot | null>(
+    initialExecution,
+  );
 
   const policyByClass = new Map(
     policy.allocations.map((allocation) => [allocation.assetClass, allocation] as const),
@@ -128,6 +130,7 @@ export function ContributionExecutionSection({
               const classLabel = assetClassLabel(row.assetClass);
               const assetSelectId = `execution-asset-${row.assetClass.toLowerCase()}`;
               const minimumId = `execution-minimum-${row.assetClass.toLowerCase()}`;
+              const eligibilityErrorId = `execution-eligibility-${row.assetClass.toLowerCase()}-error`;
 
               return (
                 <div className={executionStyles.executionRow} key={row.assetClass}>
@@ -136,7 +139,9 @@ export function ContributionExecutionSection({
                       <strong>{classLabel}</strong>
                       <span>
                         Após política:{" "}
-                        {policyAllocation ? moneyLabel(policyAllocation.policyAllocatedAmount) : "—"}
+                        {policyAllocation
+                          ? moneyLabel(policyAllocation.policyAllocatedAmount)
+                          : "—"}
                       </span>
                     </div>
                   </div>
@@ -171,7 +176,13 @@ export function ContributionExecutionSection({
                     <ErrorText id={`${assetSelectId}-error`} message={rowErrors?.assetId} />
                   </div>
 
-                  <fieldset className={executionStyles.eligibilityFieldset}>
+                  <fieldset
+                    className={executionStyles.eligibilityFieldset}
+                    aria-invalid={rowErrors?.isEligible !== undefined}
+                    aria-describedby={
+                      rowErrors?.isEligible !== undefined ? eligibilityErrorId : undefined
+                    }
+                  >
                     <legend>Elegibilidade</legend>
                     <div className={executionStyles.eligibilityOptions}>
                       <label>
@@ -193,10 +204,7 @@ export function ContributionExecutionSection({
                         <span>Inelegível</span>
                       </label>
                     </div>
-                    <ErrorText
-                      id={`execution-eligibility-${row.assetClass.toLowerCase()}-error`}
-                      message={rowErrors?.isEligible}
-                    />
+                    <ErrorText id={eligibilityErrorId} message={rowErrors?.isEligible} />
                   </fieldset>
 
                   <div className={styles.fieldGroup}>
