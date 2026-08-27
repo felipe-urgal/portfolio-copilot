@@ -39,8 +39,20 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Format check
-        run: pnpm format:check
+      - name: Expose exact Prettier diff
+        run: |
+          pnpm exec prettier --write \
+            apps/web/src/features/portfolio/contribution-cost-form.test.ts \
+            apps/web/src/features/portfolio/contribution-cost-form.ts \
+            apps/web/src/features/portfolio/contribution-cost-section.tsx
+          git diff -- \
+            apps/web/src/features/portfolio/contribution-cost-form.test.ts \
+            apps/web/src/features/portfolio/contribution-cost-form.ts \
+            apps/web/src/features/portfolio/contribution-cost-section.tsx
+          git diff --exit-code -- \
+            apps/web/src/features/portfolio/contribution-cost-form.test.ts \
+            apps/web/src/features/portfolio/contribution-cost-form.ts \
+            apps/web/src/features/portfolio/contribution-cost-section.tsx
 
       - name: Lint
         run: pnpm lint
