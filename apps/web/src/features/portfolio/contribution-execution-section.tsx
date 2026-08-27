@@ -14,11 +14,7 @@ import {
 } from "./contribution-execution-form";
 import executionStyles from "./contribution-execution-section.module.css";
 import { type ContributionPolicySnapshot } from "./contribution-policy-form";
-import {
-  assetClassLabel,
-  instrumentTypeLabel,
-  type LocalAssetSnapshot,
-} from "./local-asset-form";
+import { assetClassLabel, instrumentTypeLabel, type LocalAssetSnapshot } from "./local-asset-form";
 import styles from "./contribution-baseline-panel.module.css";
 
 type ContributionExecutionSectionProps = Readonly<{

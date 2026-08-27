@@ -192,9 +192,7 @@ export function createContributionExecutionSnapshot(
           .filter((allocation) => !allocation.allocatedAmount.isZero())
           .map((allocation) => {
             const assetClass = allocation.assetClass.code;
-            const row = draft.destinations.find(
-              (candidate) => candidate.assetClass === assetClass,
-            );
+            const row = draft.destinations.find((candidate) => candidate.assetClass === assetClass);
             const asset = selectedAssets.get(assetClass);
             const policyAllocation = policyByClass.get(assetClass);
 
@@ -205,9 +203,7 @@ export function createContributionExecutionSnapshot(
             const executable = executableByClass.get(assetClass);
             const minimumTradableQuantity =
               executable?.minimumTradableQuantity ??
-              AssetQuantity.fromDecimal(
-                normalizeContributionDecimal(row.minimumTradableQuantity),
-              );
+              AssetQuantity.fromDecimal(normalizeContributionDecimal(row.minimumTradableQuantity));
 
             return {
               assetClass,
