@@ -4,7 +4,10 @@ import { describe, expect, it } from "vitest";
 import type { FinancialProfileSnapshot } from "@portfolio-copilot/domain";
 
 import { FinancialProfileSessionSummary } from "./financial-profile-session-summary";
-import { FinancialSessionProvider } from "./financial-session";
+import {
+  FinancialSessionProvider,
+  type FinancialProfilePersistenceStatus,
+} from "./financial-session";
 
 const PROFILE: FinancialProfileSnapshot = {
   id: "8d5a7a27-2db8-4a51-a6c8-d84f78fd1298",
@@ -28,9 +31,15 @@ const PROFILE: FinancialProfileSnapshot = {
   ],
 };
 
-function renderSummary(initialFinancialProfile: FinancialProfileSnapshot | null): string {
+function renderSummary(
+  initialFinancialProfile: FinancialProfileSnapshot | null,
+  initialPersistenceStatus: FinancialProfilePersistenceStatus = "memory-only",
+): string {
   return renderToStaticMarkup(
-    <FinancialSessionProvider initialFinancialProfile={initialFinancialProfile}>
+    <FinancialSessionProvider
+      initialFinancialProfile={initialFinancialProfile}
+      initialPersistenceStatus={initialPersistenceStatus}
+    >
       <FinancialProfileSessionSummary />
     </FinancialSessionProvider>,
   );
@@ -51,7 +60,7 @@ describe("FinancialProfileSessionSummary", () => {
   it("renders profile, reserve target and goals from the shared snapshot without exposing ids", () => {
     const html = renderSummary(PROFILE);
 
-    expect(html).toContain("Disponível na sessão");
+    expect(html).toContain("Somente nesta sessão");
     expect(html).toContain("BRL");
     expect(html).toContain("Média");
     expect(html).toContain("Longo prazo");
@@ -61,8 +70,17 @@ describe("FinancialProfileSessionSummary", () => {
     expect(html).toContain("Objetivo com data");
     expect(html).toContain("Até 31/12/2030");
     expect(html).toContain("Meta desejada declarada; não representa saldo atual");
+    expect(html).toContain("ainda não está salvo neste dispositivo");
     expect(html).not.toContain(PROFILE.id);
     expect(html).not.toContain(PROFILE.goals[0]?.id ?? "missing-goal-id");
+  });
+
+  it("distinguishes a locally persisted profile from a memory-only session", () => {
+    const html = renderSummary(PROFILE, "persisted");
+
+    expect(html).toContain("Salvo neste dispositivo");
+    expect(html).toContain("salvo localmente neste navegador");
+    expect(html).toContain("Não existe sincronização com conta, servidor ou outro dispositivo");
   });
 
   it("distinguishes missing reserve and goals from zero or progress", () => {
