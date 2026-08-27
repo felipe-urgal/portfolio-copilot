@@ -6,6 +6,7 @@ import { Money, type AssetClassCode, type MoneySnapshot } from "@portfolio-copil
 
 import { type ContributionBaselineSnapshot } from "./contribution-baseline-form";
 import { type ContributionConcentrationSnapshot } from "./contribution-concentration-form";
+import { ContributionCostSection } from "./contribution-cost-section";
 import {
   createContributionExecutionSnapshot,
   createInitialContributionExecutionDraft,
@@ -310,6 +311,8 @@ export function ContributionExecutionSection({
             A quantidade mínima é somente uma restrição do destino. Sem preço, esta etapa não
             converte o aporte em unidades e não executa ordem.
           </p>
+
+          <ContributionCostSection baseline={baseline} execution={execution} assets={assets} />
         </div>
       ) : null}
     </section>
