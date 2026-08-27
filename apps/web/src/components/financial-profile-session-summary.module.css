@@ -53,6 +53,21 @@
   color: #3730a3;
 }
 
+.persistenceButton {
+  border: 0;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.persistenceButton:hover {
+  background: #e4e9ff;
+}
+
+.persistenceButton:focus-visible {
+  outline: 3px solid rgba(79, 70, 229, 0.22);
+  outline-offset: 3px;
+}
+
 .emptyStatus {
   background: #f0f2f5;
   color: #666d7b;
