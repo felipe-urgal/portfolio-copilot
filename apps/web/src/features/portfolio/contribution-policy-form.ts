@@ -50,6 +50,7 @@ export type ContributionPolicyResult =
   | Readonly<{ ok: true; snapshot: ContributionPolicySnapshot }>
   | Readonly<{ ok: false; errors: ContributionPolicyFieldErrors }>;
 
+const MAX_DESTINATIONS_PATTERN = /^\d+$/;
 const MINIMUM_FORMAT_ERROR = "Informe um valor monetário válido para o mínimo significativo.";
 const MINIMUM_NEGATIVE_ERROR = "O mínimo significativo não pode ser negativo.";
 const MAX_DESTINATIONS_ERROR = "Informe um inteiro positivo seguro para o limite de destinos.";
@@ -60,6 +61,11 @@ export function createInitialContributionPolicyDraft(): ContributionPolicyDraft 
     minimumMeaningfulContribution: "",
     maxDestinationsPerContribution: "",
   };
+}
+
+function parseMaxDestinationsPerContribution(value: string): number {
+  const normalized = value.trim();
+  return MAX_DESTINATIONS_PATTERN.test(normalized) ? Number(normalized) : Number.NaN;
 }
 
 function rehydrateContributionPlan(baseline: ContributionBaselineSnapshot): ContributionPlan {
@@ -118,7 +124,9 @@ export function createContributionPolicySnapshot(
     throw error;
   }
 
-  const maxDestinationsPerContribution = Number(draft.maxDestinationsPerContribution.trim());
+  const maxDestinationsPerContribution = parseMaxDestinationsPerContribution(
+    draft.maxDestinationsPerContribution,
+  );
 
   try {
     const baselinePlan = rehydrateContributionPlan(baseline);
