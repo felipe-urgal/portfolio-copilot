@@ -17,7 +17,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   },
   callbacks: {
     jwt({ token, account }) {
-      if (account !== null) {
+      if (account != null) {
         const subject = createCanonicalIdentitySubject(account.provider, account.providerAccountId);
         if (subject !== null) token.sub = subject;
       }
