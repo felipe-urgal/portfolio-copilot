@@ -1,3 +1,4 @@
+import { Money, type MoneySnapshot } from "@portfolio-copilot/domain";
 import { describe, expect, it } from "vitest";
 
 import {
@@ -16,6 +17,10 @@ const PORTFOLIO = {
   name: "Carteira principal",
   referenceCurrency: "BRL",
 } as const;
+
+function moneyValue(snapshot: MoneySnapshot | undefined): string | undefined {
+  return snapshot === undefined ? undefined : Money.fromSnapshot(snapshot).toDecimalString();
+}
 
 function createUpstream(
   draft: ContributionBaselineDraft = {
@@ -79,11 +84,11 @@ describe("contribution concentration form adapter", () => {
     if (!result.ok) return;
 
     const equity = result.snapshot.allocations.find((row) => row.assetClass === "EQUITY");
-    expect(equity?.policyAllocatedAmount.amount).toBe("10.00");
-    expect(equity?.concentrationAllocatedAmount.amount).toBe("10.00");
-    expect(equity?.blockedAmount.amount).toBe("0.00");
+    expect(moneyValue(equity?.policyAllocatedAmount)).toBe("10.00");
+    expect(moneyValue(equity?.concentrationAllocatedAmount)).toBe("10.00");
+    expect(moneyValue(equity?.blockedAmount)).toBe("0.00");
     expect(equity?.status).toBe("NO_LIMIT");
-    expect(result.snapshot.unallocatedContribution.amount).toBe("0.00");
+    expect(moneyValue(result.snapshot.unallocatedContribution)).toBe("0.00");
   });
 
   it("surfaces the soft limit as alert-only without reducing allocation", () => {
@@ -103,7 +108,7 @@ describe("contribution concentration form adapter", () => {
     expect(equity?.hardMaxWeightPercent).toBe("70.0000");
     expect(equity?.softLimitExceeded).toBe(true);
     expect(equity?.hardLimitApplied).toBe(false);
-    expect(equity?.concentrationAllocatedAmount.amount).toBe("10.00");
+    expect(moneyValue(equity?.concentrationAllocatedAmount)).toBe("10.00");
     expect(equity?.status).toBe("SOFT_ALERT");
   });
 
@@ -120,12 +125,12 @@ describe("contribution concentration form adapter", () => {
     if (!result.ok) return;
 
     const equity = result.snapshot.allocations.find((row) => row.assetClass === "EQUITY");
-    expect(equity?.policyAllocatedAmount.amount).toBe("10.00");
-    expect(equity?.concentrationAllocatedAmount.amount).toBe("5.00");
-    expect(equity?.blockedAmount.amount).toBe("5.00");
+    expect(moneyValue(equity?.policyAllocatedAmount)).toBe("10.00");
+    expect(moneyValue(equity?.concentrationAllocatedAmount)).toBe("5.00");
+    expect(moneyValue(equity?.blockedAmount)).toBe("5.00");
     expect(equity?.hardLimitApplied).toBe(true);
     expect(equity?.status).toBe("HARD_LIMITED");
-    expect(result.snapshot.unallocatedContribution.amount).toBe("5.00");
+    expect(moneyValue(result.snapshot.unallocatedContribution)).toBe("5.00");
   });
 
   it("blocks new allocation when the class is already above the hard limit", () => {
@@ -148,10 +153,10 @@ describe("contribution concentration form adapter", () => {
     if (!result.ok) return;
 
     const equity = result.snapshot.allocations.find((row) => row.assetClass === "EQUITY");
-    expect(equity?.policyAllocatedAmount.amount).toBe("9.00");
-    expect(equity?.concentrationAllocatedAmount.amount).toBe("0.00");
-    expect(equity?.blockedAmount.amount).toBe("9.00");
-    expect(result.snapshot.unallocatedContribution.amount).toBe("9.00");
+    expect(moneyValue(equity?.policyAllocatedAmount)).toBe("9.00");
+    expect(moneyValue(equity?.concentrationAllocatedAmount)).toBe("0.00");
+    expect(moneyValue(equity?.blockedAmount)).toBe("9.00");
+    expect(moneyValue(result.snapshot.unallocatedContribution)).toBe("9.00");
   });
 
   it("translates invalid weights and invalid soft-to-hard ranges to row feedback", () => {
