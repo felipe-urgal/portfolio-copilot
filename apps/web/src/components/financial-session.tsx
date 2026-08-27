@@ -73,7 +73,9 @@ export function FinancialSessionProvider({
   );
 
   return (
-    <FinancialSessionContext.Provider value={value}>{children}</FinancialSessionContext.Provider>
+    <FinancialSessionContext.Provider value={value}>
+      {children}
+    </FinancialSessionContext.Provider>
   );
 }
 
