@@ -39,11 +39,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Expose exact Prettier diff
-        run: |
-          pnpm exec prettier --write apps/web/src/features/portfolio/contribution-recommendation-explanation.ts
-          git diff -- apps/web/src/features/portfolio/contribution-recommendation-explanation.ts
-          git diff --exit-code -- apps/web/src/features/portfolio/contribution-recommendation-explanation.ts
+      - name: Format check
+        run: pnpm format:check
 
       - name: Lint
         run: pnpm lint
