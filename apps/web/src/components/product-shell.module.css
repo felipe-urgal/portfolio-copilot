@@ -61,7 +61,8 @@
 
 .navLink,
 .navLinkActive,
-.utilityLink {
+.utilityLink,
+.accountLink {
   min-height: 2.35rem;
   display: inline-flex;
   align-items: center;
@@ -84,13 +85,44 @@
   box-shadow: 0 1px 3px rgba(30, 33, 47, 0.08);
 }
 
-.utilityLink {
+.utilityArea {
   justify-self: end;
-  padding: 0.5rem 0.7rem;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.utilityLink {
+  padding: 0.5rem 0.65rem;
+}
+
+.accountLink {
+  max-width: 13rem;
+  gap: 0.48rem;
+  padding: 0.5rem 0.68rem;
+  border: 1px solid #dfe3eb;
+  background: #fff;
+  color: #343946;
+}
+
+.accountStatus {
+  width: 0.46rem;
+  height: 0.46rem;
+  flex: 0 0 auto;
+  border-radius: 999px;
+  background: #16a34a;
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
+}
+
+.accountName {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .navLink:hover,
-.utilityLink:hover {
+.utilityLink:hover,
+.accountLink:hover {
   color: #292d38;
 }
 
@@ -98,6 +130,7 @@
 .navLink:focus-visible,
 .navLinkActive:focus-visible,
 .utilityLink:focus-visible,
+.accountLink:focus-visible,
 .skipLink:focus-visible {
   outline: 3px solid rgba(79, 70, 229, 0.22);
   outline-offset: 3px;
@@ -107,6 +140,12 @@
   width: min(1180px, calc(100% - 3rem));
   margin: 0 auto;
   padding: 3.25rem 0 5rem;
+}
+
+@media (max-width: 900px) {
+  .accountName {
+    max-width: 7rem;
+  }
 }
 
 @media (max-width: 760px) {
@@ -128,7 +167,12 @@
     flex: 1;
   }
 
-  .utilityLink {
+  .utilityArea {
+    gap: 0.25rem;
+  }
+
+  .utilityLink,
+  .accountLink {
     font-size: 0.76rem;
   }
 
@@ -138,13 +182,18 @@
   }
 }
 
+@media (max-width: 500px) {
+  .accountName {
+    max-width: 5rem;
+  }
+}
+
 @media (max-width: 420px) {
   .topbarInner {
     grid-template-columns: 1fr;
   }
 
-  .utilityLink {
-    grid-row: 3;
+  .utilityArea {
     justify-self: start;
   }
 }

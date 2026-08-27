@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { FinancialProfileSessionSummary } from "@/components/financial-profile-session-summary";
 import { ProductShell } from "@/components/product-shell";
+import type { AuthenticatedIdentity } from "@/lib/identity";
 
 import styles from "./dashboard-overview.module.css";
 
@@ -35,9 +36,13 @@ const CONTEXT_RULES = [
   },
 ] as const;
 
-export function DashboardOverview() {
+type DashboardOverviewProps = Readonly<{
+  identity?: AuthenticatedIdentity;
+}>;
+
+export function DashboardOverview({ identity }: DashboardOverviewProps = {}) {
   return (
-    <ProductShell activeRoute="/dashboard">
+    <ProductShell activeRoute="/dashboard" identity={identity}>
       <FinancialProfileSessionSummary />
 
       <header className={styles.pageHeader}>
