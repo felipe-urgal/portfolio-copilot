@@ -79,6 +79,7 @@ describe("FinancialProfileSessionSummary", () => {
     const html = renderSummary(PROFILE, "persisted");
 
     expect(html).toContain("Salvo neste dispositivo");
+    expect(html).toContain("remover");
     expect(html).toContain("salvo localmente neste navegador");
     expect(html).toContain("Não existe sincronização com conta, servidor ou outro dispositivo");
   });
