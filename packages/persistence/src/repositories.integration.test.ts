@@ -2,6 +2,7 @@ import { fileURLToPath } from "node:url";
 
 import {
   Money,
+  TargetAllocation,
   Transaction,
   type FinancialProfileSnapshot,
   type PortfolioSnapshot,
@@ -112,16 +113,10 @@ describeWithDatabase("PostgreSQL owned persistence", () => {
         { assetClass: "EQUITY", targetWeightPercent: "40" },
       ],
     } as const;
+    const canonicalTarget = TargetAllocation.fromSnapshot(target).toSnapshot();
 
-    await alice.saveTargetAllocation(target);
-
-    expect(await alice.getTargetAllocation(PORTFOLIO.id)).toEqual({
-      portfolioId: PORTFOLIO.id,
-      buckets: [
-        { assetClass: "EQUITY", targetWeightPercent: "40" },
-        { assetClass: "FIXED_INCOME", targetWeightPercent: "60" },
-      ],
-    });
+    expect(await alice.saveTargetAllocation(target)).toEqual(canonicalTarget);
+    expect(await alice.getTargetAllocation(PORTFOLIO.id)).toEqual(canonicalTarget);
     expect(await bob.getTargetAllocation(PORTFOLIO.id)).toBeNull();
   });
 });
