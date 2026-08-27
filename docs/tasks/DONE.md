@@ -320,7 +320,7 @@ Histórico resumido de atividades concluídas.
 - home passa a oferecer o onboarding como ação principal e mantém `/health` como utilitário secundário;
 - layout possui stepper lateral no desktop e compacto no mobile, sem dashboard ou métricas fictícias;
 - controles possuem labels semânticas, fieldsets, foco visível, `aria-invalid`, `aria-describedby` e resumo acessível de erros;
-- auto code review sênior removeu anúncios duplicados de erros, reforçou foco por teclado e ajustou microcopy para não confundir tolerância declarada com suitability;
+- auto review sênior removeu anúncios duplicados de erros, reforçou foco por teclado e ajustou microcopy para não confundir tolerância declarada com suitability;
 - testes puros cobrem reducer, adicionar/remover objetivos, dinheiro, reserva, datas, erros e geração do snapshot;
 - renderização estática testa estrutura acessível, labels, grupos de escolha, progresso e aviso de estado local;
 - `apps/web` passa a declarar dependência workspace explícita de `@portfolio-copilot/domain`;
@@ -562,3 +562,25 @@ Histórico resumido de atividades concluídas.
 - CI do head `ffc729321206df327544a87dcb115698f93ea1bd` passou formatter, lint, typecheck, testes e build antes do merge do PR #32;
 - PR #32 foi mergeado em `f0ba3d178a1c37e6a0aa415b9fd551613b7ed851`;
 - `docs/tasks/NEXT.md` promove persistência local opt-in e versionada somente do perfil financeiro como próximo vertical seguro antes de autenticação/server-side persistence.
+
+## 2026-08-27 — Produto MVP: persistência local opt-in do perfil financeiro
+
+- `localStorage` passa a ser usado somente por um adapter isolado em `apps/web/src/lib`, sem acesso direto pelas superfícies de produto;
+- o storage usa chave namespaced e envelope com versão explícita para permitir evolução controlada do formato;
+- snapshots lidos e escritos são revalidados por `FinancialProfile.fromSnapshot` antes de entrarem ou permanecerem na sessão;
+- JSON corrompido, versão incompatível e snapshot financeiro inválido são descartados sem produzir estado parcial;
+- falhas ou bloqueio do storage degradam para sessão em memória sem quebrar Dashboard, Carteira ou Onboarding;
+- o provider reidrata a cópia persistida somente após mount e mantém SSR/hydration sem acesso antecipado a APIs do navegador;
+- salvar continua opt-in: validar o onboarding publica o snapshot apenas em memória e o usuário escolhe explicitamente `Salvar neste dispositivo`;
+- publicar um novo snapshot validado invalida qualquer cópia persistida anterior para impedir restauração de perfil stale após reload;
+- o usuário pode remover a cópia do dispositivo preservando o perfil na sessão atual, enquanto `Recomeçar` limpa sessão e storage;
+- Dashboard e Carteira continuam consumindo somente `FinancialSessionProvider` e não conhecem detalhes de persistência;
+- a UI diferencia `Somente nesta sessão`, `Salvo neste dispositivo` e storage indisponível, sem prometer sincronização com conta ou servidor;
+- nenhum conteúdo financeiro é enviado a logs, backend ou serviço externo nesta etapa;
+- testes cobrem envelope/versionamento, round-trip revalidado, storage vazio, JSON inválido, versão incompatível, snapshot inválido, remoção, indisponibilidade e estados de apresentação;
+- auto code review sênior corrigiu a possibilidade de cópia persistida stale após edição, adicionou remoção acessível fora do onboarding e ajustou a reidratação para respeitar `react-hooks/set-state-in-effect` sem desabilitar lint;
+- D-027 / ADR-0019 registram a persistência local pré-autenticação como solução provisória, explícita e separada da futura persistência server-side;
+- nenhum Portfolio, Asset, Transaction Ledger, TargetAllocation ou RecommendationSnapshot passou a ser persistido;
+- nenhuma dependência, lockfile, regra financeira, API, Market Data, FX ou IA foi adicionada;
+- CI #213 no head `d64badd0e7456c276ab281c92f04d655eeddd244` passou formatter, lint, typecheck, testes e build antes do fechamento documental;
+- `docs/tasks/NEXT.md` promove fundação de autenticação e identidade server-side, mantendo dados financeiros locais separados da conta nesta primeira etapa.
