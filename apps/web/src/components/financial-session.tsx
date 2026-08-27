@@ -70,9 +70,8 @@ export function FinancialSessionProvider({
   const [state, dispatch] = useReducer(financialSessionReducer, {
     financialProfile: initialFinancialProfile,
   });
-  const [persistenceStatus, setPersistenceStatus] = useState<FinancialProfilePersistenceStatus>(
-    initialPersistenceStatus,
-  );
+  const [persistenceStatus, setPersistenceStatus] =
+    useState<FinancialProfilePersistenceStatus>(initialPersistenceStatus);
 
   useEffect(() => {
     if (initialFinancialProfile !== null) return;
