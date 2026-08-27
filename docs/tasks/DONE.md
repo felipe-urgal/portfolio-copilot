@@ -320,7 +320,7 @@ Histórico resumido de atividades concluídas.
 - home passa a oferecer o onboarding como ação principal e mantém `/health` como utilitário secundário;
 - layout possui stepper lateral no desktop e compacto no mobile, sem dashboard ou métricas fictícias;
 - controles possuem labels semânticas, fieldsets, foco visível, `aria-invalid`, `aria-describedby` e resumo acessível de erros;
-- auto review sênior removeu anúncios duplicados de erros, reforçou foco por teclado e ajustou microcopy para não confundir tolerância declarada com suitability;
+- auto code review sênior removeu anúncios duplicados de erros, reforçou foco por teclado e ajustou microcopy para não confundir tolerância declarada com suitability;
 - testes puros cobrem reducer, adicionar/remover objetivos, dinheiro, reserva, datas, erros e geração do snapshot;
 - renderização estática testa estrutura acessível, labels, grupos de escolha, progresso e aviso de estado local;
 - `apps/web` passa a declarar dependência workspace explícita de `@portfolio-copilot/domain`;
@@ -543,3 +543,22 @@ Histórico resumido de atividades concluídas.
 - testes cobrem todos os status, todos os reason codes, múltiplos motivos em ordem canônica, ausência de inferência monetária e renderização integrada;
 - nenhuma IA, fórmula financeira, Market Data, FX, persistência, API, dependência ou regra de domínio foi adicionada;
 - `docs/tasks/NEXT.md` promove o compartilhamento local em memória do `FinancialProfileSnapshot` entre Onboarding, Dashboard e Carteira, sem inventar progresso de objetivos/reserva.
+
+## 2026-08-27 — Produto MVP: perfil financeiro compartilhado na sessão
+
+- `FinancialSessionProvider` passa a ser a única fonte cliente em memória para `FinancialProfileSnapshot | null` e fica no Root Layout para sobreviver à navegação cliente;
+- o onboarding publica no contexto somente o snapshot final validado pelo domínio e mantém o último snapshot válido enquanto o usuário edita o draft;
+- recomeçar o onboarding limpa explicitamente o perfil compartilhado;
+- Dashboard e Carteira passam a consumir o mesmo snapshot de sessão sem duplicar regras financeiras;
+- moeda de referência, tolerância a risco, horizonte, meta de reserva e objetivos são apresentados a partir do snapshot validado;
+- meta de reserva permanece explicitamente uma meta desejada, nunca saldo atual ou percentual concluído;
+- objetivos permanecem metas declaradas, sem progresso, associação automática ao patrimônio ou recomendação nova;
+- IDs internos continuam fora da UX primária e são usados apenas como identidade técnica quando necessário;
+- ausência de perfil, reserva ou objetivos possui estado explícito e não é convertida em zero ou métrica fictícia;
+- a interface diferencia o contexto financeiro compartilhado dos dados de Portfolio/Assets/Ledger, que continuam locais à Carteira;
+- o estado continua sem persistência e a copy deixa claro que reload/fechamento pode descartá-lo;
+- testes cobrem reducer da sessão, estados presentes/ausentes, Dashboard, Carteira e contrato de apresentação sem IDs/progresso inventado;
+- auto code review sênior confirmou a fronteira do provider no Root Layout e ausência de nova regra financeira, dependência ou integração externa;
+- CI do head `ffc729321206df327544a87dcb115698f93ea1bd` passou formatter, lint, typecheck, testes e build antes do merge do PR #32;
+- PR #32 foi mergeado em `f0ba3d178a1c37e6a0aa415b9fd551613b7ed851`;
+- `docs/tasks/NEXT.md` promove persistência local opt-in e versionada somente do perfil financeiro como próximo vertical seguro antes de autenticação/server-side persistence.
