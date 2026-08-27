@@ -37,7 +37,9 @@ function moneyLabel(currency: string, value: string): string {
   return `${currency} ${value}`;
 }
 
-function statusLabel(status: ContributionRecommendationSnapshot["decisions"][number]["status"]): string {
+function statusLabel(
+  status: ContributionRecommendationSnapshot["decisions"][number]["status"],
+): string {
   if (status === "EXECUTABLE") return "Executável";
   if (status === "NOT_SELECTED_BY_POLICY") return "Fora da política";
   if (status === "BLOCKED_CONCENTRATION_LIMIT") return "Bloqueado: concentração";
@@ -129,7 +131,11 @@ export function ContributionRecommendationSection({
             automaticamente.
           </p>
           {errors.methodologyVersion ? (
-            <p className={styles.fieldError} id="contribution-methodology-version-error" role="alert">
+            <p
+              className={styles.fieldError}
+              id="contribution-methodology-version-error"
+              role="alert"
+            >
               {errors.methodologyVersion}
             </p>
           ) : null}
@@ -164,21 +170,30 @@ export function ContributionRecommendationSection({
           <dl className={recommendationStyles.remainders}>
             <div>
               <dt>Após allocator</dt>
-              <dd>{moneyLabel(recommendation.currency, recommendation.cashRemainder.afterAllocator)}</dd>
+              <dd>
+                {moneyLabel(recommendation.currency, recommendation.cashRemainder.afterAllocator)}
+              </dd>
             </div>
             <div>
               <dt>Após política</dt>
-              <dd>{moneyLabel(recommendation.currency, recommendation.cashRemainder.afterPolicy)}</dd>
+              <dd>
+                {moneyLabel(recommendation.currency, recommendation.cashRemainder.afterPolicy)}
+              </dd>
             </div>
             <div>
               <dt>Após concentração</dt>
               <dd>
-                {moneyLabel(recommendation.currency, recommendation.cashRemainder.afterConcentration)}
+                {moneyLabel(
+                  recommendation.currency,
+                  recommendation.cashRemainder.afterConcentration,
+                )}
               </dd>
             </div>
             <div>
               <dt>Após execução</dt>
-              <dd>{moneyLabel(recommendation.currency, recommendation.cashRemainder.afterExecution)}</dd>
+              <dd>
+                {moneyLabel(recommendation.currency, recommendation.cashRemainder.afterExecution)}
+              </dd>
             </div>
             <div>
               <dt>Após custos</dt>
@@ -212,7 +227,9 @@ export function ContributionRecommendationSection({
                           ? "Sem destino"
                           : (asset?.name ?? "Ativo não disponível nesta sessão")}
                       </td>
-                      <td>{moneyLabel(recommendation.currency, decision.baselineAllocatedAmount)}</td>
+                      <td>
+                        {moneyLabel(recommendation.currency, decision.baselineAllocatedAmount)}
+                      </td>
                       <td>{moneyLabel(recommendation.currency, decision.policyAllocatedAmount)}</td>
                       <td>
                         {moneyLabel(recommendation.currency, decision.concentrationAllocatedAmount)}
@@ -221,10 +238,7 @@ export function ContributionRecommendationSection({
                         {moneyLabel(recommendation.currency, decision.investableAmount)}
                       </td>
                       <td>
-                        <span
-                          className={recommendationStyles.state}
-                          data-status={decision.status}
-                        >
+                        <span className={recommendationStyles.state} data-status={decision.status}>
                           {statusLabel(decision.status)}
                         </span>
                       </td>
@@ -249,10 +263,11 @@ export function ContributionRecommendationSection({
           <p className={recommendationStyles.note}>
             Reconciliação do domínio. Aporte:{" "}
             {moneyLabel(recommendation.currency, recommendation.contribution)}; investível:{" "}
-            {moneyLabel(recommendation.currency, recommendation.totalInvestableAmount)}; custo conhecido
-            consumido: {moneyLabel(recommendation.currency, recommendation.totalConsumedKnownCost)}; sobra:{" "}
-            {moneyLabel(recommendation.currency, recommendation.unallocatedContribution)}. As sobras acima são
-            cumulativas, não incrementais.
+            {moneyLabel(recommendation.currency, recommendation.totalInvestableAmount)}; custo
+            conhecido consumido:{" "}
+            {moneyLabel(recommendation.currency, recommendation.totalConsumedKnownCost)}; sobra:{" "}
+            {moneyLabel(recommendation.currency, recommendation.unallocatedContribution)}. As sobras
+            acima são cumulativas, não incrementais.
           </p>
         </div>
       ) : null}
