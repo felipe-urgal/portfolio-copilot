@@ -1,6 +1,11 @@
 import { fileURLToPath } from "node:url";
 
-import { Money, Transaction, type FinancialProfileSnapshot, type PortfolioSnapshot } from "@portfolio-copilot/domain";
+import {
+  Money,
+  Transaction,
+  type FinancialProfileSnapshot,
+  type PortfolioSnapshot,
+} from "@portfolio-copilot/domain";
 import { migrate } from "drizzle-orm/node-postgres/migrator";
 import { sql } from "drizzle-orm";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";

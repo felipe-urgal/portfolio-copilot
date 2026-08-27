@@ -18,13 +18,17 @@ import {
 
 export type PersistenceProvenance = "USER_ENTRY" | "LOCAL_MIGRATION" | "SYSTEM";
 
-const createdAt = () => timestamp("created_at", { withTimezone: true, mode: "date" }).notNull().defaultNow();
-const updatedAt = () => timestamp("updated_at", { withTimezone: true, mode: "date" }).notNull().defaultNow();
+const createdAt = () =>
+  timestamp("created_at", { withTimezone: true, mode: "date" }).notNull().defaultNow();
+const updatedAt = () =>
+  timestamp("updated_at", { withTimezone: true, mode: "date" }).notNull().defaultNow();
 
 export const accountOwners = pgTable("account_owners", {
   subject: text("subject").primaryKey(),
   createdAt: createdAt(),
-  lastSeenAt: timestamp("last_seen_at", { withTimezone: true, mode: "date" }).notNull().defaultNow(),
+  lastSeenAt: timestamp("last_seen_at", { withTimezone: true, mode: "date" })
+    .notNull()
+    .defaultNow(),
 });
 
 export const financialProfiles = pgTable(
@@ -73,7 +77,9 @@ export const portfolioAssetRefs = pgTable(
     ownerSubject: text("owner_subject").notNull(),
     portfolioId: text("portfolio_id").notNull(),
     assetId: text("asset_id").notNull(),
-    firstSeenAt: timestamp("first_seen_at", { withTimezone: true, mode: "date" }).notNull().defaultNow(),
+    firstSeenAt: timestamp("first_seen_at", { withTimezone: true, mode: "date" })
+      .notNull()
+      .defaultNow(),
   },
   (table) => [
     primaryKey({
