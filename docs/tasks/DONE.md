@@ -419,3 +419,23 @@ Histórico resumido de atividades concluídas.
 - metadata de `/portfolio` passa a descrever o baseline local com base manual;
 - nenhuma dependência, lockfile, fórmula financeira, persistência, API, autenticação, Market Data ou IA foi adicionada;
 - `docs/tasks/NEXT.md` promove a política local de microaporte e limite de destinos por `AssetClass` usando `applyContributionPolicy`.
+
+## 2026-08-27 — Produto MVP: política local de microaporte e limite de destinos
+
+- o painel de aporte em `/portfolio` passa a aplicar uma segunda etapa somente depois de existir um baseline válido do allocator;
+- `minimumMeaningfulContribution` permanece string na UI e passa por `Money` na moeda de referência do Portfolio, sem `number` binário;
+- `maxDestinationsPerContribution` é convertido apenas como configuração inteira e a validade final de inteiro positivo seguro permanece no domínio;
+- `applyContributionPolicy` é a única fonte de priorização de classes, corte de microaportes, redistribuição entre destinos remanescentes e sobra pós-política;
+- o adapter reidrata um `ContributionPlan` transitório a partir do snapshot validado e devolve somente snapshots serializáveis para o estado cliente;
+- baseline e resultado pós-política aparecem lado a lado por `AssetClass`, mantendo o valor original auditável;
+- classes com baseline positivo e alocação final zero são marcadas apenas como “Removida pela política”; a UI não inventa causa específica entre mínimo e limite porque o contrato atual não expõe reason code isolado;
+- classes sem baseline permanecem distintas de classes removidas pela política;
+- `unallocatedContribution` após a política continua explícito e nenhum destino é inventado para a sobra;
+- edição da base invalida baseline e política; edição apenas da configuração de política invalida somente o resultado pós-política;
+- política e resultados permanecem locais/efêmeros e a limitação continua explícita no painel;
+- controles usam labels, `aria-invalid`, `aria-describedby`, mensagens tipadas e tabelas responsivas com scroll horizontal;
+- testes puros cobrem mínimo vazio/zero/negativo/inválido, limite amplo/restritivo/inválido, redistribuição, classe removida, classe sem baseline e sobra;
+- renderização estática cobre estados sem baseline, baseline validado e política aplicada sem preço, quantidade ou Asset destino inventados;
+- metadata de `/portfolio` passa a descrever baseline e política operacional do aporte;
+- nenhuma dependência, lockfile, fórmula financeira, persistência, API, autenticação, Market Data, FX ou IA foi adicionada;
+- `docs/tasks/NEXT.md` promove destino local por `AssetClass` + elegibilidade + quantidade mínima usando `applyContributionExecutionConstraints`.
