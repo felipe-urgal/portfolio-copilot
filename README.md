@@ -74,11 +74,12 @@ audit
 - pnpm 11
 - Next.js 16.3.3 / React 19.2
 - TypeScript 6.0.3 strict
+- Auth.js v5 / `next-auth@5.0.0-beta.32` com GitHub OAuth
 - ESLint 9.39.5 + Prettier
 - Vitest
 - GitHub Actions
 
-A stack foi mantida deliberadamente pequena. Banco, autenticação, providers de mercado, IA e deploy entram somente nas fases em que houver necessidade concreta.
+A stack foi mantida deliberadamente pequena. Banco, providers de mercado, IA e deploy entram somente nas fases em que houver necessidade concreta.
 
 ## Desenvolvimento local
 
@@ -87,10 +88,39 @@ nvm use
 corepack enable
 corepack prepare pnpm@11.24.0 --activate
 pnpm install --frozen-lockfile
+```
+
+### Autenticação local
+
+Crie `.env.local` a partir do catálogo seguro:
+
+```bash
+cp .env.example .env.local
+```
+
+Configure uma GitHub OAuth App para o ambiente local com callback:
+
+```text
+http://localhost:3000/api/auth/callback/github
+```
+
+Preencha em `.env.local`:
+
+```text
+AUTH_SECRET=<segredo aleatório forte>
+AUTH_GITHUB_ID=<client id da OAuth App>
+AUTH_GITHUB_SECRET=<client secret da OAuth App>
+```
+
+Nunca versione os valores reais. O login estabelece somente identidade e sessão autenticada; ele não envia nem associa automaticamente à conta o perfil financeiro eventualmente salvo em `localStorage`.
+
+Depois execute:
+
+```bash
 pnpm dev
 ```
 
-A aplicação fica em `http://localhost:3000` e a página de saúde em `http://localhost:3000/health`.
+A aplicação fica em `http://localhost:3000` e a página de saúde em `http://localhost:3000/health`. `/health` permanece pública para finalidade operacional; Dashboard, Carteira e Onboarding exigem sessão autenticada.
 
 ### Quality gate
 
@@ -105,8 +135,6 @@ O comando executa, na mesma ordem usada pelo CI:
 3. `typecheck`;
 4. `test`;
 5. `build`.
-
-Não há variáveis de ambiente obrigatórias nesta fase. `.env.example` permanece como catálogo seguro para configurações futuras.
 
 ## Documentação
 
