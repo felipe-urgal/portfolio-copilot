@@ -75,7 +75,7 @@ describe("ContributionExecutionSection", () => {
     expect(html).toContain("Inelegível");
     expect(html).toContain("Quantidade mínima negociável");
     expect(html).toContain("O AssetId é resolvido internamente");
-    expect(html).toContain("não afirma que o valor alocado");
+    expect(html).toContain("Não afirma que o valor alocado");
     expect(html).not.toContain("preço por unidade");
   });
 
