@@ -1,7 +1,6 @@
 import { type ContributionRecommendationSnapshot } from "@portfolio-copilot/domain";
 
-type ContributionRecommendationDecision =
-  ContributionRecommendationSnapshot["decisions"][number];
+type ContributionRecommendationDecision = ContributionRecommendationSnapshot["decisions"][number];
 type ContributionRecommendationReasonCode =
   ContributionRecommendationDecision["reasonCodes"][number];
 type ContributionRecommendationStatus = ContributionRecommendationDecision["status"];
@@ -42,35 +41,34 @@ export type ContributionRecommendationExplanation = Readonly<{
   decisions: readonly ContributionRecommendationDecisionExplanation[];
 }>;
 
-const REASON_EXPLANATIONS: Readonly<
-  Record<ContributionRecommendationReasonCode, ExplanationCopy>
-> = Object.freeze({
-  CONTRIBUTION_POLICY_ADJUSTED: Object.freeze({
-    title: "Política ajustou o baseline",
-    description:
-      "A política operacional alterou o valor que veio do baseline para esta classe. Nenhuma causa adicional é inferida além deste reason code.",
-  }),
-  SOFT_CONCENTRATION_LIMIT_EXCEEDED: Object.freeze({
-    title: "Alerta de concentração",
-    description:
-      "O limite suave de concentração foi excedido. Este motivo representa um alerta e, sozinho, não bloqueia o aporte.",
-  }),
-  HARD_CONCENTRATION_LIMIT_APPLIED: Object.freeze({
-    title: "Limite rígido aplicado",
-    description:
-      "O limite rígido de concentração restringiu o novo aporte destinado a esta classe.",
-  }),
-  EXECUTION_DESTINATION_INELIGIBLE: Object.freeze({
-    title: "Destino inelegível",
-    description:
-      "O destino local foi marcado como inelegível para esta execução e não segue para a etapa de custos.",
-  }),
-  KNOWN_COSTS_BLOCKED_DESTINATION: Object.freeze({
-    title: "Bloqueio por custos conhecidos",
-    description:
-      "O domínio bloqueou o destino na etapa de custos conhecidos. O custo informado continua visível, mas o custo consumido permanece zero.",
-  }),
-});
+const REASON_EXPLANATIONS: Readonly<Record<ContributionRecommendationReasonCode, ExplanationCopy>> =
+  Object.freeze({
+    CONTRIBUTION_POLICY_ADJUSTED: Object.freeze({
+      title: "Política ajustou o baseline",
+      description:
+        "A política operacional alterou o valor que veio do baseline para esta classe. Nenhuma causa adicional é inferida além deste reason code.",
+    }),
+    SOFT_CONCENTRATION_LIMIT_EXCEEDED: Object.freeze({
+      title: "Alerta de concentração",
+      description:
+        "O limite suave de concentração foi excedido. Este motivo representa um alerta e, sozinho, não bloqueia o aporte.",
+    }),
+    HARD_CONCENTRATION_LIMIT_APPLIED: Object.freeze({
+      title: "Limite rígido aplicado",
+      description:
+        "O limite rígido de concentração restringiu o novo aporte destinado a esta classe.",
+    }),
+    EXECUTION_DESTINATION_INELIGIBLE: Object.freeze({
+      title: "Destino inelegível",
+      description:
+        "O destino local foi marcado como inelegível para esta execução e não segue para a etapa de custos.",
+    }),
+    KNOWN_COSTS_BLOCKED_DESTINATION: Object.freeze({
+      title: "Bloqueio por custos conhecidos",
+      description:
+        "O domínio bloqueou o destino na etapa de custos conhecidos. O custo informado continua visível, mas o custo consumido permanece zero.",
+    }),
+  });
 
 const STATUS_EXPLANATIONS: Readonly<Record<ContributionRecommendationStatus, ExplanationCopy>> =
   Object.freeze({
@@ -85,8 +83,7 @@ const STATUS_EXPLANATIONS: Readonly<Record<ContributionRecommendationStatus, Exp
     }),
     BLOCKED_CONCENTRATION_LIMIT: Object.freeze({
       title: "Bloqueado por concentração",
-      description:
-        "A decisão terminou bloqueada pela camada de limite rígido de concentração.",
+      description: "A decisão terminou bloqueada pela camada de limite rígido de concentração.",
     }),
     BLOCKED_INELIGIBLE: Object.freeze({
       title: "Bloqueado por elegibilidade",
