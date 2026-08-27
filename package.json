@@ -8,6 +8,8 @@
   },
   "scripts": {
     "dev": "pnpm --filter @portfolio-copilot/web dev",
+    "db:generate": "pnpm --filter @portfolio-copilot/persistence db:generate",
+    "db:migrate": "pnpm --filter @portfolio-copilot/persistence db:migrate",
     "format": "prettier --write \"apps/**/*.{ts,tsx,css,json}\" \"packages/**/*.{ts,json}\" \"*.{json,yaml,yml,mjs}\" \".github/**/*.yml\"",
     "format:check": "prettier --check \"apps/**/*.{ts,tsx,css,json}\" \"packages/**/*.{ts,json}\" \"*.{json,yaml,yml,mjs}\" \".github/**/*.yml\"",
     "lint": "eslint apps packages --max-warnings=0",
