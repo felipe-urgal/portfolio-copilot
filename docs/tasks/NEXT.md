@@ -1,36 +1,38 @@
-# Próxima Atividade — Produto MVP: limites locais de concentração por AssetClass
+# Próxima Atividade — Produto MVP: custos conhecidos e impacto tributário reservado do aporte
 
-**Status:** READY após merge dos destinos locais e restrições de execução do aporte.
+**Status:** READY após merge dos limites locais de concentração por AssetClass.
 
 ## Objetivo
 
-Inserir a camada local de limites de concentração entre a política de aporte e as restrições de execução, usando `applyAssetClassConcentrationLimits` para representar `softMaxWeight` e `hardMaxWeight` por `AssetClass` sem preço, Market Data, venda ou redistribuição silenciosa.
+Inserir a camada local posterior às restrições de execução usando `applyContributionCostTaxConstraints` para representar custos transacionais conhecidos e impacto tributário monetário informado externamente, preservando orçamento bruto, valor investível e sobra sem calcular imposto, tarifa, preço ou redistribuição silenciosa.
 
 ## Escopo
 
-- evoluir o fluxo de aporte em `/portfolio` a partir do mesmo `ContributionPlan` pós-política já validado;
-- configurar limites opcionais por `AssetClass` usando `softMaxWeight` e `hardMaxWeight` como strings até `AllocationWeight`;
-- aceitar apenas classes configuradas explicitamente, sem inventar limites padrão;
-- reutilizar `applyAssetClassConcentrationLimits` como única fonte para alocação após concentração, `blockedAmount`, flags soft/hard e `unallocatedContribution` acumulado;
-- preservar lado a lado o valor após política e o valor após concentração para provenance auditável;
-- mostrar `softLimitExceeded` como alerta, sem bloquear valor por conta própria;
-- mostrar `hardLimitApplied` e o valor bloqueado quando o hard limit restringir novo aporte;
-- manter valor bloqueado na sobra sem redistribuir para outra classe;
-- fazer as restrições de execução consumirem o plano já filtrado por concentração, preservando a ordem canônica `allocator -> policy -> concentration -> execution`;
-- traduzir erros tipados de duplicidade, peso inválido e faixa `soft > hard` para feedback acessível;
+- evoluir o fluxo de aporte em `/portfolio` a partir do `ContributionExecutionPlan` já validado;
+- configurar opcionalmente por destino executável `transactionCost` e `estimatedTaxImpact` como strings até `Money`;
+- vincular a configuração somente ao `AssetId` já presente no plano de execução, mantendo seleção humana por nome na UI;
+- ausência de configuração para um destino significa custo conhecido zero, sem inventar tarifa padrão;
+- reutilizar `applyContributionCostTaxConstraints` como única fonte para `totalKnownCost`, `investableAmount`, status final e `unallocatedContribution` acumulado;
+- preservar lado a lado o orçamento bruto recebido da execução, custo transacional, impacto tributário reservado e valor investível;
+- mostrar `estimatedTaxImpact` explicitamente como valor informado/reservado, nunca como imposto calculado pelo domínio;
+- quando `totalKnownCost < allocatedAmount`, manter o destino executável e expor o valor investível líquido dos custos conhecidos;
+- quando `totalKnownCost >= allocatedAmount`, bloquear o destino, zerar `investableAmount` e devolver o orçamento bruto inteiro para a sobra;
+- preservar sobra upstream e não redistribuir automaticamente valor de destino bloqueado;
+- traduzir erros tipados de destino desconhecido/duplicado, valor inválido/negativo e moeda incompatível para feedback acessível;
 - manter toda configuração e resultado local/efêmero;
 - preservar acessibilidade, foco, semântica e responsividade desktop/mobile;
-- adicionar testes para classe sem limite, soft alert-only, hard parcial/total, classe já acima do hard, configuração inválida, sobra e integração com a etapa de execução.
+- adicionar testes para destino sem configuração, custo parcial, custo + impacto tributário, bloqueio por custo igual/maior ao orçamento, valor negativo/inválido, destino desconhecido e sobra acumulada.
 
 ## Fora de escopo
 
-- concentração por Asset individual, emissor, setor, moeda, geografia ou grupo econômico;
-- preço, Market Data, FX ou valuation;
-- venda/rebalanceamento para corrigir concentração existente;
-- redistribuição automática do valor bloqueado;
-- seleção/ranking automático de Asset;
+- cálculo de imposto, alíquota, faixa de isenção, come-cotas, compensação de prejuízo, regime tributário ou jurisdição;
+- consulta de tarifa de corretora ou descoberta automática de custos;
+- custo percentual, spread, slippage ou preço de mercado;
+- Market Data, FX ou valuation;
+- redistribuição automática após bloqueio por custos;
+- reexecução da política de microaporte após custos;
 - conversão `Money ↔ AssetQuantity`;
-- custos ou impactos tributários;
+- ordem real ou integração com corretora;
 - pipeline completo de `ContributionRecommendationSnapshot`;
 - persistência/API/Server Actions;
 - autenticação/autorização;
@@ -38,23 +40,22 @@ Inserir a camada local de limites de concentração entre a política de aporte 
 
 ## Critérios de aceite
 
-- classe sem limite preserva exatamente a alocação pós-política;
-- `softMaxWeight`/`hardMaxWeight` passam por `AllocationWeight` e respeitam `soft <= hard`;
-- soft limit apenas sinaliza atenção e não reduz valor sozinho;
-- hard limit nunca permite que novo aporte empurre a classe acima do teto monetário calculado pelo domínio;
-- classe já acima do hard limit não recebe novo aporte e nenhuma venda é inferida;
-- `blockedAmount` e a sobra acumulada permanecem explícitos;
+- destino sem configuração preserva orçamento bruto, usa custos conhecidos zero e permanece executável;
+- `transactionCost` e `estimatedTaxImpact` passam por `Money`, usam a moeda do aporte e rejeitam valores negativos;
+- `totalKnownCost` e `investableAmount` vêm exclusivamente de `applyContributionCostTaxConstraints`;
+- custo conhecido parcial reduz apenas o valor investível, sem alterar silenciosamente o orçamento bruto;
+- custo total igual ou superior ao orçamento bloqueia o destino e devolve o orçamento bruto inteiro para a sobra;
+- impacto tributário é rotulado como estimativa/reserva informada, não como imposto calculado;
+- sobra upstream é preservada e acrescida somente do orçamento de destinos bloqueados;
 - valor bloqueado não é redistribuído silenciosamente;
-- `applyAssetClassConcentrationLimits` é a única fonte do resultado pós-concentração;
-- restrições de execução consomem o plano pós-concentração, não o plano pós-política direto;
-- nenhuma fórmula financeira nova, persistência, API ou integração externa é adicionada;
+- nenhuma fórmula fiscal, preço, tarifa descoberta externamente, persistência ou integração nova é adicionada;
 - `pnpm check` passa integralmente no head final validado pelo CI.
 
 ## Referências canônicas
 
 - `docs/ROADMAP.md` — Fase 3: aporte do mês;
 - `docs/FINANCIAL-METHODOLOGY.md` — políticas e restrições do aporte;
-- `docs/adr/0013-contribution-policy.md` — plano pós-política;
-- `docs/adr/0015-asset-class-concentration-limits.md` — soft/hard limits e ordem canônica;
-- `packages/domain/src/contribution/asset-class-concentration-limits.ts` — `applyAssetClassConcentrationLimits`;
-- `packages/domain/src/contribution/contribution-execution-constraints.ts` — etapa posterior de execução.
+- `docs/adr/0014-contribution-execution-constraints.md` — plano de execução por AssetId;
+- `docs/adr/0015-asset-class-concentration-limits.md` — camada de concentração anterior;
+- `docs/adr/0016-contribution-cost-tax-constraints.md` — custos conhecidos e impacto tributário reservado;
+- `packages/domain/src/contribution/contribution-cost-tax-constraints.ts` — `applyContributionCostTaxConstraints`.
