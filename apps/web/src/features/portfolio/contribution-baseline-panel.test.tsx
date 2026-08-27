@@ -38,8 +38,9 @@ describe("ContributionBaselinePanel", () => {
     expect(html).toContain("Calcular baseline do aporte");
     expect(html).toContain("Baseline ainda não calculado");
     expect(html).toContain("não representam cotação, valuation ou patrimônio");
-    expect(html).toContain("TargetAllocation, base, política e resultados");
+    expect(html).toContain("TargetAllocation, base, política, destinos e");
     expect(html).not.toContain("Política operacional");
+    expect(html).not.toContain("Restrições de execução");
     expect(html).not.toMatch(/R\$\s*\d/);
   });
 
@@ -66,11 +67,12 @@ describe("ContributionBaselinePanel", () => {
     expect(html).toContain("BRL 80.00");
     expect(html).toContain("Após política");
     expect(html).toContain("Não aplicada");
+    expect(html).not.toContain("Restrições de execução");
     expect(html).not.toContain("preço por unidade");
     expect(html).not.toMatch(/R\$\s*\d/);
   });
 
-  it("renders baseline and post-policy amounts side by side without inventing a rule-specific reason", () => {
+  it("renders post-policy provenance before exposing local execution constraints", () => {
     const baselineResult = createContributionBaselineSnapshot(DRAFT, PORTFOLIO);
     expect(baselineResult.ok).toBe(true);
     if (!baselineResult.ok) return;
@@ -102,9 +104,9 @@ describe("ContributionBaselinePanel", () => {
     expect(html).toContain("Mantida");
     expect(html).toContain("Removida pela política");
     expect(html).toContain("não atribui uma causa isolada entre mínimo e limite");
-    expect(html).toContain(
-      "Nenhuma etapa escolhe ativo, calcula quantidade ou usa preço de mercado",
-    );
+    expect(html).toContain("Restrições de execução");
+    expect(html).toContain("Cadastre um ativo local de Ações antes de validar esta etapa.");
+    expect(html).toContain("nenhuma etapa calcula quantidade de compra ou usa preço de mercado");
     expect(html).not.toMatch(/R\$\s*\d/);
   });
 });

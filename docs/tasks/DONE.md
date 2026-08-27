@@ -439,3 +439,25 @@ Histórico resumido de atividades concluídas.
 - metadata de `/portfolio` passa a descrever baseline e política operacional do aporte;
 - nenhuma dependência, lockfile, fórmula financeira, persistência, API, autenticação, Market Data, FX ou IA foi adicionada;
 - `docs/tasks/NEXT.md` promove destino local por `AssetClass` + elegibilidade + quantidade mínima usando `applyContributionExecutionConstraints`.
+
+## 2026-08-27 — Produto MVP: destinos locais e restrições de execução do aporte
+
+- `/portfolio` passa a usar os Assets locais da própria sessão como candidatos explícitos aos destinos do aporte;
+- a etapa de execução só é liberada após existir baseline e política de aporte válidos;
+- somente `AssetClass` com alocação monetária positiva após a política exige destino de execução;
+- candidatos são filtrados pela mesma `AssetClass` e apresentados por nome e instrumento, mantendo `AssetId` interno à interface;
+- cada classe recebe no máximo um destino local explícito, sem ranking ou seleção automática de ativo;
+- elegibilidade é declarada explicitamente como elegível ou inelegível antes da validação do plano;
+- `minimumTradableQuantity` permanece string na UI e passa por `AssetQuantity`, preservando precisão exata de até 12 casas decimais;
+- quantidade mínima é apresentada somente como restrição operacional e nunca como quantidade recomendada ou comprável;
+- `applyContributionExecutionConstraints` é a única fonte para destinos executáveis e `unallocatedContribution` após as restrições;
+- destino elegível preserva exatamente a alocação monetária recebida da política;
+- destino inelegível fica bloqueado e seu valor retorna para a sobra explícita, sem redistribuição silenciosa;
+- a UI preserva lado a lado valor após política, destino escolhido, quantidade mínima e resultado após restrições;
+- ausência de Asset local para uma classe positiva é mostrada como estado indisponível real, sem inventar ticker ou destino;
+- erros de destino ausente/inválido, elegibilidade, quantidade mínima e duplicidade são traduzidos para feedback acessível;
+- editar baseline ou política invalida naturalmente a etapa de execução, mantendo provenance entre as camadas;
+- toda configuração e resultado continuam locais/efêmeros e desaparecem com a sessão;
+- testes cobrem destinos elegíveis/inelegíveis, classe sem candidato, destino ausente, Asset errado, duplicidade, quantidade mínima inválida e plano sem alocações positivas;
+- nenhuma conversão `Money ↔ AssetQuantity`, preço, Market Data, FX, ordem de corretora, persistência ou fórmula financeira nova foi adicionada;
+- `docs/tasks/NEXT.md` promove limites locais de concentração por `AssetClass` como próximo vertical, preservando a ordem canônica `allocator -> policy -> concentration -> execution`.

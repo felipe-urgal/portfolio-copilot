@@ -747,7 +747,7 @@ export function PortfolioWorkspace({
             </div>
           </section>
 
-          <ContributionBaselinePanel portfolio={snapshot} />
+          <ContributionBaselinePanel portfolio={snapshot} assets={assets} />
         </div>
       )}
     </>
