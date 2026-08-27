@@ -24,3 +24,7 @@ minimumReleaseAgeExcludePrune: true
 # lifecycle scripts were explicitly reviewed for this dependency graph.
 allowBuilds:
   unrs-resolver@1.12.2: true
+  # Exact native-binary install scripts required by the reviewed drizzle-kit@0.31.10 graph.
+  esbuild@0.18.20: true
+  esbuild@0.25.12: true
+  esbuild@0.28.2: true

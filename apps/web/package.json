@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@portfolio-copilot/domain": "workspace:*",
+    "@portfolio-copilot/persistence": "workspace:*",
     "@portfolio-copilot/shared": "workspace:*",
     "next": "16.3.3",
     "next-auth": "5.0.0-beta.32",

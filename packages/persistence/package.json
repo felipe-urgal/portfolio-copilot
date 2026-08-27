@@ -1,0 +1,24 @@
+{
+  "name": "@portfolio-copilot/persistence",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "db:generate": "drizzle-kit generate --dialect postgresql --schema ./src/schema.ts --out ./drizzle",
+    "db:migrate": "drizzle-kit migrate --config ./drizzle.config.ts"
+  },
+  "dependencies": {
+    "@portfolio-copilot/domain": "workspace:*",
+    "drizzle-orm": "0.45.2",
+    "pg": "8.23.0"
+  },
+  "devDependencies": {
+    "@types/pg": "8.23.1",
+    "drizzle-kit": "0.31.10"
+  }
+}
