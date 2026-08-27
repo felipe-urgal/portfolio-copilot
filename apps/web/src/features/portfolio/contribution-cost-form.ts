@@ -69,8 +69,10 @@ export type ContributionCostResult =
 const COST_FORMAT_ERROR = "Informe um valor monetário válido ou deixe em branco para zero.";
 const COST_NEGATIVE_ERROR = "O valor informado não pode ser negativo.";
 const UNKNOWN_DESTINATION_ERROR = "A configuração referencia um destino que não está executável.";
-const DUPLICATE_DESTINATION_ERROR = "Cada destino executável pode ter no máximo uma configuração de custos.";
-const TECHNICAL_ERROR = "Não foi possível aplicar os custos conhecidos do aporte. Tente novamente.";
+const DUPLICATE_DESTINATION_ERROR =
+  "Cada destino executável pode ter no máximo uma configuração de custos.";
+const TECHNICAL_ERROR =
+  "Não foi possível aplicar os custos conhecidos do aporte. Tente novamente.";
 
 function executableDestinations(execution: ContributionExecutionSnapshot) {
   return execution.destinations.filter(
@@ -107,10 +109,7 @@ function rowError(assetId: string, errors: ContributionCostRowErrors): Contribut
   return { ok: false, errors: { rows: { [assetId]: errors } } };
 }
 
-function parseOptionalMoney(
-  value: string,
-  currency: string,
-): Money {
+function parseOptionalMoney(value: string, currency: string): Money {
   if (value.trim() === "") return Money.zero(currency);
   return Money.fromDecimal(normalizeContributionDecimal(value), currency);
 }
@@ -197,7 +196,11 @@ export function createContributionCostSnapshot(
     }
 
     if (error instanceof UnknownContributionCostConstraintDestinationError) {
-      return rowError(error.assetId, { transactionCost: UNKNOWN_DESTINATION_ERROR });
+      const row = draft.rows.find((candidate) => candidate.assetId === error.assetId);
+      if (row === undefined) return { ok: false, errors: { form: TECHNICAL_ERROR } };
+      const field =
+        row.transactionCost.trim() !== "" ? "transactionCost" : "estimatedTaxImpact";
+      return rowError(error.assetId, { [field]: UNKNOWN_DESTINATION_ERROR });
     }
 
     if (error instanceof InvalidContributionCostAmountError) {
@@ -206,7 +209,10 @@ export function createContributionCostSnapshot(
 
     if (error instanceof NegativeAllocationValueError) {
       const [field, assetId] = error.field.split(":", 2);
-      if (assetId !== undefined && (field === "transactionCost" || field === "estimatedTaxImpact")) {
+      if (
+        assetId !== undefined &&
+        (field === "transactionCost" || field === "estimatedTaxImpact")
+      ) {
         return rowError(assetId, { [field]: COST_NEGATIVE_ERROR });
       }
     }
