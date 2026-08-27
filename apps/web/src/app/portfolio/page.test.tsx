@@ -37,7 +37,7 @@ describe("PortfolioPage financial session", () => {
   it("reads the same validated profile snapshot used by other product surfaces", () => {
     const html = renderPortfolio(PROFILE);
 
-    expect(html).toContain("Disponível na sessão");
+    expect(html).toContain("Somente nesta sessão");
     expect(html).toContain("USD");
     expect(html).toContain("Baixa");
     expect(html).toContain("Curto prazo");
