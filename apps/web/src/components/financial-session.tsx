@@ -76,21 +76,32 @@ export function FinancialSessionProvider({
   useEffect(() => {
     if (initialFinancialProfile !== null) return;
 
-    const storage = getBrowserFinancialProfileStorage();
-    if (storage === null) {
-      setPersistenceStatus("unavailable");
-      return;
-    }
+    let active = true;
 
-    const result = readFinancialProfileFromStorage(storage);
+    queueMicrotask(() => {
+      if (!active) return;
 
-    if (result.status === "loaded") {
-      dispatch({ type: "publish-financial-profile", snapshot: result.snapshot });
-      setPersistenceStatus("persisted");
-      return;
-    }
+      const storage = getBrowserFinancialProfileStorage();
+      if (storage === null) {
+        setPersistenceStatus("unavailable");
+        return;
+      }
 
-    setPersistenceStatus(result.status === "unavailable" ? "unavailable" : "memory-only");
+      const result = readFinancialProfileFromStorage(storage);
+      if (!active) return;
+
+      if (result.status === "loaded") {
+        dispatch({ type: "publish-financial-profile", snapshot: result.snapshot });
+        setPersistenceStatus("persisted");
+        return;
+      }
+
+      setPersistenceStatus(result.status === "unavailable" ? "unavailable" : "memory-only");
+    });
+
+    return () => {
+      active = false;
+    };
   }, [initialFinancialProfile]);
 
   const publishFinancialProfile = useCallback((snapshot: FinancialProfileSnapshot) => {
