@@ -228,6 +228,77 @@ describe("contribution recommendation form adapter", () => {
     expect(first).toEqual(second);
   });
 
+  it("recomputes the pipeline instead of trusting intermediate outcome amounts", () => {
+    const tamperedBaseline: ContributionBaselineSnapshot = {
+      ...baseline,
+      postContributionValue: { currency: "BRL", minorUnits: "999999" },
+      allocations: baseline.allocations.map((allocation) => ({
+        ...allocation,
+        postContributionTargetValue: { currency: "BRL", minorUnits: "999999" },
+        postContributionNeed: { currency: "BRL", minorUnits: "999999" },
+        allocatedAmount: { currency: "BRL", minorUnits: "999999" },
+      })),
+      unallocatedContribution: { currency: "BRL", minorUnits: "999999" },
+    };
+    const tamperedPolicy: ContributionPolicySnapshot = {
+      ...policy,
+      allocations: policy.allocations.map((allocation) => ({
+        ...allocation,
+        baselineAllocatedAmount: { currency: "BRL", minorUnits: "999999" },
+        policyAllocatedAmount: { currency: "BRL", minorUnits: "999999" },
+      })),
+      unallocatedContribution: { currency: "BRL", minorUnits: "999999" },
+    };
+    const tamperedConcentration: ContributionConcentrationSnapshot = {
+      ...concentration,
+      allocations: concentration.allocations.map((allocation) => ({
+        ...allocation,
+        policyAllocatedAmount: { currency: "BRL", minorUnits: "999999" },
+        concentrationAllocatedAmount: { currency: "BRL", minorUnits: "999999" },
+        blockedAmount: { currency: "BRL", minorUnits: "999999" },
+      })),
+      unallocatedContribution: { currency: "BRL", minorUnits: "999999" },
+    };
+    const tamperedExecution: ContributionExecutionSnapshot = {
+      ...execution,
+      destinations: execution.destinations.map((destination) => ({
+        ...destination,
+        concentrationAllocatedAmount: { currency: "BRL", minorUnits: "999999" },
+        executionAllocatedAmount: { currency: "BRL", minorUnits: "999999" },
+      })),
+      unallocatedContribution: { currency: "BRL", minorUnits: "999999" },
+    };
+    const tamperedCost: ContributionCostSnapshot = {
+      ...cost,
+      destinations: cost.destinations.map((destination) => ({
+        ...destination,
+        grossAllocatedAmount: { currency: "BRL", minorUnits: "999999" },
+        totalKnownCost: { currency: "BRL", minorUnits: "999999" },
+        investableAmount: { currency: "BRL", minorUnits: "999999" },
+      })),
+      unallocatedContribution: { currency: "BRL", minorUnits: "999999" },
+    };
+
+    const expected = createContributionRecommendationSnapshot(
+      { methodologyVersion: "local-mvp-v1" },
+      baseline,
+      policy,
+      concentration,
+      execution,
+      cost,
+    );
+    const result = createContributionRecommendationSnapshot(
+      { methodologyVersion: "local-mvp-v1" },
+      tamperedBaseline,
+      tamperedPolicy,
+      tamperedConcentration,
+      tamperedExecution,
+      tamperedCost,
+    );
+
+    expect(result).toEqual(expected);
+  });
+
   it("translates invalid methodology version without normalizing it silently", () => {
     const blank = createContributionRecommendationSnapshot(
       { methodologyVersion: "" },
