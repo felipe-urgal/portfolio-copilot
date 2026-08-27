@@ -36,6 +36,7 @@ O sistema começa como **monólito modular**, evitando microserviços prematuros
 ```text
 apps/web
 packages/domain
+packages/persistence
 packages/portfolio-engine
 packages/investment-engine
 packages/market-data
@@ -75,11 +76,12 @@ audit
 - Next.js 16.3.3 / React 19.2
 - TypeScript 6.0.3 strict
 - Auth.js v5 / `next-auth@5.0.0-beta.32` com GitHub OAuth
+- PostgreSQL 18 + Drizzle ORM + `node-postgres` para persistência server-side
 - ESLint 9.39.5 + Prettier
 - Vitest
 - GitHub Actions
 
-A stack foi mantida deliberadamente pequena. Banco, providers de mercado, IA e deploy entram somente nas fases em que houver necessidade concreta.
+A stack é mantida deliberadamente pequena. Providers de mercado, IA e deploy entram somente nas fases em que houver necessidade concreta.
 
 ## Desenvolvimento local
 
@@ -90,13 +92,47 @@ corepack prepare pnpm@11.24.0 --activate
 pnpm install --frozen-lockfile
 ```
 
-### Autenticação local
+### Configuração local
 
-Crie `.env.local` a partir do catálogo seguro:
+Crie `.env.local` na raiz do repositório a partir do catálogo seguro:
 
 ```bash
 cp .env.example .env.local
 ```
+
+Nunca versione valores reais. Comandos de migration priorizam `DATABASE_URL` já exportado no processo e, na ausência dele, leem `.env.local` e depois `.env` na raiz do repositório.
+
+### PostgreSQL local
+
+O ambiente de desenvolvimento possui um serviço Docker Compose próprio. Ele publica PostgreSQL somente em `127.0.0.1:5433`, evitando conflito com instalações locais que já usem a porta padrão `5432`.
+
+Suba o banco:
+
+```bash
+pnpm db:up
+```
+
+Mantenha em `.env.local`:
+
+```text
+DATABASE_URL=postgresql://portfolio:portfolio@localhost:5433/portfolio_copilot
+```
+
+Aplique as migrations:
+
+```bash
+pnpm db:migrate
+```
+
+Para encerrar o serviço local:
+
+```bash
+pnpm db:down
+```
+
+O volume nomeado do Compose preserva os dados entre reinicializações. Não use as credenciais locais de exemplo em produção.
+
+### Autenticação local
 
 Configure uma GitHub OAuth App para o ambiente local com callback:
 
@@ -112,7 +148,7 @@ AUTH_GITHUB_ID=<client id da OAuth App>
 AUTH_GITHUB_SECRET=<client secret da OAuth App>
 ```
 
-Nunca versione os valores reais. O login estabelece somente identidade e sessão autenticada; ele não envia nem associa automaticamente à conta o perfil financeiro eventualmente salvo em `localStorage`.
+O login estabelece somente identidade e sessão autenticada; ele não envia nem associa automaticamente à conta o perfil financeiro eventualmente salvo em `localStorage`.
 
 Depois execute:
 
@@ -135,6 +171,8 @@ O comando executa, na mesma ordem usada pelo CI:
 3. `typecheck`;
 4. `test`;
 5. `build`.
+
+Os testes de integração de persistência são executados quando `DATABASE_URL` está disponível. O CI sobe PostgreSQL isolado, aplica as migrations e executa esses testes contra o banco real.
 
 ## Documentação
 
