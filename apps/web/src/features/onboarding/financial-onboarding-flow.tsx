@@ -17,7 +17,10 @@ import {
 } from "@portfolio-copilot/domain";
 import { APP_NAME } from "@portfolio-copilot/shared";
 
-import { useFinancialSession } from "@/components/financial-session";
+import {
+  useFinancialSession,
+  type FinancialProfilePersistenceStatus,
+} from "@/components/financial-session";
 
 import styles from "./financial-onboarding-flow.module.css";
 import {
@@ -58,7 +61,8 @@ const STEP_COPY: Record<
     label: "Revisão",
     summary: "Snapshot validado",
     title: "Revise seu perfil financeiro",
-    description: "Este resumo foi construído e validado pelo domínio. Nada foi salvo remotamente.",
+    description:
+      "Este resumo foi construído e validado pelo domínio. Nada é enviado a um servidor nesta etapa.",
   },
 };
 
@@ -494,13 +498,22 @@ function GoalReview({ goal }: Readonly<{ goal: FinancialGoalSnapshot }>) {
 
 function ReviewStep({
   snapshot,
+  persistenceStatus,
+  onPersist,
+  onRemovePersisted,
   onEdit,
   onReset,
 }: Readonly<{
   snapshot: FinancialProfileSnapshot;
+  persistenceStatus: FinancialProfilePersistenceStatus;
+  onPersist: () => boolean;
+  onRemovePersisted: () => boolean;
   onEdit: () => void;
   onReset: () => void;
 }>) {
+  const isPersisted = persistenceStatus === "persisted";
+  const storageUnavailable = persistenceStatus === "unavailable";
+
   return (
     <div className={styles.stepBody}>
       <div className={styles.reviewGrid}>
@@ -543,10 +556,17 @@ function ReviewStep({
       </section>
 
       <div className={styles.reviewNotice} role="status">
-        <strong>Perfil validado e compartilhado nesta sessão.</strong>
+        <strong>
+          {isPersisted
+            ? "Perfil salvo neste dispositivo."
+            : "Perfil validado e compartilhado nesta sessão."}
+        </strong>
         <span>
-          Dashboard e Carteira podem reutilizar este snapshot enquanto a aplicação permanecer
-          carregada. Recarregar ou fechar a aplicação pode descartá-lo.
+          {isPersisted
+            ? "Recarregar pode restaurar este perfil neste navegador. Nada é sincronizado com conta, servidor ou outro dispositivo."
+            : storageUnavailable
+              ? "O armazenamento local não está disponível. O perfil continua utilizável nesta sessão e você pode tentar salvá-lo novamente."
+              : "Por padrão, o perfil fica somente em memória. Salve neste dispositivo apenas se quiser restaurá-lo após recarregar."}
         </span>
       </div>
 
@@ -554,8 +574,17 @@ function ReviewStep({
         <button className={styles.secondaryButton} type="button" onClick={onEdit}>
           Editar dados
         </button>
+        {isPersisted ? (
+          <button className={styles.secondaryButton} type="button" onClick={onRemovePersisted}>
+            Remover deste dispositivo
+          </button>
+        ) : (
+          <button className={styles.primaryButton} type="button" onClick={onPersist}>
+            {storageUnavailable ? "Tentar salvar neste dispositivo" : "Salvar neste dispositivo"}
+          </button>
+        )}
         <button className={styles.textButton} type="button" onClick={onReset}>
-          Recomeçar
+          {isPersisted ? "Recomeçar e apagar perfil" : "Recomeçar"}
         </button>
       </div>
     </div>
@@ -563,7 +592,13 @@ function ReviewStep({
 }
 
 export function FinancialOnboardingFlow() {
-  const { publishFinancialProfile, clearFinancialProfile } = useFinancialSession();
+  const {
+    persistenceStatus,
+    publishFinancialProfile,
+    persistFinancialProfile,
+    removePersistedFinancialProfile,
+    clearFinancialProfile,
+  } = useFinancialSession();
   const [state, dispatch] = useReducer(onboardingReducer, undefined, createInitialOnboardingState);
   const nextGoalSequence = useRef(1);
   const activeIndex = ONBOARDING_STEPS.indexOf(state.step);
@@ -647,10 +682,10 @@ export function FinancialOnboardingFlow() {
           </ol>
 
           <div className={styles.persistenceNote}>
-            <strong>Estado somente em memória</strong>
+            <strong>Persistência sob seu controle</strong>
             <p>
-              Após a revisão, o perfil é compartilhado entre as telas desta sessão. Recarregar a
-              aplicação pode descartá-lo.
+              Por padrão, o perfil fica só nesta sessão. Na revisão, você decide se quer salvá-lo
+              neste dispositivo para restaurá-lo após recarregar.
             </p>
           </div>
         </aside>
@@ -668,6 +703,9 @@ export function FinancialOnboardingFlow() {
             {state.step === "review" && state.snapshot !== null ? (
               <ReviewStep
                 snapshot={state.snapshot}
+                persistenceStatus={persistenceStatus}
+                onPersist={persistFinancialProfile}
+                onRemovePersisted={removePersistedFinancialProfile}
                 onEdit={() => dispatch({ type: "go-to-step", step: "profile" })}
                 onReset={() => {
                   nextGoalSequence.current = 1;
