@@ -72,7 +72,9 @@ export function FinancialSessionProvider({
     [clearFinancialProfile, publishFinancialProfile, state.financialProfile],
   );
 
-  return <FinancialSessionContext.Provider value={value}>{children}</FinancialSessionContext.Provider>;
+  return (
+    <FinancialSessionContext.Provider value={value}>{children}</FinancialSessionContext.Provider>
+  );
 }
 
 export function useFinancialSession(): FinancialSessionContextValue {
