@@ -6,6 +6,11 @@ import {
   type ContributionBaselineSnapshot,
 } from "./contribution-baseline-form";
 import {
+  createContributionConcentrationSnapshot,
+  createInitialContributionConcentrationDraft,
+  type ContributionConcentrationSnapshot,
+} from "./contribution-concentration-form";
+import {
   createContributionExecutionSnapshot,
   createInitialContributionExecutionDraft,
   type ContributionExecutionDraft,
@@ -57,6 +62,20 @@ function policyFrom(baseline: ContributionBaselineSnapshot): ContributionPolicyS
   return result.snapshot;
 }
 
+function concentrationFrom(
+  baseline: ContributionBaselineSnapshot,
+  policy: ContributionPolicySnapshot,
+): ContributionConcentrationSnapshot {
+  const result = createContributionConcentrationSnapshot(
+    createInitialContributionConcentrationDraft(policy),
+    baseline,
+    policy,
+  );
+  expect(result.ok).toBe(true);
+  if (!result.ok) throw new Error("Expected valid concentration plan");
+  return result.snapshot;
+}
+
 const BASELINE = baselineFrom({
   portfolioValue: "1000",
   contribution: "200",
@@ -66,6 +85,7 @@ const BASELINE = baselineFrom({
   ],
 });
 const POLICY = policyFrom(BASELINE);
+const CONCENTRATION = concentrationFrom(BASELINE, POLICY);
 
 function validDraft(): ContributionExecutionDraft {
   return {
@@ -87,8 +107,8 @@ function validDraft(): ContributionExecutionDraft {
 }
 
 describe("contribution execution form adapter", () => {
-  it("creates empty destination rows only for positive post-policy allocations", () => {
-    expect(createInitialContributionExecutionDraft(POLICY)).toEqual({
+  it("creates empty destination rows only for positive post-concentration allocations", () => {
+    expect(createInitialContributionExecutionDraft(CONCENTRATION)).toEqual({
       destinations: [
         {
           assetClass: "EQUITY",
@@ -113,14 +133,48 @@ describe("contribution execution form adapter", () => {
         { assetClass: "FIXED_INCOME", targetWeight: "40", currentValue: "400" },
       ],
     });
+    const zeroPolicy = policyFrom(zeroBaseline);
 
-    expect(createInitialContributionExecutionDraft(policyFrom(zeroBaseline))).toEqual({
-      destinations: [],
+    expect(
+      createInitialContributionExecutionDraft(concentrationFrom(zeroBaseline, zeroPolicy)),
+    ).toEqual({ destinations: [] });
+  });
+
+  it("removes a hard-blocked class before execution destinations are created", () => {
+    const concentrationDraft = createInitialContributionConcentrationDraft(POLICY);
+    const result = createContributionConcentrationSnapshot(
+      {
+        rows: concentrationDraft.rows.map((row) =>
+          row.assetClass === "EQUITY"
+            ? { ...row, enabled: true, softMaxWeight: "45", hardMaxWeight: "50" }
+            : row,
+        ),
+      },
+      BASELINE,
+      POLICY,
+    );
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+
+    expect(createInitialContributionExecutionDraft(result.snapshot)).toEqual({
+      destinations: [
+        {
+          assetClass: "FIXED_INCOME",
+          assetId: "",
+          isEligible: null,
+          minimumTradableQuantity: "",
+        },
+      ],
     });
   });
 
-  it("preserves eligible post-policy amounts and normalizes minimum quantities without price", () => {
-    const result = createContributionExecutionSnapshot(validDraft(), BASELINE, POLICY, ASSETS);
+  it("preserves eligible post-concentration amounts and normalizes minimum quantities without price", () => {
+    const result = createContributionExecutionSnapshot(
+      validDraft(),
+      BASELINE,
+      CONCENTRATION,
+      ASSETS,
+    );
 
     expect(result).toEqual({
       ok: true,
@@ -131,7 +185,7 @@ describe("contribution execution form adapter", () => {
             assetId: EQUITY_ASSET.id,
             isEligible: true,
             minimumTradableQuantity: "0.500000000000",
-            policyAllocatedAmount: { currency: "BRL", minorUnits: "12000" },
+            concentrationAllocatedAmount: { currency: "BRL", minorUnits: "12000" },
             executionAllocatedAmount: { currency: "BRL", minorUnits: "12000" },
             status: "EXECUTABLE",
           },
@@ -140,7 +194,7 @@ describe("contribution execution form adapter", () => {
             assetId: FIXED_INCOME_ASSET.id,
             isEligible: true,
             minimumTradableQuantity: "1.000000000000",
-            policyAllocatedAmount: { currency: "BRL", minorUnits: "8000" },
+            concentrationAllocatedAmount: { currency: "BRL", minorUnits: "8000" },
             executionAllocatedAmount: { currency: "BRL", minorUnits: "8000" },
             status: "EXECUTABLE",
           },
@@ -159,7 +213,7 @@ describe("contribution execution form adapter", () => {
         ),
       },
       BASELINE,
-      POLICY,
+      CONCENTRATION,
       ASSETS,
     );
 
@@ -171,7 +225,7 @@ describe("contribution execution form adapter", () => {
       assetId: FIXED_INCOME_ASSET.id,
       isEligible: false,
       minimumTradableQuantity: "1.000000000000",
-      policyAllocatedAmount: { currency: "BRL", minorUnits: "8000" },
+      concentrationAllocatedAmount: { currency: "BRL", minorUnits: "8000" },
       executionAllocatedAmount: null,
       status: "BLOCKED_INELIGIBLE",
     });
@@ -190,7 +244,7 @@ describe("contribution execution form adapter", () => {
         ),
       },
       BASELINE,
-      POLICY,
+      CONCENTRATION,
       ASSETS,
     );
 
@@ -213,7 +267,7 @@ describe("contribution execution form adapter", () => {
         ),
       },
       BASELINE,
-      POLICY,
+      CONCENTRATION,
       ASSETS,
     );
     const zeroMinimum = createContributionExecutionSnapshot(
@@ -223,7 +277,7 @@ describe("contribution execution form adapter", () => {
         ),
       },
       BASELINE,
-      POLICY,
+      CONCENTRATION,
       ASSETS,
     );
     const invalidMinimum = createContributionExecutionSnapshot(
@@ -233,7 +287,7 @@ describe("contribution execution form adapter", () => {
         ),
       },
       BASELINE,
-      POLICY,
+      CONCENTRATION,
       ASSETS,
     );
 
@@ -271,7 +325,7 @@ describe("contribution execution form adapter", () => {
         ),
       },
       BASELINE,
-      POLICY,
+      CONCENTRATION,
       ASSETS,
     );
     const wrongClass = createContributionExecutionSnapshot(
@@ -281,7 +335,7 @@ describe("contribution execution form adapter", () => {
         ),
       },
       BASELINE,
-      POLICY,
+      CONCENTRATION,
       ASSETS,
     );
 
@@ -304,7 +358,7 @@ describe("contribution execution form adapter", () => {
         destinations: [draft.destinations[0]!, draft.destinations[0]!, draft.destinations[1]!],
       },
       BASELINE,
-      POLICY,
+      CONCENTRATION,
       ASSETS,
     );
 
