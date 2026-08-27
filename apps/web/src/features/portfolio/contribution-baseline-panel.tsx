@@ -12,6 +12,7 @@ import {
   type ContributionBaselineSnapshot,
   type ContributionClassDraft,
 } from "./contribution-baseline-form";
+import { ContributionExecutionSection } from "./contribution-execution-section";
 import {
   createContributionPolicySnapshot,
   createInitialContributionPolicyDraft,
@@ -20,11 +21,12 @@ import {
   type ContributionPolicyFieldErrors,
   type ContributionPolicySnapshot,
 } from "./contribution-policy-form";
-import { assetClassLabel } from "./local-asset-form";
+import { assetClassLabel, type LocalAssetSnapshot } from "./local-asset-form";
 import styles from "./contribution-baseline-panel.module.css";
 
 type ContributionBaselinePanelProps = Readonly<{
   portfolio: PortfolioSnapshot;
+  assets?: readonly LocalAssetSnapshot[];
   initialBaseline?: ContributionBaselineSnapshot | null;
   initialPolicy?: ContributionPolicySnapshot | null;
 }>;
@@ -65,6 +67,7 @@ function ErrorText({ id, message }: Readonly<{ id: string; message: string | und
 
 export function ContributionBaselinePanel({
   portfolio,
+  assets = [],
   initialBaseline = null,
   initialPolicy = null,
 }: ContributionBaselinePanelProps) {
@@ -157,8 +160,8 @@ export function ContributionBaselinePanel({
         <div>
           <h2 id="contribution-baseline-title">Baseline do aporte</h2>
           <p>
-            Valide a base monetária e depois aplique a política de microaporte e limite de destinos.
-            Nenhuma etapa converte quantidades do ledger em valor de mercado.
+            Valide a base monetária, aplique a política e só então configure destinos locais de
+            execução. Nenhuma etapa converte quantidades do ledger em valor de mercado.
           </p>
         </div>
         <span className={styles.status}>{statusLabel}</span>
@@ -170,8 +173,8 @@ export function ContributionBaselinePanel({
             <strong>Base monetária manual</strong>
             <p>
               Estes valores são declarados por você e não representam cotação, valuation ou
-              patrimônio derivado de Market Data. TargetAllocation, base, política e resultados
-              existem apenas nesta sessão.
+              patrimônio derivado de Market Data. TargetAllocation, base, política, destinos e
+              resultados existem apenas nesta sessão.
             </p>
           </div>
 
@@ -309,10 +312,10 @@ export function ContributionBaselinePanel({
 
         <div className={styles.result} aria-live="polite">
           <div className={styles.resultHeading}>
-            <h3>Baseline x política</h3>
+            <h3>Baseline, política e execução</h3>
             <p>
-              O allocator define o baseline econômico; a política só restringe destinos e
-              microaportes sobre esse plano validado.
+              O allocator define o baseline econômico; política e restrições de execução só refinam
+              esse plano validado, sem reescrever sua necessidade pós-aporte.
             </p>
           </div>
 
@@ -486,13 +489,18 @@ export function ContributionBaselinePanel({
                 </table>
               </div>
 
+              {policy !== null ? (
+                <ContributionExecutionSection baseline={baseline} policy={policy} assets={assets} />
+              ) : null}
+
               <p className={styles.resultFootnote}>
                 “Removida pela política” significa que o domínio zerou a alocação final daquela
                 classe. A UI não atribui uma causa isolada entre mínimo e limite porque o contrato
                 atual não expõe reason code específico.
               </p>
               <p className={styles.resultFootnote}>
-                Nenhuma etapa escolhe ativo, calcula quantidade ou usa preço de mercado.
+                A etapa de execução escolhe apenas um destino local explícito por classe; nenhuma
+                etapa calcula quantidade de compra ou usa preço de mercado.
               </p>
             </>
           )}
