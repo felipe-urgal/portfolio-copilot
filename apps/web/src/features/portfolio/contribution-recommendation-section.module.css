@@ -1,0 +1,141 @@
+.section {
+  display: grid;
+  gap: 1rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.heading h5,
+.heading p {
+  margin: 0;
+}
+
+.heading p {
+  max-width: 68ch;
+  margin-top: 0.35rem;
+  color: var(--text-muted);
+  line-height: 1.55;
+}
+
+.form {
+  display: grid;
+  gap: 0.85rem;
+  max-width: 32rem;
+}
+
+.result {
+  display: grid;
+  gap: 1rem;
+}
+
+.summary,
+.remainders {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: 0;
+  border: 1px solid var(--border-subtle);
+  border-radius: 0.8rem;
+  overflow: hidden;
+}
+
+.remainders {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.summary div,
+.remainders div {
+  display: grid;
+  gap: 0.25rem;
+  min-width: 0;
+  padding: 0.8rem;
+  border-right: 1px solid var(--border-subtle);
+}
+
+.summary div:last-child,
+.remainders div:last-child {
+  border-right: 0;
+}
+
+.summary dt,
+.remainders dt {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+
+.summary dd,
+.remainders dd {
+  margin: 0;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.reasonList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.reasonList code {
+  padding: 0.2rem 0.4rem;
+  border: 1px solid var(--border-subtle);
+  border-radius: 999px;
+  background: var(--surface-subtle);
+  font-size: 0.72rem;
+  white-space: nowrap;
+}
+
+.emptyReason {
+  color: var(--text-muted);
+}
+
+.state {
+  font-weight: 700;
+}
+
+.state[data-status="EXECUTABLE"] {
+  color: var(--text-success);
+}
+
+.state[data-status^="BLOCKED_"] {
+  color: var(--text-danger);
+}
+
+.state[data-status="NOT_SELECTED_BY_POLICY"] {
+  color: var(--text-muted);
+}
+
+.note {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+@media (max-width: 760px) {
+  .heading {
+    display: grid;
+  }
+
+  .summary,
+  .remainders {
+    grid-template-columns: 1fr;
+  }
+
+  .summary div,
+  .remainders div {
+    border-right: 0;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .summary div:last-child,
+  .remainders div:last-child {
+    border-bottom: 0;
+  }
+}
