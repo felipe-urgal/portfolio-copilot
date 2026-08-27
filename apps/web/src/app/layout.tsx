@@ -3,6 +3,8 @@ import type { ReactNode } from "react";
 
 import { APP_NAME } from "@portfolio-copilot/shared";
 
+import { FinancialSessionProvider } from "@/components/financial-session";
+
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -13,7 +15,9 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
     <html lang="pt-BR">
-      <body>{children}</body>
+      <body>
+        <FinancialSessionProvider>{children}</FinancialSessionProvider>
+      </body>
     </html>
   );
 }
