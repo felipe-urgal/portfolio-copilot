@@ -96,6 +96,7 @@ describe("ContributionExecutionSection", () => {
     expect(html).toContain("Quantidade mínima negociável");
     expect(html).toContain("O AssetId é resolvido internamente");
     expect(html).toContain("Não afirma que o valor alocado");
+    expect(html).not.toContain("Custos conhecidos");
     expect(html).not.toContain("preço por unidade");
   });
 
@@ -112,7 +113,7 @@ describe("ContributionExecutionSection", () => {
     expect(html).toContain("Cadastre um ativo local de Renda fixa antes de validar esta etapa.");
   });
 
-  it("renders executable and blocked destinations without implying purchasable quantity", () => {
+  it("reveals known costs only after execution is validated", () => {
     const { baseline, concentration } = setup();
     const executionDraft: ContributionExecutionDraft = {
       destinations: [
@@ -155,6 +156,9 @@ describe("ContributionExecutionSection", () => {
     expect(html).toContain("1 un.");
     expect(html).toContain("Executável");
     expect(html).toContain("Bloqueado: inelegível");
+    expect(html).toContain("Custos conhecidos");
+    expect(html).toContain("Custo transacional conhecido");
+    expect(html).toContain("Impacto tributário reservado");
     expect(html).toContain("Sem preço, esta etapa não");
     expect(html).toContain("não executa ordem");
     expect(html).not.toContain("quantidade recomendada: 0.5");
