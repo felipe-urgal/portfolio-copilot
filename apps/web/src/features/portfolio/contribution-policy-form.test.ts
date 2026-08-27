@@ -40,7 +40,7 @@ const REDISTRIBUTION_BASELINE = baselineFrom({
   rows: [
     { assetClass: "EQUITY", targetWeight: "40", currentValue: "350" },
     { assetClass: "FIXED_INCOME", targetWeight: "30", currentValue: "350" },
-    { assetClass: "CRYPTO", targetWeight: "30", currentValue: "300" },
+    { assetClass: "CRYPTO_ASSET", targetWeight: "30", currentValue: "300" },
   ],
 });
 
@@ -131,7 +131,7 @@ describe("contribution policy form adapter", () => {
 
     expect(result.snapshot.allocations).toEqual([
       {
-        assetClass: "CRYPTO",
+        assetClass: "CRYPTO_ASSET",
         baselineAllocatedAmount: { currency: "BRL", minorUnits: "2500" },
         policyAllocatedAmount: { currency: "BRL", minorUnits: "0" },
         status: "REMOVED",
