@@ -3,14 +3,12 @@ export const DEFAULT_AUTHENTICATED_ROUTE = "/dashboard";
 const PROTECTED_PRODUCT_ROOTS = ["/dashboard", "/portfolio", "/onboarding"] as const;
 
 type SessionIdentitySource = Readonly<{
-  user?:
-    | Readonly<{
-        id?: string | null;
-        name?: string | null;
-        email?: string | null;
-        image?: string | null;
-      }>
-    | null;
+  user?: Readonly<{
+    id?: string | null;
+    name?: string | null;
+    email?: string | null;
+    image?: string | null;
+  }> | null;
 }>;
 
 export type AuthenticatedIdentity = Readonly<{
@@ -37,7 +35,9 @@ export function createCanonicalIdentitySubject(
   return `${normalizedProvider}:${normalizedAccountId}`;
 }
 
-export function identityFromSession(session: SessionIdentitySource | null): AuthenticatedIdentity | null {
+export function identityFromSession(
+  session: SessionIdentitySource | null,
+): AuthenticatedIdentity | null {
   const subject = normalizedText(session?.user?.id);
   if (subject === null) return null;
 

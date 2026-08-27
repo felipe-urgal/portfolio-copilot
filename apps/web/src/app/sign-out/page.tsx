@@ -51,9 +51,8 @@ export default async function SignOutPage() {
         </div>
 
         <div className={styles.notice}>
-          <strong>Seus dados locais não são apagados ao sair.</strong>
-          O perfil financeiro salvo neste dispositivo continua sob a ação explícita de remoção já
-          existente no onboarding.
+          <strong>Seus dados locais não são apagados ao sair.</strong>O perfil financeiro salvo
+          neste dispositivo continua sob a ação explícita de remoção já existente no onboarding.
         </div>
 
         <div className={styles.actions}>
