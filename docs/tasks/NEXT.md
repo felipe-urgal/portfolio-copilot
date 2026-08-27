@@ -1,6 +1,6 @@
 # Próxima Atividade — MVP: migração opt-in do perfil financeiro local para a conta
 
-**Status:** BLOCKED até o merge da issue #37; depois, READY.
+**Status:** READY
 
 ## Issue canônica
 
