@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 
 import { APP_NAME } from "@portfolio-copilot/shared";
 
+import { FinancialProfileSessionSummary } from "@/components/financial-profile-session-summary";
 import { ProductShell } from "@/components/product-shell";
 import { PortfolioWorkspace } from "@/features/portfolio/portfolio-workspace";
 
@@ -14,6 +15,7 @@ export const metadata: Metadata = {
 export default function PortfolioPage() {
   return (
     <ProductShell activeRoute="/portfolio">
+      <FinancialProfileSessionSummary />
       <PortfolioWorkspace />
     </ProductShell>
   );
