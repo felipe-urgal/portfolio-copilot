@@ -3,6 +3,8 @@ import type { ReactNode } from "react";
 
 import { APP_NAME } from "@portfolio-copilot/shared";
 
+import type { AuthenticatedIdentity } from "@/lib/identity";
+
 import styles from "./product-shell.module.css";
 
 type ProductRoute = "/dashboard" | "/onboarding" | "/portfolio";
@@ -10,6 +12,7 @@ type ProductRoute = "/dashboard" | "/onboarding" | "/portfolio";
 type ProductShellProps = Readonly<{
   activeRoute: ProductRoute;
   children: ReactNode;
+  identity?: AuthenticatedIdentity;
 }>;
 
 const PRIMARY_NAVIGATION: ReadonlyArray<Readonly<{ href: ProductRoute; label: string }>> = [
@@ -18,7 +21,7 @@ const PRIMARY_NAVIGATION: ReadonlyArray<Readonly<{ href: ProductRoute; label: st
   { href: "/onboarding", label: "Onboarding" },
 ];
 
-export function ProductShell({ activeRoute, children }: ProductShellProps) {
+export function ProductShell({ activeRoute, children, identity }: ProductShellProps) {
   return (
     <div className={styles.pageShell}>
       <a className={styles.skipLink} href="#main-content">
@@ -44,9 +47,21 @@ export function ProductShell({ activeRoute, children }: ProductShellProps) {
             ))}
           </nav>
 
-          <Link className={styles.utilityLink} href="/health">
-            Saúde da aplicação
-          </Link>
+          <div className={styles.utilityArea}>
+            <Link className={styles.utilityLink} href="/health">
+              Saúde
+            </Link>
+            {identity === undefined ? null : (
+              <Link
+                className={styles.accountLink}
+                href="/sign-out"
+                aria-label={`Sessão autenticada como ${identity.displayName}. Abrir opções para sair.`}
+              >
+                <span className={styles.accountStatus} aria-hidden="true" />
+                <span className={styles.accountName}>{identity.displayName}</span>
+              </Link>
+            )}
+          </div>
         </div>
       </header>
 
