@@ -19,7 +19,7 @@ import {
   normalizeContributionDecimal,
   type ContributionBaselineSnapshot,
 } from "./contribution-baseline-form";
-import { type ContributionPolicySnapshot } from "./contribution-policy-form";
+import { type ContributionConcentrationSnapshot } from "./contribution-concentration-form";
 import { type LocalAssetSnapshot } from "./local-asset-form";
 
 export type ContributionExecutionDestinationDraft = Readonly<{
@@ -51,7 +51,7 @@ export type ContributionExecutionDestinationSnapshot = Readonly<{
   assetId: string;
   isEligible: boolean;
   minimumTradableQuantity: string;
-  policyAllocatedAmount: MoneySnapshot;
+  concentrationAllocatedAmount: MoneySnapshot;
   executionAllocatedAmount: MoneySnapshot | null;
   status: ContributionExecutionDestinationStatus;
 }>;
@@ -85,13 +85,13 @@ function rowError(
   return { ok: false, errors: { destinations: { [assetClass]: errors } } };
 }
 
-function rehydratePolicyPlan(
+function rehydrateConcentrationPlan(
   baseline: ContributionBaselineSnapshot,
-  policy: ContributionPolicySnapshot,
+  concentration: ContributionConcentrationSnapshot,
 ): ContributionPlan {
   const portfolioId = PortfolioId.from(baseline.targetAllocation.portfolioId);
-  const policyByClass = new Map(
-    policy.allocations.map((allocation) => [allocation.assetClass, allocation] as const),
+  const concentrationByClass = new Map(
+    concentration.allocations.map((allocation) => [allocation.assetClass, allocation] as const),
   );
 
   return Object.freeze({
@@ -101,9 +101,9 @@ function rehydratePolicyPlan(
     postContributionValue: Money.fromSnapshot(baseline.postContributionValue),
     allocations: Object.freeze(
       baseline.allocations.map((allocation) => {
-        const policyAllocation = policyByClass.get(allocation.assetClass);
-        if (policyAllocation === undefined) {
-          throw new Error(`Missing policy allocation for ${allocation.assetClass}`);
+        const concentrationAllocation = concentrationByClass.get(allocation.assetClass);
+        if (concentrationAllocation === undefined) {
+          throw new Error(`Missing concentration allocation for ${allocation.assetClass}`);
         }
 
         return Object.freeze({
@@ -112,20 +112,20 @@ function rehydratePolicyPlan(
           currentValue: Money.fromSnapshot(allocation.currentValue),
           postContributionTargetValue: Money.fromSnapshot(allocation.postContributionTargetValue),
           postContributionNeed: Money.fromSnapshot(allocation.postContributionNeed),
-          allocatedAmount: Money.fromSnapshot(policyAllocation.policyAllocatedAmount),
+          allocatedAmount: Money.fromSnapshot(concentrationAllocation.concentrationAllocatedAmount),
         });
       }),
     ),
-    unallocatedContribution: Money.fromSnapshot(policy.unallocatedContribution),
+    unallocatedContribution: Money.fromSnapshot(concentration.unallocatedContribution),
   });
 }
 
 export function createInitialContributionExecutionDraft(
-  policy: ContributionPolicySnapshot,
+  concentration: ContributionConcentrationSnapshot,
 ): ContributionExecutionDraft {
   return {
-    destinations: policy.allocations
-      .filter((allocation) => isPositiveMoney(allocation.policyAllocatedAmount))
+    destinations: concentration.allocations
+      .filter((allocation) => isPositiveMoney(allocation.concentrationAllocatedAmount))
       .map((allocation) => ({
         assetClass: allocation.assetClass,
         assetId: "",
@@ -138,7 +138,7 @@ export function createInitialContributionExecutionDraft(
 export function createContributionExecutionSnapshot(
   draft: ContributionExecutionDraft,
   baseline: ContributionBaselineSnapshot,
-  policy: ContributionPolicySnapshot,
+  concentration: ContributionConcentrationSnapshot,
   assets: readonly LocalAssetSnapshot[],
 ): ContributionExecutionResult {
   const selectedAssets = new Map<string, LocalAssetSnapshot>();
@@ -171,9 +171,9 @@ export function createContributionExecutionSnapshot(
   }
 
   try {
-    const policyPlan = rehydratePolicyPlan(baseline, policy);
+    const concentrationPlan = rehydrateConcentrationPlan(baseline, concentration);
     const executionPlan = applyContributionExecutionConstraints({
-      plan: policyPlan,
+      plan: concentrationPlan,
       destinations,
     });
     const executableByClass = new Map(
@@ -181,22 +181,22 @@ export function createContributionExecutionSnapshot(
         (destination) => [destination.assetClass.code, destination] as const,
       ),
     );
-    const policyByClass = new Map(
-      policy.allocations.map((allocation) => [allocation.assetClass, allocation] as const),
+    const concentrationByClass = new Map(
+      concentration.allocations.map((allocation) => [allocation.assetClass, allocation] as const),
     );
 
     return {
       ok: true,
       snapshot: {
-        destinations: policyPlan.allocations
+        destinations: concentrationPlan.allocations
           .filter((allocation) => !allocation.allocatedAmount.isZero())
           .map((allocation) => {
             const assetClass = allocation.assetClass.code;
             const row = draft.destinations.find((candidate) => candidate.assetClass === assetClass);
             const asset = selectedAssets.get(assetClass);
-            const policyAllocation = policyByClass.get(assetClass);
+            const concentrationAllocation = concentrationByClass.get(assetClass);
 
-            if (row === undefined || asset === undefined || policyAllocation === undefined) {
+            if (row === undefined || asset === undefined || concentrationAllocation === undefined) {
               throw new Error(`Missing validated execution input for ${assetClass}`);
             }
 
@@ -210,7 +210,7 @@ export function createContributionExecutionSnapshot(
               assetId: asset.id,
               isEligible: row.isEligible === true,
               minimumTradableQuantity: minimumTradableQuantity.toDecimalString(),
-              policyAllocatedAmount: policyAllocation.policyAllocatedAmount,
+              concentrationAllocatedAmount: concentrationAllocation.concentrationAllocatedAmount,
               executionAllocatedAmount: executable?.allocatedAmount.toSnapshot() ?? null,
               status: executable === undefined ? "BLOCKED_INELIGIBLE" : "EXECUTABLE",
             };

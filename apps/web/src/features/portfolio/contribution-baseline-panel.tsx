@@ -12,7 +12,8 @@ import {
   type ContributionBaselineSnapshot,
   type ContributionClassDraft,
 } from "./contribution-baseline-form";
-import { ContributionExecutionSection } from "./contribution-execution-section";
+import { type ContributionConcentrationSnapshot } from "./contribution-concentration-form";
+import { ContributionConcentrationSection } from "./contribution-concentration-section";
 import {
   createContributionPolicySnapshot,
   createInitialContributionPolicyDraft,
@@ -29,6 +30,7 @@ type ContributionBaselinePanelProps = Readonly<{
   assets?: readonly LocalAssetSnapshot[];
   initialBaseline?: ContributionBaselineSnapshot | null;
   initialPolicy?: ContributionPolicySnapshot | null;
+  initialConcentration?: ContributionConcentrationSnapshot | null;
 }>;
 
 type ContributionRowField = "targetWeight" | "currentValue";
@@ -70,6 +72,7 @@ export function ContributionBaselinePanel({
   assets = [],
   initialBaseline = null,
   initialPolicy = null,
+  initialConcentration = null,
 }: ContributionBaselinePanelProps) {
   const [draft, setDraft] = useState<ContributionBaselineDraft>(
     createInitialContributionBaselineDraft,
@@ -160,8 +163,8 @@ export function ContributionBaselinePanel({
         <div>
           <h2 id="contribution-baseline-title">Baseline do aporte</h2>
           <p>
-            Valide a base monetária, aplique a política e só então configure destinos locais de
-            execução. Nenhuma etapa converte quantidades do ledger em valor de mercado.
+            Valide a base monetária, aplique política e concentração e só então configure destinos
+            locais de execução. Nenhuma etapa converte quantidades do ledger em valor de mercado.
           </p>
         </div>
         <span className={styles.status}>{statusLabel}</span>
@@ -173,8 +176,8 @@ export function ContributionBaselinePanel({
             <strong>Base monetária manual</strong>
             <p>
               Estes valores são declarados por você e não representam cotação, valuation ou
-              patrimônio derivado de Market Data. TargetAllocation, base, política, destinos e
-              resultados existem apenas nesta sessão.
+              patrimônio derivado de Market Data. TargetAllocation, base, política, concentração,
+              destinos e resultados existem apenas nesta sessão.
             </p>
           </div>
 
@@ -312,10 +315,10 @@ export function ContributionBaselinePanel({
 
         <div className={styles.result} aria-live="polite">
           <div className={styles.resultHeading}>
-            <h3>Baseline, política e execução</h3>
+            <h3>Baseline, política, concentração e execução</h3>
             <p>
-              O allocator define o baseline econômico; política e restrições de execução só refinam
-              esse plano validado, sem reescrever sua necessidade pós-aporte.
+              O allocator define o baseline econômico; política, concentração e execução refinam
+              esse plano validado sem reescrever sua necessidade pós-aporte.
             </p>
           </div>
 
@@ -490,7 +493,12 @@ export function ContributionBaselinePanel({
               </div>
 
               {policy !== null ? (
-                <ContributionExecutionSection baseline={baseline} policy={policy} assets={assets} />
+                <ContributionConcentrationSection
+                  baseline={baseline}
+                  policy={policy}
+                  assets={assets}
+                  initialConcentration={initialConcentration}
+                />
               ) : null}
 
               <p className={styles.resultFootnote}>
@@ -499,8 +507,9 @@ export function ContributionBaselinePanel({
                 atual não expõe reason code específico.
               </p>
               <p className={styles.resultFootnote}>
-                A etapa de execução escolhe apenas um destino local explícito por classe; nenhuma
-                etapa calcula quantidade de compra ou usa preço de mercado.
+                Concentração pode apenas sinalizar soft limit ou bloquear novo valor no hard limit.
+                Execução recebe somente o valor pós-concentração e nenhuma etapa calcula quantidade
+                de compra ou usa preço de mercado.
               </p>
             </>
           )}

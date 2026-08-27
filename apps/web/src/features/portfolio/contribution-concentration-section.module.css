@@ -1,0 +1,171 @@
+.section {
+  display: grid;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid #e6e8ef;
+  border-radius: 0.9rem;
+  background: #fbfbfd;
+}
+
+.heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.heading h4,
+.row legend {
+  margin: 0;
+  color: #292d38;
+}
+
+.heading h4 {
+  font-size: 0.92rem;
+}
+
+.heading p,
+.rowHelp,
+.resultNote {
+  margin: 0.35rem 0 0;
+  color: #747b89;
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
+.form,
+.rows,
+.row,
+.controls,
+.limitFields,
+.result {
+  display: grid;
+}
+
+.form,
+.rows,
+.result {
+  gap: 0.9rem;
+}
+
+.row {
+  gap: 0.75rem;
+  padding: 0.9rem;
+  border: 1px solid #e1e4eb;
+  border-radius: 0.8rem;
+  background: #fff;
+}
+
+.row legend {
+  padding: 0 0.25rem;
+  font-size: 0.8rem;
+  font-weight: 760;
+}
+
+.controls {
+  grid-template-columns: minmax(11rem, 0.7fr) minmax(0, 1.3fr);
+  gap: 0.85rem;
+  align-items: start;
+}
+
+.toggle {
+  min-height: 2.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  color: #333844;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.toggle input {
+  width: 1rem;
+  height: 1rem;
+}
+
+.limitFields {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.limitFields input:disabled {
+  background: #f4f5f8;
+  color: #9197a3;
+  cursor: not-allowed;
+}
+
+.result {
+  padding-top: 0.2rem;
+}
+
+.summary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.7rem;
+  margin: 0;
+}
+
+.summary div {
+  padding: 0.75rem 0.8rem;
+  border: 1px solid #e3e6ed;
+  border-radius: 0.72rem;
+  background: #fff;
+}
+
+.summary dt {
+  color: #7c8390;
+  font-size: 0.68rem;
+  font-weight: 720;
+}
+
+.summary dd {
+  margin: 0.2rem 0 0;
+  color: #292d38;
+  font-size: 0.82rem;
+  font-weight: 760;
+}
+
+.state {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  padding: 0.25rem 0.48rem;
+  border-radius: 999px;
+  background: #f1f3f6;
+  color: #626977;
+  font-size: 0.68rem;
+  font-weight: 760;
+}
+
+.state[data-status="SOFT_ALERT"] {
+  background: #fff7df;
+  color: #835d08;
+}
+
+.state[data-status="HARD_LIMITED"] {
+  background: #fff0f1;
+  color: #a23d48;
+}
+
+.state[data-status="WITHIN_LIMITS"] {
+  background: #eef8f3;
+  color: #2e6b55;
+}
+
+.blockedAmount {
+  color: #a23d48 !important;
+  font-weight: 760;
+}
+
+@media (max-width: 760px) {
+  .heading,
+  .controls {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .limitFields,
+  .summary {
+    grid-template-columns: 1fr;
+  }
+}

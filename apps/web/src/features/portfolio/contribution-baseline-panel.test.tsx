@@ -6,6 +6,10 @@ import {
   type ContributionBaselineDraft,
 } from "./contribution-baseline-form";
 import { ContributionBaselinePanel } from "./contribution-baseline-panel";
+import {
+  createContributionConcentrationSnapshot,
+  createInitialContributionConcentrationDraft,
+} from "./contribution-concentration-form";
 import { createContributionPolicySnapshot } from "./contribution-policy-form";
 
 const PORTFOLIO = {
@@ -23,6 +27,21 @@ const DRAFT: ContributionBaselineDraft = {
   ],
 };
 
+function setupPolicy() {
+  const baselineResult = createContributionBaselineSnapshot(DRAFT, PORTFOLIO);
+  expect(baselineResult.ok).toBe(true);
+  if (!baselineResult.ok) throw new Error("Expected baseline");
+
+  const policyResult = createContributionPolicySnapshot(
+    { minimumMeaningfulContribution: "0", maxDestinationsPerContribution: "2" },
+    baselineResult.snapshot,
+  );
+  expect(policyResult.ok).toBe(true);
+  if (!policyResult.ok) throw new Error("Expected policy");
+
+  return { baseline: baselineResult.snapshot, policy: policyResult.snapshot };
+}
+
 describe("ContributionBaselinePanel", () => {
   it("renders an honest manual monetary basis before any calculation", () => {
     const html = renderToStaticMarkup(<ContributionBaselinePanel portfolio={PORTFOLIO} />);
@@ -38,8 +57,9 @@ describe("ContributionBaselinePanel", () => {
     expect(html).toContain("Calcular baseline do aporte");
     expect(html).toContain("Baseline ainda não calculado");
     expect(html).toContain("não representam cotação, valuation ou patrimônio");
-    expect(html).toContain("TargetAllocation, base, política, destinos e");
+    expect(html).toContain("TargetAllocation, base, política, concentração,");
     expect(html).not.toContain("Política operacional");
+    expect(html).not.toContain("Limites de concentração");
     expect(html).not.toContain("Restrições de execução");
     expect(html).not.toMatch(/R\$\s*\d/);
   });
@@ -67,31 +87,19 @@ describe("ContributionBaselinePanel", () => {
     expect(html).toContain("BRL 80.00");
     expect(html).toContain("Após política");
     expect(html).toContain("Não aplicada");
+    expect(html).not.toContain("Limites de concentração");
     expect(html).not.toContain("Restrições de execução");
     expect(html).not.toContain("preço por unidade");
     expect(html).not.toMatch(/R\$\s*\d/);
   });
 
-  it("renders post-policy provenance before exposing local execution constraints", () => {
-    const baselineResult = createContributionBaselineSnapshot(DRAFT, PORTFOLIO);
-    expect(baselineResult.ok).toBe(true);
-    if (!baselineResult.ok) return;
-
-    const policyResult = createContributionPolicySnapshot(
-      {
-        minimumMeaningfulContribution: "0",
-        maxDestinationsPerContribution: "1",
-      },
-      baselineResult.snapshot,
-    );
-    expect(policyResult.ok).toBe(true);
-    if (!policyResult.ok) return;
-
+  it("reveals concentration after policy but keeps execution gated", () => {
+    const { baseline, policy } = setupPolicy();
     const html = renderToStaticMarkup(
       <ContributionBaselinePanel
         portfolio={PORTFOLIO}
-        initialBaseline={baselineResult.snapshot}
-        initialPolicy={policyResult.snapshot}
+        initialBaseline={baseline}
+        initialPolicy={policy}
       />,
     );
 
@@ -99,14 +107,38 @@ describe("ContributionBaselinePanel", () => {
     expect(html).toContain("Mínimo aplicado");
     expect(html).toContain("Máximo de destinos");
     expect(html).toContain("Sobra após política");
-    expect(html).toContain("BRL 120.00");
-    expect(html).toContain("BRL 80.00");
-    expect(html).toContain("Mantida");
-    expect(html).toContain("Removida pela política");
+    expect(html).toContain("Limites de concentração");
+    expect(html).toContain("Configurar limite nesta classe");
+    expect(html).toContain("Alert-only. Não reduz valor sozinho.");
+    expect(html).not.toContain("Restrições de execução");
     expect(html).toContain("não atribui uma causa isolada entre mínimo e limite");
+    expect(html).not.toMatch(/R\$\s*\d/);
+  });
+
+  it("reveals execution only after concentration has been explicitly validated", () => {
+    const { baseline, policy } = setupPolicy();
+    const concentrationResult = createContributionConcentrationSnapshot(
+      createInitialContributionConcentrationDraft(policy),
+      baseline,
+      policy,
+    );
+    expect(concentrationResult.ok).toBe(true);
+    if (!concentrationResult.ok) return;
+
+    const html = renderToStaticMarkup(
+      <ContributionBaselinePanel
+        portfolio={PORTFOLIO}
+        initialBaseline={baseline}
+        initialPolicy={policy}
+        initialConcentration={concentrationResult.snapshot}
+      />,
+    );
+
+    expect(html).toContain("Sobra após concentração");
+    expect(html).toContain("Sem limite");
     expect(html).toContain("Restrições de execução");
     expect(html).toContain("Cadastre um ativo local de Ações antes de validar esta etapa.");
-    expect(html).toContain("nenhuma etapa calcula quantidade de compra ou usa preço de mercado");
+    expect(html).toContain("Execução recebe somente o valor pós-concentração");
     expect(html).not.toMatch(/R\$\s*\d/);
   });
 });
