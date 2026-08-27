@@ -482,3 +482,25 @@ Histórico resumido de atividades concluídas.
 - testes cobrem ausência de limite, soft alert-only, hard parcial, hard total/classe acima do teto, configuração inválida e integração com destinos de execução;
 - nenhuma fórmula financeira nova, preço, Market Data, FX, venda, redistribuição, ranking de Asset ou conversão `Money ↔ AssetQuantity` foi adicionada;
 - `docs/tasks/NEXT.md` promove custos conhecidos e impacto tributário reservado via `applyContributionCostTaxConstraints` como próximo vertical.
+
+## 2026-08-27 — Produto MVP: custos conhecidos e impacto tributário reservado do aporte
+
+- `/portfolio` passa a inserir custos conhecidos como etapa explícita posterior às restrições de execução;
+- somente destinos já validados como executáveis recebem configuração de custos;
+- destinos bloqueados por inelegibilidade permanecem fora desta etapa e não recebem custos hipotéticos;
+- `transactionCost` e `estimatedTaxImpact` permanecem strings na UI e são convertidos para `Money` na moeda do aporte;
+- campo monetário vazio representa custo conhecido zero, sem tarifa padrão inventada;
+- `estimatedTaxImpact` representa somente uma reserva monetária informada pelo usuário e não imposto calculado pelo domínio;
+- `applyContributionCostTaxConstraints` é a única fonte para `totalKnownCost`, `investableAmount`, status e sobra após custos;
+- orçamento bruto herdado da execução permanece explícito e não é sobrescrito pelo valor investível;
+- quando o custo conhecido total é menor que o orçamento bruto, somente `investableAmount` é reduzido;
+- quando o custo conhecido total é igual ou superior ao orçamento bruto, o destino é bloqueado e `investableAmount` fica zero;
+- em destino bloqueado por custos, o orçamento bruto inteiro retorna para `unallocatedContribution` e nenhum custo hipotético é debitado;
+- a sobra acumulada das etapas anteriores é preservada e não existe redistribuição automática após custos;
+- a UI mostra lado a lado orçamento bruto, custo transacional, reserva tributária, custo conhecido total, valor investível e estado;
+- editar a execução invalida naturalmente a etapa de custos, evitando resultado órfão ou stale;
+- configuração e resultado continuam locais e efêmeros;
+- testes cobrem custo zero, custos abaixo do orçamento, igualdade, excesso, valores inválidos/negativos, destino desconhecido e duplicidade;
+- nenhuma regra fiscal, consulta de tarifa, preço, Market Data, FX, spread, slippage, execução de ordem ou conversão `Money ↔ AssetQuantity` foi adicionada;
+- nenhuma dependência, lockfile, domínio ou fórmula financeira nova foi alterada;
+- `docs/tasks/NEXT.md` promove `buildContributionRecommendationSnapshot` como próximo vertical para consolidar provenance, status, reason codes e reconciliação do pipeline completo.
