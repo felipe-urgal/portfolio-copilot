@@ -9,7 +9,7 @@
   "scripts": {
     "dev": "pnpm --filter @portfolio-copilot/web dev",
     "format": "prettier --write \"apps/**/*.{ts,tsx,css,json}\" \"packages/**/*.{ts,json}\" \"*.{json,yaml,yml,mjs}\" \".github/**/*.yml\"",
-    "format:check": "prettier --write \"apps/web/src/components/financial-session.tsx\" \"apps/web/src/lib/financial-profile-storage.test.ts\" \"apps/web/src/components/financial-profile-session-summary.tsx\" \"apps/web/src/components/financial-profile-session-summary.module.css\" && git diff --exit-code -- \"apps/web/src/components/financial-session.tsx\" \"apps/web/src/lib/financial-profile-storage.test.ts\" \"apps/web/src/components/financial-profile-session-summary.tsx\" \"apps/web/src/components/financial-profile-session-summary.module.css\"",
+    "format:check": "prettier --check \"apps/**/*.{ts,tsx,css,json}\" \"packages/**/*.{ts,json}\" \"*.{json,yaml,yml,mjs}\" \".github/**/*.yml\"",
     "lint": "eslint apps packages --max-warnings=0",
     "typecheck": "pnpm -r --if-present run typecheck",
     "test": "vitest run",
