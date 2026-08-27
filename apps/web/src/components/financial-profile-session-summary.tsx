@@ -56,7 +56,8 @@ function GoalItem({ goal }: Readonly<{ goal: FinancialGoalSnapshot }>) {
 }
 
 export function FinancialProfileSessionSummary() {
-  const { financialProfile, persistenceStatus } = useFinancialSession();
+  const { financialProfile, persistenceStatus, removePersistedFinancialProfile } =
+    useFinancialSession();
   const isPersisted = financialProfile !== null && persistenceStatus === "persisted";
 
   return (
@@ -72,13 +73,19 @@ export function FinancialProfileSessionSummary() {
                 : "Contexto declarado no onboarding e compartilhado somente nesta sessão."}
           </p>
         </div>
-        <span className={financialProfile === null ? styles.emptyStatus : styles.activeStatus}>
-          {financialProfile === null
-            ? "Não configurado"
-            : isPersisted
-              ? "Salvo neste dispositivo"
-              : "Somente nesta sessão"}
-        </span>
+        {isPersisted ? (
+          <button
+            className={`${styles.activeStatus} ${styles.persistenceButton}`}
+            type="button"
+            onClick={removePersistedFinancialProfile}
+          >
+            Salvo neste dispositivo · remover
+          </button>
+        ) : (
+          <span className={financialProfile === null ? styles.emptyStatus : styles.activeStatus}>
+            {financialProfile === null ? "Não configurado" : "Somente nesta sessão"}
+          </span>
+        )}
       </div>
 
       {financialProfile === null ? (
