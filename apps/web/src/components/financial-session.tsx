@@ -33,7 +33,8 @@ type FinancialSessionProviderProps = Readonly<{
   initialFinancialProfile?: FinancialProfileSnapshot | null;
 }>;
 
-const FinancialSessionContext = createContext<FinancialSessionContextValue | null>(null);
+const FinancialSessionContext =
+  createContext<FinancialSessionContextValue | null>(null);
 
 export function financialSessionReducer(
   state: FinancialSessionState,
@@ -55,9 +56,12 @@ export function FinancialSessionProvider({
     financialProfile: initialFinancialProfile,
   });
 
-  const publishFinancialProfile = useCallback((snapshot: FinancialProfileSnapshot) => {
-    dispatch({ type: "publish-financial-profile", snapshot });
-  }, []);
+  const publishFinancialProfile = useCallback(
+    (snapshot: FinancialProfileSnapshot) => {
+      dispatch({ type: "publish-financial-profile", snapshot });
+    },
+    [],
+  );
 
   const clearFinancialProfile = useCallback(() => {
     dispatch({ type: "clear-financial-profile" });
@@ -83,7 +87,9 @@ export function useFinancialSession(): FinancialSessionContextValue {
   const context = useContext(FinancialSessionContext);
 
   if (context === null) {
-    throw new Error("useFinancialSession must be used within FinancialSessionProvider");
+    throw new Error(
+      "useFinancialSession must be used within FinancialSessionProvider",
+    );
   }
 
   return context;
