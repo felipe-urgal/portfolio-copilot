@@ -70,7 +70,9 @@ export function ContributionCostSection({
     value: string,
   ): void {
     setDraft((current) => ({
-      rows: current.rows.map((row) => (row.assetId === assetId ? { ...row, [field]: value } : row)),
+      rows: current.rows.map((row) =>
+        row.assetId === assetId ? { ...row, [field]: value } : row,
+      ),
     }));
     setErrors({});
     setCost(null);
@@ -123,7 +125,8 @@ export function ContributionCostSection({
                   <div className={costStyles.costDestination}>
                     <strong>{asset?.name ?? "Ativo não disponível nesta sessão"}</strong>
                     <span>
-                      Orçamento bruto: {destination?.executionAllocatedAmount
+                      Orçamento bruto:{" "}
+                      {destination?.executionAllocatedAmount
                         ? moneyLabel(destination.executionAllocatedAmount)
                         : "—"}
                     </span>
@@ -139,9 +142,13 @@ export function ContributionCostSection({
                       value={row.transactionCost}
                       aria-invalid={rowErrors?.transactionCost !== undefined}
                       aria-describedby={
-                        rowErrors?.transactionCost ? `${transactionId}-error` : `${transactionId}-help`
+                        rowErrors?.transactionCost
+                          ? `${transactionId}-error`
+                          : `${transactionId}-help`
                       }
-                      onChange={(event) => updateRow(row.assetId, "transactionCost", event.target.value)}
+                      onChange={(event) =>
+                        updateRow(row.assetId, "transactionCost", event.target.value)
+                      }
                     />
                     <p className={styles.helpText} id={`${transactionId}-help`}>
                       Valor informado em {baseline.contribution.currency}; vazio representa zero.
@@ -158,7 +165,9 @@ export function ContributionCostSection({
                       autoComplete="off"
                       value={row.estimatedTaxImpact}
                       aria-invalid={rowErrors?.estimatedTaxImpact !== undefined}
-                      aria-describedby={rowErrors?.estimatedTaxImpact ? `${taxId}-error` : `${taxId}-help`}
+                      aria-describedby={
+                        rowErrors?.estimatedTaxImpact ? `${taxId}-error` : `${taxId}-help`
+                      }
                       onChange={(event) =>
                         updateRow(row.assetId, "estimatedTaxImpact", event.target.value)
                       }
@@ -186,7 +195,7 @@ export function ContributionCostSection({
       )}
 
       {cost !== null ? (
-        <div className={costStyles.costResult} aria-live="polite">
+        <div className={costStyles.costResult}>
           <dl className={costStyles.costSummary}>
             <div>
               <dt>Sobra antes dos custos</dt>
@@ -221,7 +230,9 @@ export function ContributionCostSection({
                       <td>{moneyLabel(destination.transactionCost)}</td>
                       <td>{moneyLabel(destination.estimatedTaxImpact)}</td>
                       <td>{moneyLabel(destination.totalKnownCost)}</td>
-                      <td className={styles.policyAmount}>{moneyLabel(destination.investableAmount)}</td>
+                      <td className={styles.policyAmount}>
+                        {moneyLabel(destination.investableAmount)}
+                      </td>
                       <td>
                         <span className={costStyles.costState} data-status={destination.status}>
                           {costStatusLabel(destination.status)}
