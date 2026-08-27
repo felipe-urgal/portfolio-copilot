@@ -42,7 +42,7 @@ describe("FinancialProfileSessionSummary", () => {
 
     expect(html).toContain('aria-label="Perfil financeiro da sessão"');
     expect(html).toContain("Não configurado");
-    expect(html).toContain("Nenhum perfil compartilhado");
+    expect(html).toContain("Nenhum contexto financeiro validado foi compartilhado nesta sessão.");
     expect(html).toContain('href="/onboarding"');
     expect(html).not.toMatch(/BRL\s+\d/);
     expect(html).not.toMatch(/>\s*0%\s*</);
