@@ -12,6 +12,7 @@ import {
   type ContributionExecutionFieldErrors,
   type ContributionExecutionSnapshot,
 } from "./contribution-execution-form";
+import executionStyles from "./contribution-execution-section.module.css";
 import { type ContributionPolicySnapshot } from "./contribution-policy-form";
 import {
   assetClassLabel,
@@ -97,8 +98,11 @@ export function ContributionExecutionSection({
   }
 
   return (
-    <section className={styles.executionSection} aria-labelledby="contribution-execution-title">
-      <div className={styles.executionHeading}>
+    <section
+      className={executionStyles.executionSection}
+      aria-labelledby="contribution-execution-title"
+    >
+      <div className={executionStyles.executionHeading}>
         <div>
           <h4 id="contribution-execution-title">Restrições de execução</h4>
           <p>
@@ -109,14 +113,14 @@ export function ContributionExecutionSection({
         <span className={styles.status}>{execution === null ? "Configurar" : "Validado"}</span>
       </div>
 
-      <form className={styles.executionForm} noValidate onSubmit={handleSubmit}>
+      <form className={executionStyles.executionForm} noValidate onSubmit={handleSubmit}>
         {draft.destinations.length === 0 ? (
-          <div className={styles.executionEmpty}>
+          <div className={executionStyles.executionEmpty}>
             <strong>Nenhum destino necessário</strong>
             <p>Nenhuma classe possui alocação monetária positiva após a política.</p>
           </div>
         ) : (
-          <div className={styles.executionRows}>
+          <div className={executionStyles.executionRows}>
             {draft.destinations.map((row) => {
               const rowErrors = errors.destinations?.[row.assetClass];
               const candidates = assets.filter((asset) => asset.assetClass === row.assetClass);
@@ -126,12 +130,13 @@ export function ContributionExecutionSection({
               const minimumId = `execution-minimum-${row.assetClass.toLowerCase()}`;
 
               return (
-                <div className={styles.executionRow} key={row.assetClass}>
-                  <div className={styles.executionRowHeading}>
+                <div className={executionStyles.executionRow} key={row.assetClass}>
+                  <div className={executionStyles.executionRowHeading}>
                     <div>
                       <strong>{classLabel}</strong>
                       <span>
-                        Após política: {policyAllocation ? moneyLabel(policyAllocation.policyAllocatedAmount) : "—"}
+                        Após política:{" "}
+                        {policyAllocation ? moneyLabel(policyAllocation.policyAllocatedAmount) : "—"}
                       </span>
                     </div>
                   </div>
@@ -139,6 +144,7 @@ export function ContributionExecutionSection({
                   <div className={styles.fieldGroup}>
                     <label htmlFor={assetSelectId}>Ativo local</label>
                     <select
+                      className={executionStyles.assetSelect}
                       id={assetSelectId}
                       value={row.assetId}
                       disabled={candidates.length === 0}
@@ -165,9 +171,9 @@ export function ContributionExecutionSection({
                     <ErrorText id={`${assetSelectId}-error`} message={rowErrors?.assetId} />
                   </div>
 
-                  <fieldset className={styles.eligibilityFieldset}>
+                  <fieldset className={executionStyles.eligibilityFieldset}>
                     <legend>Elegibilidade</legend>
-                    <div className={styles.eligibilityOptions}>
+                    <div className={executionStyles.eligibilityOptions}>
                       <label>
                         <input
                           type="radio"
@@ -240,8 +246,8 @@ export function ContributionExecutionSection({
       </form>
 
       {execution !== null ? (
-        <div className={styles.executionResult} aria-live="polite">
-          <dl className={styles.executionSummary}>
+        <div className={executionStyles.executionResult} aria-live="polite">
+          <dl className={executionStyles.executionSummary}>
             <div>
               <dt>Sobra após restrições</dt>
               <dd>{moneyLabel(execution.unallocatedContribution)}</dd>
@@ -249,7 +255,7 @@ export function ContributionExecutionSection({
           </dl>
 
           {execution.destinations.length === 0 ? (
-            <div className={styles.executionEmpty}>
+            <div className={executionStyles.executionEmpty}>
               <strong>Plano sem destinos</strong>
               <p>Nenhuma alocação positiva exige destino nesta configuração.</p>
             </div>
@@ -281,7 +287,10 @@ export function ContributionExecutionSection({
                             : moneyLabel(destination.executionAllocatedAmount)}
                         </td>
                         <td>
-                          <span className={styles.policyState} data-status={destination.status}>
+                          <span
+                            className={executionStyles.executionState}
+                            data-status={destination.status}
+                          >
                             {executionStatusLabel(destination.status)}
                           </span>
                         </td>
