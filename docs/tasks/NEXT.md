@@ -1,58 +1,65 @@
-# Próxima Atividade — Produto MVP: perfil financeiro local compartilhado na sessão
+# Próxima Atividade — Produto MVP: persistência local opt-in do perfil financeiro
 
-**Status:** READY após merge da explicação local determinística do aporte.
+**Status:** READY após merge do compartilhamento local de `FinancialProfileSnapshot` entre Onboarding, Dashboard e Carteira.
 
 ## Objetivo
 
-Fazer o `FinancialProfileSnapshot` já validado pelo onboarding sobreviver à navegação cliente durante a sessão e ser reutilizado por Dashboard e Carteira como contexto declarado do usuário, sem persistência, sem reconstruir o domínio e sem inventar progresso de metas ou reserva.
+Fazer o `FinancialProfileSnapshot` validado sobreviver a reloads no mesmo navegador quando o usuário optar explicitamente por salvar o perfil neste dispositivo, mantendo a solução pequena, versionada, recuperável e honesta sobre seus limites antes de autenticação e persistência server-side.
+
+## Decisão de escopo
+
+Nesta etapa, persistir **somente o perfil financeiro** em armazenamento local do navegador. Portfolio, Assets, Transaction Ledger, TargetAllocation, configurações do aporte e snapshots de recomendação continuam efêmeros.
+
+A persistência local é provisória para o MVP pré-autenticação e não substitui a direção arquitetural futura de PostgreSQL. Nenhum dado é enviado a servidor nesta atividade.
 
 ## Escopo
 
-- evoluir a aplicação a partir do `FinancialProfileSnapshot` já produzido e validado pelo onboarding;
-- introduzir um contexto cliente de sessão no shell da aplicação como único dono do snapshot financeiro local compartilhado;
-- manter o estado somente em memória durante a sessão da aplicação, sem `localStorage`, cookie, API ou banco;
-- fazer o onboarding publicar no contexto apenas o snapshot final validado pelo domínio;
-- permitir que Dashboard e Carteira leiam o mesmo snapshot sem duplicar ou revalidar regras financeiras;
-- exibir moeda de referência, tolerância a risco e horizonte como dados declarados do perfil;
-- exibir a meta de reserva de emergência quando configurada e um estado honesto quando ausente;
-- exibir objetivos existentes com tipo, valor-alvo e data-alvo quando aplicável;
-- usar os quatro tipos canônicos de `FinancialGoal`: `NET_WORTH`, `PASSIVE_INCOME_MONTHLY`, `RETIREMENT` e `DATED_PURPOSE`;
-- manter os IDs de perfil/objetivos internos ao contrato e fora da UX primária;
-- preservar a distinção entre meta desejada e saldo/progresso atual;
-- deixar explícito que navegar/recarregar fora da sessão em memória pode perder o contexto nesta etapa;
-- garantir leitura responsiva e acessível sem criar card grid redundante;
-- adicionar testes de publicação do snapshot pelo onboarding, leitura compartilhada entre superfícies e estados sem perfil/reserva/objetivos.
+- manter `FinancialSessionProvider` como fonte cliente única para `FinancialProfileSnapshot | null`;
+- adicionar um adapter pequeno e isolado para persistência do perfil no navegador, sem dependência externa;
+- usar uma chave namespaced e um envelope com versão de schema explícita;
+- persistir somente após ação/consentimento explícito do usuário na experiência de onboarding/revisão;
+- reidratar o snapshot salvo no carregamento cliente sem acessar APIs de browser durante SSR;
+- revalidar dados reidratados pelas invariantes canônicas do domínio antes de publicá-los na sessão;
+- tratar JSON corrompido, schema incompatível ou snapshot inválido como dado indisponível, nunca como perfil parcialmente confiável;
+- permitir remover explicitamente o perfil persistido do dispositivo;
+- manter claro na UI quando o perfil está apenas na sessão e quando está salvo neste dispositivo;
+- evitar logs com conteúdo financeiro do snapshot;
+- manter Dashboard e Carteira consumindo apenas a sessão compartilhada, sem acesso direto ao storage;
+- cobrir persistência, reidratação, remoção, versão incompatível, JSON inválido e snapshot de domínio inválido com testes determinísticos;
+- registrar a decisão/limitação arquitetural do armazenamento local pré-autenticação em ADR/DECISIONS se a implementação confirmar essa direção.
 
 ## Fora de escopo
 
-- persistência em `localStorage`, IndexedDB, cookie, API, Server Actions ou banco;
-- autenticação/autorização;
-- sincronização entre abas, dispositivos ou sessões;
-- cálculo de progresso da reserva ou dos objetivos;
-- associar automaticamente patrimônio, ledger ou posições a um objetivo;
-- sugerir contribuição mensal para objetivos;
-- alterar `FinancialProfile`, `FinancialGoal` ou suas invariantes no domínio;
+- persistir Portfolio, Assets, Transaction Ledger, TargetAllocation, configurações de aporte ou RecommendationSnapshot;
+- PostgreSQL, ORM, migrations, API, Server Actions ou qualquer backend de persistência;
+- autenticação, autorização, ownership por usuário ou multi-tenancy;
+- sincronização entre abas, navegadores, dispositivos ou sessões de usuário;
+- criptografia client-side com promessa de proteção que o navegador não consiga garantir contra código executando na mesma origem;
+- backup, restore remoto ou exportação/importação;
 - Market Data, preço, FX, valuation ou rentabilidade;
-- ranking, recomendação ou geração por IA;
-- notificações, calendário ou execução financeira.
+- alterar `FinancialProfile`, `FinancialGoal` ou regras financeiras;
+- cálculo de progresso de reserva/objetivos;
+- IA, recomendação nova, notificações ou execução financeira.
 
 ## Critérios de aceite
 
-- existe uma única fonte cliente de sessão para `FinancialProfileSnapshot | null`;
-- somente snapshot validado pelo onboarding é publicado nessa fonte;
-- Dashboard e Carteira conseguem ler o mesmo snapshot após navegação cliente;
-- ausência de snapshot mostra estado explícito e não métricas fictícias;
-- meta de reserva é apresentada como meta, nunca como saldo atual ou percentual concluído;
-- objetivos são apresentados com os campos já presentes no snapshot, sem cálculo de progresso;
-- IDs internos não aparecem como informação primária;
-- recarregar a aplicação não promete persistência que ainda não existe;
-- nenhuma regra financeira, dependência, persistência ou integração externa é adicionada;
+- sem opt-in, o comportamento atual permanece somente em memória;
+- com opt-in, reload no mesmo navegador reidrata o último `FinancialProfileSnapshot` válido;
+- Dashboard e Carteira continuam lendo o perfil apenas por `FinancialSessionProvider`;
+- storage contém envelope versionado e somente snapshots serializáveis já existentes;
+- dado persistido nunca é confiado sem parse, checagem de versão e revalidação de domínio;
+- storage corrompido/incompatível não quebra a aplicação nem produz estado financeiro parcial;
+- usuário consegue remover o perfil salvo do dispositivo e a sessão reflete a remoção de forma coerente;
+- UI diferencia claramente “somente nesta sessão” de “salvo neste dispositivo”;
+- nenhuma informação financeira é adicionada a logs técnicos;
+- nenhuma dependência externa, regra financeira ou integração server-side é adicionada;
 - `pnpm check` passa integralmente no head final validado pelo CI.
 
 ## Referências canônicas
 
-- `docs/ROADMAP.md` — Fase 3: objetivos/reserva;
-- `packages/domain/src/onboarding/financial-profile.ts` — `FinancialProfileSnapshot` e meta de reserva;
-- `packages/domain/src/onboarding/financial-goal.ts` — objetivos e tipos canônicos;
-- `apps/web/src/features/onboarding/onboarding-form.ts` — construção/validação atual do snapshot;
-- `apps/web/src/components/product-shell.tsx` — fronteira atual compartilhada entre superfícies.
+- `docs/ROADMAP.md` — Fase 3: persistência;
+- `docs/ARCHITECTURE.md` — Infrastructure e direção futura de PostgreSQL;
+- `docs/SECURITY.md` — classificação de dados financeiros e minimização de exposição;
+- `docs/DECISIONS.md` — D-009, PostgreSQL como direção proposta de persistência;
+- `packages/domain/src/onboarding/financial-profile.ts` — `FinancialProfileSnapshot` e reidratação canônica;
+- `apps/web/src/components/financial-session.tsx` — fonte cliente compartilhada atual.
