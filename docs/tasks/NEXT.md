@@ -1,65 +1,66 @@
-# Próxima Atividade — Produto MVP: persistência local opt-in do perfil financeiro
+# Próxima Atividade — Produto MVP: fundação de autenticação e identidade
 
-**Status:** READY após merge do compartilhamento local de `FinancialProfileSnapshot` entre Onboarding, Dashboard e Carteira.
+**Status:** READY após merge da persistência local opt-in do perfil financeiro.
 
 ## Objetivo
 
-Fazer o `FinancialProfileSnapshot` validado sobreviver a reloads no mesmo navegador quando o usuário optar explicitamente por salvar o perfil neste dispositivo, mantendo a solução pequena, versionada, recuperável e honesta sobre seus limites antes de autenticação e persistência server-side.
+Introduzir uma fronteira real de identidade e sessão autenticada para o MVP, com autenticação server-side segura e UX mínima de entrar/sair, sem migrar automaticamente dados financeiros locais para servidor e sem criar autorização fictícia antes de existir ownership persistido.
 
 ## Decisão de escopo
 
-Nesta etapa, persistir **somente o perfil financeiro** em armazenamento local do navegador. Portfolio, Assets, Transaction Ledger, TargetAllocation, configurações do aporte e snapshots de recomendação continuam efêmeros.
+Nesta etapa, autenticação serve para estabelecer **quem está usando o produto** e proteger a sessão da aplicação. O `FinancialProfileSnapshot` salvo localmente continua sendo dado do dispositivo e não é enviado, associado ou sincronizado com a conta automaticamente.
 
-A persistência local é provisória para o MVP pré-autenticação e não substitui a direção arquitetural futura de PostgreSQL. Nenhum dado é enviado a servidor nesta atividade.
+A implementação deve usar solução de autenticação mantida e adequada ao Next.js atual; não criar armazenamento próprio de senha, hash caseiro, token customizado ou sessão client-only.
 
 ## Escopo
 
-- manter `FinancialSessionProvider` como fonte cliente única para `FinancialProfileSnapshot | null`;
-- adicionar um adapter pequeno e isolado para persistência do perfil no navegador, sem dependência externa;
-- usar uma chave namespaced e um envelope com versão de schema explícita;
-- persistir somente após ação/consentimento explícito do usuário na experiência de onboarding/revisão;
-- reidratar o snapshot salvo no carregamento cliente sem acessar APIs de browser durante SSR;
-- revalidar dados reidratados pelas invariantes canônicas do domínio antes de publicá-los na sessão;
-- tratar JSON corrompido, schema incompatível ou snapshot inválido como dado indisponível, nunca como perfil parcialmente confiável;
-- permitir remover explicitamente o perfil persistido do dispositivo;
-- manter claro na UI quando o perfil está apenas na sessão e quando está salvo neste dispositivo;
-- evitar logs com conteúdo financeiro do snapshot;
-- manter Dashboard e Carteira consumindo apenas a sessão compartilhada, sem acesso direto ao storage;
-- cobrir persistência, reidratação, remoção, versão incompatível, JSON inválido e snapshot de domínio inválido com testes determinísticos;
-- registrar a decisão/limitação arquitetural do armazenamento local pré-autenticação em ADR/DECISIONS se a implementação confirmar essa direção.
+- definir e integrar a solução de autenticação compatível com a arquitetura atual e requisitos de segurança do projeto;
+- introduzir identidade canônica mínima de usuário separada dos IDs de domínio financeiro;
+- estabelecer sessão server-side com cookie seguro e sem expor token de autenticação ao JavaScript quando não for necessário;
+- implementar entrar, sair e estado autenticado/não autenticado com UX simples e acessível;
+- proteger as superfícies de produto que exigirem sessão por fronteira server-side, evitando depender apenas de redirect no cliente;
+- manter `/health` utilizável conforme a finalidade operacional existente, sem carregar contexto financeiro;
+- disponibilizar somente os dados mínimos de identidade necessários ao shell da aplicação;
+- deixar explícito quando o usuário está autenticado sem exibir identificadores internos como informação primária;
+- não copiar nem enviar automaticamente o perfil salvo em `localStorage` para a conta autenticada;
+- manter a persistência local do perfil funcionando de forma independente da sessão autenticada nesta etapa;
+- tratar sessão ausente, expirada ou inválida de forma previsível e sem revelar informação sensível;
+- evitar logs com tokens, cookies, perfil financeiro ou dados pessoais desnecessários;
+- adicionar testes para fronteira autenticada, logout, sessão inválida/ausente e separação entre identidade e storage financeiro local;
+- registrar ADR/DECISIONS para a escolha do mecanismo/provedor de autenticação e fronteira de sessão.
 
 ## Fora de escopo
 
-- persistir Portfolio, Assets, Transaction Ledger, TargetAllocation, configurações de aporte ou RecommendationSnapshot;
-- PostgreSQL, ORM, migrations, API, Server Actions ou qualquer backend de persistência;
-- autenticação, autorização, ownership por usuário ou multi-tenancy;
-- sincronização entre abas, navegadores, dispositivos ou sessões de usuário;
-- criptografia client-side com promessa de proteção que o navegador não consiga garantir contra código executando na mesma origem;
-- backup, restore remoto ou exportação/importação;
-- Market Data, preço, FX, valuation ou rentabilidade;
-- alterar `FinancialProfile`, `FinancialGoal` ou regras financeiras;
-- cálculo de progresso de reserva/objetivos;
-- IA, recomendação nova, notificações ou execução financeira.
+- persistir `FinancialProfileSnapshot`, Portfolio, Assets, Transaction Ledger, TargetAllocation ou recomendações no servidor;
+- migrar dados existentes do dispositivo para uma conta;
+- sincronização entre dispositivos;
+- autorização granular por portfolio/recurso antes de existir persistência com ownership;
+- painel administrativo ou papéis de suporte;
+- cobrança/billing;
+- integração com corretora/Open Finance;
+- MFA obrigatório nesta etapa, embora deva permanecer requisito antes de exposição pública relevante;
+- recuperação de conta customizada quando o provedor escolhido já oferecer fluxo seguro;
+- Market Data, FX, valuation, IA ou regra financeira nova.
 
 ## Critérios de aceite
 
-- sem opt-in, o comportamento atual permanece somente em memória;
-- com opt-in, reload no mesmo navegador reidrata o último `FinancialProfileSnapshot` válido;
-- Dashboard e Carteira continuam lendo o perfil apenas por `FinancialSessionProvider`;
-- storage contém envelope versionado e somente snapshots serializáveis já existentes;
-- dado persistido nunca é confiado sem parse, checagem de versão e revalidação de domínio;
-- storage corrompido/incompatível não quebra a aplicação nem produz estado financeiro parcial;
-- usuário consegue remover o perfil salvo do dispositivo e a sessão reflete a remoção de forma coerente;
-- UI diferencia claramente “somente nesta sessão” de “salvo neste dispositivo”;
-- nenhuma informação financeira é adicionada a logs técnicos;
-- nenhuma dependência externa, regra financeira ou integração server-side é adicionada;
+- existe uma identidade autenticada mínima e uma sessão server-side verificável;
+- login/logout funcionam sem armazenar senha ou token sensível em código cliente do produto;
+- cookies de sessão usam atributos de segurança adequados ao ambiente e à solução escolhida;
+- superfícies protegidas não confiam apenas em estado cliente para decidir acesso;
+- sessão ausente/expirada retorna o usuário ao fluxo de autenticação sem vazar dados;
+- shell exibe estado autenticado de forma mínima e acessível;
+- perfil financeiro local não é enviado nem associado à conta automaticamente;
+- logout não promete apagar storage financeiro local do dispositivo; essa remoção continua sendo ação própria e explícita;
+- nenhuma informação financeira, token ou cookie é registrada em logs técnicos;
+- solução/provedor e trade-offs ficam documentados em ADR/DECISIONS;
 - `pnpm check` passa integralmente no head final validado pelo CI.
 
 ## Referências canônicas
 
-- `docs/ROADMAP.md` — Fase 3: persistência;
-- `docs/ARCHITECTURE.md` — Infrastructure e direção futura de PostgreSQL;
-- `docs/SECURITY.md` — classificação de dados financeiros e minimização de exposição;
-- `docs/DECISIONS.md` — D-009, PostgreSQL como direção proposta de persistência;
-- `packages/domain/src/onboarding/financial-profile.ts` — `FinancialProfileSnapshot` e reidratação canônica;
-- `apps/web/src/components/financial-session.tsx` — fonte cliente compartilhada atual.
+- `docs/ROADMAP.md` — Fase 3: autenticação;
+- `docs/ARCHITECTURE.md` — módulo `identity` e camada Application/Infrastructure;
+- `docs/SECURITY.md` — requisitos de autenticação, cookies, autorização, logging e segredos;
+- `docs/adr/0019-local-financial-profile-persistence.md` — persistência local pré-autenticação e limites deliberados;
+- `apps/web/src/components/financial-session.tsx` — sessão financeira cliente que deve permanecer separada da identidade autenticada;
+- `apps/web/src/components/product-shell.tsx` — superfície compartilhada onde o estado mínimo de identidade poderá ser apresentado.
