@@ -57,13 +57,13 @@ describe("DashboardOverview honest states", () => {
     expect(html).toContain('aria-label="Perfil financeiro da sessão"');
     expect(html).toContain("Não configurado");
     expect(html).toContain("Dashboard e Carteira não inventam moeda, risco, horizonte, reserva");
-    expect(html).toContain("Estado somente em memória");
+    expect(html).toContain("Somente em memória");
   });
 
   it("reads the shared validated profile without turning targets into current values", () => {
     const html = renderDashboard(PROFILE);
 
-    expect(html).toContain("Disponível na sessão");
+    expect(html).toContain("Somente nesta sessão");
     expect(html).toContain("BRL");
     expect(html).toContain("Média");
     expect(html).toContain("Longo prazo");
