@@ -56,7 +56,9 @@ function GoalItem({ goal }: Readonly<{ goal: FinancialGoalSnapshot }>) {
 }
 
 export function FinancialProfileSessionSummary() {
-  const { financialProfile } = useFinancialSession();
+  const { financialProfile, persistenceStatus, removePersistedFinancialProfile } =
+    useFinancialSession();
+  const isPersisted = financialProfile !== null && persistenceStatus === "persisted";
 
   return (
     <aside className={styles.surface} aria-label="Perfil financeiro da sessão">
@@ -66,12 +68,24 @@ export function FinancialProfileSessionSummary() {
           <p>
             {financialProfile === null
               ? "Nenhum contexto financeiro validado foi compartilhado nesta sessão."
-              : "Contexto declarado no onboarding e compartilhado enquanto a aplicação permanece carregada."}
+              : isPersisted
+                ? "Contexto declarado no onboarding e salvo localmente neste navegador."
+                : "Contexto declarado no onboarding e compartilhado somente nesta sessão."}
           </p>
         </div>
-        <span className={financialProfile === null ? styles.emptyStatus : styles.activeStatus}>
-          {financialProfile === null ? "Não configurado" : "Disponível na sessão"}
-        </span>
+        {isPersisted ? (
+          <button
+            className={`${styles.activeStatus} ${styles.persistenceButton}`}
+            type="button"
+            onClick={removePersistedFinancialProfile}
+          >
+            Salvo neste dispositivo · remover
+          </button>
+        ) : (
+          <span className={financialProfile === null ? styles.emptyStatus : styles.activeStatus}>
+            {financialProfile === null ? "Não configurado" : "Somente nesta sessão"}
+          </span>
+        )}
       </div>
 
       {financialProfile === null ? (
@@ -135,8 +149,11 @@ export function FinancialProfileSessionSummary() {
       )}
 
       <p className={styles.sessionNote}>
-        Estado somente em memória: navegar pelo app preserva este perfil; recarregar ou fechar a
-        aplicação pode descartá-lo.
+        {isPersisted
+          ? "Salvo localmente neste navegador: recarregar pode restaurar este perfil. Não existe sincronização com conta, servidor ou outro dispositivo."
+          : persistenceStatus === "unavailable"
+            ? "Armazenamento local indisponível: este perfil permanece somente na sessão atual."
+            : "Somente em memória: este perfil ainda não está salvo neste dispositivo."}
       </p>
     </aside>
   );

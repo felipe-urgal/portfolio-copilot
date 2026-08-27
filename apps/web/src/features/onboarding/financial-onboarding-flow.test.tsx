@@ -14,7 +14,7 @@ function renderFlow(): string {
 }
 
 describe("FinancialOnboardingFlow accessibility shell", () => {
-  it("renders labelled progress, grouped choices and the in-memory session contract", () => {
+  it("renders labelled progress, grouped choices and the opt-in persistence contract", () => {
     const html = renderFlow();
 
     expect(html).toContain('aria-label="Progresso do onboarding"');
@@ -27,9 +27,9 @@ describe("FinancialOnboardingFlow accessibility shell", () => {
     expect(html).toContain('id="risk-help"');
     expect(html).toContain('id="horizon-help"');
     expect(html).toContain('id="reference-currency"');
-    expect(html).toContain("Estado somente em memória");
-    expect(html).toContain("o perfil é compartilhado entre as telas desta sessão");
-    expect(html).toContain("Recarregar a aplicação pode descartá-lo");
+    expect(html).toContain("Persistência sob seu controle");
+    expect(html).toContain("Por padrão, o perfil fica só nesta sessão");
+    expect(html).toContain("você decide se quer salvá-lo neste dispositivo");
   });
 
   it("keeps the primary inputs associated with visible labels", () => {
