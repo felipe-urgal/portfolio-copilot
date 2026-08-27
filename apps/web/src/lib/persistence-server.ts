@@ -1,6 +1,5 @@
 import {
   createPostgresPersistence,
-  openOwnedPersistence,
   type PostgresPersistence,
 } from "@portfolio-copilot/persistence";
 
@@ -27,5 +26,5 @@ function postgresPersistence(): PostgresPersistence {
 
 export async function requireOwnedPersistence() {
   const identity = await requireAuthenticatedIdentity();
-  return openOwnedPersistence(postgresPersistence().db, identity.subject);
+  return postgresPersistence().ownedBy(identity.subject);
 }

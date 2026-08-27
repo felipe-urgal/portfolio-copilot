@@ -6,11 +6,11 @@ import {
   type FinancialProfileSnapshot,
   type PortfolioSnapshot,
 } from "@portfolio-copilot/domain";
-import { migrate } from "drizzle-orm/node-postgres/migrator";
 import { sql } from "drizzle-orm";
+import { migrate } from "drizzle-orm/node-postgres/migrator";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 
-import { createPostgresPersistence, type PostgresPersistence } from "./database";
+import { createPostgresConnection, type PostgresConnection } from "./database";
 import { ImmutableLedgerConflictError, OwnedResourceNotFoundError } from "./errors";
 import { openOwnedPersistence } from "./repositories";
 
@@ -46,10 +46,10 @@ function trade(amount = "1234.56") {
 }
 
 describeWithDatabase("PostgreSQL owned persistence", () => {
-  let connection: PostgresPersistence;
+  let connection: PostgresConnection;
 
   beforeAll(async () => {
-    connection = createPostgresPersistence(DATABASE_URL!);
+    connection = createPostgresConnection(DATABASE_URL!);
     await migrate(connection.db, {
       migrationsFolder: fileURLToPath(new URL("../drizzle", import.meta.url)),
     });
