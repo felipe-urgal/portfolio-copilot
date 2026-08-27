@@ -95,8 +95,16 @@ export function FinancialSessionProvider({
   }, [initialFinancialProfile]);
 
   const publishFinancialProfile = useCallback((snapshot: FinancialProfileSnapshot) => {
+    const storage = getBrowserFinancialProfileStorage();
+
+    if (storage === null) {
+      setPersistenceStatus("unavailable");
+    } else {
+      const removed = removeFinancialProfileFromStorage(storage);
+      setPersistenceStatus(removed ? "memory-only" : "unavailable");
+    }
+
     dispatch({ type: "publish-financial-profile", snapshot });
-    setPersistenceStatus("memory-only");
   }, []);
 
   const persistFinancialProfile = useCallback((): boolean => {
