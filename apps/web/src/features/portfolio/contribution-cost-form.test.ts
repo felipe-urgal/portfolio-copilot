@@ -62,7 +62,10 @@ function execution(): ContributionExecutionSnapshot {
   };
 }
 
-function withEquityCosts(transactionCost: string, estimatedTaxImpact: string): ContributionCostDraft {
+function withEquityCosts(
+  transactionCost: string,
+  estimatedTaxImpact: string,
+): ContributionCostDraft {
   return {
     rows: [
       {
@@ -132,7 +135,10 @@ describe("contribution cost form adapter", () => {
       investableAmount: { currency: "BRL", minorUnits: "10450" },
       status: "EXECUTABLE",
     });
-    expect(result.snapshot.unallocatedContribution).toEqual({ currency: "BRL", minorUnits: "8000" });
+    expect(result.snapshot.unallocatedContribution).toEqual({
+      currency: "BRL",
+      minorUnits: "8000",
+    });
   });
 
   it("blocks a destination when known costs equal its gross budget and returns the full budget to remainder", () => {
@@ -150,7 +156,10 @@ describe("contribution cost form adapter", () => {
       investableAmount: { currency: "BRL", minorUnits: "0" },
       status: "BLOCKED_KNOWN_COSTS",
     });
-    expect(result.snapshot.unallocatedContribution).toEqual({ currency: "BRL", minorUnits: "20000" });
+    expect(result.snapshot.unallocatedContribution).toEqual({
+      currency: "BRL",
+      minorUnits: "20000",
+    });
   });
 
   it("also blocks when known costs exceed the gross budget without debiting hypothetical costs", () => {
@@ -168,7 +177,10 @@ describe("contribution cost form adapter", () => {
       minorUnits: "0",
     });
     expect(result.snapshot.destinations[0]?.status).toBe("BLOCKED_KNOWN_COSTS");
-    expect(result.snapshot.unallocatedContribution).toEqual({ currency: "BRL", minorUnits: "20000" });
+    expect(result.snapshot.unallocatedContribution).toEqual({
+      currency: "BRL",
+      minorUnits: "20000",
+    });
   });
 
   it("translates malformed and negative values to the affected field", () => {
