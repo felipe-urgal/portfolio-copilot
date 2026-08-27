@@ -53,9 +53,7 @@ function withEquityLimit(
 ): ContributionConcentrationDraft {
   return {
     rows: draft.rows.map((row) =>
-      row.assetClass === "EQUITY"
-        ? { ...row, enabled: true, softMaxWeight, hardMaxWeight }
-        : row,
+      row.assetClass === "EQUITY" ? { ...row, enabled: true, softMaxWeight, hardMaxWeight } : row,
     ),
   };
 }
@@ -93,11 +91,7 @@ describe("contribution concentration form adapter", () => {
 
   it("surfaces the soft limit as alert-only without reducing allocation", () => {
     const { baseline, policy } = createUpstream();
-    const draft = withEquityLimit(
-      createInitialContributionConcentrationDraft(policy),
-      "55",
-      "70",
-    );
+    const draft = withEquityLimit(createInitialContributionConcentrationDraft(policy), "55", "70");
     const result = createContributionConcentrationSnapshot(draft, baseline, policy);
 
     expect(result.ok).toBe(true);
@@ -114,11 +108,7 @@ describe("contribution concentration form adapter", () => {
 
   it("keeps blocked hard-limit value explicit and adds it to the upstream remainder", () => {
     const { baseline, policy } = createUpstream();
-    const draft = withEquityLimit(
-      createInitialContributionConcentrationDraft(policy),
-      "50",
-      "55",
-    );
+    const draft = withEquityLimit(createInitialContributionConcentrationDraft(policy), "50", "55");
     const result = createContributionConcentrationSnapshot(draft, baseline, policy);
 
     expect(result.ok).toBe(true);
@@ -142,11 +132,7 @@ describe("contribution concentration form adapter", () => {
         { assetClass: "FIXED_INCOME", targetWeight: "30", currentValue: "29" },
       ],
     });
-    const draft = withEquityLimit(
-      createInitialContributionConcentrationDraft(policy),
-      "55",
-      "60",
-    );
+    const draft = withEquityLimit(createInitialContributionConcentrationDraft(policy), "55", "60");
     const result = createContributionConcentrationSnapshot(draft, baseline, policy);
 
     expect(result.ok).toBe(true);
@@ -170,7 +156,9 @@ describe("contribution concentration form adapter", () => {
     );
     expect(invalidWeight).toEqual({
       ok: false,
-      errors: { rows: { EQUITY: { softMaxWeight: "Informe um percentual válido entre 0 e 100." } } },
+      errors: {
+        rows: { EQUITY: { softMaxWeight: "Informe um percentual válido entre 0 e 100." } },
+      },
     });
 
     const invalidRange = createContributionConcentrationSnapshot(

@@ -71,9 +71,7 @@ export function ContributionConcentrationSection({
     patch: Partial<ContributionConcentrationDraft["rows"][number]>,
   ): void {
     setDraft((current) => ({
-      rows: current.rows.map((row) =>
-        row.assetClass === assetClass ? { ...row, ...patch } : row,
-      ),
+      rows: current.rows.map((row) => (row.assetClass === assetClass ? { ...row, ...patch } : row)),
     }));
     setErrors({});
     setConcentration(null);
@@ -123,7 +121,8 @@ export function ContributionConcentrationSection({
               <fieldset className={concentrationStyles.row} key={row.assetClass}>
                 <legend>{classLabel}</legend>
                 <p className={concentrationStyles.rowHelp}>
-                  Após política: {policyAllocation ? moneyLabel(policyAllocation.policyAllocatedAmount) : "—"}
+                  Após política:{" "}
+                  {policyAllocation ? moneyLabel(policyAllocation.policyAllocatedAmount) : "—"}
                 </p>
 
                 <div className={concentrationStyles.controls}>
@@ -148,7 +147,9 @@ export function ContributionConcentrationSection({
                         autoComplete="off"
                         disabled={!row.enabled}
                         value={row.softMaxWeight}
-                        aria-invalid={rowErrors?.softMaxWeight !== undefined || rowErrors?.range !== undefined}
+                        aria-invalid={
+                          rowErrors?.softMaxWeight !== undefined || rowErrors?.range !== undefined
+                        }
                         aria-describedby={
                           rowErrors?.softMaxWeight
                             ? `${softId}-error`
@@ -175,7 +176,9 @@ export function ContributionConcentrationSection({
                         autoComplete="off"
                         disabled={!row.enabled}
                         value={row.hardMaxWeight}
-                        aria-invalid={rowErrors?.hardMaxWeight !== undefined || rowErrors?.range !== undefined}
+                        aria-invalid={
+                          rowErrors?.hardMaxWeight !== undefined || rowErrors?.range !== undefined
+                        }
                         aria-describedby={
                           rowErrors?.hardMaxWeight
                             ? `${hardId}-error`
@@ -260,10 +263,7 @@ export function ContributionConcentrationSection({
                       {moneyLabel(allocation.blockedAmount)}
                     </td>
                     <td>
-                      <span
-                        className={concentrationStyles.state}
-                        data-status={allocation.status}
-                      >
+                      <span className={concentrationStyles.state} data-status={allocation.status}>
                         {statusLabel(allocation.status)}
                       </span>
                     </td>

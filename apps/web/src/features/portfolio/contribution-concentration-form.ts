@@ -44,10 +44,7 @@ export type ContributionConcentrationFieldErrors = Readonly<{
 }>;
 
 export type ContributionConcentrationStatus =
-  | "NO_LIMIT"
-  | "WITHIN_LIMITS"
-  | "SOFT_ALERT"
-  | "HARD_LIMITED";
+  "NO_LIMIT" | "WITHIN_LIMITS" | "SOFT_ALERT" | "HARD_LIMITED";
 
 export type ContributionConcentrationAllocationSnapshot = Readonly<{
   assetClass: AssetClassCode;
@@ -73,7 +70,8 @@ export type ContributionConcentrationResult =
 const WEIGHT_ERROR = "Informe um percentual válido entre 0 e 100.";
 const RANGE_ERROR = "O limite de alerta deve ser menor ou igual ao limite rígido.";
 const DUPLICATE_ERROR = "Cada classe pode ter no máximo uma configuração de concentração.";
-const TECHNICAL_ERROR = "Não foi possível aplicar os limites locais de concentração. Tente novamente.";
+const TECHNICAL_ERROR =
+  "Não foi possível aplicar os limites locais de concentração. Tente novamente.";
 
 function rowError(
   assetClass: AssetClassCode,

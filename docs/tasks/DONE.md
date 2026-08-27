@@ -461,3 +461,24 @@ Histórico resumido de atividades concluídas.
 - testes cobrem destinos elegíveis/inelegíveis, classe sem candidato, destino ausente, Asset errado, duplicidade, quantidade mínima inválida e plano sem alocações positivas;
 - nenhuma conversão `Money ↔ AssetQuantity`, preço, Market Data, FX, ordem de corretora, persistência ou fórmula financeira nova foi adicionada;
 - `docs/tasks/NEXT.md` promove limites locais de concentração por `AssetClass` como próximo vertical, preservando a ordem canônica `allocator -> policy -> concentration -> execution`.
+
+## 2026-08-27 — Produto MVP: limites locais de concentração por AssetClass
+
+- `/portfolio` passa a inserir uma etapa explícita de concentração entre política e restrições de execução do aporte;
+- limites são configurados opcionalmente por `AssetClass`, sem valores padrão inventados;
+- cada classe usa `softMaxWeight` e `hardMaxWeight` como strings até a validação por `AllocationWeight`;
+- classes sem configuração preservam exatamente a alocação pós-política;
+- `applyAssetClassConcentrationLimits` é a única fonte para alocação pós-concentração, `blockedAmount`, flags soft/hard e sobra acumulada;
+- soft limit é alert-only e nunca reduz valor sozinho;
+- hard limit bloqueia somente a parcela de novo aporte que ultrapassaria o teto;
+- classe já acima do hard limit não recebe novo aporte e nenhuma venda ou rebalanceamento é inferido;
+- valor bloqueado permanece explícito em `blockedAmount` e é somado a `unallocatedContribution` sem redistribuição;
+- a UI mostra lado a lado valor após política, após concentração, thresholds, valor bloqueado e estado;
+- limites são opt-in, com feedback acessível para peso inválido e faixa `soft > hard`;
+- a etapa de execução passa a consumir exclusivamente o snapshot pós-concentração;
+- classes zeradas pelo hard limit deixam de gerar destino de execução;
+- Assets continuam selecionados por contexto humano e `AssetId` permanece interno;
+- toda configuração e resultado continuam locais e efêmeros;
+- testes cobrem ausência de limite, soft alert-only, hard parcial, hard total/classe acima do teto, configuração inválida e integração com destinos de execução;
+- nenhuma fórmula financeira nova, preço, Market Data, FX, venda, redistribuição, ranking de Asset ou conversão `Money ↔ AssetQuantity` foi adicionada;
+- `docs/tasks/NEXT.md` promove custos conhecidos e impacto tributário reservado via `applyContributionCostTaxConstraints` como próximo vertical.
