@@ -245,11 +245,7 @@ describe("contribution cost form adapter", () => {
       transactionCost: "1",
       estimatedTaxImpact: "",
     } as const;
-    const result = createContributionCostSnapshot(
-      { rows: [row, row] },
-      baseline(),
-      execution(),
-    );
+    const result = createContributionCostSnapshot({ rows: [row, row] }, baseline(), execution());
 
     expect(result).toEqual({
       ok: false,
