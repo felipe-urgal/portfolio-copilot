@@ -1,11 +1,21 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 
+import { FinancialSessionProvider } from "@/components/financial-session";
+
 import { FinancialOnboardingFlow } from "./financial-onboarding-flow";
 
+function renderFlow(): string {
+  return renderToStaticMarkup(
+    <FinancialSessionProvider>
+      <FinancialOnboardingFlow />
+    </FinancialSessionProvider>,
+  );
+}
+
 describe("FinancialOnboardingFlow accessibility shell", () => {
-  it("renders labelled progress, grouped choices and an explicitly local-state notice", () => {
-    const html = renderToStaticMarkup(<FinancialOnboardingFlow />);
+  it("renders labelled progress, grouped choices and the in-memory session contract", () => {
+    const html = renderFlow();
 
     expect(html).toContain('aria-label="Progresso do onboarding"');
     expect(html).toContain('aria-current="step"');
@@ -17,12 +27,13 @@ describe("FinancialOnboardingFlow accessibility shell", () => {
     expect(html).toContain('id="risk-help"');
     expect(html).toContain('id="horizon-help"');
     expect(html).toContain('id="reference-currency"');
-    expect(html).toContain("Sem salvamento automático");
-    expect(html).toContain("Os dados vivem somente nesta página durante este MVP.");
+    expect(html).toContain("Estado somente em memória");
+    expect(html).toContain("o perfil é compartilhado entre as telas desta sessão");
+    expect(html).toContain("Recarregar a aplicação pode descartá-lo");
   });
 
   it("keeps the primary inputs associated with visible labels", () => {
-    const html = renderToStaticMarkup(<FinancialOnboardingFlow />);
+    const html = renderFlow();
 
     expect(html).toContain('for="reference-currency"');
     expect(html).toContain("Moeda de referência");
