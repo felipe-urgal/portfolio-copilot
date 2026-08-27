@@ -156,6 +156,13 @@ describe("contribution policy form adapter", () => {
   });
 
   it("translates invalid minimum and destination-limit configurations", () => {
+    const emptyMinimum = createContributionPolicySnapshot(
+      {
+        minimumMeaningfulContribution: "",
+        maxDestinationsPerContribution: "2",
+      },
+      TWO_CLASS_BASELINE,
+    );
     const invalidMinimum = createContributionPolicySnapshot(
       {
         minimumMeaningfulContribution: "abc",
@@ -184,19 +191,36 @@ describe("contribution policy form adapter", () => {
       },
       TWO_CLASS_BASELINE,
     );
+    const scientificLimit = createContributionPolicySnapshot(
+      {
+        minimumMeaningfulContribution: "0",
+        maxDestinationsPerContribution: "1e2",
+      },
+      TWO_CLASS_BASELINE,
+    );
 
-    expect(invalidMinimum).toEqual({
+    const minimumFormatError = {
       ok: false,
-      errors: { minimumMeaningfulContribution: "Informe um valor monetário válido para o mínimo significativo." },
-    });
+      errors: {
+        minimumMeaningfulContribution: "Informe um valor monetário válido para o mínimo significativo.",
+      },
+    } as const;
+    const destinationLimitError = {
+      ok: false,
+      errors: {
+        maxDestinationsPerContribution:
+          "Informe um inteiro positivo seguro para o limite de destinos.",
+      },
+    } as const;
+
+    expect(emptyMinimum).toEqual(minimumFormatError);
+    expect(invalidMinimum).toEqual(minimumFormatError);
     expect(negativeMinimum).toEqual({
       ok: false,
       errors: { minimumMeaningfulContribution: "O mínimo significativo não pode ser negativo." },
     });
-    expect(zeroLimit).toEqual({
-      ok: false,
-      errors: { maxDestinationsPerContribution: "Informe um inteiro positivo seguro para o limite de destinos." },
-    });
-    expect(fractionalLimit).toEqual(zeroLimit);
+    expect(zeroLimit).toEqual(destinationLimitError);
+    expect(fractionalLimit).toEqual(destinationLimitError);
+    expect(scientificLimit).toEqual(destinationLimitError);
   });
 });
