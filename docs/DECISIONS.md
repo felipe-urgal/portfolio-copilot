@@ -30,6 +30,7 @@ Este arquivo resume decisões. Decisões arquiteturais importantes também ganha
 | D-024 | Custos conhecidos e impacto tributário reservado consomem o orçamento bruto do destino; se igualarem ou superarem a alocação, o destino é bloqueado e o valor retorna para caixa | Aceita — ADR-0016 |
 | D-025 | O pipeline canônico de aporte é orquestrado sem reimplementar regras e produz snapshot serializável com `methodologyVersion`, reason codes e provenance das etapas | Aceita — ADR-0017 |
 | D-026 | Onboarding financeiro é configuração declarativa separada de `Portfolio`, autenticação e saldos; risco/horizonte são taxonomias explícitas e nunca alteram alocação automaticamente | Aceita — ADR-0018 |
+| D-027 | Antes de autenticação, somente `FinancialProfileSnapshot` pode usar persistência local opt-in, versionada e revalidada pelo domínio; essa conveniência não substitui PostgreSQL server-side futuro | Aceita — ADR-0019 |
 
 ## Como alterar uma decisão
 
