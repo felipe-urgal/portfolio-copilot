@@ -65,7 +65,10 @@ describe("financial profile local storage adapter", () => {
       version: FINANCIAL_PROFILE_STORAGE_VERSION,
       snapshot: PROFILE,
     });
-    expect(readFinancialProfileFromStorage(storage)).toEqual({ status: "loaded", snapshot: PROFILE });
+    expect(readFinancialProfileFromStorage(storage)).toEqual({
+      status: "loaded",
+      snapshot: PROFILE,
+    });
   });
 
   it("treats an empty storage as absence instead of inventing a profile", () => {
