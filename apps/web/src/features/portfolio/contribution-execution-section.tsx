@@ -5,6 +5,7 @@ import { useState, type FormEvent } from "react";
 import { Money, type AssetClassCode, type MoneySnapshot } from "@portfolio-copilot/domain";
 
 import { type ContributionBaselineSnapshot } from "./contribution-baseline-form";
+import { type ContributionConcentrationSnapshot } from "./contribution-concentration-form";
 import {
   createContributionExecutionSnapshot,
   createInitialContributionExecutionDraft,
@@ -13,13 +14,12 @@ import {
   type ContributionExecutionSnapshot,
 } from "./contribution-execution-form";
 import executionStyles from "./contribution-execution-section.module.css";
-import { type ContributionPolicySnapshot } from "./contribution-policy-form";
 import { assetClassLabel, instrumentTypeLabel, type LocalAssetSnapshot } from "./local-asset-form";
 import styles from "./contribution-baseline-panel.module.css";
 
 type ContributionExecutionSectionProps = Readonly<{
   baseline: ContributionBaselineSnapshot;
-  policy: ContributionPolicySnapshot;
+  concentration: ContributionConcentrationSnapshot;
   assets: readonly LocalAssetSnapshot[];
   initialExecution?: ContributionExecutionSnapshot | null;
 }>;
@@ -51,20 +51,20 @@ function ErrorText({ id, message }: Readonly<{ id: string; message: string | und
 
 export function ContributionExecutionSection({
   baseline,
-  policy,
+  concentration,
   assets,
   initialExecution = null,
 }: ContributionExecutionSectionProps) {
   const [draft, setDraft] = useState<ContributionExecutionDraft>(() =>
-    createInitialContributionExecutionDraft(policy),
+    createInitialContributionExecutionDraft(concentration),
   );
   const [errors, setErrors] = useState<ContributionExecutionFieldErrors>({});
   const [execution, setExecution] = useState<ContributionExecutionSnapshot | null>(
     initialExecution,
   );
 
-  const policyByClass = new Map(
-    policy.allocations.map((allocation) => [allocation.assetClass, allocation] as const),
+  const concentrationByClass = new Map(
+    concentration.allocations.map((allocation) => [allocation.assetClass, allocation] as const),
   );
   const assetsById = new Map(assets.map((asset) => [asset.id, asset] as const));
 
@@ -83,7 +83,7 @@ export function ContributionExecutionSection({
 
   function handleSubmit(event: FormEvent<HTMLFormElement>): void {
     event.preventDefault();
-    const result = createContributionExecutionSnapshot(draft, baseline, policy, assets);
+    const result = createContributionExecutionSnapshot(draft, baseline, concentration, assets);
 
     if (!result.ok) {
       setErrors(result.errors);
@@ -115,14 +115,14 @@ export function ContributionExecutionSection({
         {draft.destinations.length === 0 ? (
           <div className={executionStyles.executionEmpty}>
             <strong>Nenhum destino necessário</strong>
-            <p>Nenhuma classe possui alocação monetária positiva após a política.</p>
+            <p>Nenhuma classe possui alocação monetária positiva após a concentração.</p>
           </div>
         ) : (
           <div className={executionStyles.executionRows}>
             {draft.destinations.map((row) => {
               const rowErrors = errors.destinations?.[row.assetClass];
               const candidates = assets.filter((asset) => asset.assetClass === row.assetClass);
-              const policyAllocation = policyByClass.get(row.assetClass);
+              const concentrationAllocation = concentrationByClass.get(row.assetClass);
               const classLabel = assetClassLabel(row.assetClass);
               const assetSelectId = `execution-asset-${row.assetClass.toLowerCase()}`;
               const minimumId = `execution-minimum-${row.assetClass.toLowerCase()}`;
@@ -134,9 +134,9 @@ export function ContributionExecutionSection({
                     <div>
                       <strong>{classLabel}</strong>
                       <span>
-                        Após política:{" "}
-                        {policyAllocation
-                          ? moneyLabel(policyAllocation.policyAllocatedAmount)
+                        Após concentração:{" "}
+                        {concentrationAllocation
+                          ? moneyLabel(concentrationAllocation.concentrationAllocatedAmount)
                           : "—"}
                       </span>
                     </div>
@@ -269,7 +269,7 @@ export function ContributionExecutionSection({
                 <thead>
                   <tr>
                     <th scope="col">Classe</th>
-                    <th scope="col">Após política</th>
+                    <th scope="col">Após concentração</th>
                     <th scope="col">Destino</th>
                     <th scope="col">Qtd. mínima</th>
                     <th scope="col">Após restrições</th>
@@ -282,7 +282,7 @@ export function ContributionExecutionSection({
                     return (
                       <tr key={destination.assetClass}>
                         <th scope="row">{assetClassLabel(destination.assetClass)}</th>
-                        <td>{moneyLabel(destination.policyAllocatedAmount)}</td>
+                        <td>{moneyLabel(destination.concentrationAllocatedAmount)}</td>
                         <td>{asset?.name ?? "Ativo não disponível nesta sessão"}</td>
                         <td>{compactQuantity(destination.minimumTradableQuantity)} un.</td>
                         <td className={styles.policyAmount}>
