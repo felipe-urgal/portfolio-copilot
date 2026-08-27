@@ -177,7 +177,9 @@ export function createContributionExecutionSnapshot(
       destinations,
     });
     const executableByClass = new Map(
-      executionPlan.destinations.map((destination) => [destination.assetClass.code, destination] as const),
+      executionPlan.destinations.map(
+        (destination) => [destination.assetClass.code, destination] as const,
+      ),
     );
     const policyByClass = new Map(
       policy.allocations.map((allocation) => [allocation.assetClass, allocation] as const),
@@ -190,7 +192,9 @@ export function createContributionExecutionSnapshot(
           .filter((allocation) => !allocation.allocatedAmount.isZero())
           .map((allocation) => {
             const assetClass = allocation.assetClass.code;
-            const row = draft.destinations.find((candidate) => candidate.assetClass === assetClass);
+            const row = draft.destinations.find(
+              (candidate) => candidate.assetClass === assetClass,
+            );
             const asset = selectedAssets.get(assetClass);
             const policyAllocation = policyByClass.get(assetClass);
 
