@@ -1,57 +1,58 @@
-# Próxima Atividade — Produto MVP: explicação local determinística do aporte
+# Próxima Atividade — Produto MVP: perfil financeiro local compartilhado na sessão
 
-**Status:** READY após merge do snapshot auditável do pipeline de aporte.
+**Status:** READY após merge da explicação local determinística do aporte.
 
 ## Objetivo
 
-Transformar `ContributionRecommendationSnapshot` em uma explicação humana, local e determinística do aporte, usando exclusivamente `status` e `reasonCodes` estruturados como fonte das causas e os valores já serializados no snapshot como contexto, sem IA e sem reimplementar regras financeiras.
+Fazer o `FinancialProfileSnapshot` já validado pelo onboarding sobreviver à navegação cliente durante a sessão e ser reutilizado por Dashboard e Carteira como contexto declarado do usuário, sem persistência, sem reconstruir o domínio e sem inventar progresso de metas ou reserva.
 
 ## Escopo
 
-- evoluir `/portfolio` a partir do `ContributionRecommendationSnapshot` canônico já consolidado;
-- consumir somente o snapshot final como entrada da camada de explicação, sem remontar allocator, política, concentração, execução ou custos;
-- criar uma camada pura de apresentação que traduza cada reason code fechado do domínio para texto PT-BR estável e não prescritivo;
-- preservar a ordem dos `reasonCodes` recebida do domínio, sem repriorizar ou inferir causa por comparação de valores;
-- explicar o estado final de cada decisão a partir do `status` fechado do snapshot;
-- contextualizar cada decisão com `AssetClass`, nome local do Asset quando houver, baseline, pós-política, pós-concentração e valor investível já presentes no snapshot;
-- distinguir claramente alerta de concentração, bloqueio rígido, inelegibilidade e bloqueio por custos conhecidos;
-- explicar que custo conhecido em destino bloqueado pode permanecer visível enquanto `consumedKnownCost = 0`;
-- manter `methodologyVersion` visível como provenance da explicação;
-- manter a reconciliação e a sobra final como fatos do snapshot, sem novo cálculo financeiro na camada de apresentação;
-- manter toda explicação local/efêmera nesta etapa;
-- garantir leitura acessível e responsiva, com hierarquia simples e sem card grid redundante;
-- adicionar testes que cubram todos os reason codes, todos os status finais, combinações de múltiplos motivos e preservação da ordem canônica.
+- evoluir a aplicação a partir do `FinancialProfileSnapshot` já produzido e validado pelo onboarding;
+- introduzir um contexto cliente de sessão no shell da aplicação como único dono do snapshot financeiro local compartilhado;
+- manter o estado somente em memória durante a sessão da aplicação, sem `localStorage`, cookie, API ou banco;
+- fazer o onboarding publicar no contexto apenas o snapshot final validado pelo domínio;
+- permitir que Dashboard e Carteira leiam o mesmo snapshot sem duplicar ou revalidar regras financeiras;
+- exibir moeda de referência, tolerância a risco e horizonte como dados declarados do perfil;
+- exibir a meta de reserva de emergência quando configurada e um estado honesto quando ausente;
+- exibir objetivos existentes com tipo, valor-alvo e data-alvo quando aplicável;
+- usar os quatro tipos canônicos de `FinancialGoal`: `NET_WORTH`, `PASSIVE_INCOME_MONTHLY`, `RETIREMENT` e `DATED_PURPOSE`;
+- manter os IDs de perfil/objetivos internos ao contrato e fora da UX primária;
+- preservar a distinção entre meta desejada e saldo/progresso atual;
+- deixar explícito que navegar/recarregar fora da sessão em memória pode perder o contexto nesta etapa;
+- garantir leitura responsiva e acessível sem criar card grid redundante;
+- adicionar testes de publicação do snapshot pelo onboarding, leitura compartilhada entre superfícies e estados sem perfil/reserva/objetivos.
 
 ## Fora de escopo
 
-- geração de texto por IA/LLM ou linguagem probabilística;
-- inferir motivo a partir de diferenças monetárias quando não houver reason code correspondente;
-- alterar ou criar reason codes/status no domínio;
-- nova fórmula de alocação, redistribuição, concentração, execução ou custos;
-- recomendação de compra/venda, ranking de ativos ou seleção automática de destino;
-- Market Data, preço, FX, valuation ou quantidade comprável;
-- cálculo tributário ou consulta de tarifas;
-- persistência/API/Server Actions;
-- `asOf`, timestamp ou provenance de fonte externa;
+- persistência em `localStorage`, IndexedDB, cookie, API, Server Actions ou banco;
 - autenticação/autorização;
-- execução real de ordens ou corretora.
+- sincronização entre abas, dispositivos ou sessões;
+- cálculo de progresso da reserva ou dos objetivos;
+- associar automaticamente patrimônio, ledger ou posições a um objetivo;
+- sugerir contribuição mensal para objetivos;
+- alterar `FinancialProfile`, `FinancialGoal` ou suas invariantes no domínio;
+- Market Data, preço, FX, valuation ou rentabilidade;
+- ranking, recomendação ou geração por IA;
+- notificações, calendário ou execução financeira.
 
 ## Critérios de aceite
 
-- a explicação recebe somente um `ContributionRecommendationSnapshot` válido;
-- causas humanas são derivadas exclusivamente dos `reasonCodes` e estados finais exclusivamente de `status`;
-- nenhum texto de causa é inferido comparando valores intermediários;
-- a ordem dos motivos exibidos é idêntica à ordem canônica do snapshot;
-- `CONTRIBUTION_POLICY_ADJUSTED`, `SOFT_CONCENTRATION_LIMIT_EXCEEDED`, `HARD_CONCENTRATION_LIMIT_APPLIED`, `EXECUTION_DESTINATION_INELIGIBLE` e `KNOWN_COSTS_BLOCKED_DESTINATION` possuem cobertura explícita;
-- `EXECUTABLE`, `NOT_SELECTED_BY_POLICY`, `BLOCKED_CONCENTRATION_LIMIT`, `BLOCKED_INELIGIBLE` e `BLOCKED_KNOWN_COSTS` possuem apresentação explícita;
-- `methodologyVersion`, sobra final e reconciliação permanecem visíveis sem novo cálculo;
-- a copy evita linguagem que implique ordem, garantia, previsão ou aconselhamento financeiro individualizado;
-- nenhuma dependência, regra financeira, preço, persistência ou IA é adicionada;
+- existe uma única fonte cliente de sessão para `FinancialProfileSnapshot | null`;
+- somente snapshot validado pelo onboarding é publicado nessa fonte;
+- Dashboard e Carteira conseguem ler o mesmo snapshot após navegação cliente;
+- ausência de snapshot mostra estado explícito e não métricas fictícias;
+- meta de reserva é apresentada como meta, nunca como saldo atual ou percentual concluído;
+- objetivos são apresentados com os campos já presentes no snapshot, sem cálculo de progresso;
+- IDs internos não aparecem como informação primária;
+- recarregar a aplicação não promete persistência que ainda não existe;
+- nenhuma regra financeira, dependência, persistência ou integração externa é adicionada;
 - `pnpm check` passa integralmente no head final validado pelo CI.
 
 ## Referências canônicas
 
-- `docs/ROADMAP.md` — Fase 3: explicação de rebalanceamento;
-- `docs/FINANCIAL-METHODOLOGY.md` — pipeline determinístico do aporte;
-- `docs/adr/0017-contribution-pipeline-snapshot.md` — status finais, reason codes e provenance;
-- `packages/domain/src/contribution/contribution-recommendation-pipeline.ts` — `ContributionRecommendationSnapshot`.
+- `docs/ROADMAP.md` — Fase 3: objetivos/reserva;
+- `packages/domain/src/onboarding/financial-profile.ts` — `FinancialProfileSnapshot` e meta de reserva;
+- `packages/domain/src/onboarding/financial-goal.ts` — objetivos e tipos canônicos;
+- `apps/web/src/features/onboarding/onboarding-form.ts` — construção/validação atual do snapshot;
+- `apps/web/src/components/product-shell.tsx` — fronteira atual compartilhada entre superfícies.
