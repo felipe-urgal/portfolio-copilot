@@ -70,9 +70,7 @@ export function ContributionCostSection({
     value: string,
   ): void {
     setDraft((current) => ({
-      rows: current.rows.map((row) =>
-        row.assetId === assetId ? { ...row, [field]: value } : row,
-      ),
+      rows: current.rows.map((row) => (row.assetId === assetId ? { ...row, [field]: value } : row)),
     }));
     setErrors({});
     setCost(null);
@@ -108,7 +106,9 @@ export function ContributionCostSection({
       {draft.rows.length === 0 ? (
         <div className={costStyles.costEmpty}>
           <strong>Nenhum destino executável para custos</strong>
-          <p>Os bloqueios anteriores já estão refletidos na sobra e não recebem custos hipotéticos.</p>
+          <p>
+            Os bloqueios anteriores já estão refletidos na sobra e não recebem custos hipotéticos.
+          </p>
         </div>
       ) : (
         <form className={costStyles.costForm} noValidate onSubmit={handleSubmit}>
