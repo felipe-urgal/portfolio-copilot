@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { FinancialProfileSessionSummary } from "@/components/financial-profile-session-summary";
 import { ProductShell } from "@/components/product-shell";
 
 import styles from "./dashboard-overview.module.css";
@@ -9,71 +10,54 @@ const SUMMARY_STATES = [
     label: "Patrimônio total",
     state: "Dado indisponível",
     detail:
-      "O dashboard ainda não recebe carteira persistida nem preços para calcular este resumo.",
+      "O dashboard ainda não recebe carteira compartilhada nem preços para calcular este resumo.",
   },
   {
     label: "Aporte do mês",
     state: "Ainda não calculado",
-    detail: "O cálculo depende de carteira e de um valor de aporte informado pelo usuário.",
-  },
-  {
-    label: "Reserva de emergência",
-    state: "Sem dado persistido",
     detail:
-      "Uma meta pode ser definida no onboarding, mas ainda não é salva nem lida pelo dashboard.",
+      "O cálculo depende de carteira, baseline de aporte e demais fatos que ainda vivem na tela de carteira.",
   },
 ] as const;
 
-const CONFIGURATION_STATES = [
+const CONTEXT_RULES = [
   {
     label: "Perfil financeiro",
-    state: "Disponível no onboarding",
+    state: "Snapshot validado no onboarding",
   },
   {
     label: "Objetivos",
-    state: "Não persistidos",
+    state: "Metas declaradas, sem progresso calculado",
   },
   {
-    label: "Meta da reserva",
-    state: "Não persistida",
+    label: "Reserva",
+    state: "Meta desejada, sem saldo atual inferido",
   },
 ] as const;
 
 export function DashboardOverview() {
   return (
     <ProductShell activeRoute="/dashboard">
+      <FinancialProfileSessionSummary />
+
       <header className={styles.pageHeader}>
         <div>
           <h1>Dashboard</h1>
           <p>
             Uma visão geral que mostra apenas o que o produto realmente sabe hoje e deixa claro o
-            que ainda precisa ser configurado.
+            que ainda não pode calcular.
           </p>
         </div>
-        <span className={styles.dataMode}>Sem fonte persistida</span>
+        <span className={styles.dataMode}>Sessão local</span>
       </header>
-
-      <section className={styles.persistenceBanner} aria-labelledby="persistence-title">
-        <div>
-          <h2 id="persistence-title">Sem persistência nesta versão</h2>
-          <p>
-            Onboarding e carteira já possuem fluxos locais, mas cada estado vive somente na própria
-            página. Por isso, o dashboard ainda não recebe perfil, reserva, objetivos ou portfolio
-            configurados.
-          </p>
-        </div>
-        <Link className={styles.primaryAction} href="/onboarding">
-          Configurar perfil no onboarding
-        </Link>
-      </section>
 
       <section className={styles.overviewSurface} aria-labelledby="overview-title">
         <div className={styles.sectionHeading}>
           <div>
             <h2 id="overview-title">Visão geral</h2>
-            <p>Ausência de dado não é tratada como valor zero.</p>
+            <p>Contexto declarado não é confundido com patrimônio, saldo ou progresso.</p>
           </div>
-          <span className={styles.sectionStatus}>Sem métricas financeiras disponíveis</span>
+          <span className={styles.sectionStatus}>Sem métricas patrimoniais calculáveis</span>
         </div>
 
         <dl className={styles.summaryGrid}>
@@ -103,8 +87,8 @@ export function DashboardOverview() {
               <div>
                 <strong>Carteira não disponível no dashboard</strong>
                 <p>
-                  O cadastro local existe na tela de carteira, mas ainda não é persistido nem
-                  compartilhado com esta visão geral.
+                  Portfolio, ativos e ledger ainda vivem somente na tela de carteira e não são
+                  compartilhados com esta visão geral.
                 </p>
               </div>
             </div>
@@ -114,16 +98,16 @@ export function DashboardOverview() {
             </Link>
           </section>
 
-          <section className={styles.detailRegion} aria-labelledby="configuration-title">
+          <section className={styles.detailRegion} aria-labelledby="context-rules-title">
             <div className={styles.detailHeading}>
               <div>
-                <h2 id="configuration-title">Objetivos e configuração</h2>
-                <p>O dashboard só exibirá configuração que consiga recuperar de forma confiável.</p>
+                <h2 id="context-rules-title">Como o contexto é usado</h2>
+                <p>O snapshot compartilhado continua sendo contexto declarado, não resultado.</p>
               </div>
             </div>
 
             <dl className={styles.configurationList}>
-              {CONFIGURATION_STATES.map((item) => (
+              {CONTEXT_RULES.map((item) => (
                 <div key={item.label}>
                   <dt>{item.label}</dt>
                   <dd>{item.state}</dd>
@@ -150,7 +134,7 @@ export function DashboardOverview() {
             <div>
               <strong>Defina seu contexto financeiro</strong>
               <p>
-                Perfil, reserva e objetivos já podem ser validados no fluxo local de onboarding.
+                Perfil, reserva e objetivos validados passam a acompanhar a navegação desta sessão.
               </p>
               <Link href="/onboarding">Ir para o onboarding</Link>
             </div>
@@ -168,8 +152,8 @@ export function DashboardOverview() {
             <div>
               <strong>Registre transações</strong>
               <p>
-                Posições só poderão aparecer quando o Transaction Ledger tiver fatos suficientes
-                para projetá-las.
+                Posições só aparecem quando o Transaction Ledger possui fatos suficientes para
+                projetá-las.
               </p>
             </div>
           </li>
