@@ -17,6 +17,8 @@ import {
 } from "@portfolio-copilot/domain";
 import { APP_NAME } from "@portfolio-copilot/shared";
 
+import { useFinancialSession } from "@/components/financial-session";
+
 import styles from "./financial-onboarding-flow.module.css";
 import {
   ONBOARDING_STEPS,
@@ -541,9 +543,10 @@ function ReviewStep({
       </section>
 
       <div className={styles.reviewNotice} role="status">
-        <strong>Perfil validado localmente.</strong>
+        <strong>Perfil validado e compartilhado nesta sessão.</strong>
         <span>
-          Esta versão não possui persistência. Atualizar ou fechar a página pode descartar os dados.
+          Dashboard e Carteira podem reutilizar este snapshot enquanto a aplicação permanecer
+          carregada. Recarregar ou fechar a aplicação pode descartá-lo.
         </span>
       </div>
 
@@ -560,6 +563,7 @@ function ReviewStep({
 }
 
 export function FinancialOnboardingFlow() {
+  const { publishFinancialProfile, clearFinancialProfile } = useFinancialSession();
   const [state, dispatch] = useReducer(onboardingReducer, undefined, createInitialOnboardingState);
   const nextGoalSequence = useRef(1);
   const activeIndex = ONBOARDING_STEPS.indexOf(state.step);
@@ -602,6 +606,7 @@ export function FinancialOnboardingFlow() {
 
     if (result.snapshot === null) return;
 
+    publishFinancialProfile(result.snapshot);
     dispatch({ type: "review-ready", snapshot: result.snapshot });
   }
 
@@ -612,7 +617,7 @@ export function FinancialOnboardingFlow() {
           {APP_NAME}
         </Link>
         <span className={styles.topbarTitle}>Onboarding financeiro</span>
-        <span className={styles.ephemeralLabel}>Estado local</span>
+        <span className={styles.ephemeralLabel}>Sessão local</span>
       </header>
 
       <div className={styles.layout}>
@@ -642,8 +647,11 @@ export function FinancialOnboardingFlow() {
           </ol>
 
           <div className={styles.persistenceNote}>
-            <strong>Sem salvamento automático</strong>
-            <p>Os dados vivem somente nesta página durante este MVP.</p>
+            <strong>Estado somente em memória</strong>
+            <p>
+              Após a revisão, o perfil é compartilhado entre as telas desta sessão. Recarregar a
+              aplicação pode descartá-lo.
+            </p>
           </div>
         </aside>
 
@@ -663,6 +671,7 @@ export function FinancialOnboardingFlow() {
                 onEdit={() => dispatch({ type: "go-to-step", step: "profile" })}
                 onReset={() => {
                   nextGoalSequence.current = 1;
+                  clearFinancialProfile();
                   dispatch({ type: "reset" });
                 }}
               />
