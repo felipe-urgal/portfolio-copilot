@@ -12,7 +12,7 @@ type ProductRoute = "/dashboard" | "/onboarding" | "/portfolio";
 type ProductShellProps = Readonly<{
   activeRoute: ProductRoute;
   children: ReactNode;
-  identity?: AuthenticatedIdentity;
+  identity?: AuthenticatedIdentity | undefined;
 }>;
 
 const PRIMARY_NAVIGATION: ReadonlyArray<Readonly<{ href: ProductRoute; label: string }>> = [
