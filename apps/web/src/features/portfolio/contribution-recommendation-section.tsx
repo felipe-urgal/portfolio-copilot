@@ -2,7 +2,10 @@
 
 import { useState, type FormEvent } from "react";
 
-import { type ContributionRecommendationSnapshot } from "@portfolio-copilot/domain";
+import {
+  type AssetClassCode,
+  type ContributionRecommendationSnapshot,
+} from "@portfolio-copilot/domain";
 
 import { type ContributionBaselineSnapshot } from "./contribution-baseline-form";
 import { type ContributionConcentrationSnapshot } from "./contribution-concentration-form";
@@ -203,7 +206,7 @@ export function ContributionRecommendationSection({
 
                   return (
                     <tr key={decision.assetClass}>
-                      <th scope="row">{assetClassLabel(decision.assetClass as never)}</th>
+                      <th scope="row">{assetClassLabel(decision.assetClass as AssetClassCode)}</th>
                       <td>
                         {decision.assetId === null
                           ? "Sem destino"
@@ -244,10 +247,11 @@ export function ContributionRecommendationSection({
           </div>
 
           <p className={recommendationStyles.note}>
-            Reconciliação do domínio: aporte {moneyLabel(recommendation.currency, recommendation.contribution)} =
-            investível {moneyLabel(recommendation.currency, recommendation.totalInvestableAmount)} + custo
-            conhecido consumido {moneyLabel(recommendation.currency, recommendation.totalConsumedKnownCost)} +
-            sobra {moneyLabel(recommendation.currency, recommendation.unallocatedContribution)}. As sobras acima são
+            Reconciliação do domínio. Aporte:{" "}
+            {moneyLabel(recommendation.currency, recommendation.contribution)}; investível:{" "}
+            {moneyLabel(recommendation.currency, recommendation.totalInvestableAmount)}; custo conhecido
+            consumido: {moneyLabel(recommendation.currency, recommendation.totalConsumedKnownCost)}; sobra:{" "}
+            {moneyLabel(recommendation.currency, recommendation.unallocatedContribution)}. As sobras acima são
             cumulativas, não incrementais.
           </p>
         </div>
