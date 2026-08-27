@@ -197,7 +197,9 @@ export function ContributionRecommendationSection({
             </div>
             <div>
               <dt>Após custos</dt>
-              <dd>{moneyLabel(recommendation.currency, recommendation.cashRemainder.afterCosts)}</dd>
+              <dd>
+                {moneyLabel(recommendation.currency, recommendation.cashRemainder.afterCosts)}
+              </dd>
             </div>
           </dl>
 
