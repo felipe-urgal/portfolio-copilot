@@ -504,3 +504,22 @@ Histórico resumido de atividades concluídas.
 - nenhuma regra fiscal, consulta de tarifa, preço, Market Data, FX, spread, slippage, execução de ordem ou conversão `Money ↔ AssetQuantity` foi adicionada;
 - nenhuma dependência, lockfile, domínio ou fórmula financeira nova foi alterada;
 - `docs/tasks/NEXT.md` promove `buildContributionRecommendationSnapshot` como próximo vertical para consolidar provenance, status, reason codes e reconciliação do pipeline completo.
+
+## 2026-08-27 — Produto MVP: snapshot auditável do pipeline de aporte
+
+- `/portfolio` passa a consolidar o fluxo local de aporte em um snapshot final auditável e serializável;
+- `buildContributionRecommendationSnapshot` é a única fonte do resultado consolidado do pipeline completo;
+- a ordem canônica permanece `allocator -> policy -> concentration -> execution -> costs -> snapshot`;
+- `methodologyVersion` é informada explicitamente, sem valor padrão, trim ou timestamp implícito;
+- a UI exibe a sobra cumulativa após allocator, política, concentração, execução e custos;
+- `totalInvestableAmount`, `totalConsumedKnownCost` e `unallocatedContribution` finais permanecem explícitos e reconciliáveis;
+- decisões materiais por `AssetClass` preservam baseline, política, concentração, execução, custos, status final e reason codes;
+- status e reason codes vêm diretamente do domínio e são apresentados sem inferência paralela por diferenças monetárias;
+- destinos bloqueados por custos preservam custo conhecido informado, mas `consumedKnownCost` permanece zero conforme o domínio;
+- `AssetId` continua interno ao contrato e a UI resolve nomes somente a partir do catálogo local disponível;
+- o adapter web reidrata apenas os inputs canônicos já validados e deixa o domínio recalcular o pipeline completo;
+- teste dedicado adultera outputs monetários intermediários e prova que eles não são usados como fonte paralela de verdade;
+- testes cobrem reconciliação, determinismo, ordem estável de reason codes, estados finais e `methodologyVersion` inválida;
+- o gate público passou com formatter, lint, typecheck, testes e build no código do vertical antes do fechamento documental;
+- nenhuma regra financeira, preço, Market Data, FX, valuation, timestamp, persistência, IA, execução de ordem ou nova dependência foi adicionada;
+- `docs/tasks/NEXT.md` promove explicação local determinística do aporte baseada exclusivamente no snapshot, status e reason codes, sem IA.

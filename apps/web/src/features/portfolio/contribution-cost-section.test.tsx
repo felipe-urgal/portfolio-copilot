@@ -5,9 +5,14 @@ import {
   createContributionBaselineSnapshot,
   type ContributionBaselineDraft,
 } from "./contribution-baseline-form";
+import {
+  createContributionConcentrationSnapshot,
+  createInitialContributionConcentrationDraft,
+} from "./contribution-concentration-form";
 import { createContributionCostSnapshot } from "./contribution-cost-form";
 import { ContributionCostSection } from "./contribution-cost-section";
 import { type ContributionExecutionSnapshot } from "./contribution-execution-form";
+import { createContributionPolicySnapshot } from "./contribution-policy-form";
 import { type LocalAssetSnapshot } from "./local-asset-form";
 
 const PORTFOLIO = {
@@ -49,6 +54,21 @@ function setup() {
   expect(baselineResult.ok).toBe(true);
   if (!baselineResult.ok) throw new Error("Expected baseline");
 
+  const policyResult = createContributionPolicySnapshot(
+    { minimumMeaningfulContribution: "0", maxDestinationsPerContribution: "2" },
+    baselineResult.snapshot,
+  );
+  expect(policyResult.ok).toBe(true);
+  if (!policyResult.ok) throw new Error("Expected policy");
+
+  const concentrationResult = createContributionConcentrationSnapshot(
+    createInitialContributionConcentrationDraft(policyResult.snapshot),
+    baselineResult.snapshot,
+    policyResult.snapshot,
+  );
+  expect(concentrationResult.ok).toBe(true);
+  if (!concentrationResult.ok) throw new Error("Expected concentration");
+
   const execution: ContributionExecutionSnapshot = {
     destinations: [
       {
@@ -73,14 +93,25 @@ function setup() {
     unallocatedContribution: { currency: "BRL", minorUnits: "8000" },
   };
 
-  return { baseline: baselineResult.snapshot, execution };
+  return {
+    baseline: baselineResult.snapshot,
+    policy: policyResult.snapshot,
+    concentration: concentrationResult.snapshot,
+    execution,
+  };
 }
 
 describe("ContributionCostSection", () => {
   it("renders optional known-cost inputs only for executable destinations", () => {
-    const { baseline, execution } = setup();
+    const { baseline, policy, concentration, execution } = setup();
     const html = renderToStaticMarkup(
-      <ContributionCostSection baseline={baseline} execution={execution} assets={ASSETS} />,
+      <ContributionCostSection
+        baseline={baseline}
+        policy={policy}
+        concentration={concentration}
+        execution={execution}
+        assets={ASSETS}
+      />,
     );
 
     expect(html).toContain("Custos conhecidos");
@@ -91,10 +122,11 @@ describe("ContributionCostSection", () => {
     expect(html).toContain("não é imposto calculado pelo domínio");
     expect(html).toContain("Campo vazio significa custo conhecido zero");
     expect(html).toContain("Aplicar custos conhecidos");
+    expect(html).not.toContain("Snapshot auditável");
   });
 
   it("shows gross budget, known costs and investable amount without hiding provenance", () => {
-    const { baseline, execution } = setup();
+    const { baseline, policy, concentration, execution } = setup();
     const costResult = createContributionCostSnapshot(
       {
         rows: [
@@ -114,6 +146,8 @@ describe("ContributionCostSection", () => {
     const html = renderToStaticMarkup(
       <ContributionCostSection
         baseline={baseline}
+        policy={policy}
+        concentration={concentration}
         execution={execution}
         assets={ASSETS}
         initialCost={costResult.snapshot}
@@ -129,10 +163,13 @@ describe("ContributionCostSection", () => {
     expect(html).toContain("BRL 15.00");
     expect(html).toContain("BRL 105.00");
     expect(html).toContain("Executável");
+    expect(html).toContain("Snapshot auditável");
+    expect(html).toContain("Versão da metodologia");
+    expect(html).not.toContain("Ativo não disponível nesta sessão");
   });
 
   it("states blocked known costs and preserves the full gross budget as remainder", () => {
-    const { baseline, execution } = setup();
+    const { baseline, policy, concentration, execution } = setup();
     const costResult = createContributionCostSnapshot(
       {
         rows: [
@@ -152,6 +189,8 @@ describe("ContributionCostSection", () => {
     const html = renderToStaticMarkup(
       <ContributionCostSection
         baseline={baseline}
+        policy={policy}
+        concentration={concentration}
         execution={execution}
         assets={ASSETS}
         initialCost={costResult.snapshot}
@@ -162,5 +201,6 @@ describe("ContributionCostSection", () => {
     expect(html).toContain("BRL 200.00");
     expect(html).toContain("Nenhum custo hipotético é debitado");
     expect(html).toContain("nada é redistribuído automaticamente");
+    expect(html).toContain("Snapshot auditável");
   });
 });

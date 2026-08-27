@@ -16,10 +16,12 @@ import {
 } from "./contribution-execution-form";
 import executionStyles from "./contribution-execution-section.module.css";
 import { assetClassLabel, instrumentTypeLabel, type LocalAssetSnapshot } from "./local-asset-form";
+import { type ContributionPolicySnapshot } from "./contribution-policy-form";
 import styles from "./contribution-baseline-panel.module.css";
 
 type ContributionExecutionSectionProps = Readonly<{
   baseline: ContributionBaselineSnapshot;
+  policy: ContributionPolicySnapshot;
   concentration: ContributionConcentrationSnapshot;
   assets: readonly LocalAssetSnapshot[];
   initialExecution?: ContributionExecutionSnapshot | null;
@@ -52,6 +54,7 @@ function ErrorText({ id, message }: Readonly<{ id: string; message: string | und
 
 export function ContributionExecutionSection({
   baseline,
+  policy,
   concentration,
   assets,
   initialExecution = null,
@@ -312,7 +315,13 @@ export function ContributionExecutionSection({
             converte o aporte em unidades e não executa ordem.
           </p>
 
-          <ContributionCostSection baseline={baseline} execution={execution} assets={assets} />
+          <ContributionCostSection
+            baseline={baseline}
+            policy={policy}
+            concentration={concentration}
+            execution={execution}
+            assets={assets}
+          />
         </div>
       ) : null}
     </section>

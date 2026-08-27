@@ -71,16 +71,18 @@ function setup() {
 
   return {
     baseline: baselineResult.snapshot,
+    policy: policyResult.snapshot,
     concentration: concentrationResult.snapshot,
   };
 }
 
 describe("ContributionExecutionSection", () => {
   it("renders local candidates by human context only after concentration is available", () => {
-    const { baseline, concentration } = setup();
+    const { baseline, policy, concentration } = setup();
     const html = renderToStaticMarkup(
       <ContributionExecutionSection
         baseline={baseline}
+        policy={policy}
         concentration={concentration}
         assets={ASSETS}
       />,
@@ -101,10 +103,11 @@ describe("ContributionExecutionSection", () => {
   });
 
   it("states honestly when a positive class has no local candidate", () => {
-    const { baseline, concentration } = setup();
+    const { baseline, policy, concentration } = setup();
     const html = renderToStaticMarkup(
       <ContributionExecutionSection
         baseline={baseline}
+        policy={policy}
         concentration={concentration}
         assets={ASSETS.filter((asset) => asset.assetClass === "EQUITY")}
       />,
@@ -114,7 +117,7 @@ describe("ContributionExecutionSection", () => {
   });
 
   it("reveals known costs only after execution is validated", () => {
-    const { baseline, concentration } = setup();
+    const { baseline, policy, concentration } = setup();
     const executionDraft: ContributionExecutionDraft = {
       destinations: [
         {
@@ -143,6 +146,7 @@ describe("ContributionExecutionSection", () => {
     const html = renderToStaticMarkup(
       <ContributionExecutionSection
         baseline={baseline}
+        policy={policy}
         concentration={concentration}
         assets={ASSETS}
         initialExecution={executionResult.snapshot}
