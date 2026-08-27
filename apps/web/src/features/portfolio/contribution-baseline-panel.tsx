@@ -12,19 +12,36 @@ import {
   type ContributionBaselineSnapshot,
   type ContributionClassDraft,
 } from "./contribution-baseline-form";
+import {
+  createContributionPolicySnapshot,
+  createInitialContributionPolicyDraft,
+  type ContributionPolicyAllocationStatus,
+  type ContributionPolicyDraft,
+  type ContributionPolicyFieldErrors,
+  type ContributionPolicySnapshot,
+} from "./contribution-policy-form";
 import { assetClassLabel } from "./local-asset-form";
 import styles from "./contribution-baseline-panel.module.css";
 
 type ContributionBaselinePanelProps = Readonly<{
   portfolio: PortfolioSnapshot;
   initialBaseline?: ContributionBaselineSnapshot | null;
+  initialPolicy?: ContributionPolicySnapshot | null;
 }>;
 
 type ContributionRowField = "targetWeight" | "currentValue";
+type PolicyField = keyof ContributionPolicyDraft;
 
 function moneyLabel(snapshot: MoneySnapshot): string {
   const money = Money.fromSnapshot(snapshot);
   return `${money.currency.toString()} ${money.toDecimalString()}`;
+}
+
+function policyStatusLabel(status: ContributionPolicyAllocationStatus | undefined): string {
+  if (status === "KEPT") return "Mantida";
+  if (status === "REMOVED") return "Removida pela política";
+  if (status === "NO_BASELINE") return "Sem baseline";
+  return "Não aplicada";
 }
 
 function ErrorText({ id, message }: Readonly<{ id: string; message: string | undefined }>) {
@@ -40,17 +57,36 @@ function ErrorText({ id, message }: Readonly<{ id: string; message: string | und
 export function ContributionBaselinePanel({
   portfolio,
   initialBaseline = null,
+  initialPolicy = null,
 }: ContributionBaselinePanelProps) {
   const [draft, setDraft] = useState<ContributionBaselineDraft>(
     createInitialContributionBaselineDraft,
   );
   const [errors, setErrors] = useState<ContributionBaselineFieldErrors>({});
   const [baseline, setBaseline] = useState<ContributionBaselineSnapshot | null>(initialBaseline);
+  const [policyDraft, setPolicyDraft] = useState<ContributionPolicyDraft>(
+    createInitialContributionPolicyDraft,
+  );
+  const [policyErrors, setPolicyErrors] = useState<ContributionPolicyFieldErrors>({});
+  const [policy, setPolicy] = useState<ContributionPolicySnapshot | null>(initialPolicy);
+
+  const statusLabel =
+    policy !== null ? "Política aplicada" : baseline !== null ? "Baseline validado" : "Base manual";
+  const policyByClass = new Map(
+    policy?.allocations.map((allocation) => [allocation.assetClass, allocation] as const) ?? [],
+  );
+
+  function invalidateBaseline(): void {
+    setErrors({});
+    setBaseline(null);
+    setPolicyDraft(createInitialContributionPolicyDraft());
+    setPolicyErrors({});
+    setPolicy(null);
+  }
 
   function updateField(field: "portfolioValue" | "contribution", value: string): void {
     setDraft((current) => ({ ...current, [field]: value }));
-    setErrors({});
-    setBaseline(null);
+    invalidateBaseline();
   }
 
   function updateRow(
@@ -64,8 +100,13 @@ export function ContributionBaselinePanel({
         row.assetClass === assetClass ? { ...row, [field]: value } : row,
       ),
     }));
-    setErrors({});
-    setBaseline(null);
+    invalidateBaseline();
+  }
+
+  function updatePolicyField(field: PolicyField, value: string): void {
+    setPolicyDraft((current) => ({ ...current, [field]: value }));
+    setPolicyErrors({});
+    setPolicy(null);
   }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>): void {
@@ -75,11 +116,31 @@ export function ContributionBaselinePanel({
     if (!result.ok) {
       setErrors(result.errors);
       setBaseline(null);
+      setPolicy(null);
       return;
     }
 
     setBaseline(result.snapshot);
     setErrors({});
+    setPolicyDraft(createInitialContributionPolicyDraft());
+    setPolicyErrors({});
+    setPolicy(null);
+  }
+
+  function handlePolicySubmit(event: FormEvent<HTMLFormElement>): void {
+    event.preventDefault();
+    if (baseline === null) return;
+
+    const result = createContributionPolicySnapshot(policyDraft, baseline);
+
+    if (!result.ok) {
+      setPolicyErrors(result.errors);
+      setPolicy(null);
+      return;
+    }
+
+    setPolicy(result.snapshot);
+    setPolicyErrors({});
   }
 
   return (
@@ -88,11 +149,11 @@ export function ContributionBaselinePanel({
         <div>
           <h2 id="contribution-baseline-title">Baseline do aporte</h2>
           <p>
-            Configure o alvo por classe e uma base monetária declarada manualmente. O cálculo não
-            converte quantidades do ledger em valor de mercado.
+            Valide a base monetária e depois aplique a política de microaporte e limite de destinos.
+            Nenhuma etapa converte quantidades do ledger em valor de mercado.
           </p>
         </div>
-        <span className={styles.status}>{baseline === null ? "Base manual" : "Calculado"}</span>
+        <span className={styles.status}>{statusLabel}</span>
       </div>
 
       <div className={styles.layout}>
@@ -101,8 +162,8 @@ export function ContributionBaselinePanel({
             <strong>Base monetária manual</strong>
             <p>
               Estes valores são declarados por você e não representam cotação, valuation ou
-              patrimônio derivado de Market Data. TargetAllocation, base e baseline existem apenas
-              nesta sessão.
+              patrimônio derivado de Market Data. TargetAllocation, base, política e resultados
+              existem apenas nesta sessão.
             </p>
           </div>
 
@@ -240,16 +301,19 @@ export function ContributionBaselinePanel({
 
         <div className={styles.result} aria-live="polite">
           <div className={styles.resultHeading}>
-            <h3>Distribuição por AssetClass</h3>
-            <p>O domínio calcula necessidade pós-aporte, baseline e sobra sem escolher um ativo.</p>
+            <h3>Baseline x política</h3>
+            <p>
+              O allocator define o baseline econômico; a política só restringe destinos e
+              microaportes sobre esse plano validado.
+            </p>
           </div>
 
           {baseline === null ? (
             <div className={styles.emptyResult}>
               <strong>Baseline ainda não calculado</strong>
               <p>
-                Nenhum peso, valor atual, destino ou quantidade é inferido enquanto a base manual
-                não for validada.
+                A política só fica disponível depois que TargetAllocation, base atual e aporte
+                formam um ContributionPlan válido.
               </p>
             </div>
           ) : (
@@ -268,10 +332,107 @@ export function ContributionBaselinePanel({
                   <dd>{moneyLabel(baseline.postContributionValue)}</dd>
                 </div>
                 <div>
-                  <dt>Sobra não alocada</dt>
+                  <dt>Sobra no baseline</dt>
                   <dd>{moneyLabel(baseline.unallocatedContribution)}</dd>
                 </div>
               </dl>
+
+              <section className={styles.policySection} aria-labelledby="contribution-policy-title">
+                <div className={styles.policyHeading}>
+                  <h4 id="contribution-policy-title">Política operacional</h4>
+                  <p>
+                    Defina o mínimo monetário significativo e quantas classes podem receber o
+                    aporte. A seleção e a redistribuição permanecem no domínio.
+                  </p>
+                </div>
+
+                <form className={styles.policyForm} noValidate onSubmit={handlePolicySubmit}>
+                  <div className={styles.fieldRow}>
+                    <div className={styles.fieldGroup}>
+                      <label htmlFor="minimum-meaningful-contribution">
+                        Mínimo significativo
+                      </label>
+                      <input
+                        id="minimum-meaningful-contribution"
+                        type="text"
+                        inputMode="decimal"
+                        autoComplete="off"
+                        value={policyDraft.minimumMeaningfulContribution}
+                        aria-invalid={policyErrors.minimumMeaningfulContribution !== undefined}
+                        aria-describedby={
+                          policyErrors.minimumMeaningfulContribution
+                            ? "minimum-meaningful-contribution-error"
+                            : "minimum-meaningful-contribution-help"
+                        }
+                        onChange={(event) =>
+                          updatePolicyField("minimumMeaningfulContribution", event.target.value)
+                        }
+                      />
+                      <p className={styles.helpText} id="minimum-meaningful-contribution-help">
+                        Valor em {portfolio.referenceCurrency}; zero desativa o corte por mínimo.
+                      </p>
+                      <ErrorText
+                        id="minimum-meaningful-contribution-error"
+                        message={policyErrors.minimumMeaningfulContribution}
+                      />
+                    </div>
+
+                    <div className={styles.fieldGroup}>
+                      <label htmlFor="max-contribution-destinations">Limite de destinos</label>
+                      <input
+                        id="max-contribution-destinations"
+                        type="text"
+                        inputMode="numeric"
+                        autoComplete="off"
+                        value={policyDraft.maxDestinationsPerContribution}
+                        aria-invalid={policyErrors.maxDestinationsPerContribution !== undefined}
+                        aria-describedby={
+                          policyErrors.maxDestinationsPerContribution
+                            ? "max-contribution-destinations-error"
+                            : "max-contribution-destinations-help"
+                        }
+                        onChange={(event) =>
+                          updatePolicyField("maxDestinationsPerContribution", event.target.value)
+                        }
+                      />
+                      <p className={styles.helpText} id="max-contribution-destinations-help">
+                        Inteiro positivo; o domínio prioriza classes por necessidade pós-aporte.
+                      </p>
+                      <ErrorText
+                        id="max-contribution-destinations-error"
+                        message={policyErrors.maxDestinationsPerContribution}
+                      />
+                    </div>
+                  </div>
+
+                  {policyErrors.form ? (
+                    <p className={styles.formError} role="alert">
+                      {policyErrors.form}
+                    </p>
+                  ) : null}
+
+                  <button className={styles.primaryAction} type="submit">
+                    Aplicar política ao baseline
+                  </button>
+                </form>
+
+                {policy !== null ? (
+                  <dl className={styles.policySummary}>
+                    <div>
+                      <dt>Mínimo aplicado</dt>
+                      <dd>{moneyLabel(policy.minimumMeaningfulContribution)}</dd>
+                    </div>
+                    <div>
+                      <dt>Máximo de destinos</dt>
+                      <dd>{policy.maxDestinationsPerContribution}</dd>
+                    </div>
+                    <div>
+                      <dt>Sobra após política</dt>
+                      <dd>{moneyLabel(policy.unallocatedContribution)}</dd>
+                    </div>
+                  </dl>
+                ) : null}
+              </section>
 
               <div className={styles.tableScroller}>
                 <table className={styles.resultTable}>
@@ -280,29 +441,52 @@ export function ContributionBaselinePanel({
                       <th scope="col">Classe</th>
                       <th scope="col">Alvo</th>
                       <th scope="col">Atual</th>
-                      <th scope="col">Necessidade pós-aporte</th>
+                      <th scope="col">Necessidade</th>
                       <th scope="col">Baseline</th>
+                      <th scope="col">Após política</th>
+                      <th scope="col">Estado</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {baseline.allocations.map((allocation) => (
-                      <tr key={allocation.assetClass}>
-                        <th scope="row">{assetClassLabel(allocation.assetClass)}</th>
-                        <td>{allocation.targetWeightPercent}%</td>
-                        <td>{moneyLabel(allocation.currentValue)}</td>
-                        <td>{moneyLabel(allocation.postContributionNeed)}</td>
-                        <td className={styles.baselineAmount}>
-                          {moneyLabel(allocation.allocatedAmount)}
-                        </td>
-                      </tr>
-                    ))}
+                    {baseline.allocations.map((allocation) => {
+                      const policyAllocation = policyByClass.get(allocation.assetClass);
+
+                      return (
+                        <tr key={allocation.assetClass}>
+                          <th scope="row">{assetClassLabel(allocation.assetClass)}</th>
+                          <td>{allocation.targetWeightPercent}%</td>
+                          <td>{moneyLabel(allocation.currentValue)}</td>
+                          <td>{moneyLabel(allocation.postContributionNeed)}</td>
+                          <td className={styles.baselineAmount}>
+                            {moneyLabel(allocation.allocatedAmount)}
+                          </td>
+                          <td className={styles.policyAmount}>
+                            {policyAllocation === undefined
+                              ? "—"
+                              : moneyLabel(policyAllocation.policyAllocatedAmount)}
+                          </td>
+                          <td>
+                            <span
+                              className={styles.policyState}
+                              data-status={policyAllocation?.status ?? "NOT_APPLIED"}
+                            >
+                              {policyStatusLabel(policyAllocation?.status)}
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
 
               <p className={styles.resultFootnote}>
-                Baseline monetário por classe: não escolhe ativo, não calcula quantidade e não usa
-                preço de mercado.
+                “Removida pela política” significa que o domínio zerou a alocação final daquela
+                classe. A UI não atribui uma causa isolada entre mínimo e limite porque o contrato
+                atual não expõe reason code específico.
+              </p>
+              <p className={styles.resultFootnote}>
+                Nenhuma etapa escolhe ativo, calcula quantidade ou usa preço de mercado.
               </p>
             </>
           )}
