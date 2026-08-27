@@ -13,6 +13,7 @@ import { type ContributionCostSnapshot } from "./contribution-cost-form";
 import { type ContributionExecutionSnapshot } from "./contribution-execution-form";
 import { assetClassLabel, type LocalAssetSnapshot } from "./local-asset-form";
 import { type ContributionPolicySnapshot } from "./contribution-policy-form";
+import { ContributionRecommendationExplanationSection } from "./contribution-recommendation-explanation-section";
 import {
   createContributionRecommendationSnapshot,
   createInitialContributionRecommendationDraft,
@@ -261,6 +262,11 @@ export function ContributionRecommendationSection({
               </tbody>
             </table>
           </div>
+
+          <ContributionRecommendationExplanationSection
+            recommendation={recommendation}
+            assets={assets}
+          />
 
           <p className={recommendationStyles.note}>
             Reconciliação do domínio. Aporte:{" "}

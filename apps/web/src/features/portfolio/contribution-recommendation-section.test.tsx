@@ -173,9 +173,10 @@ describe("ContributionRecommendationSection", () => {
     expect(html).toContain("Gerar snapshot consolidado");
     expect(html).toContain("Não é gerado nem normalizado automaticamente");
     expect(html).not.toContain("Total investível");
+    expect(html).not.toContain("Como ler este aporte");
   });
 
-  it("renders cumulative remainder, reconciliation and structured provenance from the domain snapshot", () => {
+  it("renders cumulative remainder, reconciliation, structured provenance and deterministic explanation", () => {
     const html = renderToStaticMarkup(
       <ContributionRecommendationSection
         baseline={baseline}
@@ -203,6 +204,11 @@ describe("ContributionRecommendationSection", () => {
     expect(html).toContain("ETF global");
     expect(html).toContain("Executável");
     expect(html).toContain("CONTRIBUTION_POLICY_ADJUSTED");
+    expect(html).toContain("Como ler este aporte");
+    expect(html).toContain("Política ajustou o baseline");
+    expect(html).toContain("Nenhuma causa adicional é inferida");
+    expect(html).toContain("não uma ordem de compra");
+    expect(html).toContain("Nenhum valor é recalculado nesta leitura");
     expect(html).toContain("cumulativas, não incrementais");
     expect(html).not.toContain(EQUITY_ASSET_ID);
   });

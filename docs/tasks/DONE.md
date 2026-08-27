@@ -523,3 +523,23 @@ Histórico resumido de atividades concluídas.
 - o gate público passou com formatter, lint, typecheck, testes e build no código do vertical antes do fechamento documental;
 - nenhuma regra financeira, preço, Market Data, FX, valuation, timestamp, persistência, IA, execução de ordem ou nova dependência foi adicionada;
 - `docs/tasks/NEXT.md` promove explicação local determinística do aporte baseada exclusivamente no snapshot, status e reason codes, sem IA.
+
+## 2026-08-27 — Produto MVP: explicação local determinística do aporte
+
+- `/portfolio` passa a apresentar uma leitura humana do `ContributionRecommendationSnapshot` já consolidado;
+- o snapshot final é a única entrada da camada de explicação e nenhuma etapa do pipeline é reconstruída;
+- os cinco status finais do domínio possuem tradução PT-BR explícita e estável;
+- os cinco reason codes do domínio possuem tradução PT-BR explícita e não prescritiva;
+- a ordem dos reason codes exibidos é exatamente a ordem recebida do snapshot, sem repriorização local;
+- causas são derivadas exclusivamente de reason codes e estados exclusivamente de status;
+- valores de baseline, política, concentração, custos e investível são usados somente como contexto visual e nunca para inferir motivo;
+- teste dedicado adultera os valores monetários intermediários e prova que a explicação de causas/estados permanece idêntica;
+- `methodologyVersion`, aporte, valor investível, custo conhecido consumido e sobra final permanecem visíveis como fatos do snapshot;
+- nomes de Assets são resolvidos somente pelo catálogo local disponível e `AssetId` continua fora da UX primária;
+- destino bloqueado por custos conhecidos explica explicitamente que o custo informado pode permanecer visível enquanto `consumedKnownCost = 0`;
+- decisões sem reason code adicional informam que nenhuma causa extra é inferida;
+- a UI mantém a tabela auditável existente e acrescenta uma lista aberta/responsiva de explicações, sem card grid redundante;
+- a copy deixa explícito que a leitura não representa ordem de compra/venda, garantia, previsão ou seleção automática de ativo;
+- testes cobrem todos os status, todos os reason codes, múltiplos motivos em ordem canônica, ausência de inferência monetária e renderização integrada;
+- nenhuma IA, fórmula financeira, Market Data, FX, persistência, API, dependência ou regra de domínio foi adicionada;
+- `docs/tasks/NEXT.md` promove o compartilhamento local em memória do `FinancialProfileSnapshot` entre Onboarding, Dashboard e Carteira, sem inventar progresso de objetivos/reserva.
