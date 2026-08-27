@@ -12,7 +12,7 @@ Este arquivo resume decisões. Decisões arquiteturais importantes também ganha
 | D-006 | Rebalanceamento prioriza novos aportes | Aceita |
 | D-007 | RecommendationSnapshot é imutável | Aceita |
 | D-008 | Dados materiais precisam de provenance e `asOf` | Aceita |
-| D-009 | PostgreSQL é direção inicial de persistência | Proposta, validar na fundação técnica |
+| D-009 | PostgreSQL é a persistência relacional inicial; ORM fica restrito à infraestrutura | Aceita — ADR-0021 |
 | D-010 | Web/PWA é direção inicial de interface | Proposta, validar na fundação técnica |
 | D-011 | Produto público exige Regulatory Gate | Aceita |
 | D-012 | Sem microaportes artificiais: o motor pode concentrar o aporte do mês em menos destinos para corrigir gaps | Aceita |
@@ -32,6 +32,7 @@ Este arquivo resume decisões. Decisões arquiteturais importantes também ganha
 | D-026 | Onboarding financeiro é configuração declarativa separada de `Portfolio`, autenticação e saldos; risco/horizonte são taxonomias explícitas e nunca alteram alocação automaticamente | Aceita — ADR-0018 |
 | D-027 | Antes de autenticação, somente `FinancialProfileSnapshot` pode usar persistência local opt-in, versionada e revalidada pelo domínio; essa conveniência não substitui PostgreSQL server-side futuro | Aceita — ADR-0019 |
 | D-028 | Autenticação usa Auth.js v5 com GitHub OAuth e sessão server-side; identidade canônica é separada dos IDs financeiros e login/logout não migram nem apagam automaticamente o perfil local | Aceita — ADR-0020 |
+| D-029 | Toda persistência privada usa ownership derivado da sessão no servidor e reforçado por chaves/FKs compostas; conexão e schema brutos não são API de aplicação | Aceita — ADR-0021 |
 
 ## Como alterar uma decisão
 
