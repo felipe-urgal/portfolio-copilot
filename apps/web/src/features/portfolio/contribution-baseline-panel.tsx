@@ -44,6 +44,15 @@ function policyStatusLabel(status: ContributionPolicyAllocationStatus | undefine
   return "Não aplicada";
 }
 
+function contributionStatusLabel(
+  baseline: ContributionBaselineSnapshot | null,
+  policy: ContributionPolicySnapshot | null,
+): string {
+  if (baseline === null) return "Base manual";
+  if (policy === null) return "Baseline validado";
+  return "Política aplicada";
+}
+
 function ErrorText({ id, message }: Readonly<{ id: string; message: string | undefined }>) {
   if (message === undefined) return null;
 
@@ -70,8 +79,7 @@ export function ContributionBaselinePanel({
   const [policyErrors, setPolicyErrors] = useState<ContributionPolicyFieldErrors>({});
   const [policy, setPolicy] = useState<ContributionPolicySnapshot | null>(initialPolicy);
 
-  const statusLabel =
-    policy !== null ? "Política aplicada" : baseline !== null ? "Baseline validado" : "Base manual";
+  const statusLabel = contributionStatusLabel(baseline, policy);
   const policyByClass = new Map(
     policy?.allocations.map((allocation) => [allocation.assetClass, allocation] as const) ?? [],
   );
