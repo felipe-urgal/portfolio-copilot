@@ -5,6 +5,7 @@ import { useState, type FormEvent } from "react";
 import { Money, type MoneySnapshot } from "@portfolio-copilot/domain";
 
 import { type ContributionBaselineSnapshot } from "./contribution-baseline-form";
+import { type ContributionConcentrationSnapshot } from "./contribution-concentration-form";
 import {
   createContributionCostSnapshot,
   createInitialContributionCostDraft,
@@ -15,10 +16,14 @@ import {
 import costStyles from "./contribution-cost-section.module.css";
 import { type ContributionExecutionSnapshot } from "./contribution-execution-form";
 import { type LocalAssetSnapshot } from "./local-asset-form";
+import { type ContributionPolicySnapshot } from "./contribution-policy-form";
+import { ContributionRecommendationSection } from "./contribution-recommendation-section";
 import styles from "./contribution-baseline-panel.module.css";
 
 type ContributionCostSectionProps = Readonly<{
   baseline: ContributionBaselineSnapshot;
+  policy: ContributionPolicySnapshot;
+  concentration: ContributionConcentrationSnapshot;
   execution: ContributionExecutionSnapshot;
   assets: readonly LocalAssetSnapshot[];
   initialCost?: ContributionCostSnapshot | null;
@@ -44,6 +49,8 @@ function ErrorText({ id, message }: Readonly<{ id: string; message: string | und
 
 export function ContributionCostSection({
   baseline,
+  policy,
+  concentration,
   execution,
   assets,
   initialCost = null,
@@ -250,6 +257,15 @@ export function ContributionCostSection({
             orçamento inteiro volta para a sobra. Nenhum custo hipotético é debitado e nada é
             redistribuído automaticamente.
           </p>
+
+          <ContributionRecommendationSection
+            baseline={baseline}
+            policy={policy}
+            concentration={concentration}
+            execution={execution}
+            cost={cost}
+            assets={assets}
+          />
         </div>
       ) : null}
     </section>
