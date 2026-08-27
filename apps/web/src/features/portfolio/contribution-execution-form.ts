@@ -157,11 +157,15 @@ export function createContributionExecutionSnapshot(
       return rowError(row.assetClass, { assetId: DESTINATION_INVALID_ERROR });
     }
 
+    if (row.isEligible === null) {
+      return rowError(row.assetClass, { isEligible: ELIGIBILITY_ERROR });
+    }
+
     selectedAssets.set(row.assetClass, asset);
     destinations.push({
       assetId: asset.id,
       assetClass: asset.assetClass,
-      isEligible: row.isEligible as boolean,
+      isEligible: row.isEligible,
       minimumTradableQuantity: normalizeContributionDecimal(row.minimumTradableQuantity),
     });
   }
