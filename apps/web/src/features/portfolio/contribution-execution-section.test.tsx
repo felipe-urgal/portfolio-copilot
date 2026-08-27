@@ -6,6 +6,10 @@ import {
   type ContributionBaselineDraft,
 } from "./contribution-baseline-form";
 import {
+  createContributionConcentrationSnapshot,
+  createInitialContributionConcentrationDraft,
+} from "./contribution-concentration-form";
+import {
   createContributionExecutionSnapshot,
   type ContributionExecutionDraft,
 } from "./contribution-execution-form";
@@ -57,17 +61,33 @@ function setup() {
   expect(policyResult.ok).toBe(true);
   if (!policyResult.ok) throw new Error("Expected policy");
 
-  return { baseline: baselineResult.snapshot, policy: policyResult.snapshot };
+  const concentrationResult = createContributionConcentrationSnapshot(
+    createInitialContributionConcentrationDraft(policyResult.snapshot),
+    baselineResult.snapshot,
+    policyResult.snapshot,
+  );
+  expect(concentrationResult.ok).toBe(true);
+  if (!concentrationResult.ok) throw new Error("Expected concentration");
+
+  return {
+    baseline: baselineResult.snapshot,
+    concentration: concentrationResult.snapshot,
+  };
 }
 
 describe("ContributionExecutionSection", () => {
-  it("renders local candidates by human context only after policy is available", () => {
-    const { baseline, policy } = setup();
+  it("renders local candidates by human context only after concentration is available", () => {
+    const { baseline, concentration } = setup();
     const html = renderToStaticMarkup(
-      <ContributionExecutionSection baseline={baseline} policy={policy} assets={ASSETS} />,
+      <ContributionExecutionSection
+        baseline={baseline}
+        concentration={concentration}
+        assets={ASSETS}
+      />,
     );
 
     expect(html).toContain("Restrições de execução");
+    expect(html).toContain("Após concentração");
     expect(html).toContain("Ativo local");
     expect(html).toContain("ETF global — ETF");
     expect(html).toContain("Tesouro IPCA — Instrumento de renda fixa");
@@ -80,11 +100,11 @@ describe("ContributionExecutionSection", () => {
   });
 
   it("states honestly when a positive class has no local candidate", () => {
-    const { baseline, policy } = setup();
+    const { baseline, concentration } = setup();
     const html = renderToStaticMarkup(
       <ContributionExecutionSection
         baseline={baseline}
-        policy={policy}
+        concentration={concentration}
         assets={ASSETS.filter((asset) => asset.assetClass === "EQUITY")}
       />,
     );
@@ -93,7 +113,7 @@ describe("ContributionExecutionSection", () => {
   });
 
   it("renders executable and blocked destinations without implying purchasable quantity", () => {
-    const { baseline, policy } = setup();
+    const { baseline, concentration } = setup();
     const executionDraft: ContributionExecutionDraft = {
       destinations: [
         {
@@ -113,7 +133,7 @@ describe("ContributionExecutionSection", () => {
     const executionResult = createContributionExecutionSnapshot(
       executionDraft,
       baseline,
-      policy,
+      concentration,
       ASSETS,
     );
     expect(executionResult.ok).toBe(true);
@@ -122,7 +142,7 @@ describe("ContributionExecutionSection", () => {
     const html = renderToStaticMarkup(
       <ContributionExecutionSection
         baseline={baseline}
-        policy={policy}
+        concentration={concentration}
         assets={ASSETS}
         initialExecution={executionResult.snapshot}
       />,
