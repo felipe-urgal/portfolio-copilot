@@ -357,9 +357,7 @@ export function ContributionBaselinePanel({
                 <form className={styles.policyForm} noValidate onSubmit={handlePolicySubmit}>
                   <div className={styles.fieldRow}>
                     <div className={styles.fieldGroup}>
-                      <label htmlFor="minimum-meaningful-contribution">
-                        Mínimo significativo
-                      </label>
+                      <label htmlFor="minimum-meaningful-contribution">Mínimo significativo</label>
                       <input
                         id="minimum-meaningful-contribution"
                         type="text"

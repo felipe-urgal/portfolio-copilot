@@ -202,7 +202,8 @@ describe("contribution policy form adapter", () => {
     const minimumFormatError = {
       ok: false,
       errors: {
-        minimumMeaningfulContribution: "Informe um valor monetário válido para o mínimo significativo.",
+        minimumMeaningfulContribution:
+          "Informe um valor monetário válido para o mínimo significativo.",
       },
     } as const;
     const destinationLimitError = {

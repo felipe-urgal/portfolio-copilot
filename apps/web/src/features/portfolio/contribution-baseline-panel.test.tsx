@@ -102,7 +102,9 @@ describe("ContributionBaselinePanel", () => {
     expect(html).toContain("Mantida");
     expect(html).toContain("Removida pela política");
     expect(html).toContain("não atribui uma causa isolada entre mínimo e limite");
-    expect(html).toContain("Nenhuma etapa escolhe ativo, calcula quantidade ou usa preço de mercado");
+    expect(html).toContain(
+      "Nenhuma etapa escolhe ativo, calcula quantidade ou usa preço de mercado",
+    );
     expect(html).not.toMatch(/R\$\s*\d/);
   });
 });
