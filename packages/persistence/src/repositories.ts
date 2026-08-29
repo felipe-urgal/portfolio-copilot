@@ -43,6 +43,29 @@ export class OwnedPersistence {
     public readonly ownerSubject: OwnerSubjectValue,
   ) {}
 
+  public async createFinancialProfileIfAbsent(
+    snapshot: FinancialProfileSnapshot,
+    provenance: PersistenceProvenance = DEFAULT_PROVENANCE,
+  ): Promise<FinancialProfileSnapshot | null> {
+    const canonical = FinancialProfile.fromSnapshot(snapshot).toSnapshot();
+    const inserted = await this.db
+      .insert(financialProfiles)
+      .values({
+        ownerSubject: this.ownerSubject,
+        profileId: canonical.id,
+        referenceCurrency: canonical.referenceCurrency,
+        riskTolerance: canonical.riskTolerance,
+        horizon: canonical.horizon,
+        emergencyReserveTarget: canonical.emergencyReserveTarget,
+        goals: canonical.goals,
+        provenance,
+      })
+      .onConflictDoNothing({ target: financialProfiles.ownerSubject })
+      .returning({ ownerSubject: financialProfiles.ownerSubject });
+
+    return inserted.length === 0 ? null : canonical;
+  }
+
   public async saveFinancialProfile(
     snapshot: FinancialProfileSnapshot,
     provenance: PersistenceProvenance = DEFAULT_PROVENANCE,
