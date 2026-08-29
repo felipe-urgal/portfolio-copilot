@@ -163,10 +163,7 @@ describe("MarketDataFreshnessPolicy", () => {
       FX: 60_000,
       MACRO: 60_000,
     });
-    const snapshot = priceSnapshot(
-      "2026-08-29T12:10:00.000Z",
-      "2026-08-29T12:11:00.000Z",
-    );
+    const snapshot = priceSnapshot("2026-08-29T12:10:00.000Z", "2026-08-29T12:11:00.000Z");
 
     expect(policy.evaluate(snapshot, "2026-08-29T12:09:00.000Z").status).toBe("FUTURE");
     expect(policy.flagsFor(snapshot, "2026-08-29T12:09:00.000Z")).toEqual(["CONFLICT"]);
