@@ -64,6 +64,33 @@ function normalizeProviderValue(value: string): string {
   return normalized;
 }
 
+function hasValidIsinChecksum(value: string): boolean {
+  let expanded = "";
+
+  for (const character of value) {
+    expanded +=
+      character >= "0" && character <= "9"
+        ? character
+        : String(character.charCodeAt(0) - "A".charCodeAt(0) + 10);
+  }
+
+  let sum = 0;
+  const doubleParity = expanded.length % 2;
+
+  for (let index = 0; index < expanded.length; index += 1) {
+    let digit = Number(expanded[index]);
+
+    if (index % 2 === doubleParity) {
+      digit *= 2;
+      if (digit > 9) digit -= 9;
+    }
+
+    sum += digit;
+  }
+
+  return sum % 10 === 0;
+}
+
 export class ExternalAssetIdentifier {
   private constructor(
     public readonly kind: ExternalAssetIdentifierKind,
@@ -82,7 +109,7 @@ export class ExternalAssetIdentifier {
   public static isin(value: string): ExternalAssetIdentifier {
     const normalized = value.trim().toUpperCase();
 
-    if (!ISIN_PATTERN.test(normalized)) {
+    if (!ISIN_PATTERN.test(normalized) || !hasValidIsinChecksum(normalized)) {
       throw new InvalidExternalAssetIdentifierError("isin", value);
     }
 
