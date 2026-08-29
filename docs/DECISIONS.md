@@ -36,6 +36,7 @@ Este arquivo resume decisões. Decisões arquiteturais importantes também ganha
 | D-030 | Migração do `FinancialProfileSnapshot` local para a conta é opt-in, revalidada pelo domínio, preserva a cópia local e trata conflito antes de qualquer substituição server-side | Aceita — ADR-0019/0020/0021 |
 | D-031 | Asset Master preserva `AssetId` como identidade; listings atuais/históricos e identificadores externos carregam provenance, e matching exato retorna `UNMATCHED`, `PARTIAL_MATCH`, `MATCH` ou `CONFLICT` sem dedupe heurístico | Aceita — ADR-0022 |
 | D-032 | Market Data vive em package próprio; snapshots materiais usam decimal exato, provenance e `asOf`, freshness/cache são independentes, e fallback só ocorre para falhas explicitamente autorizadas | Aceita — ADR-0023 |
+| D-033 | Investment Engine mantém Quality, Opportunity e Dividend separados, usa metodologias versionadas por classe/setor, bloqueia missing/stale/conflict/look-ahead e exige valuation auditável para Opportunity | Aceita — ADR-0024 |
 
 ## Como alterar uma decisão
 
