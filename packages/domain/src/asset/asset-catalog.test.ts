@@ -119,6 +119,25 @@ describe("AssetCatalogEntry", () => {
     ]);
   });
 
+  it("keeps historical ticker aliases in the catalog without exposing them as current Asset identifiers", () => {
+    const entry = AssetCatalogEntry.create(firstAssetInput());
+    const currentTicker = ExternalAssetIdentifier.marketSymbol("B3", "ITUB4");
+    const historicalTicker = ExternalAssetIdentifier.marketSymbol("B3", "ITUB3");
+
+    expect(entry.asset.hasExternalIdentifier(currentTicker)).toBe(true);
+    expect(entry.asset.hasExternalIdentifier(historicalTicker)).toBe(false);
+    expect(entry.identityIdentifiers().map((identifier) => identifier.key())).toContain(
+      historicalTicker.key(),
+    );
+  });
+
+  it.each(["ACTIVE", "INACTIVE", "DELISTED"])(
+    "supports the %s lifecycle status",
+    (status) => {
+      expect(AssetCatalogEntry.create({ ...firstAssetInput(), status }).status).toBe(status);
+    },
+  );
+
   it("keeps market symbols in explicit listings instead of generic identifier bindings", () => {
     expect(() =>
       AssetCatalogEntry.create({
@@ -202,11 +221,32 @@ describe("InMemoryAssetCatalogAdapter", () => {
     ).toMatchObject({ outcome: "MATCH", assetId: FIRST_ASSET_ID });
   });
 
+  it("returns a partial match when evidence converges but one supplied identifier is unknown", () => {
+    const catalog = InMemoryAssetCatalogAdapter.create([firstAssetInput()]);
+    const knownIdentifier = ExternalAssetIdentifier.providerId("PROVIDER_A", "itub-preferred");
+    const unknownIdentifier = ExternalAssetIdentifier.providerId("PROVIDER_C", "unknown");
+
+    expect(catalog.resolve([unknownIdentifier, knownIdentifier])).toEqual({
+      outcome: "PARTIAL_MATCH",
+      assetId: FIRST_ASSET_ID,
+      evidence: [
+        {
+          identifier: knownIdentifier.toSnapshot(),
+          candidateAssetIds: [FIRST_ASSET_ID],
+        },
+        {
+          identifier: unknownIdentifier.toSnapshot(),
+          candidateAssetIds: [],
+        },
+      ],
+    });
+  });
+
   it("returns deterministic auditable conflict evidence instead of guessing", () => {
     const catalog = InMemoryAssetCatalogAdapter.create([firstAssetInput(), secondAssetInput()]);
     const resolution = catalog.resolve([
-      ExternalAssetIdentifier.providerId("PROVIDER_A", "example-corp"),
       ExternalAssetIdentifier.providerId("PROVIDER_A", "itub-preferred"),
+      ExternalAssetIdentifier.providerId("PROVIDER_A", "example-corp"),
     ]);
 
     expect(resolution).toEqual({
