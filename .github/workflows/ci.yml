@@ -7,7 +7,7 @@ on:
       - main
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
@@ -40,8 +40,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
-          ref: ${{ github.event.pull_request.head.ref }}
-          persist-credentials: true
+          persist-credentials: false
 
       - name: Setup Node.js
         uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
@@ -54,16 +53,8 @@ jobs:
       - name: Activate pnpm
         run: corepack prepare pnpm@11.24.0 --activate
 
-      - name: Install dependencies and refresh workspace lockfile
-        run: |
-          pnpm install --no-frozen-lockfile
-          if ! git diff --quiet -- pnpm-lock.yaml; then
-            git config user.name "portfolio-copilot-ci"
-            git config user.email "portfolio-copilot-ci@users.noreply.github.com"
-            git add pnpm-lock.yaml
-            git commit -m "chore: update market-data lockfile"
-            git push origin HEAD:${{ github.event.pull_request.head.ref }}
-          fi
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
       - name: Validate local Docker Compose
         run: docker compose config --quiet
