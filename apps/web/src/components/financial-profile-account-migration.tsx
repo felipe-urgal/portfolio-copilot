@@ -114,7 +114,11 @@ export function FinancialProfileAccountMigration({
           Accept: "application/json",
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ snapshot: financialProfile, replace }),
+        body: JSON.stringify({
+          snapshot: financialProfile,
+          replace,
+          ...(replace && accountProfile !== null ? { accountProfile } : {}),
+        }),
       });
       const payload: unknown = await response.json();
 
