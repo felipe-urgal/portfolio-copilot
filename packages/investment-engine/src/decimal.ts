@@ -46,7 +46,10 @@ function pow10(exponent: number): bigint {
   return 10n ** BigInt(exponent);
 }
 
-function alignDecimals(left: ParsedDecimal, right: ParsedDecimal): Readonly<{
+function alignDecimals(
+  left: ParsedDecimal,
+  right: ParsedDecimal,
+): Readonly<{
   leftUnits: bigint;
   rightUnits: bigint;
 }> {

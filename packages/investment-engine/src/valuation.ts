@@ -83,7 +83,9 @@ const VERSION_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$/;
 function normalizeVersion(value: string): string {
   const normalized = value.trim();
   if (!VERSION_PATTERN.test(normalized)) {
-    throw new InvalidValuationInputError(`Invalid valuation model version: ${JSON.stringify(value)}`);
+    throw new InvalidValuationInputError(
+      `Invalid valuation model version: ${JSON.stringify(value)}`,
+    );
   }
 
   return normalized;

@@ -128,9 +128,9 @@ describe("investment methodology", () => {
   });
 
   it("keeps methodology version selection explicit", () => {
-    expect(
-      BASELINE_INVESTMENT_METHODOLOGY_REGISTRY.get("EQUITY_STOCK_GENERAL", "1.0.0"),
-    ).toBe(GENERIC_STOCK_METHODOLOGY);
+    expect(BASELINE_INVESTMENT_METHODOLOGY_REGISTRY.get("EQUITY_STOCK_GENERAL", "1.0.0")).toBe(
+      GENERIC_STOCK_METHODOLOGY,
+    );
     expect(
       BASELINE_INVESTMENT_METHODOLOGY_REGISTRY.get("EQUITY_STOCK_GENERAL", "2.0.0"),
     ).toBeNull();

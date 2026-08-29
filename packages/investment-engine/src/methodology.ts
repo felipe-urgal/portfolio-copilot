@@ -65,7 +65,9 @@ const TOTAL_WEIGHT_BPS = 10_000;
 function normalizeVersion(value: string): string {
   const normalized = value.trim();
   if (!VERSION_PATTERN.test(normalized)) {
-    throw new InvalidInvestmentMethodologyError(`Invalid methodology version: ${JSON.stringify(value)}`);
+    throw new InvalidInvestmentMethodologyError(
+      `Invalid methodology version: ${JSON.stringify(value)}`,
+    );
   }
 
   return normalized;
@@ -97,7 +99,11 @@ function normalizeComponents(
   }
 
   const components = inputs.map((input) => {
-    if (!Number.isSafeInteger(input.weightBps) || input.weightBps <= 0 || input.weightBps > TOTAL_WEIGHT_BPS) {
+    if (
+      !Number.isSafeInteger(input.weightBps) ||
+      input.weightBps <= 0 ||
+      input.weightBps > TOTAL_WEIGHT_BPS
+    ) {
       throw new InvalidInvestmentMethodologyError(
         `Invalid ${kind} weight for ${input.componentId}: ${input.weightBps}`,
       );
@@ -110,7 +116,9 @@ function normalizeComponents(
   });
 
   if (new Set(components.map((component) => component.componentId)).size !== components.length) {
-    throw new InvalidInvestmentMethodologyError(`${kind} methodology contains duplicate components.`);
+    throw new InvalidInvestmentMethodologyError(
+      `${kind} methodology contains duplicate components.`,
+    );
   }
 
   const totalWeight = components.reduce((sum, component) => sum + component.weightBps, 0);
@@ -123,7 +131,9 @@ function normalizeComponents(
   return Object.freeze(components);
 }
 
-export function createInvestmentMethodology(input: InvestmentMethodologyInput): InvestmentMethodology {
+export function createInvestmentMethodology(
+  input: InvestmentMethodologyInput,
+): InvestmentMethodology {
   const dividendApplicability = input.dividendApplicability;
   if (
     dividendApplicability !== "REQUIRED" &&
@@ -149,11 +159,7 @@ export function createInvestmentMethodology(input: InvestmentMethodologyInput): 
     quality: normalizeComponents("QUALITY", input.quality, true),
     opportunity: normalizeComponents("OPPORTUNITY", input.opportunity, true),
     dividendApplicability,
-    dividend: normalizeComponents(
-      "DIVIDEND",
-      dividendInputs,
-      dividendApplicability === "REQUIRED",
-    ),
+    dividend: normalizeComponents("DIVIDEND", dividendInputs, dividendApplicability === "REQUIRED"),
   });
 }
 

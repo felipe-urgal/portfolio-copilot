@@ -108,7 +108,9 @@ function normalizeReasonCodes(componentId: string, values: readonly string[]): r
   return Object.freeze([...new Set(normalized)].sort());
 }
 
-function normalizeInputs(inputs: readonly ScoreComponentInput[]): ReadonlyMap<string, ScoreComponentInput> {
+function normalizeInputs(
+  inputs: readonly ScoreComponentInput[],
+): ReadonlyMap<string, ScoreComponentInput> {
   const normalized = new Map<string, ScoreComponentInput>();
   for (const input of inputs) {
     const componentId = normalizeInvestmentIdentifier("componentId", input.componentId);
