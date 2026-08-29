@@ -131,12 +131,9 @@ describe("AssetCatalogEntry", () => {
     );
   });
 
-  it.each(["ACTIVE", "INACTIVE", "DELISTED"])(
-    "supports the %s lifecycle status",
-    (status) => {
-      expect(AssetCatalogEntry.create({ ...firstAssetInput(), status }).status).toBe(status);
-    },
-  );
+  it.each(["ACTIVE", "INACTIVE", "DELISTED"])("supports the %s lifecycle status", (status) => {
+    expect(AssetCatalogEntry.create({ ...firstAssetInput(), status }).status).toBe(status);
+  });
 
   it("keeps market symbols in explicit listings instead of generic identifier bindings", () => {
     expect(() =>
@@ -301,9 +298,7 @@ describe("InMemoryAssetCatalogAdapter", () => {
   it("returns unmatched without inventing a fuzzy name or ticker match", () => {
     const catalog = InMemoryAssetCatalogAdapter.create([firstAssetInput()]);
 
-    expect(
-      catalog.resolve([ExternalAssetIdentifier.providerId("PROVIDER_A", "unknown")]),
-    ).toEqual({
+    expect(catalog.resolve([ExternalAssetIdentifier.providerId("PROVIDER_A", "unknown")])).toEqual({
       outcome: "UNMATCHED",
       evidence: [
         {
