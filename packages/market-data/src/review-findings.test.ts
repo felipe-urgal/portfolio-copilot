@@ -5,6 +5,7 @@ import {
   fetchWithExplicitFallback,
   InMemoryPriceProvider,
   InvalidMarketDataFallbackPolicyError,
+  InvalidMarketDataSnapshotError,
   missingMarketData,
 } from "./index";
 
@@ -49,5 +50,22 @@ describe("senior review hardening", () => {
         (provider) => provider.load(),
       ),
     ).rejects.toThrowError(InvalidMarketDataFallbackPolicyError);
+  });
+
+  it("rejects credentials embedded in provenance source URLs", () => {
+    expect(() =>
+      createPriceSnapshot({
+        assetId: ASSET_ID,
+        price: "10.1234",
+        currency: "BRL",
+        asOf: "2026-08-29T00:00:00.000Z",
+        retrievedAt: "2026-08-29T12:00:00.000Z",
+        provenance: {
+          provider: "provider_a",
+          sourceUrl: "https://user:secret@example.com/prices",
+          normalizationVersion: "review-v1",
+        },
+      }),
+    ).toThrowError(InvalidMarketDataSnapshotError);
   });
 });
