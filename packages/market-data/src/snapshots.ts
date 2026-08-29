@@ -152,7 +152,11 @@ function normalizeSourceUrl(value: string | null | undefined): string | null {
     throw new InvalidMarketDataSnapshotError("provenance.sourceUrl", value);
   }
 
-  if (parsed.protocol !== "https:" && parsed.protocol !== "http:") {
+  if (
+    (parsed.protocol !== "https:" && parsed.protocol !== "http:") ||
+    parsed.username.length > 0 ||
+    parsed.password.length > 0
+  ) {
     throw new InvalidMarketDataSnapshotError("provenance.sourceUrl", value);
   }
 
