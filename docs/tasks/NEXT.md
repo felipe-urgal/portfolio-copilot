@@ -1,47 +1,49 @@
-# Próxima Atividade — MVP: migração opt-in do perfil financeiro local para a conta
+# Próxima Atividade — Market Data: catálogo canônico de ativos e identidade de instrumentos
 
 **Status:** READY
 
 ## Issue canônica
 
-- #38 — `MVP: migração opt-in do perfil financeiro local para a conta`
+- #39 — `Market Data: catálogo canônico de ativos e identidade de instrumentos`
 
 ## Objetivo
 
-Permitir que um usuário autenticado associe explicitamente à conta um `FinancialProfileSnapshot` previamente salvo no dispositivo, sem upload automático, perda silenciosa ou mistura entre identidade e domínio financeiro.
+Construir o Asset Master canônico que permita identificar corretamente ativos independentemente de ticker ou provedor e sirva de base para preços, fundamentals, valuation e IA.
 
 ## Escopo
 
-- detectar perfil local existente sem enviá-lo ao servidor;
-- explicar a diferença entre dado local e dado da conta;
-- pedir consentimento explícito antes de qualquer migração;
-- comparar snapshots local e server-side quando ambos existirem;
-- apresentar conflito de forma determinística;
-- permitir manter somente local, migrar ou descartar o local explicitamente;
-- revalidar o snapshot pelo domínio antes da persistência;
-- manter remoção do dado local como ação separada;
-- cobrir consentimento, conflitos e idempotência com testes.
+- definir modelo canônico de instrumento/ativo;
+- manter ticker por bolsa/mercado separado do `AssetId`;
+- representar país, moeda, bolsa e identificadores externos quando disponíveis;
+- preservar classe econômica e tipo de instrumento como conceitos separados;
+- suportar aliases e mudanças de ticker;
+- representar status ativo/inativo/delisted quando aplicável;
+- registrar provenance por identificador externo;
+- definir estratégia explícita de matching e deduplicação;
+- criar adapter inicial de catálogo;
+- cobrir identidade, matching e conflitos com testes.
 
 ## Fora de escopo
 
-- sincronização genérica multi-dispositivo;
-- migração automática no login;
+- adapter de preços e séries temporais;
+- fundamentals, valuation ou scoring;
+- recomendação de investimento;
+- execução de ordens;
 - importação de corretora/Open Finance;
-- Market Data, valuation ou IA;
-- alteração das regras financeiras do onboarding.
+- IA assistiva.
 
 ## Critérios de aceite
 
-- autenticar nunca dispara upload/migração do perfil local;
-- nenhuma escolha destrutiva ocorre sem ação explícita;
-- snapshot é revalidado antes de persistir;
-- conflitos são visíveis e determinísticos;
-- logout continua independente da remoção do storage local;
+- ticker nunca é chave de domínio;
+- múltiplos provedores podem apontar para o mesmo ativo canônico;
+- conflitos de identidade são detectáveis e auditáveis;
+- `AssetClass` e `InstrumentType` continuam semanticamente separados;
+- provenance acompanha identificadores externos relevantes;
 - `pnpm check` passa integralmente no head final.
 
 ## Referências canônicas
 
-- issue #38;
-- ADR-0019 — persistência local opt-in;
-- ADR-0020 — autenticação e identidade;
-- ADR-0021 — persistência PostgreSQL com ownership.
+- issue #39;
+- ADR-0006 — identidade de ativos e taxonomias;
+- `docs/ROADMAP.md` — Fase 4 / Market Data;
+- `docs/DATA_STRATEGY.md`.

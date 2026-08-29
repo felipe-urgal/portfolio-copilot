@@ -3,7 +3,7 @@ import {
   type PostgresPersistence,
 } from "@portfolio-copilot/persistence";
 
-import { requireAuthenticatedIdentity } from "@/lib/identity-server";
+import { getAuthenticatedIdentity, requireAuthenticatedIdentity } from "@/lib/identity-server";
 
 declare global {
   var portfolioCopilotPostgres: PostgresPersistence | undefined;
@@ -22,6 +22,13 @@ function databaseUrl(): string {
 function postgresPersistence(): PostgresPersistence {
   globalThis.portfolioCopilotPostgres ??= createPostgresPersistence(databaseUrl());
   return globalThis.portfolioCopilotPostgres;
+}
+
+export async function getOwnedPersistence() {
+  const identity = await getAuthenticatedIdentity();
+  if (identity === null) return null;
+
+  return postgresPersistence().ownedBy(identity.subject);
 }
 
 export async function requireOwnedPersistence() {

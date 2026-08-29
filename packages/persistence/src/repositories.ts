@@ -8,7 +8,7 @@ import {
   type TargetAllocationSnapshot,
   type TransactionSnapshot,
 } from "@portfolio-copilot/domain";
-import { and, asc, eq, sql } from "drizzle-orm";
+import { and, asc, eq, isNull, sql } from "drizzle-orm";
 
 import type { PersistenceDatabase } from "./database";
 import { ImmutableLedgerConflictError, OwnedResourceNotFoundError } from "./errors";
@@ -43,6 +43,29 @@ export class OwnedPersistence {
     public readonly ownerSubject: OwnerSubjectValue,
   ) {}
 
+  public async createFinancialProfileIfAbsent(
+    snapshot: FinancialProfileSnapshot,
+    provenance: PersistenceProvenance = DEFAULT_PROVENANCE,
+  ): Promise<FinancialProfileSnapshot | null> {
+    const canonical = FinancialProfile.fromSnapshot(snapshot).toSnapshot();
+    const inserted = await this.db
+      .insert(financialProfiles)
+      .values({
+        ownerSubject: this.ownerSubject,
+        profileId: canonical.id,
+        referenceCurrency: canonical.referenceCurrency,
+        riskTolerance: canonical.riskTolerance,
+        horizon: canonical.horizon,
+        emergencyReserveTarget: canonical.emergencyReserveTarget,
+        goals: canonical.goals,
+        provenance,
+      })
+      .onConflictDoNothing({ target: financialProfiles.ownerSubject })
+      .returning({ ownerSubject: financialProfiles.ownerSubject });
+
+    return inserted.length === 0 ? null : canonical;
+  }
+
   public async saveFinancialProfile(
     snapshot: FinancialProfileSnapshot,
     provenance: PersistenceProvenance = DEFAULT_PROVENANCE,
@@ -76,6 +99,46 @@ export class OwnedPersistence {
       });
 
     return canonical;
+  }
+
+  public async replaceFinancialProfileIfMatches(
+    expectedSnapshot: FinancialProfileSnapshot,
+    replacementSnapshot: FinancialProfileSnapshot,
+    provenance: PersistenceProvenance = DEFAULT_PROVENANCE,
+  ): Promise<FinancialProfileSnapshot | null> {
+    const expected = FinancialProfile.fromSnapshot(expectedSnapshot).toSnapshot();
+    const replacement = FinancialProfile.fromSnapshot(replacementSnapshot).toSnapshot();
+    const reserveCondition =
+      expected.emergencyReserveTarget === null
+        ? isNull(financialProfiles.emergencyReserveTarget)
+        : eq(financialProfiles.emergencyReserveTarget, expected.emergencyReserveTarget);
+
+    const updated = await this.db
+      .update(financialProfiles)
+      .set({
+        profileId: replacement.id,
+        referenceCurrency: replacement.referenceCurrency,
+        riskTolerance: replacement.riskTolerance,
+        horizon: replacement.horizon,
+        emergencyReserveTarget: replacement.emergencyReserveTarget,
+        goals: replacement.goals,
+        provenance,
+        updatedAt: new Date(),
+      })
+      .where(
+        and(
+          eq(financialProfiles.ownerSubject, this.ownerSubject),
+          eq(financialProfiles.profileId, expected.id),
+          eq(financialProfiles.referenceCurrency, expected.referenceCurrency),
+          eq(financialProfiles.riskTolerance, expected.riskTolerance),
+          eq(financialProfiles.horizon, expected.horizon),
+          reserveCondition,
+          eq(financialProfiles.goals, expected.goals),
+        ),
+      )
+      .returning({ ownerSubject: financialProfiles.ownerSubject });
+
+    return updated.length === 0 ? null : replacement;
   }
 
   public async getFinancialProfile(): Promise<FinancialProfileSnapshot | null> {
