@@ -78,6 +78,21 @@ describeWithDatabase("PostgreSQL owned persistence", () => {
     expect((await bob.getPortfolio(PORTFOLIO.id))?.name).toBe("Carteira do Bob");
   });
 
+  it("creates a financial profile only when the owner does not already have one", async () => {
+    const owner = await openOwnedPersistence(connection.db, "github:alice");
+    const conflictingProfile: FinancialProfileSnapshot = {
+      ...PROFILE,
+      id: "550e8400-e29b-41d4-a716-446655440031",
+      riskTolerance: "HIGH",
+    };
+
+    expect(await owner.createFinancialProfileIfAbsent(PROFILE, "LOCAL_MIGRATION")).toEqual(PROFILE);
+    expect(
+      await owner.createFinancialProfileIfAbsent(conflictingProfile, "LOCAL_MIGRATION"),
+    ).toBeNull();
+    expect(await owner.getFinancialProfile()).toEqual(PROFILE);
+  });
+
   it("keeps ledger writes immutable and idempotent inside one owner scope", async () => {
     const owner = await openOwnedPersistence(connection.db, "github:alice");
     await owner.savePortfolio(PORTFOLIO);
