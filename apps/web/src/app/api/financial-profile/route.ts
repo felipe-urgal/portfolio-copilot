@@ -66,9 +66,17 @@ export async function POST(request: Request) {
   if ("replace" in payload && typeof payload.replace !== "boolean") return invalidRequest();
 
   let localProfile: FinancialProfileSnapshot;
+  let expectedAccountProfile: FinancialProfileSnapshot | null = null;
 
   try {
     localProfile = canonicalFinancialProfileSnapshot(payload.snapshot as FinancialProfileSnapshot);
+
+    if (payload.replace === true) {
+      if (!("accountProfile" in payload) || payload.accountProfile === null) return invalidRequest();
+      expectedAccountProfile = canonicalFinancialProfileSnapshot(
+        payload.accountProfile as FinancialProfileSnapshot,
+      );
+    }
   } catch {
     return invalidRequest();
   }
@@ -111,8 +119,16 @@ export async function POST(request: Request) {
       return conflict(latestAccountProfile);
     }
 
-    const profile = await persistence.saveFinancialProfile(plan.snapshot, "LOCAL_MIGRATION");
-    return NextResponse.json({ outcome: "replace", profile });
+    if (expectedAccountProfile === null) return invalidRequest();
+
+    const replaced = await persistence.replaceFinancialProfileIfMatches(
+      expectedAccountProfile,
+      plan.snapshot,
+      "LOCAL_MIGRATION",
+    );
+    if (replaced !== null) return NextResponse.json({ outcome: "replace", profile: replaced });
+
+    return conflict(await persistence.getFinancialProfile());
   } catch {
     return unavailable();
   }
