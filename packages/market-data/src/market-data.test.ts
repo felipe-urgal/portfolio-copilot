@@ -158,7 +158,11 @@ describe("MarketDataFreshnessPolicy", () => {
   });
 
   it("treats future observations as conflicting instead of current", () => {
-    const policy = MarketDataFreshnessPolicy.create({ PRICE: 60_000, FX: 60_000, MACRO: 60_000 });
+    const policy = MarketDataFreshnessPolicy.create({
+      PRICE: 60_000,
+      FX: 60_000,
+      MACRO: 60_000,
+    });
     const snapshot = priceSnapshot(
       "2026-08-29T12:10:00.000Z",
       "2026-08-29T12:11:00.000Z",
