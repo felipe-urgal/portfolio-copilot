@@ -59,6 +59,12 @@ importers:
 
   packages/domain: {}
 
+  packages/market-data:
+    dependencies:
+      '@portfolio-copilot/domain':
+        specifier: workspace:*
+        version: link:../domain
+
   packages/persistence:
     dependencies:
       '@portfolio-copilot/domain':
