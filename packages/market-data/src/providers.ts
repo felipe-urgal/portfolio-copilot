@@ -1,9 +1,4 @@
-import type {
-  FxSnapshot,
-  MacroSnapshot,
-  MarketDataCategory,
-  PriceSnapshot,
-} from "./snapshots";
+import type { FxSnapshot, MacroSnapshot, MarketDataCategory, PriceSnapshot } from "./snapshots";
 
 export type MarketDataMissingResult = Readonly<{
   status: "MISSING";
@@ -25,9 +20,7 @@ export type MarketDataFoundResult<T> = Readonly<{
 }>;
 
 export type MarketDataProviderResult<T> =
-  | MarketDataFoundResult<T>
-  | MarketDataMissingResult
-  | MarketDataProviderErrorResult;
+  MarketDataFoundResult<T> | MarketDataMissingResult | MarketDataProviderErrorResult;
 
 export interface PriceProvider {
   readonly name: string;
@@ -36,7 +29,10 @@ export interface PriceProvider {
 
 export interface FxProvider {
   readonly name: string;
-  fetchFx(baseCurrency: string, quoteCurrency: string): Promise<MarketDataProviderResult<FxSnapshot>>;
+  fetchFx(
+    baseCurrency: string,
+    quoteCurrency: string,
+  ): Promise<MarketDataProviderResult<FxSnapshot>>;
 }
 
 export interface MacroProvider {
@@ -89,7 +85,9 @@ export class InvalidMarketDataFallbackPolicyError extends Error {
 function normalizeProviderName(value: string): string {
   const normalized = value.trim().toUpperCase();
   if (!/^[A-Z0-9][A-Z0-9._-]{0,63}$/.test(normalized)) {
-    throw new InvalidMarketDataFallbackPolicyError(`Invalid provider name: ${JSON.stringify(value)}`);
+    throw new InvalidMarketDataFallbackPolicyError(
+      `Invalid provider name: ${JSON.stringify(value)}`,
+    );
   }
 
   return normalized;
@@ -97,12 +95,16 @@ function normalizeProviderName(value: string): string {
 
 function normalizePolicy(policy: MarketDataFallbackPolicy): MarketDataFallbackPolicy {
   if (policy.orderedProviders.length === 0) {
-    throw new InvalidMarketDataFallbackPolicyError("Fallback policy requires at least one provider.");
+    throw new InvalidMarketDataFallbackPolicyError(
+      "Fallback policy requires at least one provider.",
+    );
   }
 
   const orderedProviders = policy.orderedProviders.map(normalizeProviderName);
   if (new Set(orderedProviders).size !== orderedProviders.length) {
-    throw new InvalidMarketDataFallbackPolicyError("Fallback provider order cannot contain duplicates.");
+    throw new InvalidMarketDataFallbackPolicyError(
+      "Fallback provider order cannot contain duplicates.",
+    );
   }
 
   const fallbackOn = [...new Set(policy.fallbackOn)].sort();
@@ -133,7 +135,8 @@ function recordTelemetry(
 
 export function missingMarketData(provider: string, reason: string): MarketDataMissingResult {
   const normalizedReason = reason.trim();
-  if (normalizedReason.length === 0) throw new TypeError("Missing market data reason cannot be empty.");
+  if (normalizedReason.length === 0)
+    throw new TypeError("Missing market data reason cannot be empty.");
 
   return Object.freeze({
     status: "MISSING",
@@ -174,7 +177,9 @@ export async function fetchWithExplicitFallback<TProvider extends { readonly nam
   const providerEntries = providers.map(
     (provider) => [normalizeProviderName(provider.name), provider] as const,
   );
-  if (new Set(providerEntries.map(([providerName]) => providerName)).size !== providerEntries.length) {
+  if (
+    new Set(providerEntries.map(([providerName]) => providerName)).size !== providerEntries.length
+  ) {
     throw new InvalidMarketDataFallbackPolicyError(
       "Available providers cannot contain duplicate normalized names.",
     );

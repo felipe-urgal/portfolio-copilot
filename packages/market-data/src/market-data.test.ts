@@ -151,10 +151,7 @@ describe("MarketDataFreshnessPolicy", () => {
       qualityFlags: ["CONFLICT"],
     });
 
-    expect(policy.flagsFor(snapshot, "2026-08-29T12:05:01.000Z")).toEqual([
-      "CONFLICT",
-      "STALE",
-    ]);
+    expect(policy.flagsFor(snapshot, "2026-08-29T12:05:01.000Z")).toEqual(["CONFLICT", "STALE"]);
   });
 
   it("treats future observations as conflicting instead of current", () => {

@@ -100,7 +100,11 @@ describe("BCB SGS MacroProvider contract", () => {
   });
 
   it("degrades malformed or unavailable upstream responses explicitly", async () => {
-    const malformed = new BcbSgsMacroProvider(undefined, jsonClient({ unexpected: true }), () => RETRIEVED_AT);
+    const malformed = new BcbSgsMacroProvider(
+      undefined,
+      jsonClient({ unexpected: true }),
+      () => RETRIEVED_AT,
+    );
     await expect(malformed.fetchMacro("BCB:SELIC_TARGET")).resolves.toEqual({
       status: "PROVIDER_ERROR",
       provider: "BCB_SGS",

@@ -188,12 +188,18 @@ export class BcbSgsMacroProvider implements MacroProvider {
     const normalizedIndicatorId = normalizeIndicatorId(indicatorId);
     const definition = this.definitions.get(normalizedIndicatorId);
     if (definition === undefined) {
-      return missingMarketData(this.name, `Unsupported BCB SGS indicator ${normalizedIndicatorId}.`);
+      return missingMarketData(
+        this.name,
+        `Unsupported BCB SGS indicator ${normalizedIndicatorId}.`,
+      );
     }
 
     const result = await fetchObservation(definition.seriesCode, this.client);
     if (result.status === "MISSING") {
-      return missingMarketData(this.name, `BCB SGS series ${definition.seriesCode} returned no observation.`);
+      return missingMarketData(
+        this.name,
+        `BCB SGS series ${definition.seriesCode} returned no observation.`,
+      );
     }
     if (result.status === "PROVIDER_ERROR") return providerError(this.name, result.errorCode);
 
@@ -233,7 +239,8 @@ export class BcbSgsFxProvider implements FxProvider {
     const entries = definitions.map((definition) => {
       const baseCurrency = CurrencyCode.from(definition.baseCurrency).code;
       const quoteCurrency = CurrencyCode.from(definition.quoteCurrency).code;
-      if (baseCurrency === quoteCurrency) throw new TypeError("BCB SGS FX pair currencies must differ.");
+      if (baseCurrency === quoteCurrency)
+        throw new TypeError("BCB SGS FX pair currencies must differ.");
       const key = `${baseCurrency}/${quoteCurrency}`;
       return [
         key,
@@ -264,7 +271,10 @@ export class BcbSgsFxProvider implements FxProvider {
 
     const result = await fetchObservation(definition.seriesCode, this.client);
     if (result.status === "MISSING") {
-      return missingMarketData(this.name, `BCB SGS series ${definition.seriesCode} returned no observation.`);
+      return missingMarketData(
+        this.name,
+        `BCB SGS series ${definition.seriesCode} returned no observation.`,
+      );
     }
     if (result.status === "PROVIDER_ERROR") return providerError(this.name, result.errorCode);
 

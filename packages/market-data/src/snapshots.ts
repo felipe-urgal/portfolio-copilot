@@ -245,7 +245,10 @@ function normalizeUnit(value: string): string {
   return normalized;
 }
 
-function normalizeTimes(asOfInput: string, retrievedAtInput: string): Readonly<{
+function normalizeTimes(
+  asOfInput: string,
+  retrievedAtInput: string,
+): Readonly<{
   asOf: string;
   retrievedAt: string;
 }> {
@@ -277,13 +280,18 @@ export function createPriceSnapshot(input: PriceSnapshotInput): PriceSnapshot {
 
 export function createFxSnapshot(input: FxSnapshotInput): FxSnapshot {
   const baseCurrency =
-    typeof input.baseCurrency === "string" ? CurrencyCode.from(input.baseCurrency) : input.baseCurrency;
+    typeof input.baseCurrency === "string"
+      ? CurrencyCode.from(input.baseCurrency)
+      : input.baseCurrency;
   const quoteCurrency =
     typeof input.quoteCurrency === "string"
       ? CurrencyCode.from(input.quoteCurrency)
       : input.quoteCurrency;
   if (baseCurrency.equals(quoteCurrency)) {
-    throw new InvalidMarketDataSnapshotError("currencyPair", [baseCurrency.code, quoteCurrency.code]);
+    throw new InvalidMarketDataSnapshotError("currencyPair", [
+      baseCurrency.code,
+      quoteCurrency.code,
+    ]);
   }
   const times = normalizeTimes(input.asOf, input.retrievedAt);
 
