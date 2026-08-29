@@ -29,10 +29,7 @@ export class InvalidAssetCatalogCountryError extends AssetCatalogError {
 
 export class InvalidAssetCatalogStatusError extends AssetCatalogError {
   public constructor(value: string) {
-    super(
-      "INVALID_ASSET_CATALOG_STATUS",
-      `Invalid asset catalog status: ${JSON.stringify(value)}`,
-    );
+    super("INVALID_ASSET_CATALOG_STATUS", `Invalid asset catalog status: ${JSON.stringify(value)}`);
   }
 }
 
