@@ -19,6 +19,17 @@ function invalidRequest() {
   );
 }
 
+function conflict(accountProfile: FinancialProfileSnapshot | null) {
+  return NextResponse.json(
+    {
+      code: "financial_profile_conflict",
+      error: "O perfil local é diferente do perfil salvo na conta.",
+      accountProfile,
+    },
+    { status: 409 },
+  );
+}
+
 function unavailable() {
   return NextResponse.json(
     { code: "persistence_unavailable", error: "Persistência da conta indisponível." },
@@ -78,23 +89,30 @@ export async function POST(request: Request) {
       payload.replace === true,
     );
 
-    if (plan.outcome === "conflict") {
-      return NextResponse.json(
-        {
-          code: "financial_profile_conflict",
-          error: "O perfil local é diferente do perfil salvo na conta.",
-          accountProfile,
-        },
-        { status: 409 },
-      );
-    }
+    if (plan.outcome === "conflict") return conflict(accountProfile);
 
     if (plan.outcome === "unchanged") {
       return NextResponse.json({ outcome: "unchanged", profile: accountProfile });
     }
 
+    if (plan.outcome === "create") {
+      const created = await persistence.createFinancialProfileIfAbsent(
+        plan.snapshot,
+        "LOCAL_MIGRATION",
+      );
+      if (created !== null) return NextResponse.json({ outcome: "create", profile: created });
+
+      const latestAccountProfile = await persistence.getFinancialProfile();
+      const latestPlan = planFinancialProfileMigration(localProfile, latestAccountProfile);
+      if (latestPlan.outcome === "unchanged") {
+        return NextResponse.json({ outcome: "unchanged", profile: latestAccountProfile });
+      }
+
+      return conflict(latestAccountProfile);
+    }
+
     const profile = await persistence.saveFinancialProfile(plan.snapshot, "LOCAL_MIGRATION");
-    return NextResponse.json({ outcome: plan.outcome, profile });
+    return NextResponse.json({ outcome: "replace", profile });
   } catch {
     return unavailable();
   }
