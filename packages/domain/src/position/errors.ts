@@ -1,4 +1,5 @@
-export type PositionDomainErrorCode = "INSUFFICIENT_ASSET_POSITION";
+export type PositionDomainErrorCode =
+  "INSUFFICIENT_ASSET_POSITION" | "DUPLICATE_TRANSACTION_IN_POSITION_PROJECTION";
 
 export class PositionDomainError extends Error {
   public constructor(
@@ -21,6 +22,18 @@ export class InsufficientAssetPositionError extends PositionDomainError {
     super(
       "INSUFFICIENT_ASSET_POSITION",
       `Transaction ${transactionId} cannot sell ${requestedQuantity} of asset ${assetId} in portfolio ${portfolioId}; available position is ${availableQuantity}`,
+    );
+  }
+}
+
+export class DuplicateTransactionInPositionProjectionError extends PositionDomainError {
+  public constructor(
+    public readonly portfolioId: string,
+    public readonly transactionId: string,
+  ) {
+    super(
+      "DUPLICATE_TRANSACTION_IN_POSITION_PROJECTION",
+      `Transaction ${transactionId} appears more than once while projecting portfolio ${portfolioId}`,
     );
   }
 }

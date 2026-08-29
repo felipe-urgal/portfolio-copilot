@@ -199,7 +199,12 @@ export async function fetchWithExplicitFallback<TProvider extends { readonly nam
     }
 
     const startedAt = now();
-    const result = await fetcher(provider);
+    let result: MarketDataProviderResult<T>;
+    try {
+      result = await fetcher(provider);
+    } catch {
+      result = providerError(providerName, "UNHANDLED_PROVIDER_EXCEPTION");
+    }
     const finishedAt = now();
     const resultProvider = normalizeProviderName(result.provider);
     if (resultProvider !== providerName) {

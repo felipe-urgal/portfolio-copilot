@@ -111,8 +111,10 @@ type NormalizedExecutionDestination = Readonly<{
   minimumTradableQuantity: AssetQuantity;
 }>;
 
+const METHODOLOGY_VERSION_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._\/-]{0,63}$/;
+
 function validateMethodologyVersion(value: string): string {
-  if (typeof value !== "string" || value.length === 0 || value.trim() !== value) {
+  if (typeof value !== "string" || !METHODOLOGY_VERSION_PATTERN.test(value)) {
     throw new InvalidContributionMethodologyVersionError(String(value));
   }
 

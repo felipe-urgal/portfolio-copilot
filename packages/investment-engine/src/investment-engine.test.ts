@@ -72,6 +72,7 @@ function valuation(price = "80", fairValue = "100", assetId = ASSET_ID) {
     evaluationAsOf: EVALUATION_AS_OF,
     currentPrice,
     fairValue: {
+      assetId,
       value: fairValue,
       currency: "BRL",
       evidence: evidenceInput("FAIR_VALUE_INPUT", {
@@ -199,6 +200,7 @@ describe("valuation snapshots", () => {
       currentPrice,
       currentPriceQualityFlags: ["STALE"],
       fairValue: {
+        assetId: ASSET_ID,
         value: "100",
         currency: "BRL",
         evidence: evidenceInput("FAIR_VALUE"),
@@ -226,6 +228,7 @@ describe("valuation snapshots", () => {
       evaluationAsOf: EVALUATION_AS_OF,
       currentPrice,
       fairValue: {
+        assetId: ASSET_ID,
         value: "100",
         currency: "USD",
         evidence: evidenceInput("FAIR_VALUE_LOOKAHEAD", {
@@ -327,6 +330,7 @@ describe("deterministic scores", () => {
       currentPrice,
       currentPriceQualityFlags: ["STALE"],
       fairValue: {
+        assetId: ASSET_ID,
         value: "100",
         currency: "BRL",
         evidence: evidenceInput("FAIR_VALUE"),

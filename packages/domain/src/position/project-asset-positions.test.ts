@@ -2,7 +2,11 @@ import { describe, expect, it } from "vitest";
 
 import { Money } from "../financial";
 import { Transaction } from "../transaction";
-import { InsufficientAssetPositionError, projectAssetPositions } from "./index";
+import {
+  DuplicateTransactionInPositionProjectionError,
+  InsufficientAssetPositionError,
+  projectAssetPositions,
+} from "./index";
 
 const PORTFOLIO_ID = "550e8400-e29b-41d4-a716-446655440010";
 const SECOND_PORTFOLIO_ID = "550e8400-e29b-41d4-a716-446655440011";
@@ -74,6 +78,14 @@ describe("projectAssetPositions", () => {
     ]);
 
     expect(snapshot(result)).toEqual([{ assetId: ASSET_ID, quantity: "0.300000000001" }]);
+  });
+
+  it("rejects duplicate transaction identities instead of double-applying ledger facts", () => {
+    const transaction = createTrade({ id: transactionId(20), quantity: "2" });
+
+    expect(() => projectAssetPositions(PORTFOLIO_ID, [transaction, transaction])).toThrowError(
+      DuplicateTransactionInPositionProjectionError,
+    );
   });
 
   it("subtracts a partial sell from the current position", () => {

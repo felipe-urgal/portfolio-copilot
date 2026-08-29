@@ -29,12 +29,21 @@ export class InMemoryMarketDataCache<T> {
 
   public constructor(private readonly now: () => number = Date.now) {}
 
+  private currentTime(): number {
+    const value = this.now();
+    if (!Number.isSafeInteger(value)) {
+      throw new TypeError("Market data cache clock must return a safe integer timestamp.");
+    }
+
+    return value;
+  }
+
   public get(key: string): T | null {
     const normalizedKey = normalizeCacheKey(key);
     const entry = this.entries.get(normalizedKey);
     if (entry === undefined) return null;
 
-    if (entry.expiresAtMs <= this.now()) {
+    if (entry.expiresAtMs <= this.currentTime()) {
       this.entries.delete(normalizedKey);
       return null;
     }
@@ -44,10 +53,10 @@ export class InMemoryMarketDataCache<T> {
 
   public set(key: string, value: T, ttlMs: number): void {
     const normalizedKey = normalizeCacheKey(key);
-    const currentTime = this.now();
+    const currentTime = this.currentTime();
     const expiresAtMs = currentTime + validateTtlMs(ttlMs);
-    if (!Number.isSafeInteger(currentTime) || !Number.isSafeInteger(expiresAtMs)) {
-      throw new TypeError("Market data cache clock must return a safe integer timestamp.");
+    if (!Number.isSafeInteger(expiresAtMs)) {
+      throw new TypeError("Market data cache expiration must be a safe integer timestamp.");
     }
 
     this.entries.set(normalizedKey, Object.freeze({ value, expiresAtMs }));

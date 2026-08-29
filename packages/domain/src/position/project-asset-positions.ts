@@ -3,7 +3,10 @@ import type { AssetId } from "../asset";
 import { PortfolioId } from "../portfolio";
 import type { Transaction } from "../transaction";
 import type { AssetPosition } from "./asset-position";
-import { InsufficientAssetPositionError } from "./errors";
+import {
+  DuplicateTransactionInPositionProjectionError,
+  InsufficientAssetPositionError,
+} from "./errors";
 
 function toPortfolioId(value: PortfolioId | string): PortfolioId {
   return typeof value === "string" ? PortfolioId.from(value) : value;
@@ -40,9 +43,19 @@ export function projectAssetPositions(
       );
       return timestampOrder === 0 ? left.inputIndex - right.inputIndex : timestampOrder;
     });
+  const seenTransactionIds = new Set<string>();
   const positions = new Map<string, AssetPosition>();
 
   for (const { transaction } of orderedTransactions) {
+    const transactionId = transaction.id.toString();
+    if (seenTransactionIds.has(transactionId)) {
+      throw new DuplicateTransactionInPositionProjectionError(
+        targetPortfolioId.toString(),
+        transactionId,
+      );
+    }
+    seenTransactionIds.add(transactionId);
+
     if (!isAssetTrade(transaction)) continue;
 
     const assetKey = transaction.assetId.toString();
@@ -64,7 +77,7 @@ export function projectAssetPositions(
       throw new InsufficientAssetPositionError(
         targetPortfolioId.toString(),
         assetKey,
-        transaction.id.toString(),
+        transactionId,
         currentQuantity.toDecimalString(),
         transaction.quantity.toDecimalString(),
       );

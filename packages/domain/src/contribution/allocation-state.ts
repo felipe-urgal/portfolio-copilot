@@ -101,6 +101,14 @@ export function apportionMinorUnitsByAssetClass(
     throw new RangeError("Cannot apportion negative weight units");
   }
 
+  const seenAssetClasses = new Set<AssetClassCode>();
+  for (const bucket of weights) {
+    if (seenAssetClasses.has(bucket.assetClass.code)) {
+      throw new RangeError(`Cannot apportion duplicate asset class ${bucket.assetClass.code}`);
+    }
+    seenAssetClasses.add(bucket.assetClass.code);
+  }
+
   const positiveWeights = weights.filter((bucket) => bucket.weightUnits > 0n);
 
   if (totalMinorUnits === 0n || positiveWeights.length === 0) {
