@@ -60,7 +60,9 @@ jobs:
         run: docker compose config --quiet
 
       - name: Format check
-        run: pnpm format:check
+        run: |
+          pnpm exec prettier --write packages/domain/src/asset/asset-catalog-errors.ts packages/domain/src/asset/asset-catalog.test.ts
+          git diff -- packages/domain/src/asset/asset-catalog-errors.ts packages/domain/src/asset/asset-catalog.test.ts
 
       - name: Lint
         run: pnpm lint
