@@ -171,9 +171,16 @@ export async function fetchWithExplicitFallback<TProvider extends { readonly nam
   options?: MarketDataFallbackOptions,
 ): Promise<MarketDataFallbackResult<T>> {
   const policy = normalizePolicy(policyInput);
-  const providersByName = new Map(
-    providers.map((provider) => [normalizeProviderName(provider.name), provider] as const),
+  const providerEntries = providers.map(
+    (provider) => [normalizeProviderName(provider.name), provider] as const,
   );
+  if (new Set(providerEntries.map(([providerName]) => providerName)).size !== providerEntries.length) {
+    throw new InvalidMarketDataFallbackPolicyError(
+      "Available providers cannot contain duplicate normalized names.",
+    );
+  }
+
+  const providersByName = new Map(providerEntries);
   const attempts: MarketDataProviderAttempt[] = [];
   const now = options?.now ?? Date.now;
   let lastResult: MarketDataProviderResult<T> | null = null;
