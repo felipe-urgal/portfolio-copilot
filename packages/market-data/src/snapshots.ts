@@ -1,4 +1,4 @@
-import { AssetId, CurrencyCode, Money, type MoneySnapshot } from "@portfolio-copilot/domain";
+import { AssetId, CurrencyCode } from "@portfolio-copilot/domain";
 
 export type MarketDataCategory = "PRICE" | "FX" | "MACRO";
 export type MarketDataQualityFlag = "STALE" | "CONFLICT";
@@ -22,7 +22,8 @@ export type MarketDataProvenance = Readonly<{
 export type PriceSnapshot = Readonly<{
   category: "PRICE";
   assetId: string;
-  price: MoneySnapshot;
+  price: string;
+  currency: string;
   asOf: string;
   retrievedAt: string;
   provenance: MarketDataProvenance;
@@ -55,7 +56,8 @@ export type MaterialMarketDataSnapshot = PriceSnapshot | FxSnapshot | MacroSnaps
 
 export type PriceSnapshotInput = Readonly<{
   assetId: AssetId | string;
-  price: Money | MoneySnapshot;
+  price: string;
+  currency: CurrencyCode | string;
   asOf: string;
   retrievedAt: string;
   provenance: MarketDataProvenanceInput;
@@ -98,6 +100,8 @@ const NORMALIZATION_VERSION_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$/;
 const IDENTIFIER_PATTERN = /^[A-Z0-9][A-Z0-9._:-]{0,127}$/;
 const CONTROL_CHARACTER_PATTERN = /[\u0000-\u001f\u007f]/;
 const MAX_TEXT_LENGTH = 512;
+const MAX_DECIMAL_LENGTH = 128;
+const MAX_DECIMAL_SCALE = 18;
 
 function normalizeInstant(field: string, value: string): string {
   const normalized = value.trim();
@@ -200,13 +204,21 @@ function normalizePositiveDecimal(field: string, value: string): string {
 
 function normalizeDecimal(field: string, value: string): string {
   const trimmed = value.trim();
-  if (!/^-?\d+(?:\.\d+)?$/.test(trimmed)) {
+  if (
+    trimmed.length === 0 ||
+    trimmed.length > MAX_DECIMAL_LENGTH ||
+    !/^-?\d+(?:\.\d+)?$/.test(trimmed)
+  ) {
     throw new InvalidMarketDataSnapshotError(field, value);
   }
 
   const negative = trimmed.startsWith("-");
   const unsigned = negative ? trimmed.slice(1) : trimmed;
   const [integerPart = "0", fractionalPart = ""] = unsigned.split(".");
+  if (fractionalPart.length > MAX_DECIMAL_SCALE) {
+    throw new InvalidMarketDataSnapshotError(field, value);
+  }
+
   const integer = integerPart.replace(/^0+(?=\d)/, "");
   const fraction = fractionalPart.replace(/0+$/, "");
   const magnitude = fraction.length > 0 ? `${integer}.${fraction}` : integer;
@@ -248,16 +260,15 @@ function normalizeTimes(asOfInput: string, retrievedAtInput: string): Readonly<{
 
 export function createPriceSnapshot(input: PriceSnapshotInput): PriceSnapshot {
   const assetId = typeof input.assetId === "string" ? AssetId.from(input.assetId) : input.assetId;
-  const price = input.price instanceof Money ? input.price : Money.fromSnapshot(input.price);
-  if (price.minorUnits <= 0n) {
-    throw new InvalidMarketDataSnapshotError("price", price.toSnapshot());
-  }
+  const currency =
+    typeof input.currency === "string" ? CurrencyCode.from(input.currency) : input.currency;
   const times = normalizeTimes(input.asOf, input.retrievedAt);
 
   return Object.freeze({
     category: "PRICE",
     assetId: assetId.toString(),
-    price: price.toSnapshot(),
+    price: normalizePositiveDecimal("price", input.price),
+    currency: currency.code,
     ...times,
     provenance: normalizeProvenance(input.provenance),
     qualityFlags: normalizeQualityFlags(input.qualityFlags),
