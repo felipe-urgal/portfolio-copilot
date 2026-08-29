@@ -60,10 +60,7 @@ jobs:
         run: docker compose config --quiet
 
       - name: Format check
-        run: |
-          pnpm format
-          git diff -- apps/web/src/components/financial-profile-account-migration.tsx apps/web/src/lib/financial-profile-account-migration.ts apps/web/src/lib/persistence-server.ts
-          git diff --exit-code
+        run: pnpm format:check
 
       - name: Lint
         run: pnpm lint
