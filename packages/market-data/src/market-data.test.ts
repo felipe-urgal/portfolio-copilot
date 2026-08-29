@@ -1,4 +1,3 @@
-import { Money } from "@portfolio-copilot/domain";
 import { describe, expect, it } from "vitest";
 
 import {
@@ -28,7 +27,8 @@ const PROVENANCE = {
 function priceSnapshot(asOf = "2026-08-29T12:00:00.000Z") {
   return createPriceSnapshot({
     assetId: ASSET_ID,
-    price: Money.fromDecimal("42.50", "BRL"),
+    price: "42.501234",
+    currency: "BRL",
     asOf,
     retrievedAt: "2026-08-29T12:05:00.000Z",
     provenance: PROVENANCE,
@@ -36,13 +36,14 @@ function priceSnapshot(asOf = "2026-08-29T12:00:00.000Z") {
 }
 
 describe("material market data snapshots", () => {
-  it("normalizes price identity and provenance while preserving exact money", () => {
+  it("normalizes price identity and provenance while preserving exact decimal precision", () => {
     const snapshot = priceSnapshot();
 
     expect(snapshot).toEqual({
       category: "PRICE",
       assetId: ASSET_ID,
-      price: { currency: "BRL", minorUnits: "4250" },
+      price: "42.501234",
+      currency: "BRL",
       asOf: "2026-08-29T12:00:00.000Z",
       retrievedAt: "2026-08-29T12:05:00.000Z",
       provenance: {
@@ -60,9 +61,34 @@ describe("material market data snapshots", () => {
     expect(() =>
       createPriceSnapshot({
         assetId: ASSET_ID,
-        price: Money.fromDecimal("42.50", "BRL"),
+        price: "42.50",
+        currency: "BRL",
         asOf: "2026-08-29T12:05:00.000Z",
         retrievedAt: "2026-08-29T12:00:00.000Z",
+        provenance: PROVENANCE,
+      }),
+    ).toThrowError(InvalidMarketDataSnapshotError);
+  });
+
+  it("rejects non-positive prices and excessive decimal scale", () => {
+    expect(() =>
+      createPriceSnapshot({
+        assetId: ASSET_ID,
+        price: "0",
+        currency: "BRL",
+        asOf: "2026-08-29T12:00:00.000Z",
+        retrievedAt: "2026-08-29T12:00:01.000Z",
+        provenance: PROVENANCE,
+      }),
+    ).toThrowError(InvalidMarketDataSnapshotError);
+
+    expect(() =>
+      createPriceSnapshot({
+        assetId: ASSET_ID,
+        price: "1.1234567890123456789",
+        currency: "BRL",
+        asOf: "2026-08-29T12:00:00.000Z",
+        retrievedAt: "2026-08-29T12:00:01.000Z",
         provenance: PROVENANCE,
       }),
     ).toThrowError(InvalidMarketDataSnapshotError);
@@ -116,8 +142,11 @@ describe("MarketDataFreshnessPolicy", () => {
   it("preserves provider conflict while adding stale quality", () => {
     const policy = MarketDataFreshnessPolicy.create({ PRICE: 1, FX: 1, MACRO: 1 });
     const snapshot = createPriceSnapshot({
-      ...priceSnapshot(),
-      price: Money.fromDecimal("42.50", "BRL"),
+      assetId: ASSET_ID,
+      price: "42.50",
+      currency: "BRL",
+      asOf: "2026-08-29T12:00:00.000Z",
+      retrievedAt: "2026-08-29T12:05:00.000Z",
       provenance: PROVENANCE,
       qualityFlags: ["CONFLICT"],
     });
@@ -127,6 +156,14 @@ describe("MarketDataFreshnessPolicy", () => {
       "STALE",
     ]);
   });
+
+  it("treats future observations as conflicting instead of current", () => {
+    const policy = MarketDataFreshnessPolicy.create({ PRICE: 60_000, FX: 60_000, MACRO: 60_000 });
+    const snapshot = priceSnapshot("2026-08-29T12:10:00.000Z");
+
+    expect(policy.evaluate(snapshot, "2026-08-29T12:09:00.000Z").status).toBe("FUTURE");
+    expect(policy.flagsFor(snapshot, "2026-08-29T12:09:00.000Z")).toEqual(["CONFLICT"]);
+  });
 });
 
 describe("InMemoryMarketDataCache", () => {
@@ -134,15 +171,15 @@ describe("InMemoryMarketDataCache", () => {
     let now = 1_000;
     const cache = new InMemoryMarketDataCache<string>(() => now);
 
-    cache.set("price:1", "first", 100);
+    cache.set(" price:1 ", "first", 100);
     expect(cache.get("price:1")).toBe("first");
 
-    expect(cache.invalidate("price:1")).toBe(true);
+    expect(cache.invalidate(" price:1 ")).toBe(true);
     expect(cache.get("price:1")).toBeNull();
 
     cache.set("price:1", "second", 100);
     now = 1_100;
-    expect(cache.get("price:1")).toBeNull();
+    expect(cache.get(" price:1 ")).toBeNull();
     expect(cache.size()).toBe(0);
   });
 });
