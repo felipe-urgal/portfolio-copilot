@@ -24,13 +24,16 @@ const PROVENANCE = {
   normalizationVersion: "market-data-v1",
 } as const;
 
-function priceSnapshot(asOf = "2026-08-29T12:00:00.000Z") {
+function priceSnapshot(
+  asOf = "2026-08-29T12:00:00.000Z",
+  retrievedAt = "2026-08-29T12:05:00.000Z",
+) {
   return createPriceSnapshot({
     assetId: ASSET_ID,
     price: "42.501234",
     currency: "BRL",
     asOf,
-    retrievedAt: "2026-08-29T12:05:00.000Z",
+    retrievedAt,
     provenance: PROVENANCE,
   });
 }
@@ -156,7 +159,10 @@ describe("MarketDataFreshnessPolicy", () => {
 
   it("treats future observations as conflicting instead of current", () => {
     const policy = MarketDataFreshnessPolicy.create({ PRICE: 60_000, FX: 60_000, MACRO: 60_000 });
-    const snapshot = priceSnapshot("2026-08-29T12:10:00.000Z");
+    const snapshot = priceSnapshot(
+      "2026-08-29T12:10:00.000Z",
+      "2026-08-29T12:11:00.000Z",
+    );
 
     expect(policy.evaluate(snapshot, "2026-08-29T12:09:00.000Z").status).toBe("FUTURE");
     expect(policy.flagsFor(snapshot, "2026-08-29T12:09:00.000Z")).toEqual(["CONFLICT"]);
