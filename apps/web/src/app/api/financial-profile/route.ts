@@ -72,7 +72,9 @@ export async function POST(request: Request) {
     localProfile = canonicalFinancialProfileSnapshot(payload.snapshot as FinancialProfileSnapshot);
 
     if (payload.replace === true) {
-      if (!("accountProfile" in payload) || payload.accountProfile === null) return invalidRequest();
+      if (!("accountProfile" in payload) || payload.accountProfile === null) {
+        return invalidRequest();
+      }
       expectedAccountProfile = canonicalFinancialProfileSnapshot(
         payload.accountProfile as FinancialProfileSnapshot,
       );
