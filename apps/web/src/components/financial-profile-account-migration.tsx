@@ -122,9 +122,7 @@ export function FinancialProfileAccountMigration({
         const latestAccountProfile =
           payload.accountProfile === null
             ? null
-            : canonicalFinancialProfileSnapshot(
-                payload.accountProfile as FinancialProfileSnapshot,
-              );
+            : canonicalFinancialProfileSnapshot(payload.accountProfile as FinancialProfileSnapshot);
         setAccountState({ status: "ready", profile: latestAccountProfile });
         setStatusMessage(
           "O perfil da conta mudou. Revise o conflito atualizado antes de substituir qualquer dado.",
