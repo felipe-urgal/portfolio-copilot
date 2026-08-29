@@ -1,4 +1,16 @@
 export {
+  BCB_SGS_BASE_URL,
+  BCB_SGS_PROVIDER_NAME,
+  BCB_SGS_SELIC_TARGET,
+  BCB_SGS_USD_BRL_SALE,
+  BcbSgsFxProvider,
+  BcbSgsMacroProvider,
+  type BcbSgsFxSeriesDefinition,
+  type BcbSgsMacroSeriesDefinition,
+  type MarketDataHttpClient,
+  type MarketDataHttpResponse,
+} from "./bcb-sgs-provider";
+export {
   InMemoryMarketDataCache,
   InvalidMarketDataCacheTtlError,
   type MarketDataCacheEntry,
@@ -9,6 +21,7 @@ export {
   type MarketDataFreshness,
   type MarketDataFreshnessConfig,
 } from "./freshness";
+export { InMemoryPriceProvider } from "./in-memory-price-provider";
 export {
   fetchWithExplicitFallback,
   foundMarketData,
@@ -17,14 +30,17 @@ export {
   providerError,
   type FxProvider,
   type MacroProvider,
+  type MarketDataFallbackOptions,
   type MarketDataFallbackPolicy,
   type MarketDataFallbackResult,
   type MarketDataFallbackTrigger,
   type MarketDataFoundResult,
   type MarketDataMissingResult,
+  type MarketDataObserver,
   type MarketDataProviderAttempt,
   type MarketDataProviderErrorResult,
   type MarketDataProviderResult,
+  type MarketDataTelemetryEvent,
   type PriceProvider,
 } from "./providers";
 export {
