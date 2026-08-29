@@ -1,10 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import {
-  fetchWithExplicitFallback,
-  foundMarketData,
-  InMemoryMarketDataCache,
-} from "./index";
+import { fetchWithExplicitFallback, foundMarketData, InMemoryMarketDataCache } from "./index";
 
 describe("Market Data hardening", () => {
   it("rejects an invalid cache clock during reads instead of returning stale data indefinitely", () => {
