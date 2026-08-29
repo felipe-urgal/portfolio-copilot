@@ -1,3 +1,5 @@
+import { AssetId } from "@portfolio-copilot/domain";
+
 import type {
   InvestmentMethodology,
   InvestmentScoreKind,
@@ -19,7 +21,8 @@ export type InvestmentScoreInsufficientReason =
   | "CONFLICTING_EVIDENCE"
   | "LOOKAHEAD_EVIDENCE"
   | "MISSING_VALUATION"
-  | "INVALID_VALUATION";
+  | "INVALID_VALUATION"
+  | "VALUATION_ASSET_MISMATCH";
 
 export type ScoreComponentInput = Readonly<{
   componentId: string;
@@ -32,7 +35,7 @@ export type ScoreComponentSnapshot = Readonly<{
   componentId: string;
   scoreBps: number;
   weightBps: number;
-  weightedScoreBps: number;
+  weightedContributionNumerator: number;
   reasonCodes: readonly string[];
   evidence: readonly AnalyticalEvidenceSnapshot[];
 }>;
@@ -40,6 +43,7 @@ export type ScoreComponentSnapshot = Readonly<{
 export type InvestmentScoreSnapshot = Readonly<{
   status: "SCORED";
   kind: InvestmentScoreKind;
+  assetId: string;
   scoreBps: number;
   evaluationAsOf: string;
   methodologyId: string;
@@ -52,6 +56,7 @@ export type InvestmentScoreSnapshot = Readonly<{
 export type InvestmentScoreInsufficientData = Readonly<{
   status: "INSUFFICIENT_DATA";
   kind: InvestmentScoreKind;
+  assetId: string;
   evaluationAsOf: string;
   methodologyId: string;
   methodologyVersion: string;
@@ -59,12 +64,13 @@ export type InvestmentScoreInsufficientData = Readonly<{
   reasonCodes: readonly InvestmentScoreInsufficientReason[];
   affectedComponents: readonly string[];
   components: readonly ScoreComponentSnapshot[];
-  valuation: ValuationSnapshot | null;
+  valuation: ValuationEvaluationResult | null;
 }>;
 
 export type DividendScoreNotApplicable = Readonly<{
   status: "NOT_APPLICABLE";
   kind: "DIVIDEND";
+  assetId: string;
   evaluationAsOf: string;
   methodologyId: string;
   methodologyVersion: string;
@@ -115,13 +121,9 @@ function normalizeInputs(inputs: readonly ScoreComponentInput[]): ReadonlyMap<st
   return normalized;
 }
 
-function roundedWeightedScore(scoreBps: number, weightBps: number): number {
-  return Math.floor((scoreBps * weightBps + 5_000) / 10_000);
-}
-
 function aggregateScore(components: readonly ScoreComponentSnapshot[]): number {
   const numerator = components.reduce(
-    (sum, component) => sum + component.scoreBps * component.weightBps,
+    (sum, component) => sum + component.weightedContributionNumerator,
     0,
   );
   return Math.floor((numerator + 5_000) / 10_000);
@@ -198,7 +200,7 @@ function scoreComponents(
         componentId: definition.componentId,
         scoreBps,
         weightBps: definition.weightBps,
-        weightedScoreBps: roundedWeightedScore(scoreBps, definition.weightBps),
+        weightedContributionNumerator: scoreBps * definition.weightBps,
         reasonCodes: normalizeReasonCodes(definition.componentId, input.reasonCodes),
         evidence,
       }),
@@ -209,6 +211,7 @@ function scoreComponents(
 }
 
 type EvaluateScoreInput = Readonly<{
+  assetId: string;
   evaluationAsOf: string;
   components: readonly ScoreComponentInput[];
 }>;
@@ -223,9 +226,10 @@ function evaluateScore(
   methodology: InvestmentMethodology,
   definitions: readonly ScoreComponentDefinition[],
   input: EvaluateScoreInput,
-  valuation: ValuationSnapshot | null,
+  valuation: ValuationEvaluationResult | null,
   extraReasons: readonly InvestmentScoreInsufficientReason[] = [],
 ): InvestmentScoreResult {
+  const assetId = AssetId.from(input.assetId).toString();
   const evaluationAsOf = normalizeEvaluationInstant("evaluationAsOf", input.evaluationAsOf);
   const reasons = new Set<InvestmentScoreInsufficientReason>(extraReasons);
   const affectedComponents = new Set<string>();
@@ -241,6 +245,7 @@ function evaluateScore(
     return Object.freeze({
       status: "INSUFFICIENT_DATA",
       kind,
+      assetId,
       evaluationAsOf,
       methodologyId: methodology.methodologyId,
       methodologyVersion: methodology.version,
@@ -252,16 +257,18 @@ function evaluateScore(
     });
   }
 
+  const validValuation = valuation?.status === "VALUED" ? valuation : null;
   return Object.freeze({
     status: "SCORED",
     kind,
+    assetId,
     scoreBps: aggregateScore(components),
     evaluationAsOf,
     methodologyId: methodology.methodologyId,
     methodologyVersion: methodology.version,
     classification: methodology.classification,
     components,
-    valuation,
+    valuation: validValuation,
   });
 }
 
@@ -276,17 +283,17 @@ export function evaluateOpportunityScore(
   methodology: InvestmentMethodology,
   input: EvaluateOpportunityScoreInput,
 ): InvestmentScoreResult {
+  const assetId = AssetId.from(input.assetId).toString();
   const reasons: InvestmentScoreInsufficientReason[] = [];
-  let valuation: ValuationSnapshot | null = null;
 
   if (input.valuation === null) {
     reasons.push("MISSING_VALUATION");
   } else if (input.valuation.status !== "VALUED") {
     reasons.push("INVALID_VALUATION");
   } else {
-    valuation = input.valuation;
     const evaluationAsOf = normalizeEvaluationInstant("evaluationAsOf", input.evaluationAsOf);
-    if (valuation.evaluationAsOf > evaluationAsOf) reasons.push("INVALID_VALUATION");
+    if (input.valuation.evaluationAsOf > evaluationAsOf) reasons.push("INVALID_VALUATION");
+    if (input.valuation.assetId !== assetId) reasons.push("VALUATION_ASSET_MISMATCH");
   }
 
   return evaluateScore(
@@ -294,7 +301,7 @@ export function evaluateOpportunityScore(
     methodology,
     methodology.opportunity,
     input,
-    valuation,
+    input.valuation,
     reasons,
   );
 }
@@ -303,6 +310,7 @@ export function evaluateDividendScore(
   methodology: InvestmentMethodology,
   input: EvaluateScoreInput,
 ): DividendScoreResult {
+  const assetId = AssetId.from(input.assetId).toString();
   const evaluationAsOf = normalizeEvaluationInstant("evaluationAsOf", input.evaluationAsOf);
   if (
     methodology.dividendApplicability === "NOT_APPLICABLE" ||
@@ -311,6 +319,7 @@ export function evaluateDividendScore(
     return Object.freeze({
       status: "NOT_APPLICABLE",
       kind: "DIVIDEND",
+      assetId,
       evaluationAsOf,
       methodologyId: methodology.methodologyId,
       methodologyVersion: methodology.version,
