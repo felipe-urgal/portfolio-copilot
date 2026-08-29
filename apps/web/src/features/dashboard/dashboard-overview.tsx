@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { FinancialProfileAccountMigration } from "@/components/financial-profile-account-migration";
 import { FinancialProfileSessionSummary } from "@/components/financial-profile-session-summary";
 import { ProductShell } from "@/components/product-shell";
 import type { AuthenticatedIdentity } from "@/lib/identity";
@@ -44,6 +45,7 @@ export function DashboardOverview({ identity }: DashboardOverviewProps = {}) {
   return (
     <ProductShell activeRoute="/dashboard" identity={identity}>
       <FinancialProfileSessionSummary />
+      <FinancialProfileAccountMigration />
 
       <header className={styles.pageHeader}>
         <div>

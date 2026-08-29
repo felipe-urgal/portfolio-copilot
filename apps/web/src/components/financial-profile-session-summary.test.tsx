@@ -81,7 +81,8 @@ describe("FinancialProfileSessionSummary", () => {
     expect(html).toContain("Salvo neste dispositivo");
     expect(html).toContain("remover");
     expect(html).toContain("salvo localmente neste navegador");
-    expect(html).toContain("Não existe sincronização com conta, servidor ou outro dispositivo");
+    expect(html).toContain("Não existe sincronização automática com conta ou outro dispositivo");
+    expect(html).toContain("A migração para a conta é uma ação separada no Dashboard");
   });
 
   it("distinguishes missing reserve and goals from zero or progress", () => {

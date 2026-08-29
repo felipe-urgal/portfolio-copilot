@@ -150,7 +150,7 @@ export function FinancialProfileSessionSummary() {
 
       <p className={styles.sessionNote}>
         {isPersisted
-          ? "Salvo localmente neste navegador: recarregar pode restaurar este perfil. Não existe sincronização com conta, servidor ou outro dispositivo."
+          ? "Salvo localmente neste navegador: recarregar pode restaurar este perfil. Não existe sincronização automática com conta ou outro dispositivo. A migração para a conta é uma ação separada no Dashboard."
           : persistenceStatus === "unavailable"
             ? "Armazenamento local indisponível: este perfil permanece somente na sessão atual."
             : "Somente em memória: este perfil ainda não está salvo neste dispositivo."}
