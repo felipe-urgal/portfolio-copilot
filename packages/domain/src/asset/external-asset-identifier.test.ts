@@ -23,14 +23,18 @@ describe("ExternalAssetIdentifier", () => {
     });
   });
 
-  it("normalizes ISIN casing without claiming checksum validation", () => {
-    const isin = ExternalAssetIdentifier.isin("britubacnpr1");
+  it("normalizes and validates the ISO 6166 ISIN checksum", () => {
+    const isin = ExternalAssetIdentifier.isin("us0378331005");
 
     expect(isin.toSnapshot()).toEqual({
       kind: "ISIN",
       scope: "GLOBAL",
-      value: "BRITUBACNPR1",
+      value: "US0378331005",
     });
+
+    expect(() => ExternalAssetIdentifier.isin("US0378331004")).toThrowError(
+      InvalidExternalAssetIdentifierError,
+    );
   });
 
   it("preserves provider identifier case while normalizing provider scope", () => {
