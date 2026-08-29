@@ -20,13 +20,19 @@ export class AssetCatalogError extends Error {
 
 export class InvalidAssetCatalogCountryError extends AssetCatalogError {
   public constructor(value: string) {
-    super("INVALID_ASSET_CATALOG_COUNTRY", `Invalid asset catalog country: ${JSON.stringify(value)}`);
+    super(
+      "INVALID_ASSET_CATALOG_COUNTRY",
+      `Invalid asset catalog country: ${JSON.stringify(value)}`,
+    );
   }
 }
 
 export class InvalidAssetCatalogStatusError extends AssetCatalogError {
   public constructor(value: string) {
-    super("INVALID_ASSET_CATALOG_STATUS", `Invalid asset catalog status: ${JSON.stringify(value)}`);
+    super(
+      "INVALID_ASSET_CATALOG_STATUS",
+      `Invalid asset catalog status: ${JSON.stringify(value)}`,
+    );
   }
 }
 
