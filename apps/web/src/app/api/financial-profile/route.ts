@@ -7,6 +7,9 @@ import {
   planFinancialProfileMigration,
 } from "@/lib/financial-profile-account-migration";
 import { getOwnedPersistence } from "@/lib/persistence-server";
+import { readJsonBodyWithLimit, RequestPayloadTooLargeError } from "@/lib/request-json";
+
+const MAX_FINANCIAL_PROFILE_PAYLOAD_BYTES = 64 * 1024;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -16,6 +19,13 @@ function invalidRequest() {
   return NextResponse.json(
     { code: "invalid_financial_profile", error: "Perfil financeiro inválido." },
     { status: 400 },
+  );
+}
+
+function payloadTooLarge() {
+  return NextResponse.json(
+    { code: "payload_too_large", error: "O perfil financeiro excede o tamanho permitido." },
+    { status: 413 },
   );
 }
 
@@ -57,8 +67,9 @@ export async function POST(request: Request) {
   let payload: unknown;
 
   try {
-    payload = await request.json();
-  } catch {
+    payload = await readJsonBodyWithLimit(request, MAX_FINANCIAL_PROFILE_PAYLOAD_BYTES);
+  } catch (error) {
+    if (error instanceof RequestPayloadTooLargeError) return payloadTooLarge();
     return invalidRequest();
   }
 
