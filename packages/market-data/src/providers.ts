@@ -1,4 +1,9 @@
-import type { FxSnapshot, MacroSnapshot, PriceSnapshot } from "./snapshots";
+import type {
+  FxSnapshot,
+  MacroSnapshot,
+  MarketDataCategory,
+  PriceSnapshot,
+} from "./snapshots";
 
 export type MarketDataMissingResult = Readonly<{
   status: "MISSING";
@@ -56,6 +61,24 @@ export type MarketDataFallbackResult<T> = Readonly<{
   attempts: readonly MarketDataProviderAttempt[];
 }>;
 
+export type MarketDataTelemetryEvent = Readonly<{
+  category: MarketDataCategory;
+  provider: string;
+  status: "FOUND" | "MISSING" | "PROVIDER_ERROR";
+  attempt: number;
+  durationMs: number;
+}>;
+
+export interface MarketDataObserver {
+  record(event: MarketDataTelemetryEvent): void;
+}
+
+export type MarketDataFallbackOptions = Readonly<{
+  category: MarketDataCategory;
+  observer?: MarketDataObserver;
+  now?: () => number;
+}>;
+
 export class InvalidMarketDataFallbackPolicyError extends Error {
   public constructor(message: string) {
     super(message);
@@ -95,6 +118,19 @@ function normalizePolicy(policy: MarketDataFallbackPolicy): MarketDataFallbackPo
   });
 }
 
+function recordTelemetry(
+  options: MarketDataFallbackOptions | undefined,
+  event: MarketDataTelemetryEvent,
+): void {
+  if (options?.observer === undefined) return;
+
+  try {
+    options.observer.record(event);
+  } catch {
+    // Observability must never turn a successful data path into a product failure.
+  }
+}
+
 export function missingMarketData(provider: string, reason: string): MarketDataMissingResult {
   const normalizedReason = reason.trim();
   if (normalizedReason.length === 0) throw new TypeError("Missing market data reason cannot be empty.");
@@ -132,12 +168,14 @@ export async function fetchWithExplicitFallback<TProvider extends { readonly nam
   providers: readonly TProvider[],
   policyInput: MarketDataFallbackPolicy,
   fetcher: (provider: TProvider) => Promise<MarketDataProviderResult<T>>,
+  options?: MarketDataFallbackOptions,
 ): Promise<MarketDataFallbackResult<T>> {
   const policy = normalizePolicy(policyInput);
   const providersByName = new Map(
     providers.map((provider) => [normalizeProviderName(provider.name), provider] as const),
   );
   const attempts: MarketDataProviderAttempt[] = [];
+  const now = options?.now ?? Date.now;
   let lastResult: MarketDataProviderResult<T> | null = null;
 
   for (const providerName of policy.orderedProviders) {
@@ -148,7 +186,9 @@ export async function fetchWithExplicitFallback<TProvider extends { readonly nam
       );
     }
 
+    const startedAt = now();
     const result = await fetcher(provider);
+    const finishedAt = now();
     const resultProvider = normalizeProviderName(result.provider);
     if (resultProvider !== providerName) {
       throw new InvalidMarketDataFallbackPolicyError(
@@ -158,6 +198,18 @@ export async function fetchWithExplicitFallback<TProvider extends { readonly nam
 
     attempts.push(Object.freeze({ provider: providerName, status: result.status }));
     lastResult = result;
+    if (options !== undefined) {
+      recordTelemetry(
+        options,
+        Object.freeze({
+          category: options.category,
+          provider: providerName,
+          status: result.status,
+          attempt: attempts.length,
+          durationMs: Math.max(0, finishedAt - startedAt),
+        }),
+      );
+    }
 
     if (result.status === "FOUND") break;
     if (!policy.fallbackOn.includes(result.status)) break;
