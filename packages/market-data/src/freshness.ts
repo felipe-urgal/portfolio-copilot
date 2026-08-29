@@ -7,7 +7,7 @@ import type {
 export type MarketDataFreshnessConfig = Readonly<Record<MarketDataCategory, number>>;
 
 export type MarketDataFreshness = Readonly<{
-  status: "FRESH" | "STALE";
+  status: "FRESH" | "STALE" | "FUTURE";
   ageMs: number;
   maxAgeMs: number;
 }>;
@@ -54,11 +54,11 @@ export class MarketDataFreshnessPolicy {
     if (!Number.isFinite(nowMs)) throw new TypeError("Invalid freshness reference time.");
 
     const asOfMs = Date.parse(snapshot.asOf);
-    const ageMs = Math.max(0, nowMs - asOfMs);
+    const ageMs = nowMs - asOfMs;
     const maxAgeMs = this.maxAgeFor(snapshot.category);
 
     return Object.freeze({
-      status: ageMs <= maxAgeMs ? "FRESH" : "STALE",
+      status: ageMs < 0 ? "FUTURE" : ageMs <= maxAgeMs ? "FRESH" : "STALE",
       ageMs,
       maxAgeMs,
     });
@@ -69,7 +69,9 @@ export class MarketDataFreshnessPolicy {
     now: string | Date = new Date(),
   ): readonly MarketDataQualityFlag[] {
     const flags = new Set(snapshot.qualityFlags);
-    if (this.evaluate(snapshot, now).status === "STALE") flags.add("STALE");
+    const freshness = this.evaluate(snapshot, now);
+    if (freshness.status === "STALE") flags.add("STALE");
+    if (freshness.status === "FUTURE") flags.add("CONFLICT");
 
     return Object.freeze([...flags].sort());
   }
