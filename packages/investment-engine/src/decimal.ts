@@ -77,7 +77,7 @@ export function relativeDifferenceBasisPoints(
   comparison: ParsedDecimal,
 ): number {
   const aligned = alignDecimals(reference, comparison);
-  const numerator = (aligned.comparisonUnits - aligned.leftUnits) * 10_000n;
+  const numerator = (aligned.rightUnits - aligned.leftUnits) * 10_000n;
   const result = divideRoundedHalfAwayFromZero(numerator, aligned.leftUnits);
   const numeric = Number(result);
   if (!Number.isSafeInteger(numeric)) {
