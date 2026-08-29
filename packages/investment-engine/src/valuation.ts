@@ -18,7 +18,8 @@ export type ValuationInsufficientReason =
   | "CONFLICTING_FAIR_VALUE"
   | "LOOKAHEAD_PRICE"
   | "LOOKAHEAD_FAIR_VALUE"
-  | "CURRENCY_MISMATCH";
+  | "CURRENCY_MISMATCH"
+  | "FAIR_VALUE_ASSET_MISMATCH";
 
 export type ValuationModelInput = Readonly<{
   modelId: string;
@@ -26,6 +27,7 @@ export type ValuationModelInput = Readonly<{
 }>;
 
 export type FairValueEstimateInput = Readonly<{
+  assetId: AssetId | string;
   value: string;
   currency: CurrencyCode | string;
   evidence: AnalyticalEvidenceInput | AnalyticalEvidenceSnapshot;
@@ -42,6 +44,7 @@ export type ValuationEvaluationInput = Readonly<{
 export type ValuationSnapshot = Readonly<{
   status: "VALUED";
   assetId: string;
+  fairValueAssetId: string;
   currency: string;
   evaluationAsOf: string;
   currentPrice: string;
@@ -59,6 +62,7 @@ export type ValuationSnapshot = Readonly<{
 export type ValuationInsufficientData = Readonly<{
   status: "INSUFFICIENT_DATA";
   assetId: string;
+  fairValueAssetId: string;
   evaluationAsOf: string;
   reasonCodes: readonly ValuationInsufficientReason[];
   model: Readonly<{
@@ -131,6 +135,10 @@ export function evaluateValuation(input: ValuationEvaluationInput): ValuationEva
   const evaluationAsOf = normalizeEvaluationInstant("evaluationAsOf", input.evaluationAsOf);
   const model = normalizeModel(input.model);
   const assetId = AssetId.from(input.currentPrice.assetId).toString();
+  const fairValueAssetId =
+    input.fairValue.assetId instanceof AssetId
+      ? input.fairValue.assetId.toString()
+      : AssetId.from(input.fairValue.assetId).toString();
   const currentPrice = parsePositiveInvestmentDecimal("currentPrice", input.currentPrice.price);
   const fairValue = parsePositiveInvestmentDecimal("fairValue", input.fairValue.value);
   const priceCurrency = CurrencyCode.from(input.currentPrice.currency);
@@ -155,11 +163,13 @@ export function evaluateValuation(input: ValuationEvaluationInput): ValuationEva
     reasons.add("LOOKAHEAD_FAIR_VALUE");
   }
   if (!priceCurrency.equals(fairValueCurrency)) reasons.add("CURRENCY_MISMATCH");
+  if (fairValueAssetId !== assetId) reasons.add("FAIR_VALUE_ASSET_MISMATCH");
 
   if (reasons.size > 0) {
     return Object.freeze({
       status: "INSUFFICIENT_DATA",
       assetId,
+      fairValueAssetId,
       evaluationAsOf,
       reasonCodes: Object.freeze([...reasons].sort()),
       model,
@@ -174,6 +184,7 @@ export function evaluateValuation(input: ValuationEvaluationInput): ValuationEva
   return Object.freeze({
     status: "VALUED",
     assetId,
+    fairValueAssetId,
     currency: priceCurrency.code,
     evaluationAsOf,
     currentPrice: currentPrice.normalized,
