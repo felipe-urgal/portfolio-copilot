@@ -3,10 +3,7 @@ import {
   type PostgresPersistence,
 } from "@portfolio-copilot/persistence";
 
-import {
-  getAuthenticatedIdentity,
-  requireAuthenticatedIdentity,
-} from "@/lib/identity-server";
+import { getAuthenticatedIdentity, requireAuthenticatedIdentity } from "@/lib/identity-server";
 
 declare global {
   var portfolioCopilotPostgres: PostgresPersistence | undefined;
