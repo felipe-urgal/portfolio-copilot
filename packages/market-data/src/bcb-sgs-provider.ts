@@ -17,6 +17,7 @@ import {
 
 export const BCB_SGS_PROVIDER_NAME = "BCB_SGS";
 export const BCB_SGS_BASE_URL = "https://api.bcb.gov.br/dados/serie/bcdata.sgs";
+export const BCB_SGS_REQUEST_TIMEOUT_MS = 10_000;
 
 export const BCB_SGS_SELIC_TARGET = Object.freeze({
   indicatorId: "BCB:SELIC_TARGET",
@@ -113,7 +114,10 @@ function readBcbObservation(payload: unknown): Readonly<{ data: string; valor: s
 }
 
 async function defaultHttpClient(url: string): Promise<MarketDataHttpResponse> {
-  return fetch(url, { headers: { accept: "application/json" } });
+  return fetch(url, {
+    headers: { accept: "application/json" },
+    signal: AbortSignal.timeout(BCB_SGS_REQUEST_TIMEOUT_MS),
+  });
 }
 
 async function fetchObservation(
