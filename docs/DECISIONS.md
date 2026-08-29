@@ -34,6 +34,7 @@ Este arquivo resume decisões. Decisões arquiteturais importantes também ganha
 | D-028 | Autenticação usa Auth.js v5 com GitHub OAuth e sessão server-side; identidade canônica é separada dos IDs financeiros e login/logout não migram nem apagam automaticamente o perfil local | Aceita — ADR-0020 |
 | D-029 | Toda persistência privada usa ownership derivado da sessão no servidor e reforçado por chaves/FKs compostas; conexão e schema brutos não são API de aplicação | Aceita — ADR-0021 |
 | D-030 | Migração do `FinancialProfileSnapshot` local para a conta é opt-in, revalidada pelo domínio, preserva a cópia local e trata conflito antes de qualquer substituição server-side | Aceita — ADR-0019/0020/0021 |
+| D-031 | Asset Master preserva `AssetId` como identidade; listings atuais/históricos e identificadores externos carregam provenance, e matching exato retorna `UNMATCHED`, `PARTIAL_MATCH`, `MATCH` ou `CONFLICT` sem dedupe heurístico | Aceita — ADR-0022 |
 
 ## Como alterar uma decisão
 
