@@ -59,6 +59,15 @@ importers:
 
   packages/domain: {}
 
+  packages/investment-engine:
+    dependencies:
+      '@portfolio-copilot/domain':
+        specifier: workspace:*
+        version: link:../domain
+      '@portfolio-copilot/market-data':
+        specifier: workspace:*
+        version: link:../market-data
+
   packages/market-data:
     dependencies:
       '@portfolio-copilot/domain':
