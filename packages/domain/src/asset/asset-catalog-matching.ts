@@ -17,6 +17,11 @@ export type AssetIdentityResolution =
       evidence: readonly AssetIdentityEvidence[];
     }>
   | Readonly<{
+      outcome: "PARTIAL_MATCH";
+      assetId: string;
+      evidence: readonly AssetIdentityEvidence[];
+    }>
+  | Readonly<{
       outcome: "MATCH";
       assetId: string;
       evidence: readonly AssetIdentityEvidence[];
@@ -111,14 +116,20 @@ export class InMemoryAssetCatalogAdapter implements AssetCatalog {
       return { outcome: "UNMATCHED", evidence: frozenEvidence };
     }
 
-    if (candidates.length === 1) {
-      return { outcome: "MATCH", assetId: candidates[0]!, evidence: frozenEvidence };
+    if (candidates.length > 1) {
+      return {
+        outcome: "CONFLICT",
+        candidateAssetIds: candidates,
+        evidence: frozenEvidence,
+      };
     }
 
-    return {
-      outcome: "CONFLICT",
-      candidateAssetIds: candidates,
-      evidence: frozenEvidence,
-    };
+    const assetId = candidates[0]!;
+    const hasUnmatchedEvidence = evidence.some((item) => item.candidateAssetIds.length === 0);
+    if (hasUnmatchedEvidence) {
+      return { outcome: "PARTIAL_MATCH", assetId, evidence: frozenEvidence };
+    }
+
+    return { outcome: "MATCH", assetId, evidence: frozenEvidence };
   }
 }
