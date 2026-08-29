@@ -1,11 +1,7 @@
 import { FinancialProfile, type FinancialProfileSnapshot } from "@portfolio-copilot/domain";
 
 export type FinancialProfileRelation =
-  | "none"
-  | "local-only"
-  | "account-only"
-  | "aligned"
-  | "conflict";
+  "none" | "local-only" | "account-only" | "aligned" | "conflict";
 
 export type FinancialProfileDifferenceKey =
   | "profileIdentity"
