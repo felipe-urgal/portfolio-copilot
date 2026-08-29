@@ -20,6 +20,7 @@ import {
 } from "./index";
 
 const ASSET_ID = "550e8400-e29b-41d4-a716-446655440000";
+const OTHER_ASSET_ID = "550e8400-e29b-41d4-a716-446655440001";
 const EVALUATION_AS_OF = "2026-08-29T12:00:00.000Z";
 
 function evidenceInput(
@@ -53,9 +54,9 @@ function componentInputs(
   }));
 }
 
-function valuation(price = "80", fairValue = "100") {
+function valuation(price = "80", fairValue = "100", assetId = ASSET_ID) {
   const currentPrice = createPriceSnapshot({
-    assetId: ASSET_ID,
+    assetId,
     price,
     currency: "BRL",
     asOf: "2026-08-29T10:00:00.000Z",
@@ -244,28 +245,42 @@ describe("valuation snapshots", () => {
 describe("deterministic scores", () => {
   it("keeps high quality separate from a low opportunity score", () => {
     const quality = evaluateQualityScore(GENERIC_STOCK_METHODOLOGY, {
+      assetId: ASSET_ID,
       evaluationAsOf: EVALUATION_AS_OF,
       components: componentInputs(GENERIC_STOCK_METHODOLOGY, "quality", 10_000),
     });
     const opportunity = evaluateOpportunityScore(GENERIC_STOCK_METHODOLOGY, {
+      assetId: ASSET_ID,
       evaluationAsOf: EVALUATION_AS_OF,
       components: componentInputs(GENERIC_STOCK_METHODOLOGY, "opportunity", 1_000),
       valuation: valuation(),
     });
 
-    expect(quality).toMatchObject({ status: "SCORED", kind: "QUALITY", scoreBps: 10_000 });
-    expect(opportunity).toMatchObject({ status: "SCORED", kind: "OPPORTUNITY", scoreBps: 1_000 });
+    expect(quality).toMatchObject({
+      status: "SCORED",
+      kind: "QUALITY",
+      assetId: ASSET_ID,
+      scoreBps: 10_000,
+    });
+    expect(opportunity).toMatchObject({
+      status: "SCORED",
+      kind: "OPPORTUNITY",
+      assetId: ASSET_ID,
+      scoreBps: 1_000,
+    });
   });
 
   it("does not invent a score when a required component is missing", () => {
     const components = componentInputs(GENERIC_STOCK_METHODOLOGY, "quality", 8_000).slice(1);
     const result = evaluateQualityScore(GENERIC_STOCK_METHODOLOGY, {
+      assetId: ASSET_ID,
       evaluationAsOf: EVALUATION_AS_OF,
       components,
     });
 
     expect(result).toMatchObject({
       status: "INSUFFICIENT_DATA",
+      assetId: ASSET_ID,
       reasonCodes: ["MISSING_COMPONENT"],
       affectedComponents: ["PROFITABILITY"],
     });
@@ -286,6 +301,7 @@ describe("deterministic scores", () => {
     };
 
     const result = evaluateQualityScore(GENERIC_STOCK_METHODOLOGY, {
+      assetId: ASSET_ID,
       evaluationAsOf: EVALUATION_AS_OF,
       components,
     });
@@ -297,8 +313,62 @@ describe("deterministic scores", () => {
     });
   });
 
-  it("requires a valid valuation for opportunity scoring", () => {
+  it("requires a valid valuation for opportunity scoring and preserves failed valuation details", () => {
+    const currentPrice = createPriceSnapshot({
+      assetId: ASSET_ID,
+      price: "80",
+      currency: "BRL",
+      asOf: "2026-08-29T10:00:00.000Z",
+      retrievedAt: "2026-08-29T10:01:00.000Z",
+      provenance: { provider: "price_provider", normalizationVersion: "v1" },
+    });
+    const invalidValuation = evaluateValuation({
+      evaluationAsOf: EVALUATION_AS_OF,
+      currentPrice,
+      currentPriceQualityFlags: ["STALE"],
+      fairValue: {
+        value: "100",
+        currency: "BRL",
+        evidence: evidenceInput("FAIR_VALUE"),
+      },
+      model: { modelId: "DCF_BASE", version: "1.0.0" },
+    });
+
     const result = evaluateOpportunityScore(GENERIC_STOCK_METHODOLOGY, {
+      assetId: ASSET_ID,
+      evaluationAsOf: EVALUATION_AS_OF,
+      components: componentInputs(GENERIC_STOCK_METHODOLOGY, "opportunity", 6_000),
+      valuation: invalidValuation,
+    });
+
+    expect(result).toMatchObject({
+      status: "INSUFFICIENT_DATA",
+      kind: "OPPORTUNITY",
+      reasonCodes: ["INVALID_VALUATION"],
+      valuation: {
+        status: "INSUFFICIENT_DATA",
+        reasonCodes: ["STALE_PRICE"],
+      },
+    });
+  });
+
+  it("rejects a valuation created for another asset", () => {
+    const result = evaluateOpportunityScore(GENERIC_STOCK_METHODOLOGY, {
+      assetId: ASSET_ID,
+      evaluationAsOf: EVALUATION_AS_OF,
+      components: componentInputs(GENERIC_STOCK_METHODOLOGY, "opportunity", 6_000),
+      valuation: valuation("80", "100", OTHER_ASSET_ID),
+    });
+
+    expect(result).toMatchObject({
+      status: "INSUFFICIENT_DATA",
+      reasonCodes: ["VALUATION_ASSET_MISMATCH"],
+    });
+  });
+
+  it("requires a valuation instead of treating absence as a neutral opportunity input", () => {
+    const result = evaluateOpportunityScore(GENERIC_STOCK_METHODOLOGY, {
+      assetId: ASSET_ID,
       evaluationAsOf: EVALUATION_AS_OF,
       components: componentInputs(GENERIC_STOCK_METHODOLOGY, "opportunity", 6_000),
       valuation: null,
@@ -314,14 +384,16 @@ describe("deterministic scores", () => {
   it("keeps optional dividends not applicable when no dividend evidence is supplied", () => {
     expect(
       evaluateDividendScore(GENERIC_STOCK_METHODOLOGY, {
+        assetId: ASSET_ID,
         evaluationAsOf: EVALUATION_AS_OF,
         components: [],
       }),
-    ).toMatchObject({ status: "NOT_APPLICABLE", kind: "DIVIDEND" });
+    ).toMatchObject({ status: "NOT_APPLICABLE", kind: "DIVIDEND", assetId: ASSET_ID });
   });
 
   it("requires dividend components when the methodology marks dividends as required", () => {
     const result = evaluateDividendScore(REAL_ESTATE_FUND_METHODOLOGY, {
+      assetId: ASSET_ID,
       evaluationAsOf: EVALUATION_AS_OF,
       components: [],
     });
@@ -333,13 +405,15 @@ describe("deterministic scores", () => {
     });
   });
 
-  it("preserves reason codes and methodology metadata in a reproducible snapshot", () => {
+  it("preserves exact weighted contributions, reason codes and methodology metadata", () => {
     const components = componentInputs(GENERIC_STOCK_METHODOLOGY, "quality", 7_500);
     const first = evaluateQualityScore(GENERIC_STOCK_METHODOLOGY, {
+      assetId: ASSET_ID,
       evaluationAsOf: EVALUATION_AS_OF,
       components,
     });
     const second = evaluateQualityScore(GENERIC_STOCK_METHODOLOGY, {
+      assetId: ASSET_ID,
       evaluationAsOf: EVALUATION_AS_OF,
       components,
     });
@@ -347,24 +421,27 @@ describe("deterministic scores", () => {
     expect(first).toEqual(second);
     expect(first).toMatchObject({
       status: "SCORED",
+      assetId: ASSET_ID,
       methodologyId: "EQUITY_STOCK_GENERAL",
       methodologyVersion: "1.0.0",
       scoreBps: 7_500,
-      components: [
-        {
-          componentId: "PROFITABILITY",
-          reasonCodes: ["PROFITABILITY_ASSESSED"],
-        },
-      ],
+    });
+    if (first.status !== "SCORED") throw new Error("Expected scored quality snapshot.");
+    expect(first.components[0]).toMatchObject({
+      componentId: "PROFITABILITY",
+      reasonCodes: ["PROFITABILITY_ASSESSED"],
+      weightedContributionNumerator: 15_000_000,
     });
   });
 
   it("keeps score boundaries exact at zero and one hundred percent", () => {
     const zero = evaluateQualityScore(GENERIC_STOCK_METHODOLOGY, {
+      assetId: ASSET_ID,
       evaluationAsOf: EVALUATION_AS_OF,
       components: componentInputs(GENERIC_STOCK_METHODOLOGY, "quality", 0),
     });
     const full = evaluateQualityScore(GENERIC_STOCK_METHODOLOGY, {
+      assetId: ASSET_ID,
       evaluationAsOf: EVALUATION_AS_OF,
       components: componentInputs(GENERIC_STOCK_METHODOLOGY, "quality", 10_000),
     });
