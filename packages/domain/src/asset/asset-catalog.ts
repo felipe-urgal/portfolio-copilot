@@ -8,7 +8,10 @@ import {
   InvalidAssetCatalogProvenanceError,
   InvalidAssetCatalogStatusError,
 } from "./asset-catalog-errors";
-import { ExternalAssetIdentifier, type ExternalAssetIdentifierSnapshot } from "./external-asset-identifier";
+import {
+  ExternalAssetIdentifier,
+  type ExternalAssetIdentifierSnapshot,
+} from "./external-asset-identifier";
 
 export type AssetCatalogStatus = "ACTIVE" | "INACTIVE" | "DELISTED";
 export type AssetCatalogListingStatus = "CURRENT" | "HISTORICAL";
@@ -137,7 +140,10 @@ function normalizeProvider(provider: string): string {
   return normalized;
 }
 
-function normalizeOptionalSourceText(field: string, value: string | null | undefined): string | null {
+function normalizeOptionalSourceText(
+  field: string,
+  value: string | null | undefined,
+): string | null {
   if (value === null || value === undefined) return null;
 
   const normalized = value.trim();
@@ -219,7 +225,11 @@ function normalizeProvenance(
   );
   const byKey = new Map(normalized.map((item) => [provenanceKey(item), item]));
 
-  return Object.freeze([...byKey.values()].sort((left, right) => provenanceKey(left).localeCompare(provenanceKey(right))));
+  return Object.freeze(
+    [...byKey.values()].sort((left, right) =>
+      provenanceKey(left).localeCompare(provenanceKey(right)),
+    ),
+  );
 }
 
 function normalizeIdentifiers(
@@ -244,7 +254,9 @@ function normalizeIdentifiers(
   });
 
   return Object.freeze(
-    [...normalized].sort((left, right) => left.identifier.key().localeCompare(right.identifier.key())),
+    [...normalized].sort((left, right) =>
+      left.identifier.key().localeCompare(right.identifier.key()),
+    ),
   );
 }
 
@@ -254,7 +266,9 @@ function listingKey(listing: AssetCatalogListing): string {
   return `HISTORICAL:${symbolKey}:${listing.validFrom ?? ""}:${listing.validTo ?? ""}`;
 }
 
-function normalizeListings(listings: readonly AssetCatalogListingInput[]): readonly AssetCatalogListing[] {
+function normalizeListings(
+  listings: readonly AssetCatalogListingInput[],
+): readonly AssetCatalogListing[] {
   const seen = new Set<string>();
   const normalized = listings.map((listing) => {
     const identifier = ExternalAssetIdentifier.marketSymbol(listing.exchange, listing.symbol);
@@ -284,12 +298,15 @@ function normalizeListings(listings: readonly AssetCatalogListingInput[]): reado
     return normalizedListing;
   });
 
-  return Object.freeze([...normalized].sort((left, right) => listingKey(left).localeCompare(listingKey(right))));
+  return Object.freeze(
+    [...normalized].sort((left, right) => listingKey(left).localeCompare(listingKey(right))),
+  );
 }
 
-function catalogExternalIdentifiers(
+function externalIdentifiersFor(
   identifiers: readonly AssetCatalogIdentifier[],
   listings: readonly AssetCatalogListing[],
+  includeHistoricalListings: boolean,
 ): readonly ExternalAssetIdentifier[] {
   const byKey = new Map<string, ExternalAssetIdentifier>();
 
@@ -297,11 +314,15 @@ function catalogExternalIdentifiers(
     byKey.set(binding.identifier.key(), binding.identifier);
   }
   for (const listing of listings) {
+    if (!includeHistoricalListings && listing.status !== "CURRENT") continue;
+
     const identifier = ExternalAssetIdentifier.marketSymbol(listing.exchange, listing.symbol);
     byKey.set(identifier.key(), identifier);
   }
 
-  return Object.freeze([...byKey.values()].sort((left, right) => left.key().localeCompare(right.key())));
+  return Object.freeze(
+    [...byKey.values()].sort((left, right) => left.key().localeCompare(right.key())),
+  );
 }
 
 export class AssetCatalogEntry {
@@ -322,7 +343,7 @@ export class AssetCatalogEntry {
       assetClass: input.assetClass,
       instrumentType: input.instrumentType,
       referenceCurrency: input.referenceCurrency,
-      externalIdentifiers: catalogExternalIdentifiers(identifiers, listings),
+      externalIdentifiers: externalIdentifiersFor(identifiers, listings, false),
     });
 
     return new AssetCatalogEntry(
@@ -335,7 +356,7 @@ export class AssetCatalogEntry {
   }
 
   public identityIdentifiers(): readonly ExternalAssetIdentifier[] {
-    return catalogExternalIdentifiers(this.identifiers, this.listings);
+    return externalIdentifiersFor(this.identifiers, this.listings, true);
   }
 
   public toSnapshot(): AssetCatalogEntrySnapshot {
