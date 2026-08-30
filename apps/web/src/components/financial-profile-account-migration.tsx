@@ -6,6 +6,7 @@ import type { FinancialProfileSnapshot } from "@portfolio-copilot/domain";
 
 import { useFinancialSession } from "./financial-session";
 import styles from "./financial-profile-account-migration.module.css";
+import { Alert, Badge, Button, LoadingState, Status, Surface } from "./ui";
 import {
   canonicalFinancialProfileSnapshot,
   compareFinancialProfiles,
@@ -166,119 +167,126 @@ export function FinancialProfileAccountMigration({
   }
 
   return (
-    <section className={styles.surface} aria-labelledby="account-migration-title">
-      <div className={styles.header}>
-        <div>
-          <span className={styles.eyebrow}>Perfil da conta</span>
-          <h2 id="account-migration-title">Associar perfil local à conta</h2>
-          <p>
-            O perfil salvo neste dispositivo não é enviado automaticamente. A conta só recebe dados
-            depois de uma ação explícita abaixo.
-          </p>
-        </div>
-        <span className={styles.badge}>Migração opt-in</span>
-      </div>
-
-      {accountState.status === "idle" || accountState.status === "loading" ? (
-        <div className={styles.body} aria-live="polite">
-          <strong>Verificando o perfil da conta…</strong>
-          <p>Esta leitura não envia o perfil salvo no dispositivo.</p>
-        </div>
-      ) : accountState.status === "error" ? (
-        <div className={styles.body}>
-          <strong>Não foi possível consultar o perfil da conta.</strong>
-          <p>O perfil local continua intacto e nenhum dado financeiro foi enviado.</p>
-          <button className={styles.secondaryAction} type="button" onClick={loadAccountProfile}>
-            Tentar novamente
-          </button>
-        </div>
-      ) : comparison?.relation === "local-only" ? (
-        <div className={styles.body}>
-          <strong>A conta ainda não possui um perfil financeiro.</strong>
-          <p>
-            Você pode copiar o snapshot validado deste dispositivo para a conta ou continuar somente
-            com a cópia local.
-          </p>
-          <div className={styles.actions}>
-            <button
-              className={styles.primaryAction}
-              type="button"
-              disabled={isSaving}
-              onClick={() => void migrateLocalProfile(false)}
-            >
-              {isSaving ? "Salvando…" : "Salvar perfil local na conta"}
-            </button>
-            <button
-              className={styles.secondaryAction}
-              type="button"
-              disabled={isSaving}
-              onClick={keepLocalOnly}
-            >
-              Manter somente local
-            </button>
+    <section className={styles.section} aria-labelledby="account-migration-title">
+      <Surface padding="lg" className={styles.surface}>
+        <div className={styles.header}>
+          <div>
+            <span className={styles.eyebrow}>Perfil da conta</span>
+            <h2 id="account-migration-title">Associar perfil local à conta</h2>
+            <p>
+              O perfil salvo neste dispositivo não é enviado automaticamente. A conta só recebe dados
+              depois de uma ação explícita abaixo.
+            </p>
           </div>
+          <Badge tone="accent">Migração opt-in</Badge>
         </div>
-      ) : comparison?.relation === "aligned" ? (
+
         <div className={styles.body}>
-          <strong>Perfil local e perfil da conta estão alinhados.</strong>
-          <p>Nenhuma gravação adicional é necessária. As duas cópias permanecem independentes.</p>
+          {accountState.status === "idle" || accountState.status === "loading" ? (
+            <div className={styles.stateBlock}>
+              <LoadingState label="Verificando o perfil da conta…" />
+              <p>Esta leitura não envia o perfil salvo no dispositivo.</p>
+            </div>
+          ) : accountState.status === "error" ? (
+            <Alert tone="danger" title="Não foi possível consultar o perfil da conta.">
+              <p>O perfil local continua intacto e nenhum dado financeiro foi enviado.</p>
+              <Button variant="secondary" size="sm" onClick={() => void loadAccountProfile()}>
+                Tentar novamente
+              </Button>
+            </Alert>
+          ) : comparison?.relation === "local-only" ? (
+            <div className={styles.stateBlock}>
+              <div>
+                <strong>A conta ainda não possui um perfil financeiro.</strong>
+                <p>
+                  Você pode copiar o snapshot validado deste dispositivo para a conta ou continuar
+                  somente com a cópia local.
+                </p>
+              </div>
+              <div className={styles.actions}>
+                <Button
+                  size="sm"
+                  loading={isSaving}
+                  onClick={() => void migrateLocalProfile(false)}
+                >
+                  Salvar perfil local na conta
+                </Button>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  disabled={isSaving}
+                  onClick={keepLocalOnly}
+                >
+                  Manter somente local
+                </Button>
+              </div>
+            </div>
+          ) : comparison?.relation === "aligned" ? (
+            <div className={styles.stateBlock}>
+              <Status tone="success">Perfis alinhados</Status>
+              <div>
+                <strong>Perfil local e perfil da conta estão alinhados.</strong>
+                <p>Nenhuma gravação adicional é necessária. As duas cópias permanecem independentes.</p>
+              </div>
+            </div>
+          ) : comparison?.relation === "conflict" ? (
+            <div className={styles.stateBlock}>
+              <Alert tone="warning" title="Existe um conflito entre o dispositivo e a conta.">
+                <p>
+                  Nada será substituído automaticamente. Revise quais partes diferem e escolha
+                  explicitamente qual ação deseja executar.
+                </p>
+              </Alert>
+              <ul className={styles.differences} aria-label="Diferenças entre perfil local e da conta">
+                {comparison.differences.map((difference) => (
+                  <li key={difference}>{DIFFERENCE_LABELS[difference]}</li>
+                ))}
+              </ul>
+              <div className={styles.actions}>
+                <Button
+                  size="sm"
+                  loading={isSaving}
+                  onClick={() => void migrateLocalProfile(true)}
+                >
+                  Substituir perfil da conta pelo local
+                </Button>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  disabled={isSaving}
+                  onClick={keepLocalOnly}
+                >
+                  Manter somente local
+                </Button>
+              </div>
+            </div>
+          ) : null}
         </div>
-      ) : comparison?.relation === "conflict" ? (
-        <div className={styles.body}>
-          <strong>Existe um conflito entre o dispositivo e a conta.</strong>
-          <p>
-            Nada será substituído automaticamente. Revise quais partes diferem e escolha
-            explicitamente qual ação deseja executar.
+
+        {statusMessage === null ? null : (
+          <p className={styles.statusMessage} role="status">
+            {statusMessage}
           </p>
-          <ul className={styles.differences} aria-label="Diferenças entre perfil local e da conta">
-            {comparison.differences.map((difference) => (
-              <li key={difference}>{DIFFERENCE_LABELS[difference]}</li>
-            ))}
-          </ul>
-          <div className={styles.actions}>
-            <button
-              className={styles.primaryAction}
-              type="button"
-              disabled={isSaving}
-              onClick={() => void migrateLocalProfile(true)}
-            >
-              {isSaving ? "Substituindo…" : "Substituir perfil da conta pelo local"}
-            </button>
-            <button
-              className={styles.secondaryAction}
-              type="button"
-              disabled={isSaving}
-              onClick={keepLocalOnly}
-            >
-              Manter somente local
-            </button>
+        )}
+
+        <div className={styles.localFooter}>
+          <div>
+            <strong>Cópia deste dispositivo</strong>
+            <p>
+              Remover a cópia local é uma ação separada: não altera o perfil já salvo na conta e não
+              encerra sua sessão.
+            </p>
           </div>
+          <Button
+            variant="danger"
+            size="sm"
+            disabled={isSaving}
+            onClick={discardLocalProfile}
+          >
+            Remover cópia local
+          </Button>
         </div>
-      ) : null}
-
-      {statusMessage === null ? null : (
-        <p className={styles.statusMessage} role="status">
-          {statusMessage}
-        </p>
-      )}
-
-      <div className={styles.localFooter}>
-        <div>
-          <strong>Cópia deste dispositivo</strong>
-          <p>
-            Remover a cópia local é uma ação separada: não altera o perfil já salvo na conta e não
-            encerra sua sessão.
-          </p>
-        </div>
-        <button
-          className={styles.destructiveAction}
-          type="button"
-          disabled={isSaving}
-          onClick={discardLocalProfile}
-        >
-          Remover cópia local
-        </button>
-      </div>
+      </Surface>
     </section>
   );
 }
