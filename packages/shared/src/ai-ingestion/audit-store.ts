@@ -1,4 +1,4 @@
-import type { ExternalContentAuditRecord } from "./ingestion";
+import type { ExternalContentAuditRecord } from "./types";
 
 export interface ExternalContentAuditStore {
   findByFingerprint(fingerprintSha256: string): Promise<ExternalContentAuditRecord | null>;
