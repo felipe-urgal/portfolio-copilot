@@ -4,6 +4,20 @@ import { useState, type FormEvent } from "react";
 
 import { Money, type AssetClassCode, type MoneySnapshot } from "@portfolio-copilot/domain";
 
+import {
+  Button,
+  EmptyState,
+  Field,
+  FieldError,
+  HelpText,
+  Label,
+  SegmentedControl,
+  SegmentedControlOption,
+  Select,
+  Status,
+  TextInput,
+} from "@/components/ui";
+
 import { type ContributionBaselineSnapshot } from "./contribution-baseline-form";
 import { type ContributionConcentrationSnapshot } from "./contribution-concentration-form";
 import { ContributionCostSection } from "./contribution-cost-section";
@@ -43,13 +57,9 @@ function executionStatusLabel(status: "EXECUTABLE" | "BLOCKED_INELIGIBLE"): stri
   return status === "EXECUTABLE" ? "Executável" : "Bloqueado: inelegível";
 }
 
-function ErrorText({ id, message }: Readonly<{ id: string; message: string | undefined }>) {
+function ErrorMessage({ id, message }: Readonly<{ id: string; message: string | undefined }>) {
   if (message === undefined) return null;
-  return (
-    <p className={styles.fieldError} id={id} role="alert">
-      {message}
-    </p>
-  );
+  return <FieldError id={id}>{message}</FieldError>;
 }
 
 export function ContributionExecutionSection({
@@ -112,15 +122,17 @@ export function ContributionExecutionSection({
             negociável. Nenhum preço ou quantidade recomendada é calculado.
           </p>
         </div>
-        <span className={styles.status}>{execution === null ? "Configurar" : "Validado"}</span>
+        <Status tone={execution === null ? "neutral" : "success"}>
+          {execution === null ? "Configurar" : "Validado"}
+        </Status>
       </div>
 
       <form className={executionStyles.executionForm} noValidate onSubmit={handleSubmit}>
         {draft.destinations.length === 0 ? (
-          <div className={executionStyles.executionEmpty}>
-            <strong>Nenhum destino necessário</strong>
-            <p>Nenhuma classe possui alocação monetária positiva após a concentração.</p>
-          </div>
+          <EmptyState
+            title="Nenhum destino necessário"
+            description="Nenhuma classe possui alocação monetária positiva após a concentração."
+          />
         ) : (
           <div className={executionStyles.executionRows}>
             {draft.destinations.map((row) => {
@@ -146,14 +158,13 @@ export function ContributionExecutionSection({
                     </div>
                   </div>
 
-                  <div className={styles.fieldGroup}>
-                    <label htmlFor={assetSelectId}>Ativo local</label>
-                    <select
-                      className={executionStyles.assetSelect}
+                  <Field>
+                    <Label htmlFor={assetSelectId}>Ativo local</Label>
+                    <Select
                       id={assetSelectId}
                       value={row.assetId}
                       disabled={candidates.length === 0}
-                      aria-invalid={rowErrors?.assetId !== undefined}
+                      invalid={rowErrors?.assetId !== undefined}
                       aria-describedby={
                         rowErrors?.assetId ? `${assetSelectId}-error` : `${assetSelectId}-help`
                       }
@@ -167,55 +178,49 @@ export function ContributionExecutionSection({
                           {asset.name} — {instrumentTypeLabel(asset.instrumentType)}
                         </option>
                       ))}
-                    </select>
-                    <p className={styles.helpText} id={`${assetSelectId}-help`}>
+                    </Select>
+                    <HelpText id={`${assetSelectId}-help`}>
                       {candidates.length === 0
                         ? `Cadastre um ativo local de ${classLabel} antes de validar esta etapa.`
                         : "O AssetId é resolvido internamente a partir desta seleção."}
-                    </p>
-                    <ErrorText id={`${assetSelectId}-error`} message={rowErrors?.assetId} />
+                    </HelpText>
+                    <ErrorMessage id={`${assetSelectId}-error`} message={rowErrors?.assetId} />
+                  </Field>
+
+                  <div>
+                    <SegmentedControl
+                      legend="Elegibilidade"
+                      aria-describedby={
+                        rowErrors?.isEligible !== undefined ? eligibilityErrorId : undefined
+                      }
+                    >
+                      <SegmentedControlOption
+                        name={`execution-eligibility-${row.assetClass}`}
+                        checked={row.isEligible === true}
+                        onChange={() => updateDestination(row.assetClass, { isEligible: true })}
+                      >
+                        Elegível
+                      </SegmentedControlOption>
+                      <SegmentedControlOption
+                        name={`execution-eligibility-${row.assetClass}`}
+                        checked={row.isEligible === false}
+                        onChange={() => updateDestination(row.assetClass, { isEligible: false })}
+                      >
+                        Inelegível
+                      </SegmentedControlOption>
+                    </SegmentedControl>
+                    <ErrorMessage id={eligibilityErrorId} message={rowErrors?.isEligible} />
                   </div>
 
-                  <fieldset
-                    className={executionStyles.eligibilityFieldset}
-                    aria-invalid={rowErrors?.isEligible !== undefined}
-                    aria-describedby={
-                      rowErrors?.isEligible !== undefined ? eligibilityErrorId : undefined
-                    }
-                  >
-                    <legend>Elegibilidade</legend>
-                    <div className={executionStyles.eligibilityOptions}>
-                      <label>
-                        <input
-                          type="radio"
-                          name={`execution-eligibility-${row.assetClass}`}
-                          checked={row.isEligible === true}
-                          onChange={() => updateDestination(row.assetClass, { isEligible: true })}
-                        />
-                        <span>Elegível</span>
-                      </label>
-                      <label>
-                        <input
-                          type="radio"
-                          name={`execution-eligibility-${row.assetClass}`}
-                          checked={row.isEligible === false}
-                          onChange={() => updateDestination(row.assetClass, { isEligible: false })}
-                        />
-                        <span>Inelegível</span>
-                      </label>
-                    </div>
-                    <ErrorText id={eligibilityErrorId} message={rowErrors?.isEligible} />
-                  </fieldset>
-
-                  <div className={styles.fieldGroup}>
-                    <label htmlFor={minimumId}>Quantidade mínima negociável</label>
-                    <input
+                  <Field>
+                    <Label htmlFor={minimumId}>Quantidade mínima negociável</Label>
+                    <TextInput
                       id={minimumId}
                       type="text"
                       inputMode="decimal"
                       autoComplete="off"
                       value={row.minimumTradableQuantity}
-                      aria-invalid={rowErrors?.minimumTradableQuantity !== undefined}
+                      invalid={rowErrors?.minimumTradableQuantity !== undefined}
                       aria-describedby={
                         rowErrors?.minimumTradableQuantity
                           ? `${minimumId}-error`
@@ -227,30 +232,23 @@ export function ContributionExecutionSection({
                         })
                       }
                     />
-                    <p className={styles.helpText} id={`${minimumId}-help`}>
+                    <HelpText id={`${minimumId}-help`}>
                       Restrição operacional exata, até 12 casas. Não afirma que o valor alocado
                       consegue comprá-la.
-                    </p>
-                    <ErrorText
+                    </HelpText>
+                    <ErrorMessage
                       id={`${minimumId}-error`}
                       message={rowErrors?.minimumTradableQuantity}
                     />
-                  </div>
+                  </Field>
                 </div>
               );
             })}
           </div>
         )}
 
-        {errors.form ? (
-          <p className={styles.formError} role="alert">
-            {errors.form}
-          </p>
-        ) : null}
-
-        <button className={styles.primaryAction} type="submit">
-          Validar restrições de execução
-        </button>
+        {errors.form ? <FieldError>{errors.form}</FieldError> : null}
+        <Button type="submit">Validar restrições de execução</Button>
       </form>
 
       {execution !== null ? (
@@ -263,10 +261,10 @@ export function ContributionExecutionSection({
           </dl>
 
           {execution.destinations.length === 0 ? (
-            <div className={executionStyles.executionEmpty}>
-              <strong>Plano sem destinos</strong>
-              <p>Nenhuma alocação positiva exige destino nesta configuração.</p>
-            </div>
+            <EmptyState
+              title="Plano sem destinos"
+              description="Nenhuma alocação positiva exige destino nesta configuração."
+            />
           ) : (
             <div className={styles.tableScroller}>
               <table className={styles.resultTable}>
@@ -295,12 +293,11 @@ export function ContributionExecutionSection({
                             : moneyLabel(destination.executionAllocatedAmount)}
                         </td>
                         <td>
-                          <span
-                            className={executionStyles.executionState}
-                            data-status={destination.status}
+                          <Status
+                            tone={destination.status === "EXECUTABLE" ? "success" : "danger"}
                           >
                             {executionStatusLabel(destination.status)}
-                          </span>
+                          </Status>
                         </td>
                       </tr>
                     );
