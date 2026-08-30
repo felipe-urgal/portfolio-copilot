@@ -13,9 +13,11 @@ import {
   Icon,
   Label,
   LinkButton,
+  LoadingState,
   Metric,
   SegmentedControl,
   SegmentedControlOption,
+  Skeleton,
   Status,
   TextInput,
 } from "./index";
@@ -24,21 +26,26 @@ const TOKENS = readFileSync(new URL("../../styles/tokens.css", import.meta.url),
 
 describe("canonical UI primitives", () => {
   it("keeps loading actions disabled without replacing their accessible label", () => {
-    const html = renderToStaticMarkup(<Button loading>Salvar perfil</Button>);
+    const html = renderToStaticMarkup(
+      <Button loading aria-busy={false}>
+        Salvar perfil
+      </Button>,
+    );
 
     expect(html).toContain('aria-busy="true"');
     expect(html).toContain("disabled");
     expect(html).toContain("Salvar perfil");
   });
 
-  it("renders a disabled LinkButton as non-navigable content", () => {
+  it("renders a disabled LinkButton as non-navigable content without losing its accessible label", () => {
     const html = renderToStaticMarkup(
-      <LinkButton href="/dashboard" disabled>
+      <LinkButton href="/dashboard" disabled aria-label="Dashboard indisponível">
         Abrir dashboard
       </LinkButton>,
     );
 
     expect(html).toContain('aria-disabled="true"');
+    expect(html).toContain('aria-label="Dashboard indisponível"');
     expect(html).not.toContain('href="/dashboard"');
     expect(html).not.toContain("<a");
   });
@@ -117,6 +124,15 @@ describe("canonical UI primitives", () => {
     expect(html).toContain("Não foi possível calcular");
   });
 
+  it("keeps loading and skeleton semantics explicit", () => {
+    const loading = renderToStaticMarkup(<LoadingState data-state="loading" />);
+    const skeleton = renderToStaticMarkup(<Skeleton data-state="placeholder" />);
+
+    expect(loading).toContain('role="status"');
+    expect(loading).toContain('aria-live="polite"');
+    expect(skeleton).toContain('aria-hidden="true"');
+  });
+
   it("separates decorative and labelled icon semantics", () => {
     const decorative = renderToStaticMarkup(
       <Icon>
@@ -155,6 +171,11 @@ describe("canonical design tokens", () => {
     ]) {
       expect(TOKENS).toContain(token);
     }
+  });
+
+  it("keeps focus and muted text on the reviewed accessible baseline", () => {
+    expect(TOKENS).toContain("--color-focus-ring: #4f46e5;");
+    expect(TOKENS).toContain("--color-text-muted: #6b7280;");
   });
 
   it("has a reduced-motion contract at the token boundary", () => {
