@@ -354,9 +354,7 @@ function GoalEditor({
               id={`${goal.clientId}-type`}
               value={goal.type}
               invalid={typeError !== undefined}
-              aria-describedby={
-                typeError === undefined ? undefined : `${goal.clientId}-type-error`
-              }
+              aria-describedby={typeError === undefined ? undefined : `${goal.clientId}-type-error`}
               onChange={(event) =>
                 dispatch({
                   type: "update-goal",
@@ -410,9 +408,7 @@ function GoalEditor({
               value={goal.targetDate}
               aria-required={dateRequiredByDomain}
               invalid={dateError !== undefined}
-              aria-describedby={
-                dateError === undefined ? undefined : `${goal.clientId}-date-error`
-              }
+              aria-describedby={dateError === undefined ? undefined : `${goal.clientId}-date-error`}
               onChange={(event) =>
                 dispatch({
                   type: "update-goal",
