@@ -4,6 +4,17 @@ import { useState, type FormEvent } from "react";
 
 import { Money, type AssetClassCode, type MoneySnapshot } from "@portfolio-copilot/domain";
 
+import {
+  Button,
+  ChoiceCard,
+  Field,
+  FieldError,
+  HelpText,
+  Label,
+  Status,
+  TextInput,
+} from "@/components/ui";
+
 import { type ContributionBaselineSnapshot } from "./contribution-baseline-form";
 import {
   createContributionConcentrationSnapshot,
@@ -38,14 +49,18 @@ function statusLabel(status: ContributionConcentrationStatus): string {
   return "Limite rígido aplicado";
 }
 
-function ErrorText({ id, message }: Readonly<{ id: string; message: string | undefined }>) {
-  if (message === undefined) return null;
+function statusTone(
+  status: ContributionConcentrationStatus,
+): "neutral" | "success" | "warning" | "danger" {
+  if (status === "WITHIN_LIMITS") return "success";
+  if (status === "SOFT_ALERT") return "warning";
+  if (status === "HARD_LIMITED") return "danger";
+  return "neutral";
+}
 
-  return (
-    <p className={styles.fieldError} id={id} role="alert">
-      {message}
-    </p>
-  );
+function ErrorMessage({ id, message }: Readonly<{ id: string; message: string | undefined }>) {
+  if (message === undefined) return null;
+  return <FieldError id={id}>{message}</FieldError>;
 }
 
 export function ContributionConcentrationSection({
@@ -104,7 +119,9 @@ export function ContributionConcentrationSection({
             novo aporte, sem vender posição existente nem redistribuir o valor cortado.
           </p>
         </div>
-        <span className={styles.status}>{concentration === null ? "Configurar" : "Validado"}</span>
+        <Status tone={concentration === null ? "neutral" : "success"}>
+          {concentration === null ? "Configurar" : "Validado"}
+        </Status>
       </div>
 
       <form className={concentrationStyles.form} noValidate onSubmit={handleSubmit}>
@@ -126,28 +143,27 @@ export function ContributionConcentrationSection({
                 </p>
 
                 <div className={concentrationStyles.controls}>
-                  <label className={concentrationStyles.toggle}>
-                    <input
-                      type="checkbox"
-                      checked={row.enabled}
-                      onChange={(event) =>
-                        updateRow(row.assetClass, { enabled: event.target.checked })
-                      }
-                    />
-                    <span>Configurar limite nesta classe</span>
-                  </label>
+                  <ChoiceCard
+                    type="checkbox"
+                    title="Configurar limite nesta classe"
+                    description="Ative somente quando existir uma restrição explícita."
+                    checked={row.enabled}
+                    onChange={(event) =>
+                      updateRow(row.assetClass, { enabled: event.target.checked })
+                    }
+                  />
 
                   <div className={concentrationStyles.limitFields}>
-                    <div className={styles.fieldGroup}>
-                      <label htmlFor={softId}>Limite de alerta (%)</label>
-                      <input
+                    <Field>
+                      <Label htmlFor={softId}>Limite de alerta (%)</Label>
+                      <TextInput
                         id={softId}
                         type="text"
                         inputMode="decimal"
                         autoComplete="off"
                         disabled={!row.enabled}
                         value={row.softMaxWeight}
-                        aria-invalid={
+                        invalid={
                           rowErrors?.softMaxWeight !== undefined || rowErrors?.range !== undefined
                         }
                         aria-describedby={
@@ -161,22 +177,20 @@ export function ContributionConcentrationSection({
                           updateRow(row.assetClass, { softMaxWeight: event.target.value })
                         }
                       />
-                      <p className={styles.helpText} id={`${softId}-help`}>
-                        Alert-only. Não reduz valor sozinho.
-                      </p>
-                      <ErrorText id={`${softId}-error`} message={rowErrors?.softMaxWeight} />
-                    </div>
+                      <HelpText id={`${softId}-help`}>Alert-only. Não reduz valor sozinho.</HelpText>
+                      <ErrorMessage id={`${softId}-error`} message={rowErrors?.softMaxWeight} />
+                    </Field>
 
-                    <div className={styles.fieldGroup}>
-                      <label htmlFor={hardId}>Limite rígido (%)</label>
-                      <input
+                    <Field>
+                      <Label htmlFor={hardId}>Limite rígido (%)</Label>
+                      <TextInput
                         id={hardId}
                         type="text"
                         inputMode="decimal"
                         autoComplete="off"
                         disabled={!row.enabled}
                         value={row.hardMaxWeight}
-                        aria-invalid={
+                        invalid={
                           rowErrors?.hardMaxWeight !== undefined || rowErrors?.range !== undefined
                         }
                         aria-describedby={
@@ -190,29 +204,22 @@ export function ContributionConcentrationSection({
                           updateRow(row.assetClass, { hardMaxWeight: event.target.value })
                         }
                       />
-                      <p className={styles.helpText} id={`${hardId}-help`}>
+                      <HelpText id={`${hardId}-help`}>
                         Pode bloquear apenas o novo aporte desta classe.
-                      </p>
-                      <ErrorText id={`${hardId}-error`} message={rowErrors?.hardMaxWeight} />
-                    </div>
+                      </HelpText>
+                      <ErrorMessage id={`${hardId}-error`} message={rowErrors?.hardMaxWeight} />
+                    </Field>
                   </div>
                 </div>
 
-                <ErrorText id={rangeId} message={rowErrors?.range} />
+                <ErrorMessage id={rangeId} message={rowErrors?.range} />
               </fieldset>
             );
           })}
         </div>
 
-        {errors.form ? (
-          <p className={styles.formError} role="alert">
-            {errors.form}
-          </p>
-        ) : null}
-
-        <button className={styles.primaryAction} type="submit">
-          Aplicar limites de concentração
-        </button>
+        {errors.form ? <FieldError>{errors.form}</FieldError> : null}
+        <Button type="submit">Aplicar limites de concentração</Button>
       </form>
 
       {concentration !== null ? (
@@ -263,9 +270,9 @@ export function ContributionConcentrationSection({
                       {moneyLabel(allocation.blockedAmount)}
                     </td>
                     <td>
-                      <span className={concentrationStyles.state} data-status={allocation.status}>
+                      <Status tone={statusTone(allocation.status)}>
                         {statusLabel(allocation.status)}
-                      </span>
+                      </Status>
                     </td>
                   </tr>
                 ))}
