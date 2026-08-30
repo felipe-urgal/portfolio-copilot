@@ -24,7 +24,7 @@ Este catálogo separa **capability implementada**, **superfície web atual**, **
 | Investment Engine | IMPLEMENTADO — engine | Quality, Opportunity, Dividend, valuation, Portfolio Fit e ranking |
 | Investment Thesis | IMPLEMENTADO — engine | versionamento, eventos, reviews e lifecycle |
 | ingestão segura para IA | IMPLEMENTADO — foundation | conteúdo permanece untrusted; não equivale a Copiloto pronto |
-| Dashboard Assistant-First | IMPLEMENTADO — web | R6 / #78 / PR #89; somente fatos reais e estados honestos |
+| Dashboard Assistant-First | IMPLEMENTADO — web | R6 / #78 / PR #90; somente fatos reais e estados honestos |
 | Carteira final | REDESIGN | #79 / R7 |
 | estados transversais finais | REDESIGN | #80 / R8 |
 | visual/a11y/responsive QA completo | REDESIGN | #81 / R9 |
@@ -36,7 +36,7 @@ Este catálogo separa **capability implementada**, **superfície web atual**, **
 
 ## Dashboard
 
-Implementado no R6 (#78 / PR #89):
+Implementado no R6 (#78 / PR #90):
 
 - greeting derivado da identidade autenticada;
 - contexto do perfil financeiro compartilhado;
