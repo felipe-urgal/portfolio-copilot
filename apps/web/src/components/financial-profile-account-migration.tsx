@@ -193,7 +193,11 @@ export function FinancialProfileAccountMigration({
           ) : accountState.status === "error" ? (
             <Alert tone="danger" title="Não foi possível consultar o perfil da conta.">
               <p>O perfil local continua intacto e nenhum dado financeiro foi enviado.</p>
-              <Button variant="secondary" size="sm" onClick={() => void loadAccountProfile()}>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => void loadAccountProfile()}
+              >
                 Tentar novamente
               </Button>
             </Alert>
