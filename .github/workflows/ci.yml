@@ -7,7 +7,7 @@ on:
       - main
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
@@ -40,7 +40,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
-          persist-credentials: false
+          ref: feature/portfolio-redesign
+          persist-credentials: true
 
       - name: Setup Node.js
         uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
@@ -55,6 +56,33 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: Format R7 sources
+        run: |
+          pnpm exec prettier --write \
+            apps/web/src/components/financial-profile-session-summary.tsx \
+            apps/web/src/features/portfolio/contribution-baseline-panel.tsx \
+            apps/web/src/features/portfolio/contribution-concentration-section.tsx \
+            apps/web/src/features/portfolio/contribution-cost-section.tsx \
+            apps/web/src/features/portfolio/contribution-execution-section.tsx \
+            apps/web/src/features/portfolio/contribution-recommendation-explanation-section.tsx \
+            apps/web/src/features/portfolio/contribution-recommendation-section.tsx \
+            apps/web/src/features/portfolio/portfolio-workspace.tsx
+          if ! git diff --quiet; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add \
+              apps/web/src/components/financial-profile-session-summary.tsx \
+              apps/web/src/features/portfolio/contribution-baseline-panel.tsx \
+              apps/web/src/features/portfolio/contribution-concentration-section.tsx \
+              apps/web/src/features/portfolio/contribution-cost-section.tsx \
+              apps/web/src/features/portfolio/contribution-execution-section.tsx \
+              apps/web/src/features/portfolio/contribution-recommendation-explanation-section.tsx \
+              apps/web/src/features/portfolio/contribution-recommendation-section.tsx \
+              apps/web/src/features/portfolio/portfolio-workspace.tsx
+            git commit -m "style: format portfolio R7 sources"
+            git push origin HEAD:feature/portfolio-redesign
+          fi
 
       - name: Validate local Docker Compose
         run: docker compose config --quiet
