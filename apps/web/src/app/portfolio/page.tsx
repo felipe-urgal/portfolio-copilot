@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 
 import { APP_NAME } from "@portfolio-copilot/shared";
 
+import { AppShell } from "@/components/app-shell";
 import { FinancialProfileSessionSummary } from "@/components/financial-profile-session-summary";
-import { ProductShell } from "@/components/product-shell";
 import { PortfolioWorkspace } from "@/features/portfolio/portfolio-workspace";
 import { requireAuthenticatedIdentity } from "@/lib/identity-server";
 
@@ -17,9 +17,9 @@ export default async function PortfolioPage() {
   const identity = await requireAuthenticatedIdentity();
 
   return (
-    <ProductShell activeRoute="/portfolio" identity={identity}>
+    <AppShell activeRoute="/portfolio" identity={identity}>
       <FinancialProfileSessionSummary />
       <PortfolioWorkspace />
-    </ProductShell>
+    </AppShell>
   );
 }
