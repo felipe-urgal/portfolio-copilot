@@ -71,7 +71,7 @@
   --color-surface-strong: #e9edf4;
   --color-text-primary: #161922;
   --color-text-secondary: #5d6574;
-  --color-text-muted: #7a8291;
+  --color-text-muted: #6b7280;
   --color-text-inverse: #ffffff;
   --color-border-subtle: #e1e5ed;
   --color-border-strong: #cbd2de;
@@ -101,7 +101,7 @@
   --color-danger-border: #fecaca;
 
   /* Focus */
-  --color-focus-ring: rgba(79, 70, 229, 0.3);
+  --color-focus-ring: #4f46e5;
   --focus-ring-width: 3px;
   --focus-ring-offset: 3px;
 
