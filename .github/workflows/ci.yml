@@ -62,6 +62,12 @@ jobs:
       - name: Format check
         run: pnpm format:check
 
+      - name: Show thesis formatting diff
+        if: failure()
+        run: |
+          pnpm exec prettier --write packages/investment-engine/src/thesis.ts packages/investment-engine/src/thesis-events.ts packages/investment-engine/src/thesis.test.ts
+          git diff -- packages/investment-engine/src/thesis.ts packages/investment-engine/src/thesis-events.ts packages/investment-engine/src/thesis.test.ts
+
       - name: Lint
         run: pnpm lint
 
