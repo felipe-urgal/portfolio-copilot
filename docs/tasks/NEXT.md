@@ -1,105 +1,104 @@
-# Próxima Atividade — UX/UI R6: implementar dashboard baseado no Protótipo 3
+# Próxima Atividade — UX/UI R7: redesenhar carteira e workspace financeiro
 
-**Status:** READY após merge da #77 / PR #88
+**Status:** READY após merge da #78 / PR #89
 
 ## Issue canônica
 
-- #78 — `UX/UI R6: implementar dashboard baseado no Protótipo 3`
+- #79 — `UX/UI R7: redesenhar carteira e workspace financeiro`
 - iniciativa guarda-chuva: #69
 
 ## Fundação concluída
 
-O R6 parte das principais estruturas do produto já padronizadas:
+O R7 parte das superfícies e contratos já padronizados:
 
 - #72 — R0 audit do frontend anterior;
 - #73 — R1 arquitetura da informação + direção do Protótipo 3;
 - #74 — R2 design tokens e primitives canônicas;
 - #75 — R3 AppShell/sidebar/navegação responsiva;
-- #76 — R4 focused auth e sessão;
-- #77 — R5 onboarding guiado sobre primitives R2;
+- #76 — R4 focused auth/session;
+- #77 — R5 onboarding guiado;
+- #78 / PR #89 — R6 Dashboard orientado a contexto, panorama e próxima ação;
 - `docs/design/R1-ASSISTANT-FIRST-APP-SPEC.md`;
 - `docs/design/DESIGN-SYSTEM.md`;
 - `docs/design/APP-SHELL.md`;
 - `docs/design/AUTH-SESSION.md`;
-- `docs/design/ONBOARDING.md`.
+- `docs/design/ONBOARDING.md`;
+- `docs/design/DASHBOARD.md`.
 
-O Dashboard é a superfície mais diretamente representada pelo Protótipo 3, mas a implementação deve usar somente fatos realmente disponíveis no sistema. A aparência do mockup é referência de hierarchy/composição, não autorização para inventar patrimônio, retorno, market data, teses, eventos ou recomendações.
+A Carteira continua sendo a superfície mais densa do produto e hoje concentra criação/configuração, ativos, posições, ledger, transações e aporte na mesma workspace. O R7 deve reorganizar essa experiência sem alterar as fontes de verdade ou reimplementar o domínio na UI.
 
-## Objetivo do R6
+## Objetivo do R7
 
-Transformar `/dashboard` em um workspace financeiro reconhecível como a direção aprovada: panorama primeiro, atenção/próxima ação depois e informação técnica somente em segunda ordem.
+Transformar `/portfolio` em um workspace financeiro por tarefas, escaneável e progressivo, preservando o Transaction Ledger, as projeções determinísticas e o pipeline de aporte como fontes de verdade.
 
 ## Escopo
 
-### Contexto inicial
+### Overview e configuração
 
-- greeting/contexto curto quando houver fonte real;
-- estado do onboarding/perfil financeiro;
-- próxima ação segura e concreta;
-- nenhuma limitação técnica do MVP como título dominante da página.
+- identidade/nome/moeda da carteira;
+- estado atual da configuração;
+- próxima tarefa contextual;
+- detalhes técnicos/UUIDs fora da primeira hierarquia quando não necessários.
 
-### KPIs
+### Ativos e posições
 
-- compactos e somente para métricas calculáveis a partir de fontes reais;
-- ausência de dado não vira `R$ 0`, número ilustrativo ou placeholder enganoso;
-- quando necessário, usar estado explícito de `não calculável` com ação possível;
-- primitives `Metric` / `FinancialValue` quando compatíveis.
+- separar claramente catálogo local de ativo e posição projetada;
+- quantidade/classe/instrumento com hierarchy legível;
+- sem preço, market value ou P&L inventado;
+- estado `sem posição` distinto de `sem ativo` e `sem transação`.
 
-### Panorama da carteira
+### Transaction Ledger
 
-- principal bloco analítico da página quando houver carteira/dados;
-- composição, posição agregada, target vs. atual e gaps somente quando derivados de fontes existentes;
-- estados vazios orientam criação/configuração em vez de preencher layout com dados fictícios;
-- provenance/IDs/reason codes ficam em detalhe e não na primeira hierarquia.
+- manter o ledger como fonte de fatos;
+- separar criação de transação da consulta do histórico;
+- tornar tipo, data, ativo, quantidade e settlement escaneáveis;
+- erro de validação nunca vira fato parcial.
 
-### Atenção e próximos passos
+### Aporte
 
-- completar perfil;
-- criar/configurar carteira;
-- registrar transações;
-- revisar aporte quando houver baseline real;
-- stale/missing data quando realmente detectado;
-- teses/eventos somente quando capacidades reais já existirem e houver dado disponível.
+Organizar o pipeline real em uma jornada inteligível:
 
-### Copiloto/context rail
+```text
+baseline
+  -> política
+  -> concentração
+  -> custos/restrições
+  -> recomendação determinística
+  -> explicação
+  -> conclusão registrada
+```
 
-- respeitar a arquitetura Assistant-First do R1;
-- não inventar a UI funcional da #45;
-- context rail pode existir somente como composição neutra útil ou para capacidade real já entregue;
-- nenhuma resposta falsa, sugestão gerada ou CTA que simule inteligência inexistente.
+Nenhuma etapa deve sugerir execução de ordem em corretora.
 
 ### Estados e responsive
 
 - desktop/tablet/mobile;
-- empty/loading/error/stale quando aplicável;
-- layout central permanece dominante quando context rail deixa de caber;
-- nenhuma informação essencial depende de hover;
-- usar tokens/primitives R2 e AppShell R3.
+- empty/missing/error e recuperação;
+- progressive disclosure para reason codes/provenance/snapshots;
+- primitives R2 e AppShell R3 como únicas foundations visuais.
 
 ## Regras
 
-- não inventar market data, patrimônio, retorno, score ou recomendação;
-- não usar números do Protótipo 3 como seed funcional;
-- não criar rota/capability fictícia para completar a composição;
-- não reabrir AppShell, auth ou onboarding;
-- não iniciar redesign completo da Carteira (#79);
-- não implementar a #45 como efeito colateral;
-- preservar ownership e fontes de verdade atuais;
-- qualquer agente de IA deve cumprir `AGENTS.md`, inclusive auto code review fullstack sênior completo antes do merge.
+- Transaction Ledger permanece fonte de verdade das posições;
+- domínio e pipeline financeiro não são reproduzidos em CSS/React;
+- não inventar preço, patrimônio, market value, P&L ou Market Data;
+- não copiar o workspace/CSS atual para outro módulo e chamar isso de redesign;
+- não alterar persistência/ownership como efeito colateral visual;
+- mudanças funcionais descobertas devem virar vertical próprio;
+- cumprir integralmente `AGENTS.md`, inclusive auto code review fullstack sênior.
 
 ## Gate
 
-R7 (#79) só começa quando:
+R8 (#80) só começa quando:
 
-- Dashboard priorizar panorama/contexto/próxima ação em vez de limitações técnicas;
-- todos os números visíveis tiverem fonte real e determinística;
-- ausência de dados estiver representada honestamente;
-- layout estiver alinhado ao Protótipo 3 sem capabilities falsas;
+- tarefas principais da Carteira estiverem separadas e reconhecíveis;
+- ledger/posição/aporte preservarem comportamento determinístico;
+- detalhes técnicos não dominarem a primeira hierarquia;
+- formulários/feedback/ações usarem contratos canônicos;
 - desktop/mobile estiverem definidos no código;
-- `pnpm check` estiver verde;
-- CI do head final estiver verde;
-- auto code review fullstack sênior estiver concluído, com findings corrigidos e nenhum finding aberto;
-- docs/issues estiverem reconciliados conforme `docs/DOCUMENTATION-MAP.md`.
+- CI do head final estiver integralmente verde;
+- auto code review fullstack sênior estiver concluído sem finding aberto;
+- docs/issues estiverem reconciliados.
 
 ## Sequência
 
@@ -107,14 +106,14 @@ R7 (#79) só começa quando:
 #72 R0 audit ✓
   -> #73 R1 app spec ✓
   -> #74 R2 design system ✓
-  -> #75 R3 AppShell/sidebar ✓
+  -> #75 R3 AppShell ✓
   -> #76 R4 auth ✓
   -> #77 R5 onboarding ✓
-  -> #78 R6 dashboard
-  -> #79 R7 carteira
-  -> #80 R8 estados transversais
-  -> #81 R9 accessibility/responsive/fidelity QA
-  -> R10 fechamento da #69
+  -> #78 R6 dashboard ✓
+  -> #79 R7 portfolio
+  -> #80 R8 estados/componentes
+  -> #81 R9 a11y/responsive/fidelity
+  -> R10 / fechamento #69
 ```
 
 ## Referências canônicas
@@ -127,7 +126,8 @@ R7 (#79) só começa quando:
 - `docs/design/APP-SHELL.md`;
 - `docs/design/AUTH-SESSION.md`;
 - `docs/design/ONBOARDING.md`;
+- `docs/design/DASHBOARD.md`;
 - `docs/UX-UI-REDESIGN-ROADMAP.md`;
 - `docs/ROADMAP.md`.
 
-A #45 continua sem UI funcional temporária durante o redesign. Qualquer futura superfície de Copiloto deve nascer sobre os contratos visuais fechados e sobre dados estruturados reais.
+A #45 continua sem UI funcional temporária durante a #69. A futura superfície do Copiloto deve nascer sobre os contratos finais e consumir dados estruturados reais.
