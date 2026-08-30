@@ -389,28 +389,26 @@ export function PortfolioWorkspace({
         </div>
       ) : (
         <>
-          <div className={styles.taskTabs} role="tablist" aria-label="Tarefas da carteira">
+          <nav className={styles.taskTabs} aria-label="Tarefas da carteira">
             {PORTFOLIO_TASKS.map((task) => (
               <Button
                 key={task.id}
-                role="tab"
                 size="sm"
                 variant={activeTask === task.id ? "secondary" : "ghost"}
-                aria-selected={activeTask === task.id}
+                aria-current={activeTask === task.id ? "page" : undefined}
                 aria-controls={`portfolio-panel-${task.id}`}
-                id={`portfolio-tab-${task.id}`}
+                id={`portfolio-task-${task.id}`}
                 onClick={() => setActiveTask(task.id)}
               >
                 {task.label}
               </Button>
             ))}
-          </div>
+          </nav>
 
           <section
             className={styles.taskPanel}
             id="portfolio-panel-overview"
-            role="tabpanel"
-            aria-labelledby="portfolio-tab-overview"
+            aria-labelledby="portfolio-task-overview"
             hidden={activeTask !== "overview"}
           >
             <div className={styles.overviewGrid}>
@@ -513,8 +511,7 @@ export function PortfolioWorkspace({
           <section
             className={styles.taskPanel}
             id="portfolio-panel-assets"
-            role="tabpanel"
-            aria-labelledby="portfolio-tab-assets"
+            aria-labelledby="portfolio-task-assets"
             hidden={activeTask !== "assets"}
           >
             <div className={styles.assetGrid}>
@@ -699,8 +696,7 @@ export function PortfolioWorkspace({
           <section
             className={styles.taskPanel}
             id="portfolio-panel-transactions"
-            role="tabpanel"
-            aria-labelledby="portfolio-tab-transactions"
+            aria-labelledby="portfolio-task-transactions"
             hidden={activeTask !== "transactions"}
           >
             <div className={styles.transactionGrid}>
@@ -920,8 +916,7 @@ export function PortfolioWorkspace({
           <section
             className={styles.taskPanel}
             id="portfolio-panel-contribution"
-            role="tabpanel"
-            aria-labelledby="portfolio-tab-contribution"
+            aria-labelledby="portfolio-task-contribution"
             hidden={activeTask !== "contribution"}
           >
             <Alert tone="info" title="Aporte é planejamento, não execução de ordem">
@@ -934,8 +929,7 @@ export function PortfolioWorkspace({
           <section
             className={styles.taskPanel}
             id="portfolio-panel-settings"
-            role="tabpanel"
-            aria-labelledby="portfolio-tab-settings"
+            aria-labelledby="portfolio-task-settings"
             hidden={activeTask !== "settings"}
           >
             <div className={styles.settingsGrid}>
