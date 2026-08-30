@@ -1,13 +1,9 @@
-import { AssetId } from "@portfolio-copilot/domain";
+import { AssetId, PortfolioId } from "@portfolio-copilot/domain";
 
 import { normalizeEvaluationInstant } from "./evidence";
-import type {
-  InvestmentScoreInsufficientData,
-  InvestmentScoreResult,
-  InvestmentScoreSnapshot,
-} from "./score";
-import type { PortfolioFitInsufficientData, PortfolioFitResult, PortfolioFitSnapshot } from "./portfolio-fit";
+import type { PortfolioFitResult, PortfolioFitSnapshot } from "./portfolio-fit";
 import type { PortfolioRankingMethodology } from "./portfolio-ranking-methodology";
+import type { InvestmentScoreResult, InvestmentScoreSnapshot } from "./score";
 
 export type InvestmentRankingInsufficientReason =
   | "QUALITY_INSUFFICIENT_DATA"
@@ -15,7 +11,9 @@ export type InvestmentRankingInsufficientReason =
   | "PORTFOLIO_FIT_INSUFFICIENT_DATA"
   | "DIMENSION_AS_OF_MISMATCH"
   | "ANALYTICAL_METHODOLOGY_MISMATCH"
-  | "PORTFOLIO_FIT_METHODOLOGY_MISMATCH";
+  | "ANALYTICAL_CLASSIFICATION_MISMATCH"
+  | "PORTFOLIO_FIT_METHODOLOGY_MISMATCH"
+  | "PORTFOLIO_CONTEXT_MISMATCH";
 
 export type InvestmentCandidateRankingInput = Readonly<{
   assetId: string;
@@ -25,6 +23,7 @@ export type InvestmentCandidateRankingInput = Readonly<{
 }>;
 
 export type InvestmentRankingEvaluationInput = Readonly<{
+  portfolioId: string;
   evaluationAsOf: string;
   candidates: readonly InvestmentCandidateRankingInput[];
 }>;
@@ -63,6 +62,7 @@ export type InvestmentCandidateRankingInsufficientData = Readonly<{
 
 export type InvestmentRadarSnapshot = Readonly<{
   status: "RANKED";
+  portfolioId: string;
   evaluationAsOf: string;
   methodologyId: string;
   methodologyVersion: string;
@@ -78,7 +78,10 @@ export class InvalidInvestmentRankingInputError extends Error {
   }
 }
 
-function contribution(scoreBps: number, weightBps: number): InvestmentRankingDimensionContribution {
+function contribution(
+  scoreBps: number,
+  weightBps: number,
+): InvestmentRankingDimensionContribution {
   return Object.freeze({
     scoreBps,
     weightBps,
@@ -124,6 +127,17 @@ function uniqueSorted(values: readonly string[]): readonly string[] {
   return Object.freeze([...new Set(values)].sort());
 }
 
+function sameAnalyticalClassification(
+  quality: InvestmentScoreResult,
+  opportunity: InvestmentScoreResult,
+): boolean {
+  return (
+    quality.classification.assetClass === opportunity.classification.assetClass &&
+    quality.classification.instrumentType === opportunity.classification.instrumentType &&
+    quality.classification.sector === opportunity.classification.sector
+  );
+}
+
 function assertCandidateShape(candidate: InvestmentCandidateRankingInput, assetId: string): void {
   if (candidate.quality.kind !== "QUALITY") {
     throw new InvalidInvestmentRankingInputError(
@@ -133,11 +147,6 @@ function assertCandidateShape(candidate: InvestmentCandidateRankingInput, assetI
   if (candidate.opportunity.kind !== "OPPORTUNITY") {
     throw new InvalidInvestmentRankingInputError(
       `Candidate ${assetId} opportunity dimension must have kind OPPORTUNITY.`,
-    );
-  }
-  if (candidate.portfolioFit.kind !== "PORTFOLIO_FIT") {
-    throw new InvalidInvestmentRankingInputError(
-      `Candidate ${assetId} portfolio fit dimension must have kind PORTFOLIO_FIT.`,
     );
   }
   if (
@@ -173,6 +182,7 @@ function insufficientCandidate(
 
 function scoreCandidate(
   methodology: PortfolioRankingMethodology,
+  portfolioId: string,
   evaluationAsOf: string,
   candidate: InvestmentCandidateRankingInput,
 ): InvestmentCandidateRankingSnapshot | InvestmentCandidateRankingInsufficientData {
@@ -181,8 +191,12 @@ function scoreCandidate(
 
   const reasons: InvestmentRankingInsufficientReason[] = [];
   if (candidate.quality.status !== "SCORED") reasons.push("QUALITY_INSUFFICIENT_DATA");
-  if (candidate.opportunity.status !== "SCORED") reasons.push("OPPORTUNITY_INSUFFICIENT_DATA");
-  if (candidate.portfolioFit.status !== "SCORED") reasons.push("PORTFOLIO_FIT_INSUFFICIENT_DATA");
+  if (candidate.opportunity.status !== "SCORED") {
+    reasons.push("OPPORTUNITY_INSUFFICIENT_DATA");
+  }
+  if (candidate.portfolioFit.status !== "SCORED") {
+    reasons.push("PORTFOLIO_FIT_INSUFFICIENT_DATA");
+  }
 
   if (
     candidate.quality.evaluationAsOf !== evaluationAsOf ||
@@ -199,11 +213,19 @@ function scoreCandidate(
     reasons.push("ANALYTICAL_METHODOLOGY_MISMATCH");
   }
 
+  if (!sameAnalyticalClassification(candidate.quality, candidate.opportunity)) {
+    reasons.push("ANALYTICAL_CLASSIFICATION_MISMATCH");
+  }
+
   if (
     candidate.portfolioFit.methodologyId !== methodology.methodologyId ||
     candidate.portfolioFit.methodologyVersion !== methodology.version
   ) {
     reasons.push("PORTFOLIO_FIT_METHODOLOGY_MISMATCH");
+  }
+
+  if (candidate.portfolioFit.portfolioId !== portfolioId) {
+    reasons.push("PORTFOLIO_CONTEXT_MISMATCH");
   }
 
   if (reasons.length > 0) {
@@ -246,6 +268,7 @@ export function rankInvestmentCandidates(
   methodology: PortfolioRankingMethodology,
   input: InvestmentRankingEvaluationInput,
 ): InvestmentRadarSnapshot {
+  const portfolioId = PortfolioId.from(input.portfolioId).toString();
   const evaluationAsOf = normalizeEvaluationInstant("evaluationAsOf", input.evaluationAsOf);
   const seenAssetIds = new Set<string>();
   const ranked: InvestmentCandidateRankingSnapshot[] = [];
@@ -258,7 +281,7 @@ export function rankInvestmentCandidates(
     }
     seenAssetIds.add(assetId);
 
-    const result = scoreCandidate(methodology, evaluationAsOf, candidate);
+    const result = scoreCandidate(methodology, portfolioId, evaluationAsOf, candidate);
     if (result.status === "RANKED") ranked.push(result);
     else insufficient.push(result);
   }
@@ -283,6 +306,7 @@ export function rankInvestmentCandidates(
 
   return Object.freeze({
     status: "RANKED",
+    portfolioId,
     evaluationAsOf,
     methodologyId: methodology.methodologyId,
     methodologyVersion: methodology.version,
