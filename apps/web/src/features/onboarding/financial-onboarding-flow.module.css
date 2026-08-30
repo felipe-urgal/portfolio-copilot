@@ -169,6 +169,13 @@
 
 .goalEditor {
   min-width: 0;
+  padding-block: var(--space-4);
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+.goalEditor:first-child {
+  padding-top: 0;
+  border-top: 0;
 }
 
 .goalHeader {
