@@ -4,31 +4,35 @@ O roadmap é ordenado por redução de risco. Fases posteriores não devem bloqu
 
 ## Intervenção estratégica — Redesign completo UX/UI — EM ANDAMENTO
 
-A evolução das superfícies visuais entra em uma pausa estratégica para executar a issue #69 — `UX/UI: redesign completo do app e novo design system`.
+A evolução das superfícies visuais está priorizando a issue #69 — `UX/UI: redesign completo do app com base no Protótipo 3`.
 
-O redesign cobre **todo o app web**, não apenas uma tela: auth, onboarding, shell, dashboard, carteira, componentes financeiros, estados transversais e responsividade.
+O redesign cobre **todo o app web**: auth, onboarding, shell, dashboard, carteira, componentes financeiros, estados transversais e responsividade.
 
 ### Direção visual aprovada
 
-O **Protótipo 3 — Assistant-First Workspace** foi escolhido como referência visual canônica da iniciativa. Ele não é apenas inspiração: R1 deve refiná-lo e expandi-lo para todas as superfícies, preservando sua arquitetura, hierarquia e linguagem visual, sem inventar métricas ou alterar regras de domínio para reproduzir dados ilustrativos.
+O **Protótipo 3 — Assistant-First Workspace** é a referência visual canônica. R1 deve refiná-lo e expandi-lo para todas as superfícies, preservando arquitetura, hierarquia e linguagem visual, sem inventar métricas ou alterar regras de domínio para reproduzir dados ilustrativos.
 
-Referência obrigatória: `docs/design/PROTOTYPE-3-DIRECTION.md`.
+Referências obrigatórias:
 
-Roadmap detalhado: `docs/UX-UI-REDESIGN-ROADMAP.md`.
+- `docs/design/PROTOTYPE-3-DIRECTION.md`;
+- `docs/design/FRONTEND-AUDIT.md`;
+- `docs/UX-UI-REDESIGN-ROADMAP.md`.
 
-Sequência canônica:
+### Sequência canônica
 
-- [ ] R0 — audit completo e inventário;
-- [ ] R1 — arquitetura da informação + refinamento/expansão do Protótipo 3;
-- [ ] R2 — design system foundation;
-- [ ] R3 — app shell e navegação;
-- [ ] R4 — auth e sessão;
-- [ ] R5 — onboarding completo;
-- [ ] R6 — dashboard completo;
-- [ ] R7 — carteira completa;
-- [ ] R8 — componentes de domínio e estados transversais;
-- [ ] R9 — acessibilidade, responsividade e visual QA;
-- [ ] R10 — gate para novas superfícies.
+- [x] R0 — audit completo e inventário — #72;
+- [ ] R1 — arquitetura da informação + expansão do Protótipo 3 — #73;
+- [ ] R2 — design tokens e primitives — #74;
+- [ ] R3 — app shell/sidebar/navegação — #75;
+- [ ] R4 — auth e sessão — #76;
+- [ ] R5 — onboarding completo — #77;
+- [ ] R6 — dashboard completo — #78;
+- [ ] R7 — carteira completa — #79;
+- [ ] R8 — componentes/estados transversais — #80;
+- [ ] R9 — acessibilidade, responsividade e visual QA — #81;
+- [ ] R10 — gate final e fechamento da #69.
+
+O R0 concluiu o inventário de código e a revisão visual desktop atual. O responsive atual foi auditado pelos breakpoints existentes; não houve visual QA mobile do frontend antigo. Essa limitação está registrada e será tratada no produto redesenhado em #81.
 
 Enquanto esta intervenção estiver ativa, novas interfaces relevantes — incluindo a UI da #45 — não devem criar um sistema visual paralelo. Trabalho puramente de backend/contratos pode avançar quando não produzir superfície temporária.
 
