@@ -2,7 +2,11 @@
   --app-sidebar-width: 16.5rem;
   min-height: 100dvh;
   background:
-    radial-gradient(circle at 82% -8rem, rgba(79, 70, 229, 0.08), transparent 34rem),
+    radial-gradient(
+      circle at 82% -8rem,
+      color-mix(in srgb, var(--color-accent) 8%, transparent),
+      transparent 34rem
+    ),
     var(--color-canvas);
   color: var(--color-text-primary);
 }
@@ -39,7 +43,7 @@
   gap: var(--space-8);
   padding: var(--space-5);
   border-right: 1px solid var(--color-border-subtle);
-  background: rgba(255, 255, 255, 0.94);
+  background: color-mix(in srgb, var(--color-surface) 94%, transparent);
   backdrop-filter: blur(18px);
 }
 
@@ -84,7 +88,7 @@
 .brandText {
   min-width: 0;
   display: grid;
-  gap: 0.08rem;
+  gap: var(--space-1);
 }
 
 .brandText strong,
@@ -249,7 +253,7 @@
 .accountCopy {
   min-width: 0;
   display: grid;
-  gap: 0.08rem;
+  gap: var(--space-1);
 }
 
 .accountCopy strong,
@@ -319,7 +323,7 @@
     gap: var(--space-4);
     padding: var(--space-3) var(--layout-gutter);
     border-bottom: 1px solid var(--color-border-subtle);
-    background: rgba(255, 255, 255, 0.94);
+    background: color-mix(in srgb, var(--color-surface) 94%, transparent);
     backdrop-filter: blur(18px);
   }
 
@@ -330,7 +334,7 @@
   .menuGlyph {
     width: 1.05rem;
     display: grid;
-    gap: 0.2rem;
+    gap: var(--space-1);
   }
 
   .menuGlyph span {
@@ -349,7 +353,7 @@
   .drawerBackdrop {
     position: absolute;
     inset: 0;
-    background: rgba(22, 25, 34, 0.38);
+    background: color-mix(in srgb, var(--color-text-primary) 38%, transparent);
     backdrop-filter: blur(2px);
   }
 
