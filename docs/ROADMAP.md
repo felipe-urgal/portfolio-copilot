@@ -1,21 +1,36 @@
 # Roadmap
 
-O roadmap é ordenado por redução de risco. Fases posteriores não devem bloquear a criação de um núcleo correto e testável.
+O roadmap é ordenado por redução de risco. Ele registra **estado estratégico**, não substitui issues, ADRs ou `docs/tasks/NEXT.md`.
 
-## Intervenção estratégica — Redesign completo UX/UI — EM ANDAMENTO
+Consulte `docs/DOCUMENTATION-MAP.md` para a precedência das fontes de verdade.
 
-A evolução das superfícies visuais está priorizando a issue #69 — `UX/UI: redesign completo do app com base no Protótipo 3`.
+## Prioridade atual — Redesign completo UX/UI — #69 — EM ANDAMENTO
 
-O redesign cobre **todo o app web**: auth, onboarding, shell, dashboard, carteira, componentes financeiros, estados transversais e responsividade.
+O **Protótipo 3 — Assistant-First Workspace** é a direção visual canônica. A iniciativa cobre todo `apps/web`: auth, onboarding, shell, dashboard, carteira, componentes/estados transversais e responsividade.
 
-### Direção visual e arquitetura aprovadas
+### Concluído
 
-O **Protótipo 3 — Assistant-First Workspace** é a referência visual canônica. O R1 expandiu essa direção para uma arquitetura completa do app: navigation model, shell desktop/tablet/mobile, auth, onboarding, dashboard, carteira, estados transversais e papel do Copiloto. O R2 transformou essa arquitetura em semantic tokens e primitives compartilhadas. O R3 implementou o AppShell canônico com sidebar desktop, drawer responsivo, landmarks, sessão/utility e adoção pelas superfícies protegidas atuais. O R4 consolidou sign-in/sign-out como focused auth: uma ação principal, estados de erro/reentrada claros, progressive disclosure de privacidade e loading sobre primitives canônicas, sem alterar OAuth, callback safety ou ownership. O R5 migrou o onboarding completo para um guided flow sobre as primitives do R2, com stepper subordinado ao AppShell, validação/foco preservados e persistência local mantida como opt-in.
+- [x] R0 — audit/inventário — #72;
+- [x] R1 — arquitetura da informação + expansão do Protótipo 3 — #73;
+- [x] R2 — design tokens e primitives — #74;
+- [x] R3 — AppShell/sidebar/drawer/navegação — #75;
+- [x] R4 — focused auth e sessão — #76;
+- [x] R5 — onboarding guiado — #77 / PR #88.
 
-Referências obrigatórias:
+### Próximo
+
+- [ ] **R6 — dashboard completo — #78**.
+
+### Depois
+
+- [ ] R7 — carteira completa — #79;
+- [ ] R8 — componentes/estados transversais — #80;
+- [ ] R9 — accessibility, responsive e visual fidelity QA — #81;
+- [ ] R10 — gate final e fechamento da #69.
+
+Referências canônicas:
 
 - `docs/design/PROTOTYPE-3-DIRECTION.md`;
-- `docs/design/FRONTEND-AUDIT.md`;
 - `docs/design/R1-ASSISTANT-FIRST-APP-SPEC.md`;
 - `docs/design/DESIGN-SYSTEM.md`;
 - `docs/design/APP-SHELL.md`;
@@ -23,160 +38,184 @@ Referências obrigatórias:
 - `docs/design/ONBOARDING.md`;
 - `docs/UX-UI-REDESIGN-ROADMAP.md`.
 
-### Sequência canônica
+Enquanto #69 estiver ativa, novas surfaces não podem criar um sistema visual paralelo nem inventar rota, KPI, dado ou Copiloto para copiar o mockup.
 
-- [x] R0 — audit completo e inventário — #72;
-- [x] R1 — arquitetura da informação + expansão do Protótipo 3 — #73;
-- [x] R2 — design tokens e primitives — #74;
-- [x] R3 — app shell/sidebar/navegação — #75;
-- [x] R4 — auth e sessão — #76;
-- [x] R5 — onboarding completo — #77;
-- [ ] R6 — dashboard completo — #78;
-- [ ] R7 — carteira completa — #79;
-- [ ] R8 — componentes/estados transversais — #80;
-- [ ] R9 — acessibilidade, responsividade e visual QA — #81;
-- [ ] R10 — gate final e fechamento da #69.
+---
 
-R0 inventariou o frontend anterior, R1 definiu a arquitetura Assistant-First, R2 estabeleceu a fundação visual canônica, R3 tornou o AppShell único para Dashboard, Carteira e Onboarding, R4 fechou o padrão focused-auth para entrada/saída/reentrada e R5 eliminou as primitives visuais paralelas do onboarding sem alterar seu domínio. As próximas migrações devem consumir `apps/web/src/styles/tokens.css`, `@/components/ui` e o shell canônico quando aplicável, sem criar uma segunda implementação de navegação global, botão, field, focus, feedback, loading ou composição fundamental.
+## Fundação técnica e governança — IMPLEMENTADA
 
-Enquanto esta intervenção estiver ativa, novas interfaces relevantes — incluindo a UI da #45 — não devem criar um sistema visual paralelo. Trabalho puramente de backend/contratos pode avançar quando não produzir superfície temporária.
+Entregas existentes:
 
-## Fase 0 — Fundação e governança — EM ANDAMENTO
+- pnpm workspace/monorepo;
+- Next.js web app;
+- Node 24 + TypeScript strict;
+- lint/format/test/build;
+- CI GitHub Actions;
+- Docker Compose/PostgreSQL local;
+- política de supply chain;
+- configuração segura de ambiente;
+- processo de PR, quality gate e auto code review;
+- baseline de segurança e regulatório;
+- documentação/ADRs e mapa canônico de documentação.
 
-- [x] visão do produto;
-- [x] escopo e não-escopo;
-- [x] arquitetura inicial;
-- [x] metodologia financeira inicial;
-- [x] requisitos de segurança;
-- [x] estratégia de dados;
-- [x] fronteira regulatória;
-- [x] fluxo de desenvolvimento;
-- [x] backlog e `NEXT.md`;
-- [ ] revisar e mergear PR de fundação.
+A evolução dessa fundação ocorre por necessidade concreta, não como fase pendente genérica.
 
-## Fase 1 — Fundação técnica
+## Portfolio Engine / domínio financeiro — NÚCLEO IMPLEMENTADO
 
-- [ ] workspace/monorepo;
-- [ ] app web/PWA;
-- [ ] pacote de domínio;
-- [ ] TypeScript strict;
-- [ ] lint/format;
-- [ ] testes;
-- [ ] CI;
-- [ ] configuração de ambientes;
-- [ ] convenções de erro/log;
-- [ ] baseline de segurança.
+Já existem:
 
-## Fase 2 — Portfolio Engine
+- Money/Percentage/AllocationWeight/AssetQuantity;
+- Asset/AssetClass/InstrumentType/AssetId;
+- Portfolio;
+- Transaction Ledger imutável;
+- projeção determinística de posições;
+- TargetAllocation;
+- AllocationGap;
+- ContributionAllocator;
+- política de microaporte/limite de destinos;
+- elegibilidade e quantidade mínima;
+- limites de concentração;
+- custos/impacto tributário conhecido informado;
+- RecommendationSnapshot canônico;
+- reason codes/status explicáveis;
+- suíte de invariantes do pipeline.
 
-- [ ] Asset;
-- [ ] Portfolio;
-- [ ] Holding;
-- [ ] Transaction ledger;
-- [ ] TargetAllocation;
-- [ ] cálculo de pesos;
-- [ ] gap de alocação;
-- [ ] aporte determinístico;
-- [ ] regras de concentração;
-- [ ] testes de invariantes.
+Extensões financeiras futuras exigem issue/metodologia próprias e não devem ser inferidas desta lista.
 
-## Fase 3 — MVP de produto
+## Produto MVP — IMPLEMENTADO EM CAPABILITIES, JORNADA FINAL AINDA ABERTA
 
-- [ ] onboarding financeiro básico;
-- [ ] dashboard;
-- [ ] carteira;
-- [ ] cadastro de transações;
-- [ ] aporte do mês;
-- [ ] explicação de rebalanceamento;
-- [ ] objetivos/reserva;
-- [ ] persistência;
-- [ ] autenticação.
+Existem hoje:
 
-## Fase 4 — Market Data
+- autenticação GitHub e sessão server-side;
+- perfil financeiro, objetivos e reserva;
+- persistência local opt-in;
+- persistência PostgreSQL com ownership;
+- migração local → conta opt-in/conflict-safe;
+- Dashboard atual;
+- Carteira com Portfolio/Assets/Ledger/positions;
+- fluxo local do aporte do mês e explicação determinística.
 
-- [ ] catálogo canônico de ativos;
-- [ ] adapter de preços;
-- [ ] macro oficial;
-- [ ] FX;
-- [ ] snapshots e provenance;
-- [ ] freshness;
-- [ ] cache;
-- [ ] quality checks;
-- [ ] contract tests.
+Pendências:
 
-## Fase 5 — Investment Engine
+- #78/#79 — concluir a experiência visual de Dashboard/Carteira;
+- #47 — fechar a jornada ponta a ponta do MVP sobre as surfaces migradas.
 
-- [ ] classificação por classe/setor;
-- [ ] Quality Score por metodologia adequada;
-- [ ] Opportunity Score;
-- [ ] Dividend Score;
-- [ ] valuation snapshots;
-- [ ] Portfolio Fit;
-- [ ] radar;
-- [ ] versionamento de metodologia.
+## Asset Master e Market Data — FOUNDATION IMPLEMENTADA, COBERTURA EVOLUTIVA
 
-## Fase 6 — Teses e eventos
+Implementado:
 
-- [ ] InvestmentThesis;
-- [ ] drivers e riscos;
-- [ ] critérios de invalidação;
-- [ ] resultados/eventos;
-- [ ] timeline;
-- [ ] revisão periódica;
-- [ ] alerta de tese desatualizada.
+- Asset Master com identidade canônica, listings/identificadores e provenance;
+- matching explícito `UNMATCHED/PARTIAL_MATCH/MATCH/CONFLICT`;
+- package de Market Data;
+- snapshots exatos com `asOf`/`retrievedAt`/provenance;
+- freshness/cache/quality flags;
+- fallback autorizado;
+- providers de macro BCB/SGS e contracts de preço/FX.
 
-## Fase 7 — IA assistiva
+Ainda evolutivo:
 
-- [ ] ingestão segura de texto;
-- [ ] deduplicação/classificação de notícia;
-- [ ] resumo de resultados;
-- [ ] impacto candidato na tese;
-- [ ] explicações naturais a partir de dados estruturados;
-- [ ] proteção contra prompt injection;
-- [ ] avaliação de alucinação e factualidade.
+- cobertura produtiva/licenciada de preço e fundamentals;
+- séries históricas necessárias para #48;
+- integração ampla dessas capabilities na UI.
 
-## Fase 8 — Simulação e backtesting
+## Investment Engine — NÚCLEO IMPLEMENTADO
 
-- [ ] cenários de aporte;
-- [ ] inflação;
-- [ ] dividendos/reinvestimento;
-- [ ] cenários probabilísticos quando adequados;
-- [ ] backtesting sem look-ahead;
-- [ ] reconstrução histórica de recomendações;
-- [ ] comparação com benchmarks.
+Implementado:
 
-## Fase 9 — Integrações financeiras
+- evidências analíticas e metodologias versionadas;
+- Quality Score;
+- Opportunity Score;
+- Dividend Score;
+- valuation snapshots;
+- Portfolio Fit;
+- ranking explicável;
+- missing/stale/conflict/look-ahead explícitos;
+- separação entre qualidade, oportunidade e aderência à carteira.
 
-Somente após revisão de segurança/regulatório.
+Surfaces finais de análise/radar entram apenas quando houver vertical de produto correspondente.
 
-- [ ] desenho de consentimento;
-- [ ] Open Finance/integrações read-only;
-- [ ] importação automática;
-- [ ] reconciliação;
-- [ ] revogação;
-- [ ] criptografia de tokens;
-- [ ] auditoria.
+## Teses e eventos — NÚCLEO IMPLEMENTADO
 
-## Fase 10 — Produto público
+Implementado:
 
-**Regulatory Gate obrigatório antes desta fase.**
+- InvestmentThesis imutável/versionada;
+- fatos com provenance;
+- drivers e riscos;
+- indicadores;
+- critérios de invalidação;
+- eventos e reviews;
+- timeline auditável;
+- estados CURRENT/STALE/INVALIDATED e vigência temporal das versões.
 
-- [ ] modelo de negócio;
-- [ ] revisão regulatória e jurídica;
-- [ ] LGPD/privacidade;
-- [ ] tenancy/multiusuário endurecido;
-- [ ] observabilidade e SLO;
-- [ ] suporte;
-- [ ] billing se aplicável;
-- [ ] disaster recovery;
-- [ ] pentest/avaliação de segurança;
-- [ ] termos e disclosures.
+Integração de produto/alertas permanece evolutiva.
+
+## IA assistiva — FOUNDATION DE INGESTÃO IMPLEMENTADA; COPILOTO EM BACKLOG
+
+Implementado em #44:
+
+- ingestão deny-by-default;
+- allowlist de fontes;
+- normalização/limites;
+- provenance/retention;
+- dedupe/revisão;
+- classificação;
+- `UNTRUSTED_EXTERNAL_CONTENT` + instruction authority `NONE`;
+- quarantine de prompt injection suspeito;
+- audit store contract e testes adversariais iniciais.
+
+Próximos verticais:
+
+- #45 — Copiloto explicável sobre dados estruturados/recomendações;
+- #46 — factualidade, alucinação e avaliação adversarial ampliada.
+
+A UI da #45 deve nascer somente sobre a fundação final da #69.
+
+## Simulação e backtesting — BACKLOG #48
+
+- cenários de aporte;
+- inflação/reinvestimento;
+- cenários probabilísticos quando adequados;
+- reconstrução histórica;
+- backtesting sem look-ahead;
+- benchmarks.
+
+Requer dados históricos adequados e metodologia versionada.
+
+## Integrações financeiras — BACKLOG #49
+
+Somente após segurança/consentimento/regulatório:
+
+- Open Finance/read-only;
+- importação de corretora;
+- reconciliação;
+- consentimento/revogação;
+- proteção de tokens;
+- auditoria.
+
+## Produto público — BACKLOG #50
+
+**Regulatory Gate obrigatório.**
+
+Inclui:
+
+- modelo de negócio;
+- revisão jurídica/regulatória;
+- LGPD/privacidade;
+- tenancy/multiusuário endurecido;
+- observabilidade/SLO;
+- suporte;
+- billing se aplicável;
+- backup/DR;
+- pentest/avaliação de segurança;
+- termos/disclosures.
 
 ## Fora do roadmap até decisão explícita
 
 - execução automática de ordens;
+- custódia;
 - day trade;
 - derivativos;
 - alavancagem;
 - copy trading;
-- recomendação patrocinada.
+- recomendação/ranking patrocinado;
+- promessa de retorno.
