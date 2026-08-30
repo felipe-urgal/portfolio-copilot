@@ -217,7 +217,6 @@ export function AppShellNavigation({
         <Brand />
         <Button
           ref={triggerRef}
-          className={styles.menuButton}
           variant="secondary"
           size="sm"
           aria-haspopup="dialog"
@@ -253,7 +252,6 @@ export function AppShellNavigation({
               <span id="app-navigation-title">Navegação</span>
               <Button
                 ref={closeRef}
-                className={styles.drawerClose}
                 variant="ghost"
                 size="sm"
                 onClick={() => closeDrawer(true)}
