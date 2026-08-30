@@ -11,7 +11,11 @@ const sizeClass: Record<IconSize, string | undefined> = {
   lg: styles.iconLg,
 };
 
-export interface IconProps extends Omit<HTMLAttributes<HTMLSpanElement>, "children"> {
+export interface IconProps
+  extends Omit<
+    HTMLAttributes<HTMLSpanElement>,
+    "children" | "role" | "aria-label" | "aria-hidden"
+  > {
   children: ReactElement<SVGProps<SVGSVGElement>>;
   size?: IconSize;
   label?: string;
@@ -25,11 +29,11 @@ export function Icon({ children, size = "md", label, className, ...props }: Icon
 
   return (
     <span
+      {...props}
       className={classNames(styles.icon, sizeClass[size], className)}
       role={label === undefined ? undefined : "img"}
       aria-label={label}
       aria-hidden={label === undefined ? true : undefined}
-      {...props}
     >
       {svg}
     </span>
