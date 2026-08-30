@@ -10,13 +10,7 @@ export function AuthSubmitButton({ children }: Readonly<{ children: ReactNode }>
   const { pending } = useFormStatus();
 
   return (
-    <Button
-      className={styles.fullAction}
-      type="submit"
-      size="lg"
-      loading={pending}
-      disabled={pending}
-    >
+    <Button className={styles.fullAction} type="submit" size="lg" loading={pending}>
       {children}
     </Button>
   );
