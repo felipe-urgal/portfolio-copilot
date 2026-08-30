@@ -53,7 +53,9 @@ export interface ContainerProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 export function Container({ size = "wide", className, ...props }: ContainerProps) {
-  return <div className={classNames(styles.container, containerSizeClass[size], className)} {...props} />;
+  return (
+    <div className={classNames(styles.container, containerSizeClass[size], className)} {...props} />
+  );
 }
 
 export interface StackProps extends HTMLAttributes<HTMLDivElement> {
