@@ -26,7 +26,7 @@ Quando existe gap, a avaliação exige um `ContributionRecommendationSnapshot` d
 
 ### Restrições do pipeline de aporte são respeitadas
 
-Um soft limit de concentração reduz somente o componente de concentração e preserva o reason code correspondente.
+Um soft limit de concentração reduz somente o componente de concentração e preserva o reason code correspondente. Quando o pipeline informa `HARD_CONCENTRATION_LIMIT_APPLIED`, o componente de concentração é zero mesmo que ainda exista uma parcela executável; o Investment Engine não recalcula o limite, apenas torna explícito o sinal já produzido pelo Portfolio Engine.
 
 Estados que bloqueiam o destino no pipeline de aporte — política, hard concentration limit, inelegibilidade ou custos conhecidos — zeram o Portfolio Fit final. O snapshot preserva `hardBlockStatus`, componentes e reason codes; o override nunca fica implícito.
 
@@ -42,7 +42,7 @@ O baseline de ranking usa:
 
 O resultado guarda os três snapshots completos e a contribuição ponderada de cada dimensão. O score de ranking é apenas uma ordenação derivada, não substitui as dimensões como fonte de explicação.
 
-Quality e Opportunity precisam usar a mesma metodologia/versionamento e a mesma classificação analítica. Portfolio Fit precisa usar a metodologia de ranking selecionada e o `portfolioId` esperado pelo radar.
+Quality e Opportunity precisam usar a mesma metodologia/versionamento e a mesma classificação analítica. Portfolio Fit precisa usar a metodologia de ranking selecionada, pertencer ao `portfolioId` esperado pelo radar e ter a mesma classe de ativo da classificação analítica do candidato.
 
 Qualquer dimensão com `INSUFFICIENT_DATA` deixa o candidato fora da lista ranqueada e o mantém na coleção explícita de insuficientes. Missing, stale, conflict ou outra insuficiência nunca são convertidos em nota neutra.
 
@@ -58,6 +58,7 @@ O ranking ordena por score decrescente. Empates usam o `AssetId` canônico em or
 - o ranking pode ser explicado por componentes e reason codes;
 - restrições de aporte não são ignoradas por um score analítico alto;
 - contexto de uma carteira não pode contaminar o radar de outra;
+- classificação analítica e classe usada pelo Portfolio Fit não podem divergir silenciosamente;
 - dados incompletos permanecem explicitamente incompletos;
 - empates são estáveis e reproduzíveis.
 
