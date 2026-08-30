@@ -2,7 +2,7 @@
 
 ## Status
 
-Implementado na issue #78 / PR #90 como R6 da iniciativa #69.
+Implementado na issue #78 / PR #91 como R6 da iniciativa #69.
 
 Este documento registra o contrato atual de `/dashboard` após a migração para a direção do Protótipo 3. Ele complementa `R1-ASSISTANT-FIRST-APP-SPEC.md`, `DESIGN-SYSTEM.md` e `APP-SHELL.md` sem alterar domínio, metodologia financeira ou fontes de verdade.
 

@@ -256,7 +256,7 @@ Hardening sobre domínio, persistência, Asset Master, Market Data e Investment 
 
 Este marco é considerado concluído com o merge do PR #88.
 
-## 2026-08-30 — UX/UI R6 Dashboard Assistant-First — #78 / PR #90
+## 2026-08-30 — UX/UI R6 Dashboard Assistant-First — #78 / PR #91
 
 - greeting derivado somente do `displayName` da identidade autenticada;
 - hierarquia principal reorganizada em contexto, panorama e próxima ação;
@@ -270,9 +270,9 @@ Este marco é considerado concluído com o merge do PR #88.
 - `docs/design/DASHBOARD.md` registra o contrato canônico do R6;
 - README, roadmap, catálogo de funcionalidades e fila operacional reconciliados.
 
-Este marco é considerado concluído quando o próprio PR #90 é mergeado.
+Este marco é considerado concluído quando o próprio PR #91 é mergeado.
 
-## Estado após #90
+## Estado após #91
 
 Próxima atividade canônica: **#79 — R7 Carteira**.
 

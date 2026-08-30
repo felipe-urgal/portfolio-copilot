@@ -1,6 +1,6 @@
 # Próxima Atividade — UX/UI R7: redesenhar carteira e workspace financeiro
 
-**Status:** READY após merge da #78 / PR #90
+**Status:** READY após merge da #78 / PR #91
 
 ## Issue canônica
 
@@ -17,7 +17,7 @@ O R7 parte das superfícies e contratos já padronizados:
 - #75 — R3 AppShell/sidebar/navegação responsiva;
 - #76 — R4 focused auth/session;
 - #77 — R5 onboarding guiado;
-- #78 / PR #90 — R6 Dashboard orientado a contexto, panorama e próxima ação;
+- #78 / PR #91 — R6 Dashboard orientado a contexto, panorama e próxima ação;
 - `docs/design/R1-ASSISTANT-FIRST-APP-SPEC.md`;
 - `docs/design/DESIGN-SYSTEM.md`;
 - `docs/design/APP-SHELL.md`;
