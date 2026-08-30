@@ -1,0 +1,129 @@
+import type { HTMLAttributes, ReactNode } from "react";
+
+import { classNames } from "./class-names";
+import styles from "./ui.module.css";
+
+type FeedbackTone = "neutral" | "info" | "success" | "warning" | "danger";
+type BadgeTone = "neutral" | "accent";
+type SkeletonVariant = "text" | "block" | "circle";
+
+const toneClass: Record<FeedbackTone, string> = {
+  neutral: styles.toneNeutral,
+  info: styles.toneInfo,
+  success: styles.toneSuccess,
+  warning: styles.toneWarning,
+  danger: styles.toneDanger,
+};
+
+export interface StatusProps extends HTMLAttributes<HTMLSpanElement> {
+  tone?: FeedbackTone;
+}
+
+export function Status({ tone = "neutral", className, ...props }: StatusProps) {
+  return <span className={classNames(styles.status, toneClass[tone], className)} {...props} />;
+}
+
+export interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
+  tone?: BadgeTone;
+}
+
+export function Badge({ tone = "neutral", className, ...props }: BadgeProps) {
+  return (
+    <span
+      className={classNames(styles.badge, tone === "accent" && styles.badgeAccent, className)}
+      {...props}
+    />
+  );
+}
+
+export interface AlertProps extends HTMLAttributes<HTMLDivElement> {
+  tone?: Exclude<FeedbackTone, "neutral">;
+  title: ReactNode;
+}
+
+export function Alert({ tone = "info", title, className, children, role, ...props }: AlertProps) {
+  const semanticRole = role ?? (tone === "danger" ? "alert" : "status");
+
+  return (
+    <div
+      className={classNames(styles.alert, toneClass[tone], className)}
+      role={semanticRole}
+      {...props}
+    >
+      <p className={styles.alertTitle}>{title}</p>
+      {children === undefined ? null : <div className={styles.alertBody}>{children}</div>}
+    </div>
+  );
+}
+
+export interface EmptyStateProps extends HTMLAttributes<HTMLDivElement> {
+  title: ReactNode;
+  description: ReactNode;
+  icon?: ReactNode;
+  action?: ReactNode;
+  align?: "start" | "center";
+}
+
+export function EmptyState({
+  title,
+  description,
+  icon,
+  action,
+  align = "start",
+  className,
+  ...props
+}: EmptyStateProps) {
+  return (
+    <div
+      className={classNames(
+        styles.emptyState,
+        align === "center" && styles.emptyStateCentered,
+        className,
+      )}
+      {...props}
+    >
+      {icon === undefined ? null : <div className={styles.emptyStateIcon}>{icon}</div>}
+      <h2 className={styles.emptyStateTitle}>{title}</h2>
+      <p className={styles.emptyStateDescription}>{description}</p>
+      {action === undefined ? null : <div className={styles.emptyStateAction}>{action}</div>}
+    </div>
+  );
+}
+
+export interface LoadingStateProps extends HTMLAttributes<HTMLDivElement> {
+  label?: ReactNode;
+}
+
+export function LoadingState({ label = "Carregando…", className, ...props }: LoadingStateProps) {
+  return (
+    <div
+      className={classNames(styles.loadingState, className)}
+      role="status"
+      aria-live="polite"
+      {...props}
+    >
+      <span className={styles.spinner} aria-hidden="true" />
+      <span>{label}</span>
+    </div>
+  );
+}
+
+export interface SkeletonProps extends HTMLAttributes<HTMLSpanElement> {
+  variant?: SkeletonVariant;
+}
+
+const skeletonVariantClass: Record<SkeletonVariant, string> = {
+  text: styles.skeletonText,
+  block: styles.skeletonBlock,
+  circle: styles.skeletonCircle,
+};
+
+export function Skeleton({ variant = "text", className, ...props }: SkeletonProps) {
+  return (
+    <span
+      className={classNames(styles.skeleton, skeletonVariantClass[variant], className)}
+      aria-hidden="true"
+      {...props}
+    />
+  );
+}
