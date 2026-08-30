@@ -279,9 +279,7 @@ function ReserveStep({
         checked={draft.reserveEnabled}
         title="Definir uma meta de reserva"
         description="Representa a meta desejada, não o saldo que você possui hoje. Você pode deixar esse dado para depois."
-        onChange={(event) =>
-          dispatch({ type: "toggle-reserve", enabled: event.target.checked })
-        }
+        onChange={(event) => dispatch({ type: "toggle-reserve", enabled: event.target.checked })}
       />
 
       {draft.reserveEnabled ? (
@@ -357,7 +355,9 @@ function GoalEditor({
                 id={`${goal.clientId}-type`}
                 value={goal.type}
                 invalid={typeError !== undefined}
-                aria-describedby={typeError === undefined ? undefined : `${goal.clientId}-type-error`}
+                aria-describedby={
+                  typeError === undefined ? undefined : `${goal.clientId}-type-error`
+                }
                 onChange={(event) =>
                   dispatch({
                     type: "update-goal",
@@ -572,11 +572,7 @@ function ReviewStep({
           Editar dados
         </Button>
         {isPersisted ? (
-          <Button
-            variant="secondary"
-            type="button"
-            onClick={() => void onRemovePersisted()}
-          >
+          <Button variant="secondary" type="button" onClick={() => void onRemovePersisted()}>
             Remover deste dispositivo
           </Button>
         ) : (
