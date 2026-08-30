@@ -62,6 +62,12 @@ jobs:
       - name: Format check
         run: pnpm format:check
 
+      - name: Show UI primitive formatting diff
+        if: failure()
+        run: |
+          pnpm exec prettier --write apps/web/src/components/ui/button.tsx apps/web/src/components/ui/feedback.tsx apps/web/src/components/ui/icon.tsx
+          git diff -- apps/web/src/components/ui/button.tsx apps/web/src/components/ui/feedback.tsx apps/web/src/components/ui/icon.tsx
+
       - name: Lint
         run: pnpm lint
 
