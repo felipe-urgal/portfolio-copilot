@@ -13,7 +13,7 @@ Este arquivo resume decisões. Decisões arquiteturais importantes também ganha
 | D-007 | RecommendationSnapshot é imutável | Aceita |
 | D-008 | Dados materiais precisam de provenance e `asOf` | Aceita |
 | D-009 | PostgreSQL é a persistência relacional inicial; ORM fica restrito à infraestrutura | Aceita — ADR-0021 |
-| D-010 | Web/PWA é direção inicial de interface | Proposta, validar na fundação técnica |
+| D-010 | Web responsiva é a interface atual; instalação PWA permanece evolução futura e só entra com estratégia segura de cache/offline | Aceita |
 | D-011 | Produto público exige Regulatory Gate | Aceita |
 | D-012 | Sem microaportes artificiais: o motor pode concentrar o aporte do mês em menos destinos para corrigir gaps | Aceita |
 | D-013 | Valores financeiros fundamentais usam representação decimal inteira; `Money` não usa float e quantidade/preço terão tipos próprios | Aceita — ADR-0005 |
@@ -42,11 +42,15 @@ Este arquivo resume decisões. Decisões arquiteturais importantes também ganha
 | D-036 | Conteúdo externo de IA é sempre `UNTRUSTED_EXTERNAL_CONTENT` com autoridade de instrução `NONE`; fontes são allowlisted, prompt injection suspeito é quarantined antes do classifier e dedupe/classificação permanecem auditáveis | Aceita — ADR-0027 |
 | D-037 | A arquitetura visual do app deriva do Protótipo 3/R1: sidebar persistente apenas quando comportada, drawer/sheet em viewports menores, informação técnica em progressive disclosure e nenhuma rota, métrica ou UI de Copiloto fictícia pode ser criada para reproduzir o mockup | Aceita — `docs/design/R1-ASSISTANT-FIRST-APP-SPEC.md` |
 | D-038 | A fundação visual de `apps/web` usa semantic CSS tokens e React primitives canônicas; novos controles fundamentais não podem recriar styling por feature, R2 não adiciona biblioteca visual externa e Lucide outline é a família de ícones de referência quando glyphs reais entrarem | Aceita — `docs/design/DESIGN-SYSTEM.md` |
+| D-039 | Superfícies protegidas usam um único `AppShell`: sidebar em desktop e drawer em viewports menores, navegação só para capabilities reais, e somente `displayName` atravessa para a ilha client da navegação | Aceita — `docs/design/APP-SHELL.md` |
+| D-040 | Sign-in/sign-out usam focused auth fora do AppShell; GitHub permanece provider, a CTA principal é única, privacidade/segurança ficam em progressive disclosure e o redesign não altera callback safety, identidade ou ownership | Aceita — `docs/design/AUTH-SESSION.md` |
+| D-041 | O onboarding R5 preserva reducer, validações e `FinancialProfileSnapshot`; progressão é orientação subordinada ao AppShell, controles vêm das primitives R2, persistência continua opt-in/second-order e objetivos usam seções abertas sem card-in-card | Aceita — `docs/design/ONBOARDING.md` |
 
 ## Como alterar uma decisão
 
 1. não apagar o histórico;
 2. registrar nova decisão e motivo;
 3. quando arquitetural, criar/superseder ADR;
-4. atualizar documentos e tarefas afetadas;
-5. adicionar migração quando houver impacto de dados.
+4. atualizar documentos e tarefas afetados;
+5. adicionar migração/version bump quando houver impacto de dados/metodologia;
+6. quando uma decisão anterior for refinada sem novo ADR, deixar a evolução explícita neste índice e no contrato canônico correspondente.

@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useReducer, useRef, type Dispatch, type FormEvent } from "react";
 
 import {
@@ -20,6 +19,27 @@ import {
   useFinancialSession,
   type FinancialProfilePersistenceStatus,
 } from "@/components/financial-session";
+import {
+  Alert,
+  Button,
+  ChoiceCard,
+  Cluster,
+  EmptyState,
+  Field,
+  FieldError,
+  Grid,
+  HelpText,
+  Label,
+  LinkButton,
+  PageHeader,
+  SegmentedControl,
+  SegmentedControlOption,
+  Select,
+  Stack,
+  Status,
+  Surface,
+  TextInput,
+} from "@/components/ui";
 
 import styles from "./financial-onboarding-flow.module.css";
 import {
@@ -60,8 +80,7 @@ const STEP_COPY: Record<
     label: "Revisão",
     summary: "Snapshot validado",
     title: "Revise seu perfil financeiro",
-    description:
-      "Este resumo foi construído e validado pelo domínio. Nada é enviado a um servidor nesta etapa.",
+    description: "Confira o snapshot validado antes de decidir se quer salvá-lo neste dispositivo.",
   },
 };
 
@@ -130,14 +149,13 @@ function formatDate(value: string | null): string {
   return `${day}/${month}/${year}`;
 }
 
-function FieldError({ id, message }: Readonly<{ id: string; message: string | undefined }>) {
+function FieldValidationError({
+  id,
+  message,
+}: Readonly<{ id: string; message: string | undefined }>) {
   if (message === undefined) return null;
 
-  return (
-    <p className={styles.fieldError} id={id}>
-      {message}
-    </p>
-  );
+  return <FieldError id={id}>{message}</FieldError>;
 }
 
 function ProfileStep({
@@ -150,20 +168,17 @@ function ProfileStep({
   const horizonError = errors["profile.horizon"];
 
   return (
-    <div className={styles.stepBody}>
-      <div className={styles.fieldGroup}>
-        <label className={styles.label} htmlFor="reference-currency">
-          Moeda de referência
-        </label>
-        <input
-          className={styles.textInput}
+    <Stack className={styles.stepBody} space="xl">
+      <Field>
+        <Label htmlFor="reference-currency">Moeda de referência</Label>
+        <TextInput
           id="reference-currency"
           name="referenceCurrency"
           value={draft.referenceCurrency}
           maxLength={3}
           autoCapitalize="characters"
           autoComplete="off"
-          aria-invalid={currencyError !== undefined}
+          invalid={currencyError !== undefined}
           aria-describedby={describedBy(
             "currency-help",
             "currency-error",
@@ -177,86 +192,74 @@ function ProfileStep({
             })
           }
         />
-        <p className={styles.helpText} id="currency-help">
+        <HelpText id="currency-help">
           Use o código de três letras da moeda que servirá como referência, como BRL.
-        </p>
-        <FieldError id="currency-error" message={currencyError} />
-      </div>
+        </HelpText>
+        <FieldValidationError id="currency-error" message={currencyError} />
+      </Field>
 
       <fieldset
-        className={styles.fieldset}
+        className={styles.choiceFieldset}
         aria-describedby={describedBy("risk-help", "risk-error", riskError !== undefined)}
       >
-        <legend className={styles.legend}>Tolerância a risco</legend>
-        <p className={styles.helpText} id="risk-help">
+        <legend className={styles.groupLegend}>Tolerância a risco</legend>
+        <HelpText id="risk-help">
           Esta é uma preferência declarada e não substitui uma avaliação regulatória de perfil.
-        </p>
-        <div className={styles.choiceGrid}>
+        </HelpText>
+        <Grid minimum="sm" space="sm" className={styles.riskGrid}>
           {RISK_TOLERANCE_CODES.map((risk, index) => {
             const content = RISK_LABELS[risk];
-            const checked = draft.riskTolerance === risk;
 
             return (
-              <label
-                className={checked ? styles.choiceSelected : styles.choice}
-                data-onboarding-choice
+              <ChoiceCard
                 key={risk}
-              >
-                <input
-                  className={styles.visuallyHiddenControl}
-                  type="radio"
-                  name="riskTolerance"
-                  value={risk}
-                  checked={checked}
-                  data-invalid={index === 0 && riskError !== undefined ? "true" : undefined}
-                  onChange={() =>
-                    dispatch({ type: "update-profile", field: "riskTolerance", value: risk })
-                  }
-                />
-                <span className={styles.choiceMarker} aria-hidden="true" />
-                <strong>{content.title}</strong>
-                <span>{content.description}</span>
-              </label>
-            );
-          })}
-        </div>
-        <FieldError id="risk-error" message={riskError} />
-      </fieldset>
-
-      <fieldset
-        className={styles.fieldset}
-        aria-describedby={describedBy("horizon-help", "horizon-error", horizonError !== undefined)}
-      >
-        <legend className={styles.legend}>Horizonte financeiro</legend>
-        <p className={styles.helpText} id="horizon-help">
-          Escolha a categoria que melhor representa seu horizonte, sem converter automaticamente
-          para anos.
-        </p>
-        <div className={styles.segmentedChoices}>
-          {FINANCIAL_HORIZON_CODES.map((horizon, index) => (
-            <label
-              className={draft.horizon === horizon ? styles.segmentSelected : styles.segment}
-              data-onboarding-segment
-              key={horizon}
-            >
-              <input
-                className={styles.visuallyHiddenControl}
-                type="radio"
-                name="horizon"
-                value={horizon}
-                checked={draft.horizon === horizon}
-                data-invalid={index === 0 && horizonError !== undefined ? "true" : undefined}
+                name="riskTolerance"
+                value={risk}
+                checked={draft.riskTolerance === risk}
+                title={content.title}
+                description={content.description}
+                data-invalid={index === 0 && riskError !== undefined ? "true" : undefined}
                 onChange={() =>
-                  dispatch({ type: "update-profile", field: "horizon", value: horizon })
+                  dispatch({ type: "update-profile", field: "riskTolerance", value: risk })
                 }
               />
-              {HORIZON_LABELS[horizon]}
-            </label>
-          ))}
-        </div>
-        <FieldError id="horizon-error" message={horizonError} />
+            );
+          })}
+        </Grid>
+        <FieldValidationError id="risk-error" message={riskError} />
       </fieldset>
-    </div>
+
+      <div className={styles.choiceGroup}>
+        <SegmentedControl
+          legend="Horizonte financeiro"
+          aria-describedby={describedBy(
+            "horizon-help",
+            "horizon-error",
+            horizonError !== undefined,
+          )}
+        >
+          {FINANCIAL_HORIZON_CODES.map((horizon, index) => (
+            <SegmentedControlOption
+              key={horizon}
+              name="horizon"
+              value={horizon}
+              checked={draft.horizon === horizon}
+              data-invalid={index === 0 && horizonError !== undefined ? "true" : undefined}
+              onChange={() =>
+                dispatch({ type: "update-profile", field: "horizon", value: horizon })
+              }
+            >
+              {HORIZON_LABELS[horizon]}
+            </SegmentedControlOption>
+          ))}
+        </SegmentedControl>
+        <HelpText id="horizon-help">
+          Escolha a categoria que melhor representa seu horizonte, sem converter automaticamente
+          para anos.
+        </HelpText>
+        <FieldValidationError id="horizon-error" message={horizonError} />
+      </div>
+    </Stack>
   );
 }
 
@@ -268,39 +271,26 @@ function ReserveStep({
   const reserveError = errors["reserve.target"];
 
   return (
-    <div className={styles.stepBody}>
-      <div className={styles.reserveChoice}>
-        <div>
-          <strong>Definir uma meta agora</strong>
-          <p>Essa informação representa a meta desejada, não o saldo que você possui hoje.</p>
-        </div>
-        <label className={styles.switchLabel}>
-          <input
-            type="checkbox"
-            checked={draft.reserveEnabled}
-            aria-label="Definir meta de reserva de emergência"
-            onChange={(event) =>
-              dispatch({ type: "toggle-reserve", enabled: event.target.checked })
-            }
-          />
-          <span aria-hidden="true" />
-        </label>
-      </div>
+    <Stack className={styles.stepBody} space="xl">
+      <ChoiceCard
+        type="checkbox"
+        checked={draft.reserveEnabled}
+        title="Definir uma meta de reserva"
+        description="Representa a meta desejada, não o saldo que você possui hoje. Você pode deixar esse dado para depois."
+        onChange={(event) => dispatch({ type: "toggle-reserve", enabled: event.target.checked })}
+      />
 
       {draft.reserveEnabled ? (
-        <div className={styles.fieldGroup}>
-          <label className={styles.label} htmlFor="reserve-target">
-            Meta da reserva em {draft.referenceCurrency}
-          </label>
-          <input
-            className={styles.textInput}
+        <Field>
+          <Label htmlFor="reserve-target">Meta da reserva em {draft.referenceCurrency}</Label>
+          <TextInput
             id="reserve-target"
             name="reserveTarget"
             inputMode="decimal"
             autoComplete="off"
             placeholder="10000,00"
             value={draft.reserveTarget}
-            aria-invalid={reserveError !== undefined}
+            invalid={reserveError !== undefined}
             aria-describedby={describedBy(
               "reserve-help",
               "reserve-error",
@@ -308,18 +298,13 @@ function ReserveStep({
             )}
             onChange={(event) => dispatch({ type: "update-reserve", value: event.target.value })}
           />
-          <p className={styles.helpText} id="reserve-help">
-            O valor permanece como texto na interface e só vira Money durante a validação.
-          </p>
-          <FieldError id="reserve-error" message={reserveError} />
-        </div>
-      ) : (
-        <div className={styles.emptyState}>
-          <strong>Meta pendente</strong>
-          <p>Você poderá completar esse dado em uma etapa futura do produto.</p>
-        </div>
-      )}
-    </div>
+          <HelpText id="reserve-help">
+            O valor só é convertido em Money quando a etapa é validada.
+          </HelpText>
+          <FieldValidationError id="reserve-error" message={reserveError} />
+        </Field>
+      ) : null}
+    </Stack>
   );
 }
 
@@ -342,100 +327,98 @@ function GoalEditor({
 
   return (
     <section className={styles.goalEditor} aria-labelledby={`${goal.clientId}-title`}>
-      <div className={styles.goalHeader}>
-        <div>
-          <span className={styles.goalNumber}>Objetivo {index + 1}</span>
-          <h3 id={`${goal.clientId}-title`}>
-            {goal.type === "" ? "Novo objetivo" : GOAL_LABELS[goal.type]}
-          </h3>
-        </div>
-        <button
-          className={styles.textButton}
-          type="button"
-          onClick={() => dispatch({ type: "remove-goal", clientId: goal.clientId })}
-        >
-          Remover
-        </button>
-      </div>
-
-      <div className={styles.goalGrid}>
-        <div className={styles.fieldGroup}>
-          <label className={styles.label} htmlFor={`${goal.clientId}-type`}>
-            Tipo
-          </label>
-          <select
-            className={styles.selectInput}
-            id={`${goal.clientId}-type`}
-            value={goal.type}
-            aria-invalid={typeError !== undefined}
-            aria-describedby={typeError === undefined ? undefined : `${goal.clientId}-type-error`}
-            onChange={(event) =>
-              dispatch({
-                type: "update-goal",
-                clientId: goal.clientId,
-                patch: { type: event.target.value as FinancialGoalTypeCode | "" },
-              })
-            }
+      <Stack space="lg">
+        <div className={styles.goalHeader}>
+          <div>
+            <span className={styles.goalNumber}>Objetivo {index + 1}</span>
+            <h3 id={`${goal.clientId}-title`}>
+              {goal.type === "" ? "Novo objetivo" : GOAL_LABELS[goal.type]}
+            </h3>
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            type="button"
+            onClick={() => dispatch({ type: "remove-goal", clientId: goal.clientId })}
           >
-            <option value="">Selecione</option>
-            {FINANCIAL_GOAL_TYPES.map((type) => (
-              <option key={type} value={type}>
-                {GOAL_LABELS[type]}
-              </option>
-            ))}
-          </select>
-          <FieldError id={`${goal.clientId}-type-error`} message={typeError} />
+            Remover
+          </Button>
         </div>
 
-        <div className={styles.fieldGroup}>
-          <label className={styles.label} htmlFor={`${goal.clientId}-amount`}>
-            {goal.type === "PASSIVE_INCOME_MONTHLY" ? "Valor mensal-alvo" : "Valor-alvo"}
-          </label>
-          <input
-            className={styles.textInput}
-            id={`${goal.clientId}-amount`}
-            inputMode="decimal"
-            autoComplete="off"
-            placeholder="50000,00"
-            value={goal.targetAmount}
-            aria-invalid={amountError !== undefined}
-            aria-describedby={
-              amountError === undefined ? undefined : `${goal.clientId}-amount-error`
-            }
-            onChange={(event) =>
-              dispatch({
-                type: "update-goal",
-                clientId: goal.clientId,
-                patch: { targetAmount: event.target.value },
-              })
-            }
-          />
-          <FieldError id={`${goal.clientId}-amount-error`} message={amountError} />
-        </div>
+        <Grid minimum="md" space="md">
+          <Field>
+            <Label htmlFor={`${goal.clientId}-type`}>Tipo</Label>
+            <Select
+              id={`${goal.clientId}-type`}
+              value={goal.type}
+              invalid={typeError !== undefined}
+              aria-describedby={typeError === undefined ? undefined : `${goal.clientId}-type-error`}
+              onChange={(event) =>
+                dispatch({
+                  type: "update-goal",
+                  clientId: goal.clientId,
+                  patch: { type: event.target.value as FinancialGoalTypeCode | "" },
+                })
+              }
+            >
+              <option value="">Selecione</option>
+              {FINANCIAL_GOAL_TYPES.map((type) => (
+                <option key={type} value={type}>
+                  {GOAL_LABELS[type]}
+                </option>
+              ))}
+            </Select>
+            <FieldValidationError id={`${goal.clientId}-type-error`} message={typeError} />
+          </Field>
 
-        <div className={styles.fieldGroup}>
-          <label className={styles.label} htmlFor={`${goal.clientId}-date`}>
-            Data-alvo {dateRequiredByDomain ? "(obrigatória)" : "(opcional)"}
-          </label>
-          <input
-            className={styles.textInput}
-            id={`${goal.clientId}-date`}
-            type="date"
-            value={goal.targetDate}
-            aria-required={dateRequiredByDomain}
-            aria-invalid={dateError !== undefined}
-            aria-describedby={dateError === undefined ? undefined : `${goal.clientId}-date-error`}
-            onChange={(event) =>
-              dispatch({
-                type: "update-goal",
-                clientId: goal.clientId,
-                patch: { targetDate: event.target.value },
-              })
-            }
-          />
-          <FieldError id={`${goal.clientId}-date-error`} message={dateError} />
-        </div>
-      </div>
+          <Field>
+            <Label htmlFor={`${goal.clientId}-amount`}>
+              {goal.type === "PASSIVE_INCOME_MONTHLY" ? "Valor mensal-alvo" : "Valor-alvo"}
+            </Label>
+            <TextInput
+              id={`${goal.clientId}-amount`}
+              inputMode="decimal"
+              autoComplete="off"
+              placeholder="50000,00"
+              value={goal.targetAmount}
+              invalid={amountError !== undefined}
+              aria-describedby={
+                amountError === undefined ? undefined : `${goal.clientId}-amount-error`
+              }
+              onChange={(event) =>
+                dispatch({
+                  type: "update-goal",
+                  clientId: goal.clientId,
+                  patch: { targetAmount: event.target.value },
+                })
+              }
+            />
+            <FieldValidationError id={`${goal.clientId}-amount-error`} message={amountError} />
+          </Field>
+
+          <Field>
+            <Label htmlFor={`${goal.clientId}-date`} required={dateRequiredByDomain}>
+              Data-alvo {dateRequiredByDomain ? "" : "(opcional)"}
+            </Label>
+            <TextInput
+              id={`${goal.clientId}-date`}
+              type="date"
+              value={goal.targetDate}
+              aria-required={dateRequiredByDomain}
+              invalid={dateError !== undefined}
+              aria-describedby={dateError === undefined ? undefined : `${goal.clientId}-date-error`}
+              onChange={(event) =>
+                dispatch({
+                  type: "update-goal",
+                  clientId: goal.clientId,
+                  patch: { targetDate: event.target.value },
+                })
+              }
+            />
+            <FieldValidationError id={`${goal.clientId}-date-error`} message={dateError} />
+          </Field>
+        </Grid>
+      </Stack>
     </section>
   );
 }
@@ -451,35 +434,41 @@ function GoalsStep({
   nextGoalId: () => string;
   dispatch: OnboardingDispatch;
 }>) {
-  return (
-    <div className={styles.stepBody}>
-      {draft.goals.length === 0 ? (
-        <div className={styles.emptyState}>
-          <strong>Nenhum objetivo adicionado</strong>
-          <p>O domínio permite seguir sem objetivos; você pode adicioná-los quando quiser.</p>
-        </div>
-      ) : (
-        <div className={styles.goalList}>
-          {draft.goals.map((goal, index) => (
-            <GoalEditor
-              key={goal.clientId}
-              goal={goal}
-              index={index}
-              errors={errors}
-              dispatch={dispatch}
-            />
-          ))}
-        </div>
-      )}
+  const addGoal = () => dispatch({ type: "add-goal", clientId: nextGoalId() });
 
-      <button
-        className={styles.secondaryButton}
-        type="button"
-        onClick={() => dispatch({ type: "add-goal", clientId: nextGoalId() })}
-      >
-        Adicionar objetivo
-      </button>
-    </div>
+  return (
+    <Stack className={styles.stepBody} space="lg">
+      {draft.goals.length === 0 ? (
+        <EmptyState
+          title="Nenhum objetivo adicionado"
+          description="Objetivos são opcionais nesta versão. Adicione um agora ou siga direto para a revisão."
+          action={
+            <Button type="button" variant="secondary" onClick={addGoal}>
+              Adicionar objetivo
+            </Button>
+          }
+        />
+      ) : (
+        <>
+          <Stack space="md">
+            {draft.goals.map((goal, index) => (
+              <GoalEditor
+                key={goal.clientId}
+                goal={goal}
+                index={index}
+                errors={errors}
+                dispatch={dispatch}
+              />
+            ))}
+          </Stack>
+          <div>
+            <Button type="button" variant="secondary" onClick={addGoal}>
+              Adicionar outro objetivo
+            </Button>
+          </div>
+        </>
+      )}
+    </Stack>
   );
 }
 
@@ -512,10 +501,15 @@ function ReviewStep({
 }>) {
   const isPersisted = persistenceStatus === "persisted";
   const storageUnavailable = persistenceStatus === "unavailable";
+  const persistenceMessage = isPersisted
+    ? "Recarregar pode restaurar este perfil neste navegador. Nada é sincronizado automaticamente com conta, servidor ou outro dispositivo."
+    : storageUnavailable
+      ? "O armazenamento local não está disponível. O perfil continua utilizável nesta sessão e você pode tentar salvar novamente."
+      : "O perfil está validado nesta sessão. Salve neste dispositivo somente se quiser restaurá-lo após recarregar.";
 
   return (
-    <div className={styles.stepBody}>
-      <div className={styles.reviewGrid}>
+    <Stack className={styles.stepBody} space="xl">
+      <Grid minimum="sm" space="sm" className={styles.reviewGrid}>
         <div className={styles.reviewItem}>
           <span>Moeda de referência</span>
           <strong>{snapshot.referenceCurrency}</strong>
@@ -536,7 +530,7 @@ function ReviewStep({
               : formatMoney(snapshot.emergencyReserveTarget)}
           </strong>
         </div>
-      </div>
+      </Grid>
 
       <section className={styles.reviewSection} aria-labelledby="review-goals-title">
         <div className={styles.reviewSectionHeader}>
@@ -554,39 +548,35 @@ function ReviewStep({
         )}
       </section>
 
-      <div className={styles.reviewNotice} role="status">
-        <strong>
+      <div className={styles.persistenceState}>
+        <Status tone={isPersisted ? "success" : storageUnavailable ? "warning" : "neutral"}>
           {isPersisted
-            ? "Perfil salvo neste dispositivo."
-            : "Perfil validado e compartilhado nesta sessão."}
-        </strong>
-        <span>
-          {isPersisted
-            ? "Recarregar pode restaurar este perfil neste navegador. Nada é sincronizado com conta, servidor ou outro dispositivo."
+            ? "Salvo neste dispositivo"
             : storageUnavailable
-              ? "O armazenamento local não está disponível. O perfil continua utilizável nesta sessão e você pode tentar salvá-lo novamente."
-              : "Por padrão, o perfil fica somente em memória. Salve neste dispositivo apenas se quiser restaurá-lo após recarregar."}
-        </span>
+              ? "Armazenamento indisponível"
+              : "Somente nesta sessão"}
+        </Status>
+        <p>{persistenceMessage}</p>
       </div>
 
-      <div className={styles.reviewActions}>
-        <button className={styles.secondaryButton} type="button" onClick={onEdit}>
+      <Cluster className={styles.reviewActions} space="sm">
+        <Button variant="secondary" type="button" onClick={onEdit}>
           Editar dados
-        </button>
+        </Button>
         {isPersisted ? (
-          <button className={styles.secondaryButton} type="button" onClick={onRemovePersisted}>
+          <Button variant="secondary" type="button" onClick={() => void onRemovePersisted()}>
             Remover deste dispositivo
-          </button>
+          </Button>
         ) : (
-          <button className={styles.primaryButton} type="button" onClick={onPersist}>
+          <Button type="button" onClick={() => void onPersist()}>
             {storageUnavailable ? "Tentar salvar neste dispositivo" : "Salvar neste dispositivo"}
-          </button>
+          </Button>
         )}
-        <button className={styles.textButton} type="button" onClick={onReset}>
+        <Button variant="ghost" type="button" onClick={onReset}>
           {isPersisted ? "Recomeçar e apagar perfil" : "Recomeçar"}
-        </button>
-      </div>
-    </div>
+        </Button>
+      </Cluster>
+    </Stack>
   );
 }
 
@@ -645,8 +635,19 @@ export function FinancialOnboardingFlow() {
   }
 
   return (
-    <div className={styles.layout}>
-      <aside className={styles.progressPanel} aria-label="Progresso do onboarding">
+    <div className={styles.flow}>
+      <PageHeader
+        title="Perfil financeiro"
+        description="Defina seu contexto financeiro em quatro etapas curtas. Você pode revisar tudo antes de salvar no dispositivo."
+      />
+
+      <section className={styles.progress} aria-label="Progresso do onboarding">
+        <div className={styles.progressMeta}>
+          <strong>
+            Etapa {activeIndex + 1} de {ONBOARDING_STEPS.length}
+          </strong>
+          <span>{activeCopy.label}</span>
+        </div>
         <ol className={styles.progressList}>
           {ONBOARDING_STEPS.map((step, index) => {
             const copy = STEP_COPY[step];
@@ -658,11 +659,12 @@ export function FinancialOnboardingFlow() {
                 className={isCurrent ? styles.progressCurrent : styles.progressItem}
                 key={step}
                 aria-current={isCurrent ? "step" : undefined}
+                data-completed={isCompleted ? "true" : undefined}
               >
-                <span className={isCompleted ? styles.progressDone : styles.progressNumber}>
+                <span className={styles.progressNumber} aria-hidden="true">
                   {isCompleted ? "✓" : index + 1}
                 </span>
-                <span>
+                <span className={styles.progressCopy}>
                   <strong>{copy.label}</strong>
                   <small>{copy.summary}</small>
                 </span>
@@ -670,23 +672,12 @@ export function FinancialOnboardingFlow() {
             );
           })}
         </ol>
+      </section>
 
-        <div className={styles.persistenceNote}>
-          <strong>Persistência sob seu controle</strong>
-          <p>
-            Por padrão, o perfil fica só nesta sessão. Na revisão, você decide se quer salvá-lo
-            neste dispositivo para restaurá-lo após recarregar.
-          </p>
-        </div>
-      </aside>
-
-      <div className={styles.mainContent}>
-        <section className={styles.formSurface} aria-labelledby="onboarding-title">
-          <div className={styles.formHeader}>
-            <span className={styles.stepCounter}>
-              Etapa {activeIndex + 1} de {ONBOARDING_STEPS.length}
-            </span>
-            <h1 id="onboarding-title">{activeCopy.title}</h1>
+      <Surface tone="default" padding="md" className={styles.stepSurface}>
+        <Stack space="xl">
+          <div className={styles.stepHeading}>
+            <h2 id="onboarding-step-title">{activeCopy.title}</h2>
             <p>{activeCopy.description}</p>
           </div>
 
@@ -705,46 +696,56 @@ export function FinancialOnboardingFlow() {
             />
           ) : (
             <form className={styles.form} noValidate onSubmit={handleSubmit}>
-              {errorMessage === null ? null : (
-                <div className={styles.errorSummary} role="alert" tabIndex={-1}>
-                  <strong>Revise os campos destacados.</strong>
-                  <span>{errorMessage}</span>
-                </div>
-              )}
-
-              {state.step === "profile" ? (
-                <ProfileStep draft={state.draft} errors={state.errors} dispatch={dispatch} />
-              ) : null}
-              {state.step === "reserve" ? (
-                <ReserveStep draft={state.draft} errors={state.errors} dispatch={dispatch} />
-              ) : null}
-              {state.step === "goals" ? (
-                <GoalsStep
-                  draft={state.draft}
-                  errors={state.errors}
-                  nextGoalId={nextGoalId}
-                  dispatch={dispatch}
-                />
-              ) : null}
-
-              <div className={styles.formActions}>
-                {state.step === "profile" ? (
-                  <Link className={styles.backLink} href="/dashboard">
-                    Voltar ao dashboard
-                  </Link>
-                ) : (
-                  <button className={styles.backButton} type="button" onClick={goBack}>
-                    Voltar
-                  </button>
+              <Stack space="xl">
+                {errorMessage === null ? null : (
+                  <Alert tone="danger" title="Revise os campos destacados.">
+                    {errorMessage}
+                  </Alert>
                 )}
-                <button className={styles.primaryButton} type="submit">
-                  {state.step === "goals" ? "Revisar perfil" : "Continuar"}
-                </button>
-              </div>
+
+                {state.step === "profile" ? (
+                  <ProfileStep draft={state.draft} errors={state.errors} dispatch={dispatch} />
+                ) : null}
+                {state.step === "reserve" ? (
+                  <ReserveStep draft={state.draft} errors={state.errors} dispatch={dispatch} />
+                ) : null}
+                {state.step === "goals" ? (
+                  <GoalsStep
+                    draft={state.draft}
+                    errors={state.errors}
+                    nextGoalId={nextGoalId}
+                    dispatch={dispatch}
+                  />
+                ) : null}
+
+                <Cluster className={styles.formActions} space="sm" justify="between">
+                  {state.step === "profile" ? (
+                    <LinkButton href="/dashboard" variant="ghost">
+                      Voltar ao dashboard
+                    </LinkButton>
+                  ) : (
+                    <Button variant="secondary" type="button" onClick={goBack}>
+                      Voltar
+                    </Button>
+                  )}
+                  <Button type="submit">
+                    {state.step === "goals" ? "Revisar perfil" : "Continuar"}
+                  </Button>
+                </Cluster>
+              </Stack>
             </form>
           )}
-        </section>
-      </div>
+        </Stack>
+      </Surface>
+
+      <details className={styles.persistenceDisclosure}>
+        <summary>Como este perfil é salvo?</summary>
+        <p>
+          Por padrão, o perfil fica somente nesta sessão. Na revisão, você decide se quer salvá-lo
+          neste dispositivo para restaurá-lo após recarregar. Nada é sincronizado automaticamente
+          com sua conta ou outro dispositivo.
+        </p>
+      </details>
     </div>
   );
 }

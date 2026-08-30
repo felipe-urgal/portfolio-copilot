@@ -1,115 +1,59 @@
 # Backlog
 
-Backlog macro. A ordem pode mudar mediante decisão registrada.
+Backlog macro **ainda aberto**. Entregas concluídas pertencem a `DONE.md`; detalhes executáveis pertencem às issues do GitHub.
 
-## Fundação técnica
+A prioridade corrente está sempre em `NEXT.md`. Este arquivo não substitui `docs/ROADMAP.md`.
 
-- bootstrap de workspace e app web/PWA;
-- domínio compartilhado;
-- lint/typecheck/test/build;
-- CI;
-- configuração de ambiente;
-- logging e error boundary;
-- baseline de segurança.
+## UX/UI — iniciativa #69
 
-## Portfolio Engine
+A fundação visual R0–R5 está concluída após o PR #88. Permanecem:
 
-- tipos Money, Percentage e AllocationWeight;
-- Asset e AssetClass;
-- Portfolio;
-- Transaction ledger;
-- Holding projection;
-- TargetAllocation;
-- AllocationGap;
-- ContributionAllocator;
-- `minimumMeaningfulContribution` e limite de destinos por aporte;
-- unidade mínima negociável e elegibilidade do aporte;
-- limites de concentração;
-- custos/impactos tributários relevantes como restrições quando disponíveis;
-- rounding/cash remainder;
-- testes property-based.
+- #78 — R6: dashboard baseado no Protótipo 3;
+- #79 — R7: carteira completa e progressive disclosure;
+- #80 — R8: componentes/estados transversais restantes;
+- #81 — R9: acessibilidade, responsividade e visual fidelity QA;
+- R10 — gate final e fechamento da #69.
 
-## Produto MVP
+## IA assistiva
 
-- autenticação;
-- perfil financeiro;
-- objetivos;
-- reserva;
-- dashboard;
-- posições;
-- transações;
-- alocação;
-- aporte do mês;
-- RecommendationSnapshot;
-- explicações determinísticas iniciais.
+- #45 — copiloto explicável sobre dados estruturados e recomendações determinísticas;
+- #46 — suíte de segurança, prompt injection, factualidade e alucinação.
 
-## Dados
+A fundação de ingestão segura de conteúdo externo (#44) já foi concluída. UI de IA não deve criar sistema visual paralelo durante a #69.
 
-- asset master;
-- preço diário;
-- FX;
-- macro;
-- fundamentals;
-- provenance;
-- freshness;
-- quality flags;
-- adapters e contract tests.
+## Convergência do MVP
 
-## Investment Engine
+- #47 — fechar jornada ponta a ponta de carteira, transações e aporte do mês depois da migração visual de Dashboard/Carteira.
 
-- metodologias específicas por classe/setor;
-- Quality Score;
-- Opportunity Score;
-- Dividend Score;
-- valuation;
-- Portfolio Fit;
-- radar;
-- versionamento.
+Os contratos de domínio, ledger, contribuição, persistência e autenticação já existem. O trabalho restante é integração de jornada e acabamento, não reconstrução dessas fundações.
 
-## Teses
+## Simulação e backtesting
 
-- InvestmentThesis;
-- drivers;
-- riscos;
-- indicadores;
-- eventos;
-- critérios de invalidação;
-- revisão periódica.
+- #48 — cenários, inflação, reinvestimento, reconstrução histórica e backtesting sem look-ahead.
 
-## IA
+Requer dados históricos apropriados e metodologia versionada; não deve inventar séries ausentes.
 
-- news/event ingestion;
-- resumo de resultados;
-- extração estruturada;
-- explainability;
-- prompt-injection defense;
-- factuality/evaluation suite.
+## Integrações financeiras
 
-## Simulações
-
-- aporte recorrente;
-- objetivos;
-- inflação;
-- renda passiva estimada;
-- cenários;
-- backtesting;
-- benchmarks.
-
-## Integrações futuras
-
-- Open Finance/read-only;
-- importação de corretora quando permitido;
-- reconciliação;
-- alertas;
-- notificações.
+- #49 — integrações read-only/Open Finance/importação/reconciliação, somente após gates de segurança, consentimento e regulatório.
 
 ## Produto público
 
-- Regulatory Gate;
-- LGPD;
-- tenancy;
-- suporte;
-- observabilidade/SLO;
-- backup/DR;
-- billing se aplicável;
-- segurança independente.
+- #50 — Regulatory Gate, LGPD, tenancy, observabilidade/SLO, suporte, backup/DR, segurança independente, termos e eventual billing.
+
+## Extensões futuras ainda sem vertical priorizado
+
+- ampliar cobertura produtiva de providers de preço/fundamentals/FX quando houver fonte/licença definida;
+- alertas úteis derivados de estados reais como stale, concentração, tese sem revisão ou evento material;
+- PWA instalável quando houver valor de produto e estratégia de cache/offline compatível com dados financeiros.
+
+## Fora de escopo até decisão explícita
+
+- execução automática de ordens;
+- custódia;
+- day trade;
+- derivativos/alavancagem;
+- copy trading;
+- feed social;
+- recomendação/ranking patrocinado;
+- promessa de retorno.

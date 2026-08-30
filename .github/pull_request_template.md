@@ -1,45 +1,84 @@
-## Problema
+## Contexto / problema
 
-Descreva o problema/atividade que este PR resolve.
+Descreva o problema/atividade, a issue canônica e por que a mudança é necessária.
 
 ## Solução
 
-Descreva a implementação e as principais decisões.
+Explique o que foi implementado e as decisões/fronteiras importantes. Não limite esta seção a uma lista de arquivos.
 
 ## Fora de escopo
 
-Liste explicitamente o que não faz parte deste PR.
+Liste explicitamente o que não faz parte deste PR e qualquer dívida deliberadamente separada.
 
 ## Como testar
 
 ```bash
+corepack enable
+corepack prepare pnpm@11.24.0 --activate
 pnpm install --frozen-lockfile
+pnpm db:up
+pnpm db:migrate
 pnpm check
 ```
 
-Inclua passos adicionais quando necessários e registre o SHA exato validado.
+Adapte os comandos ao escopo. Inclua cenários manuais relevantes e registre o SHA exato do head final validado.
 
-## Riscos e impacto
+## Riscos e segurança
 
-Descreva riscos técnicos, financeiros, de segurança, dados, compatibilidade ou operação.
+Descreva riscos técnicos, financeiros, de segurança, privacidade, dados, compatibilidade, migration ou operação.
 
-## Documentação atualizada
+Quando aplicável, confirme explicitamente auth/authz/ownership, invariantes financeiras, provenance/freshness, concorrência/idempotência e supply chain.
 
-Liste os `.md`, ADRs e tarefas alterados.
+## Documentação e issues
+
+Liste os `.md`, ADRs, decisões e issues atualizados. Consulte `docs/DOCUMENTATION-MAP.md`.
+
+## Auto code review sênior
+
+**Obrigatório e independente do CI.** Revise o diff integral conforme `AGENTS.md` e registre aqui:
+
+- findings concretos encontrados;
+- correções aplicadas;
+- regressions tests adicionados;
+- adiamentos deliberados com issue/backlog correspondente;
+- confirmação de que não restou finding aberto.
+
+Não usar “review feito” sem explicar os pontos relevantes realmente revisados/encontrados.
+
+## Quality gate final
+
+**Head SHA:** `<sha-final>`
+
+- [ ] install com lockfile congelado;
+- [ ] Docker Compose config;
+- [ ] format check;
+- [ ] lint;
+- [ ] typecheck;
+- [ ] migrations;
+- [ ] root `.env.local` DB fallback migration;
+- [ ] tests;
+- [ ] build.
+
+Se Actions não conseguir iniciar por motivo externo confirmado antes de executar steps, documente o fallback local permitido por `docs/DEVELOPMENT.md`. Falha funcional real do CI não pode ser contornada por fallback.
 
 ## Checklist obrigatório antes do merge
 
-- [ ] critérios de aceite atendidos;
-- [ ] testes/edge cases adequados;
-- [ ] quality gate do **head final** integralmente verde via CI ou fallback local documentado quando Actions não puder iniciar por billing/infra;
-- [ ] SHA exato validado registrado no PR;
-- [ ] auto code review completo em nível sênior realizado;
-- [ ] findings do review aplicados ou adiamentos explicitamente registrados;
-- [ ] arquitetura e escopo revisados;
-- [ ] segurança e supply chain revisadas;
-- [ ] documentação/ADRs atualizados;
-- [ ] `NEXT.md`, `DONE.md` e backlog coerentes;
-- [ ] diff final revisado sem arquivos temporários;
-- [ ] nenhum finding pendente.
+- [ ] issue/critério de aceite integralmente atendido;
+- [ ] implementação na camada arquitetural correta;
+- [ ] testes e edge cases adequados;
+- [ ] regressions tests adicionados para bugs encontrados no PR/review;
+- [ ] segurança/privacidade revisadas;
+- [ ] invariantes financeiras revisadas quando aplicável;
+- [ ] accessibility/responsive revisados para UI;
+- [ ] dependências/supply chain revisadas;
+- [ ] documentação/ADRs/issues reconciliados;
+- [ ] `NEXT.md`, `BACKLOG.md`, `DONE.md` e roadmap coerentes quando afetados;
+- [ ] auto code review completo em nível fullstack sênior realizado sobre o diff integral;
+- [ ] findings corrigidos ou adiamentos explicitamente rastreados;
+- [ ] quality gate do **head final** integralmente verde;
+- [ ] SHA exato validado registrado acima;
+- [ ] diff final revisado sem debug, backup, workflow diagnóstico ou artefato temporário;
+- [ ] nenhum finding pendente;
+- [ ] PR elegível para merge conforme `AGENTS.md` e `docs/DEVELOPMENT.md`.
 
-> Um push novo invalida a checagem final. CI continua preferido. Se o GitHub Actions estiver impedido de iniciar por billing/infra, o fallback local deve executar `pnpm install --frozen-lockfile` e `pnpm check` no SHA exato do head, registrar o resultado no PR e repetir após qualquer novo push.
+> Qualquer push novo invalida a checagem final anterior. CI verde em SHA antigo não valida o head atual.

@@ -1,170 +1,231 @@
 # Catálogo de Funcionalidades
 
-Este catálogo preserva funcionalidades discutidas, mesmo quando ainda não estão no roadmap imediato.
+Este catálogo separa **capability implementada**, **superfície web atual**, **redesign em andamento** e **backlog**. A existência de um domínio/engine não significa que a capability já tenha UI final.
 
-## MVP
+## Legenda
 
-### Dashboard
+- **IMPLEMENTADO — domínio/engine:** contrato e testes existem, mas podem ainda não estar expostos na UI final;
+- **IMPLEMENTADO — web:** existe fluxo utilizável hoje;
+- **REDESIGN:** capability existe, porém sua superfície está sendo migrada pela #69;
+- **BACKLOG:** ainda requer vertical próprio.
 
-- patrimônio;
-- resultado;
-- aporte do mês;
-- reserva/meta;
-- alocação atual versus alvo;
-- desvios prioritários;
-- CTA **Onde investir meu aporte?**.
+## Estado atual
 
-### Carteira
+| Área | Estado | Observação |
+| --- | --- | --- |
+| autenticação GitHub + sessão server-side | IMPLEMENTADO — web | focused auth R4 concluído |
+| onboarding financeiro | IMPLEMENTADO — web | guided flow R5 sobre AppShell/design system |
+| perfil financeiro local e migração opt-in para conta | IMPLEMENTADO — web | contratos de conflito/ownership preservados |
+| Portfolio/Asset/Transaction Ledger/positions | IMPLEMENTADO — web + domínio | conteúdo da Carteira ainda entra no R7 |
+| pipeline determinístico de aporte | IMPLEMENTADO — domínio + web atual | allocator, política, concentração, execução, custos e snapshot |
+| explicação determinística do aporte | IMPLEMENTADO — web | reason codes/status, sem IA |
+| Asset Master | IMPLEMENTADO — domínio | matching e provenance; exposição visual futura quando necessária |
+| Market Data | IMPLEMENTADO — foundation | snapshots, freshness/cache/fallback; cobertura de providers ainda parcial |
+| Investment Engine | IMPLEMENTADO — engine | Quality, Opportunity, Dividend, valuation, Portfolio Fit e ranking |
+| Investment Thesis | IMPLEMENTADO — engine | versionamento, eventos, reviews e lifecycle |
+| ingestão segura para IA | IMPLEMENTADO — foundation | conteúdo permanece untrusted; não equivale a Copiloto pronto |
+| Dashboard final do Protótipo 3 | REDESIGN | #78 / R6 |
+| Carteira final | REDESIGN | #79 / R7 |
+| estados transversais finais | REDESIGN | #80 / R8 |
+| visual/a11y/responsive QA completo | REDESIGN | #81 / R9 |
+| Copiloto conversacional | BACKLOG | #45, UI somente sobre a fundação final da #69 |
+| factuality/hallucination eval suite | BACKLOG | #46 |
+| simulação/backtesting | BACKLOG | #48 |
+| integrações financeiras | BACKLOG | #49, sujeitas a security/regulatory gates |
+| produto público | BACKLOG | #50 / Regulatory Gate |
 
-- holdings;
-- transações;
-- custo médio;
-- valor atual;
-- pesos;
-- classe/setor;
-- tese;
-- risco.
+## Dashboard
 
-### Aporte inteligente
+Direção de produto:
+
+- panorama da carteira como região dominante;
+- patrimônio/resultado/KPIs **somente quando calculáveis por fonte real**;
+- aporte do mês e próximos passos;
+- reserva/meta sem confundir meta com saldo;
+- alocação atual versus alvo quando houver base monetária confiável;
+- teses/eventos quando houver integração real;
+- Copiloto como contexto, sem simular IA inexistente.
+
+Implementação visual final: #78.
+
+## Carteira
+
+Capabilities existentes:
+
+- Portfolio canônico;
+- catálogo local de Assets;
+- Transaction Ledger;
+- `BUY`, `SELL`, `CASH_IN`, `CASH_OUT`;
+- posições projetadas a partir do ledger;
+- TargetAllocation e aporte determinístico;
+- elegibilidade/quantidade mínima;
+- concentração;
+- custos/impacto tributário conhecido informado;
+- RecommendationSnapshot e explicação determinística.
+
+O R7 (#79) reorganiza essa capacidade sem trocar as fontes de verdade. Valor atual, P&L e métricas dependentes de Market Data não podem ser inventados para completar o layout.
+
+## Perfil, objetivos e reserva
+
+Implementado no domínio e no onboarding:
+
+- moeda de referência;
+- tolerância declarada a risco;
+- horizonte;
+- meta opcional de reserva;
+- patrimônio-alvo;
+- renda passiva mensal;
+- aposentadoria;
+- objetivo datado.
+
+Reserva é uma **meta**, não saldo. Objetivos não ganham progresso fictício sem dados que suportem o cálculo.
+
+## Aporte inteligente
+
+Implementado de forma determinística:
 
 - receber valor disponível;
-- respeitar reserva/objetivos;
-- medir gaps;
-- evitar concentração;
-- priorizar poucos destinos;
-- explicar cada valor;
+- reconciliar base monetária informada;
+- medir gaps de alocação;
+- limitar microaportes/destinos;
+- aplicar concentração;
+- aplicar elegibilidade e quantidade mínima;
+- aplicar custos conhecidos/impacto tributário monetário informado;
 - permitir sobra em caixa;
-- salvar snapshot.
+- produzir snapshot versionado/auditável;
+- explicar status e reason codes sem LLM.
 
-### Objetivos
-
-- reserva;
-- patrimônio;
-- renda passiva;
-- aposentadoria;
-- objetivos datados.
+A seleção/ranking analítico por ativo é uma capability separada do Investment Engine; integração de produto deve preservar essa separação.
 
 ## Radar e análise
 
-- carteira vs radar;
+Implementado no engine:
+
 - Quality Score;
 - Opportunity Score;
 - Dividend Score;
+- valuation snapshots;
 - Portfolio Fit;
-- estados comprar/aportar, aguardar preço, evitar aporte, observação e tese em revisão;
-- comparativo por setor;
-- filtros por classe/risco/horizonte.
+- ranking explicável;
+- metodologias versionadas;
+- missing/stale/conflict/look-ahead explícitos.
+
+Ainda não significa radar visual completo no app. Comparativos, filtros e surfaces finais entram quando houver vertical de produto que os consuma.
 
 ## Teses
 
-- tese por ativo;
+Implementado no engine:
+
+- tese por ativo/versionamento;
+- fatos com provenance;
 - drivers;
 - riscos;
-- indicadores;
-- valuation de referência;
+- indicadores monitorados;
 - critérios de invalidação;
-- timeline de eventos;
-- revisão e versionamento.
+- eventos/resultados;
+- reviews;
+- timeline;
+- estados de atualidade/invalidação.
 
-## O que mudou?
-
-- resumo desde última visita/revisão;
-- resultados trimestrais;
-- fatos relevantes;
-- guidance;
-- dividendos;
-- risco/crédito;
-- mudanças macro relevantes;
-- impacto candidato na tese;
-- `tese intacta`, `atenção` ou `revisão necessária`.
+A UI final de tese ainda depende da evolução das superfícies do produto.
 
 ## Inteligência de mercado
 
-- Selic/Copom;
-- IPCA;
-- juros EUA/Fed;
-- dólar/FX;
-- petróleo;
-- minério;
-- indicadores macro;
-- resultados e guidance;
-- fatos relevantes;
-- notícias deduplicadas e classificadas.
+Fundação implementada:
+
+- contratos de preço, FX e macro;
+- snapshots normalizados;
+- `asOf`/`retrievedAt`;
+- provenance;
+- freshness;
+- cache;
+- fallback explícito;
+- provider de macro oficial BCB/SGS.
+
+Backlog de produto/dados:
+
+- ampliar providers reais/licenciados de preço e fundamentals;
+- séries e cobertura necessárias para simulação/backtesting;
+- surfaces de stale/missing/provenance quando conectadas à web.
 
 ## IA assistiva
 
-- resumo de notícia/resultado;
-- extração de eventos estruturados;
-- comparação evento x tese;
-- explicação de recomendação;
-- perguntas em linguagem natural sobre a própria carteira.
+Fundação de segurança implementada:
 
-Não permitido: IA alterar regras, score ou posição por si só.
+- source allowlist;
+- normalização e limites;
+- dedupe/revisão;
+- provenance/retention;
+- classificação por ativo/tese/evento;
+- `UNTRUSTED_EXTERNAL_CONTENT`;
+- instruction authority `NONE`;
+- quarantine de prompt injection suspeito;
+- audit store contract.
+
+Backlog:
+
+- #45 — explicações/perguntas em linguagem natural sobre dados estruturados;
+- #46 — factuality, hallucination e adversarial evaluation mais ampla.
+
+Não permitido: IA alterar regra financeira, score, posição ou fato canônico por si só.
 
 ## Simulações
+
+Backlog #48:
 
 - aporte recorrente;
 - inflação;
 - horizonte;
-- renda passiva estimada;
 - reinvestimento;
-- cenários conservador/base/otimista;
-- alteração de aporte;
+- cenários probabilísticos quando adequados;
 - metas;
-- comparação com benchmarks.
-
-## Histórico e auditoria
-
-- RecommendationSnapshot;
-- versão de metodologia;
-- dados utilizados;
-- histórico de decisões;
-- reconstrução de recomendação;
-- backtesting posterior.
+- benchmarks;
+- backtesting sem look-ahead;
+- reconstrução histórica com dados disponíveis no instante simulado.
 
 ## Alertas
 
-Futuro:
+Futuro, quando derivados de fatos reais:
 
 - ativo acima de limite;
-- tese sem revisão;
-- dado stale;
-- resultado divulgado;
-- evento material;
-- meta/reserva abaixo do planejado;
-- concentração setorial;
+- tese sem revisão/stale;
+- dado stale/missing;
+- resultado/evento material;
+- concentração;
 - aporte mensal pendente.
 
-Evitar alertas por oscilação irrelevante.
+Evitar alerta por oscilação irrelevante ou signal sem metodologia.
 
 ## Integrações
 
-Futuro e sujeito a gates:
+Backlog #49, sujeito a gates:
 
-- cotação e fundamentos;
-- macro oficial;
 - Open Finance/read-only;
-- importação/reconciliação de transações;
+- importação de corretora;
+- reconciliação;
+- consentimento/revogação;
 - notificações.
 
 ## App/PWA
 
-Direção proposta:
+Atual:
 
-- web responsiva;
-- instalável como PWA futuramente;
-- experiência desktop e mobile;
-- baixo custo operacional no início;
-- hospedagem gratuita/baixo custo avaliada na fase de deploy.
+- web responsiva Next.js;
+- desktop/tablet/mobile como estados da mesma solução;
+- AppShell responsivo implementado.
+
+Futuro:
+
+- instalação PWA/offline somente quando houver estratégia segura para cache e dados financeiros.
 
 ## Fora de escopo atual
 
-- execução de ordem;
+- execução automática de ordem;
 - custódia;
 - day trade;
 - derivativos;
 - alavancagem;
 - copy trading;
 - feed social;
-- ranking patrocinado;
+- ranking/recomendação patrocinada;
 - promessa de retorno.
