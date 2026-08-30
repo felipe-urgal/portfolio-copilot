@@ -8,12 +8,18 @@ A evolução das superfícies visuais entra em uma pausa estratégica para execu
 
 O redesign cobre **todo o app web**, não apenas uma tela: auth, onboarding, shell, dashboard, carteira, componentes financeiros, estados transversais e responsividade.
 
+### Direção visual aprovada
+
+O **Protótipo 3 — Assistant-First Workspace** foi escolhido como referência visual canônica da iniciativa. Ele não é apenas inspiração: R1 deve refiná-lo e expandi-lo para todas as superfícies, preservando sua arquitetura, hierarquia e linguagem visual, sem inventar métricas ou alterar regras de domínio para reproduzir dados ilustrativos.
+
+Referência obrigatória: `docs/design/PROTOTYPE-3-DIRECTION.md`.
+
 Roadmap detalhado: `docs/UX-UI-REDESIGN-ROADMAP.md`.
 
 Sequência canônica:
 
 - [ ] R0 — audit completo e inventário;
-- [ ] R1 — arquitetura da informação + direção visual;
+- [ ] R1 — arquitetura da informação + refinamento/expansão do Protótipo 3;
 - [ ] R2 — design system foundation;
 - [ ] R3 — app shell e navegação;
 - [ ] R4 — auth e sessão;
