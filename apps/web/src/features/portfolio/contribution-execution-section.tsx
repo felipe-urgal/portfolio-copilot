@@ -190,6 +190,7 @@ export function ContributionExecutionSection({
                   <div>
                     <SegmentedControl
                       legend="Elegibilidade"
+                      aria-invalid={rowErrors?.isEligible !== undefined}
                       aria-describedby={
                         rowErrors?.isEligible !== undefined ? eligibilityErrorId : undefined
                       }
