@@ -1,5 +1,5 @@
-import Link, { type LinkProps } from "next/link";
-import type { AnchorHTMLAttributes, ButtonHTMLAttributes, ReactNode } from "react";
+import Link from "next/link";
+import type { ButtonHTMLAttributes, ComponentProps, ReactNode } from "react";
 
 import { classNames } from "./class-names";
 import styles from "./ui.module.css";
@@ -7,14 +7,14 @@ import styles from "./ui.module.css";
 type ButtonVariant = "primary" | "secondary" | "ghost" | "danger";
 type ButtonSize = "sm" | "md" | "lg";
 
-const variantClass: Record<ButtonVariant, string> = {
+const variantClass: Record<ButtonVariant, string | undefined> = {
   primary: styles.buttonPrimary,
   secondary: styles.buttonSecondary,
   ghost: styles.buttonGhost,
   danger: styles.buttonDanger,
 };
 
-const sizeClass: Record<ButtonSize, string> = {
+const sizeClass: Record<ButtonSize, string | undefined> = {
   sm: styles.buttonSm,
   md: styles.buttonMd,
   lg: styles.buttonLg,
@@ -52,9 +52,9 @@ export function Button({
   );
 }
 
-export interface LinkButtonProps
-  extends Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "href" | "children">, LinkProps {
+export interface LinkButtonProps extends Omit<ComponentProps<typeof Link>, "children" | "className"> {
   children: ReactNode;
+  className?: string;
   variant?: ButtonVariant;
   size?: ButtonSize;
   disabled?: boolean;
