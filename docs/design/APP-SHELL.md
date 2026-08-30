@@ -49,6 +49,8 @@ Até 960px:
 
 Até 520px o label visual do botão Menu é ocultado mantendo o texto acessível no DOM.
 
+As translucências específicas do shell são compostas a partir dos semantic color tokens do R2 com `color-mix`; o componente não introduz uma paleta paralela de cores literais.
+
 ## Keyboard e foco
 
 O drawer mantém o seguinte lifecycle:
@@ -73,6 +75,12 @@ Cada `AppShell` fornece:
 - drawer com `role="dialog"`, `aria-modal="true"` e título associado.
 
 Features inseridas dentro do shell não devem criar outro `main` nem um segundo chrome de navegação.
+
+## Boundary server/client e privacidade
+
+`AppShell` pode receber a identidade autenticada no boundary server da rota, mas a ilha client `AppShellNavigation` recebe somente `displayName`. `subject`, email, avatar e demais detalhes da identidade não atravessam esse boundary apenas para renderizar a navegação.
+
+Essa redução de payload mantém o drawer interativo sem serializar dados de sessão que a UI client não utiliza.
 
 ## Integração atual
 
