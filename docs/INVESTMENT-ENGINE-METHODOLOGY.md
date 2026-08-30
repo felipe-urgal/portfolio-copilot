@@ -226,10 +226,12 @@ A fórmula é:
 
 ```text
 rankingScoreBps = round_half_up(
-  qualityScoreBps * 3500
-  + opportunityScoreBps * 3500
-  + portfolioFitScoreBps * 3000
-) / 10000
+  (
+    qualityScoreBps * 3500
+    + opportunityScoreBps * 3500
+    + portfolioFitScoreBps * 3000
+  ) / 10000
+)
 ```
 
 Na implementação, cada contribuição ponderada é preservada separadamente no snapshot. O resultado também carrega os snapshots completos de Quality, Opportunity e Portfolio Fit.
