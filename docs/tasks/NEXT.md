@@ -1,73 +1,117 @@
-# Próxima Atividade — UX/UI R1: expandir o Protótipo 3 para o app inteiro
+# Próxima Atividade — UX/UI R2: design tokens e primitives canônicas
 
 **Status:** READY
 
 ## Issue canônica
 
-- #73 — `UX/UI R1: expandir Protótipo 3 para arquitetura e todas as superfícies`
+- #74 — `UX/UI R2: design tokens e primitives canônicas`
 - iniciativa guarda-chuva: #69
 
-## R0 concluído
+## R0 e R1 concluídos
 
-O audit de frontend foi registrado em:
+A fundação de decisão visual está registrada em:
 
-- #72 — `UX/UI R0: audit completo do frontend atual`;
-- `docs/design/FRONTEND-AUDIT.md`.
+- #72 — audit do frontend atual;
+- #73 — arquitetura e expansão da direção aprovada;
+- `docs/design/FRONTEND-AUDIT.md`;
+- `docs/design/PROTOTYPE-3-DIRECTION.md`;
+- `docs/design/R1-ASSISTANT-FIRST-APP-SPEC.md`.
 
-O audit confirmou três necessidades estruturais antes das migrações por tela:
+O R1 definiu:
 
-1. arquitetura de informação canônica;
-2. design tokens/primitives compartilhadas;
-3. shell único e responsivo.
+- navigation model sem rotas futuras fictícias;
+- AppShell com sidebar no desktop e drawer em tablet/mobile;
+- context rail/Copiloto responsivo e opcional;
+- focused auth sem sidebar;
+- onboarding dentro do shell canônico;
+- dashboard orientado a panorama e ação, sem métricas inventadas;
+- carteira dividida progressivamente por tarefa;
+- estados loading/empty/missing/stale/error/success/disabled;
+- progressive disclosure de provenance, reason codes e detalhe técnico;
+- accessibility como contrato desde a fundação.
 
-A experiência mobile atual foi auditada por código/breakpoints, mas não recebeu visual QA em viewport real. Isso está explicitamente registrado e será validado no produto redesenhado em #81.
+## Objetivo do R2
 
-## Objetivo
+Transformar a arquitetura aprovada em contratos reutilizáveis de interface antes de migrar qualquer tela grande.
 
-Transformar o **Protótipo 3 — Assistant-First Workspace** já aprovado em uma especificação completa do Portfolio Copilot, sem reabrir a escolha da direção visual.
-
-R1 deve definir como essa mesma linguagem se aplica a:
-
-- auth/sign-in/sign-out;
-- onboarding;
-- dashboard;
-- carteira;
-- shell/navegação;
-- sessão/conta;
-- estados empty/loading/error/success;
-- desktop/tablet/mobile;
-- futura presença do Copiloto.
+R2 deve eliminar a autoridade visual local das features para os padrões fundamentais. Depois dele, R3–R8 não devem recriar botão, field, focus ring, container, status ou loading por módulo.
 
 ## Escopo
 
-- arquitetura da informação e navigation model;
-- mapa de tarefas por superfície;
-- grid/container/density model;
-- tipografia, cor, superfície e iconografia;
-- conceitos derivados completos para auth, onboarding e carteira;
-- refinamento do dashboard aprovado;
-- comportamento responsive da sidebar e painel Copiloto;
-- progressive disclosure para segurança, provenance e informação operacional;
-- registro de desvios materiais do Protótipo 3 quando necessários.
+### Semantic tokens
+
+- cores de superfície, texto, border, accent e feedback;
+- tipografia e hierarchy financeira;
+- spacing;
+- radius;
+- elevation;
+- focus ring;
+- motion e reduced motion;
+- largura/container/grid/gutters;
+- z-index somente onde houver necessidade real.
+
+### Primitives mínimas
+
+- `Container`;
+- `Stack`;
+- `Cluster`;
+- `Grid`;
+- `PageHeader`;
+- `Button` e `LinkButton`;
+- `Field`, `Label`, `HelpText`, `FieldError`;
+- `TextInput` e `Select`;
+- `ChoiceCard`/`SegmentedControl` apenas se necessários aos fluxos aprovados;
+- `Surface`;
+- `Status`/`Badge` com variantes restritas;
+- `Alert`;
+- `EmptyState`;
+- loading/skeleton;
+- apresentação canônica de valores/métricas financeiras;
+- icon wrapper;
+- helpers de composição responsiva suficientes para R3–R7.
+
+### Estados
+
+Quando aplicável:
+
+- default;
+- hover;
+- focus-visible;
+- active/pressed;
+- selected;
+- disabled;
+- loading;
+- error;
+- success.
 
 ## Regras
 
-- Protótipo 3 é referência canônica, não inspiração opcional;
-- não criar rotas vazias para imitar o mockup;
-- não inventar métricas, market data, patrimônio, retorno ou capacidades;
-- não alterar regras financeiras, auth, ownership ou persistência por motivo visual;
-- conceitos precisam cobrir desktop e mobile antes da implementação ampla.
+- não criar framework genérico interno;
+- não introduzir biblioteca visual por conveniência;
+- promover apenas padrões comprovadamente necessários pelo R1 e pelo frontend existente;
+- nenhuma primitive pode alterar regra de domínio;
+- nenhuma primitive pode depender de dados fictícios do Protótipo 3;
+- WCAG 2.2 AA e `prefers-reduced-motion` fazem parte da implementação, não são polish posterior;
+- CSS local de uma feature não deve redefinir semantic token fundamental.
 
 ## Gate
 
-R2 (#74) só começa quando arquitetura, superfícies principais e estados responsivos estiverem definidos suficientemente para evitar decisões visuais ad hoc durante coding.
+R3 (#75) só começa quando o shell puder ser composto exclusivamente com a fundação canônica, sem inventar styling paralelo.
 
-## Sequência já decomposta
+O R2 deve entregar:
+
+- tokens documentados;
+- primitives testadas;
+- contratos de variantes/estados claros;
+- exemplos suficientes para R3–R7;
+- `pnpm check` verde;
+- auto code review sem finding aberto.
+
+## Sequência
 
 ```text
-#73 R1 direção/arquitetura
-  -> #74 R2 tokens + primitives
-  -> #75 R3 shell/sidebar
+#74 R2 tokens + primitives
+  -> #75 R3 AppShell/sidebar
   -> #76 R4 auth
   -> #77 R5 onboarding
   -> #78 R6 dashboard
@@ -81,7 +125,8 @@ R2 (#74) só começa quando arquitetura, superfícies principais e estados respo
 
 - `docs/design/PROTOTYPE-3-DIRECTION.md`;
 - `docs/design/FRONTEND-AUDIT.md`;
+- `docs/design/R1-ASSISTANT-FIRST-APP-SPEC.md`;
 - `docs/UX-UI-REDESIGN-ROADMAP.md`;
 - `docs/ROADMAP.md`.
 
-A #45 permanece a próxima iniciativa funcional de IA, mas sua superfície visual só nasce sobre a nova fundação.
+A #45 continua funcionalmente posterior à nova fundação visual: não criar uma UI temporária de Copiloto durante R2.
