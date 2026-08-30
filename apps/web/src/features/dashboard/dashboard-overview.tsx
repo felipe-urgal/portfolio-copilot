@@ -1,6 +1,11 @@
 "use client";
 
-import { Money, type FinancialHorizonCode, type MoneySnapshot, type RiskToleranceCode } from "@portfolio-copilot/domain";
+import {
+  Money,
+  type FinancialHorizonCode,
+  type MoneySnapshot,
+  type RiskToleranceCode,
+} from "@portfolio-copilot/domain";
 
 import { FinancialProfileAccountMigration } from "@/components/financial-profile-account-migration";
 import { useFinancialSession } from "@/components/financial-session";
@@ -33,7 +38,9 @@ type DashboardOverviewProps = Readonly<{
 }>;
 
 function formatMoney(snapshot: MoneySnapshot): string {
-  const [whole = "0", fraction = "00"] = Money.fromSnapshot(snapshot).toDecimalString().split(".");
+  const [whole = "0", fraction = "00"] = Money.fromSnapshot(snapshot)
+    .toDecimalString()
+    .split(".");
   const groupedWhole = whole.replace(/\B(?=(\d{3})+(?!\d))/gu, ".");
   return `${snapshot.currency} ${groupedWhole},${fraction}`;
 }
@@ -48,7 +55,9 @@ export function DashboardOverview({ displayName }: DashboardOverviewProps) {
   const { financialProfile, persistenceStatus } = useFinancialSession();
   const hasProfile = financialProfile !== null;
 
-  const nextActionTitle = hasProfile ? "Estruture os fatos da carteira" : "Complete seu perfil financeiro";
+  const nextActionTitle = hasProfile
+    ? "Estruture os fatos da carteira"
+    : "Complete seu perfil financeiro";
   const nextActionDescription = hasProfile
     ? "Abra a Carteira para cadastrar a estrutura e registrar transações. O Dashboard só mostrará patrimônio, composição ou posições quando esses fatos puderem ser compartilhados de forma confiável."
     : "Risco, horizonte, moeda, reserva e objetivos precisam vir de um snapshot validado antes de contextualizar o restante da experiência.";
@@ -153,7 +162,9 @@ export function DashboardOverview({ displayName }: DashboardOverviewProps) {
               <div>
                 <span className={styles.eyebrow}>Seu contexto</span>
                 <h2>Perfil financeiro</h2>
-                <p>Fatos declarados ajudam a orientar a experiência sem virar resultado financeiro.</p>
+                <p>
+                  Fatos declarados ajudam a orientar a experiência sem virar resultado financeiro.
+                </p>
               </div>
             </div>
 
