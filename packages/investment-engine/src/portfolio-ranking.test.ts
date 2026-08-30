@@ -294,11 +294,7 @@ describe("Portfolio Fit", () => {
       assetClass: "EQUITY",
       evaluationAsOf: EVALUATION_AS_OF,
       allocationGap: equityGap("300", "700"),
-      contributionRecommendation: contributionRecommendation(
-        ASSET_A,
-        {},
-        OTHER_PORTFOLIO_ID,
-      ),
+      contributionRecommendation: contributionRecommendation(ASSET_A, {}, OTHER_PORTFOLIO_ID),
     });
 
     expect(result).toMatchObject({
@@ -311,6 +307,7 @@ describe("Portfolio Fit", () => {
 describe("investment radar ranking", () => {
   it("ranks candidates by a decomposed score and preserves every dimension", () => {
     const radar = rankInvestmentCandidates(BASELINE_PORTFOLIO_RANKING_METHODOLOGY, {
+      portfolioId: PORTFOLIO_ID,
       evaluationAsOf: EVALUATION_AS_OF,
       candidates: [
         {
@@ -328,6 +325,7 @@ describe("investment radar ranking", () => {
       ],
     });
 
+    expect(radar).toMatchObject({ portfolioId: PORTFOLIO_ID });
     expect(radar.ranked.map((candidate) => [candidate.rank, candidate.assetId])).toEqual([
       [1, ASSET_B],
       [2, ASSET_A],
@@ -347,6 +345,7 @@ describe("investment radar ranking", () => {
 
   it("uses canonical AssetId ascending as the deterministic tie-break", () => {
     const radar = rankInvestmentCandidates(BASELINE_PORTFOLIO_RANKING_METHODOLOGY, {
+      portfolioId: PORTFOLIO_ID,
       evaluationAsOf: EVALUATION_AS_OF,
       candidates: [
         {
@@ -370,6 +369,7 @@ describe("investment radar ranking", () => {
 
   it("does not turn missing analytical data into a neutral score", () => {
     const radar = rankInvestmentCandidates(BASELINE_PORTFOLIO_RANKING_METHODOLOGY, {
+      portfolioId: PORTFOLIO_ID,
       evaluationAsOf: EVALUATION_AS_OF,
       candidates: [
         {
@@ -387,5 +387,55 @@ describe("investment radar ranking", () => {
       reasons: ["QUALITY_INSUFFICIENT_DATA"],
     });
     expect(radar.insufficient[0]?.reasonCodes).toContain("QUALITY:STALE_EVIDENCE");
+  });
+
+  it("does not compare Portfolio Fit snapshots from another portfolio", () => {
+    const fit = portfolioFit(ASSET_A);
+    const crossPortfolioFit = Object.freeze({ ...fit, portfolioId: OTHER_PORTFOLIO_ID });
+    const radar = rankInvestmentCandidates(BASELINE_PORTFOLIO_RANKING_METHODOLOGY, {
+      portfolioId: PORTFOLIO_ID,
+      evaluationAsOf: EVALUATION_AS_OF,
+      candidates: [
+        {
+          assetId: ASSET_A,
+          quality: scoredDimension("QUALITY", ASSET_A, 8_000),
+          opportunity: scoredDimension("OPPORTUNITY", ASSET_A, 8_000),
+          portfolioFit: crossPortfolioFit,
+        },
+      ],
+    });
+
+    expect(radar.ranked).toEqual([]);
+    expect(radar.insufficient[0]).toMatchObject({
+      reasons: ["PORTFOLIO_CONTEXT_MISMATCH"],
+    });
+  });
+
+  it("does not combine analytical dimensions with different classifications", () => {
+    const opportunity = scoredDimension("OPPORTUNITY", ASSET_A, 8_000);
+    const mismatchedOpportunity = Object.freeze({
+      ...opportunity,
+      classification: Object.freeze({
+        ...opportunity.classification,
+        sector: "BANKS",
+      }),
+    });
+    const radar = rankInvestmentCandidates(BASELINE_PORTFOLIO_RANKING_METHODOLOGY, {
+      portfolioId: PORTFOLIO_ID,
+      evaluationAsOf: EVALUATION_AS_OF,
+      candidates: [
+        {
+          assetId: ASSET_A,
+          quality: scoredDimension("QUALITY", ASSET_A, 8_000),
+          opportunity: mismatchedOpportunity,
+          portfolioFit: portfolioFit(ASSET_A),
+        },
+      ],
+    });
+
+    expect(radar.ranked).toEqual([]);
+    expect(radar.insufficient[0]).toMatchObject({
+      reasons: ["ANALYTICAL_CLASSIFICATION_MISMATCH"],
+    });
   });
 });
