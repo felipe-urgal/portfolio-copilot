@@ -59,11 +59,8 @@ jobs:
       - name: Validate local Docker Compose
         run: docker compose config --quiet
 
-      - name: Format diagnostic
-        run: |
-          pnpm exec prettier --write "packages/shared/src/ai-ingestion/*.ts"
-          git diff -- packages/shared/src/ai-ingestion
-          git diff --exit-code -- packages/shared/src/ai-ingestion
+      - name: Format check
+        run: pnpm format:check
 
       - name: Lint
         run: pnpm lint
