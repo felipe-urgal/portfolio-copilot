@@ -53,8 +53,7 @@ export function Button({
 }
 
 export interface LinkButtonProps
-  extends Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "href" | "children">,
-    LinkProps {
+  extends Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "href" | "children">, LinkProps {
   children: ReactNode;
   variant?: ButtonVariant;
   size?: ButtonSize;
