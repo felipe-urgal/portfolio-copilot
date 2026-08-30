@@ -56,22 +56,25 @@ describe("PortfolioWorkspace", () => {
     expect(html).toContain("Criar carteira local");
     expect(html).toContain("Transaction Ledger");
     expect(html).toContain("Estado local");
+    expect(html).not.toContain('aria-label="Tarefas da carteira"');
     expect(html).not.toContain('role="tablist"');
     expect(html).not.toContain('aria-label="Navegação principal"');
     expect(html).not.toContain('href="/dashboard"');
   });
 
-  it("exposes the R7 task model after portfolio creation and keeps secondary tasks disclosed", () => {
+  it("exposes the R7 task model after portfolio creation without an incomplete ARIA tabs pattern", () => {
     const html = renderToStaticMarkup(<PortfolioWorkspace initialSnapshot={SNAPSHOT} />);
 
-    expect(html).toContain('role="tablist"');
+    expect(html).toContain('aria-label="Tarefas da carteira"');
     expect(html).toContain("Visão geral");
     expect(html).toContain("Ativos e posições");
     expect(html).toContain("Transações");
     expect(html).toContain("Aporte");
     expect(html).toContain("Configuração");
-    expect(html).toContain('id="portfolio-tab-overview"');
-    expect(html).toContain('aria-selected="true"');
+    expect(html).toContain('id="portfolio-task-overview"');
+    expect(html).toContain('aria-current="page"');
+    expect(html).not.toContain('role="tablist"');
+    expect(html).not.toContain('role="tabpanel"');
     expect(html).toContain('id="portfolio-panel-assets"');
     expect(html).toContain('hidden=""');
     expect(html).toContain("Detalhes técnicos e identidade");
