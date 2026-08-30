@@ -272,13 +272,34 @@ Este marco é considerado concluído com o merge do PR #88.
 
 Este marco é considerado concluído quando o próprio PR #91 é mergeado.
 
-## Estado após #91
+## 2026-08-30 — UX/UI R7 Carteira por tarefas — #79 / PR #92
 
-Próxima atividade canônica: **#79 — R7 Carteira**.
+- `/portfolio` reorganizado em Visão geral, Ativos e posições, Transações, Aporte e Configuração;
+- estado inicial reduzido à criação/configuração do Portfolio;
+- overview mostra somente fatos reais, posições projetadas e próxima ação contextual;
+- catálogo de Assets separado de posição;
+- Transaction Ledger separado dos formulários de criação;
+- `CASH_IN`/`CASH_OUT` continuam sem alterar posição e `BUY`/`SELL` continuam como fonte da projection;
+- pipeline completo de aporte preservado sem reimplementar regra financeira em React;
+- forms/actions/status/feedback do aporte migrados para primitives R2;
+- UUIDs, reason codes, reconciliação e explicação detalhada movidos para progressive disclosure;
+- perfil financeiro da sessão reduzido a contexto secundário canônico;
+- nenhuma métrica de preço, patrimônio, market value ou P&L inventada;
+- nenhuma execução de ordem financeira sugerida;
+- persistência/ownership permanecem inalterados;
+- regression tests cobrem navegação por tarefa, projection de posições, cash-only e jornada de aporte;
+- `docs/design/PORTFOLIO.md` registra o contrato canônico do R7;
+- roadmap, mapa documental, catálogo, backlog, NEXT e issues relacionadas reconciliados.
+
+Este marco é considerado concluído quando o próprio PR #92 é mergeado.
+
+## Estado após #92
+
+Próxima atividade canônica: **#80 — R8 estados e componentes transversais**.
 
 Backlog aberto principal:
 
-- #79–#81 e R10 para concluir #69;
+- #80–#81 e R10 para concluir #69;
 - #45/#46 para Copiloto e avaliação de IA;
 - #47 para convergência ponta a ponta do MVP;
 - #48 simulação/backtesting;
