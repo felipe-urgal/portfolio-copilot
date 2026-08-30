@@ -49,8 +49,7 @@ export function FinancialProfileAccountMigration({
 }: FinancialProfileAccountMigrationProps = {}) {
   const { financialProfile, persistenceStatus, removePersistedFinancialProfile } =
     useFinancialSession();
-  const hasPersistedLocalProfile =
-    financialProfile !== null && persistenceStatus === "persisted";
+  const hasPersistedLocalProfile = financialProfile !== null && persistenceStatus === "persisted";
   const [accountState, setAccountState] = useState<AccountLoadState>(() =>
     initialAccountProfile === undefined
       ? { status: "idle" }
@@ -128,9 +127,7 @@ export function FinancialProfileAccountMigration({
         const latestAccountProfile =
           payload.accountProfile === null
             ? null
-            : canonicalFinancialProfileSnapshot(
-                payload.accountProfile as FinancialProfileSnapshot,
-              );
+            : canonicalFinancialProfileSnapshot(payload.accountProfile as FinancialProfileSnapshot);
         setAccountState({ status: "ready", profile: latestAccountProfile });
         setStatusMessage(
           "O perfil da conta mudou. Revise o conflito atualizado antes de substituir qualquer dado.",
@@ -177,8 +174,8 @@ export function FinancialProfileAccountMigration({
             <span className={styles.eyebrow}>Perfil da conta</span>
             <h2 id="account-migration-title">Associar perfil local à conta</h2>
             <p>
-              O perfil salvo neste dispositivo não é enviado automaticamente. A conta só recebe dados
-              depois de uma ação explícita abaixo.
+              O perfil salvo neste dispositivo não é enviado automaticamente. A conta só recebe
+              dados depois de uma ação explícita abaixo.
             </p>
           </div>
           <Badge tone="accent">Migração opt-in</Badge>
@@ -193,11 +190,7 @@ export function FinancialProfileAccountMigration({
           ) : accountState.status === "error" ? (
             <Alert tone="danger" title="Não foi possível consultar o perfil da conta.">
               <p>O perfil local continua intacto e nenhum dado financeiro foi enviado.</p>
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={() => void loadAccountProfile()}
-              >
+              <Button variant="secondary" size="sm" onClick={() => void loadAccountProfile()}>
                 Tentar novamente
               </Button>
             </Alert>
@@ -218,12 +211,7 @@ export function FinancialProfileAccountMigration({
                 >
                   {isSaving ? "Salvando…" : "Salvar perfil local na conta"}
                 </Button>
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  disabled={isSaving}
-                  onClick={keepLocalOnly}
-                >
+                <Button variant="secondary" size="sm" disabled={isSaving} onClick={keepLocalOnly}>
                   Manter somente local
                 </Button>
               </div>
@@ -255,19 +243,10 @@ export function FinancialProfileAccountMigration({
                 ))}
               </ul>
               <div className={styles.actions}>
-                <Button
-                  size="sm"
-                  loading={isSaving}
-                  onClick={() => void migrateLocalProfile(true)}
-                >
+                <Button size="sm" loading={isSaving} onClick={() => void migrateLocalProfile(true)}>
                   {isSaving ? "Substituindo…" : "Substituir perfil da conta pelo local"}
                 </Button>
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  disabled={isSaving}
-                  onClick={keepLocalOnly}
-                >
+                <Button variant="secondary" size="sm" disabled={isSaving} onClick={keepLocalOnly}>
                   Manter somente local
                 </Button>
               </div>
@@ -289,12 +268,7 @@ export function FinancialProfileAccountMigration({
               encerra sua sessão.
             </p>
           </div>
-          <Button
-            variant="danger"
-            size="sm"
-            disabled={isSaving}
-            onClick={discardLocalProfile}
-          >
+          <Button variant="danger" size="sm" disabled={isSaving} onClick={discardLocalProfile}>
             Remover cópia local
           </Button>
         </div>
