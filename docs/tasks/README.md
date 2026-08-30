@@ -7,6 +7,7 @@ A pasta `docs/tasks` mantém a visão operacional resumida do projeto. **Issues 
 - `NEXT.md`: exatamente uma atividade pronta/prioritária;
 - `BACKLOG.md`: backlog macro ainda aberto, sem repetir entregas concluídas;
 - `DONE.md`: histórico resumido das entregas concluídas;
+- `archive/`: snapshots históricos preservados quando a visão resumida é reconciliada;
 - `../ROADMAP.md`: estado estratégico e sequência de iniciativas;
 - `../DOCUMENTATION-MAP.md`: ownership e precedência de toda a documentação.
 
@@ -31,7 +32,15 @@ Não transformar `NEXT.md` em uma lista de tarefas paralelas. Quando uma ativida
 
 ## DONE.md
 
-É histórico resumido, não uma segunda specification. Novas entregas relevantes devem ser registradas sem depender de checklists antigos de issues fechadas. PRs e Git preservam a evidência detalhada.
+É histórico resumido, não uma segunda specification.
+
+Regras:
+
+- novas entregas relevantes devem ser registradas sem depender de checklists antigos de issues fechadas;
+- PRs e Git preservam a evidência detalhada;
+- quando uma reconciliação reduzir detalhes antigos, o conteúdo anterior deve ser preservado em `archive/` ou continuar recuperável de forma explícita, sem apagar história silenciosamente.
+
+A reconciliação do PR #88 preservou o `DONE.md` detalhado anterior em `archive/DONE-through-2026-08-27.md` e atualizou a visão resumida até R5.
 
 ## Estados conceituais
 
@@ -53,3 +62,5 @@ Se uma descoberta ampliar muito o trabalho:
 ## Reconciliação
 
 Quando houver drift entre docs e GitHub, reconciliar os documentos vivos e as issues abertas. ADRs, briefs e audits históricos não devem ser reescritos apenas para aparentar status atual; consulte `docs/DOCUMENTATION-MAP.md`.
+
+Agentes de IA devem seguir também `AGENTS.md`, incluindo quality gate do head final e auto code review fullstack sênior obrigatório.
