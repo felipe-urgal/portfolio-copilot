@@ -2,7 +2,7 @@
 
 ## Status
 
-**Documento vivo.** Última reconciliação ampla do repositório: **2026-08-30**, no PR #88.
+**Documento vivo.** Última reconciliação da iniciativa UX/UI: **2026-08-30**, no PR #89.
 
 Este mapa define qual documento responde por cada tipo de informação e como tratar divergências. O objetivo é impedir que roadmap, backlog, README, ADRs e documentos de descoberta virem fontes concorrentes de verdade.
 
@@ -70,6 +70,7 @@ Mudanças materiais nesses contratos exigem decisão registrada e, quando arquit
 | `docs/design/APP-SHELL.md` | canônico | AppShell/navegação R3 |
 | `docs/design/AUTH-SESSION.md` | canônico | focused auth R4 |
 | `docs/design/ONBOARDING.md` | canônico | guided onboarding R5 |
+| `docs/design/DASHBOARD.md` | canônico | Dashboard orientado a contexto/panorama/próxima ação R6 |
 | `docs/UX-UI-REDESIGN-ROADMAP.md` | vivo | sequência R0–R10 e gates |
 | `docs/design/FRONTEND-AUDIT.md` | baseline histórico | fotografia do frontend anterior no R0 |
 
@@ -104,9 +105,9 @@ Issues do GitHub são o backlog executável detalhado. `BACKLOG.md` é uma visã
 - R2 #74 — concluído;
 - R3 #75 — concluído;
 - R4 #76 — concluído;
-- R5 #77 — entregue no PR #88 e considerado concluído após o merge desse PR;
-- R6 #78 — próximo;
-- R7 #79 — pendente;
+- R5 #77 — concluído via PR #88;
+- R6 #78 — entregue no PR #89 e considerado concluído após o merge desse PR;
+- R7 #79 — próximo;
 - R8 #80 — pendente;
 - R9 #81 — pendente;
 - R10 — gate final e fechamento da #69.
@@ -124,8 +125,12 @@ Ao finalizar um PR relevante:
 7. não reescrever histórico antigo apenas para marcar checkbox;
 8. para trabalho conduzido por IA, cumprir integralmente `AGENTS.md`, inclusive auto code review sênior independente do CI.
 
-## Audit realizado no PR #88
+## Reconciliações recentes
 
-A reconciliação de 2026-08-30 revisou o inventário completo de Markdown do repositório. Foram classificados e preservados os ADRs/documentos históricos e atualizados os documentos vivos que apresentavam drift de status, incluindo README, roadmaps, tasks, catálogo, decisões e processo de desenvolvimento. As issues abertas também foram reconciliadas com as entregas já mergeadas.
+### PR #88
 
-O mesmo PR adiciona `AGENTS.md` como contrato operacional para agentes de IA, tornando explícitos o padrão fullstack sênior, o quality gate por head final, o auto code review completo e os gates específicos de segurança, finanças, UI/UX, banco e supply chain.
+A reconciliação ampla de 2026-08-30 revisou o inventário completo de Markdown do repositório, classificou documentos vivos/normativos/históricos, atualizou status das issues abertas e adicionou `AGENTS.md` como contrato operacional para agentes de IA.
+
+### PR #89
+
+A reconciliação do R6 adiciona `docs/design/DASHBOARD.md`, promove #79/R7 como próxima atividade e atualiza roadmap/backlog para refletir que o Dashboard já segue AppShell/tokens/primitives e preserva ausências de dados de forma explícita.
