@@ -11,9 +11,7 @@ import { normalizeEvaluationInstant } from "./evidence";
 import type { PortfolioRankingMethodology } from "./portfolio-ranking-methodology";
 
 export type PortfolioFitComponentId =
-  | "ALLOCATION_GAP"
-  | "CONCENTRATION"
-  | "CONTRIBUTION_ELIGIBILITY";
+  "ALLOCATION_GAP" | "CONCENTRATION" | "CONTRIBUTION_ELIGIBILITY";
 
 export type PortfolioFitReasonCode =
   | "ALLOCATION_GAP_PRESENT"
@@ -128,7 +126,9 @@ function aggregateScore(components: readonly PortfolioFitComponentSnapshot[]): n
   return Math.floor((numerator + 5_000) / 10_000);
 }
 
-function uniqueReasons(values: readonly PortfolioFitReasonCode[]): readonly PortfolioFitReasonCode[] {
+function uniqueReasons(
+  values: readonly PortfolioFitReasonCode[],
+): readonly PortfolioFitReasonCode[] {
   return Object.freeze([...new Set(values)].sort());
 }
 
@@ -185,9 +185,7 @@ function findContributionDecision(
   recommendation: ContributionRecommendationSnapshot,
   assetClass: string,
 ): ContributionRecommendationDecisionSnapshot | null {
-  const matches = recommendation.decisions.filter(
-    (decision) => decision.assetClass === assetClass,
-  );
+  const matches = recommendation.decisions.filter((decision) => decision.assetClass === assetClass);
   if (matches.length > 1) {
     throw new InvalidPortfolioFitInputError(
       `Contribution recommendation contains duplicate decisions for ${assetClass}.`,
@@ -232,18 +230,12 @@ export function evaluatePortfolioFit(
 
   if (input.allocationGap.gap.isZero()) {
     const components = Object.freeze([
-      component(
-        "ALLOCATION_GAP",
-        0,
-        methodology.portfolioFitWeights.allocationGapWeightBps,
-        ["NO_ALLOCATION_GAP"],
-      ),
-      component(
-        "CONCENTRATION",
-        0,
-        methodology.portfolioFitWeights.concentrationWeightBps,
-        ["NO_ALLOCATION_GAP"],
-      ),
+      component("ALLOCATION_GAP", 0, methodology.portfolioFitWeights.allocationGapWeightBps, [
+        "NO_ALLOCATION_GAP",
+      ]),
+      component("CONCENTRATION", 0, methodology.portfolioFitWeights.concentrationWeightBps, [
+        "NO_ALLOCATION_GAP",
+      ]),
       component(
         "CONTRIBUTION_ELIGIBILITY",
         0,
