@@ -8,6 +8,18 @@ O Portfolio Copilot entrou em uma pausa estratégica de evolução visual para r
 
 O objetivo não é aplicar um tema novo por cima do frontend existente. É redesenhar a experiência inteira como um único produto, preservando regras de negócio, autenticação, segurança e persistência.
 
+## Direção visual canônica — APROVADA
+
+O **Protótipo 3 — Assistant-First Workspace** é a referência visual oficial da iniciativa.
+
+![Protótipo 3 — Assistant-First Workspace](./design/prototypes/prototype-3-assistant-first-dashboard.jpg)
+
+Especificação completa: `docs/design/PROTOTYPE-3-DIRECTION.md`.
+
+A referência **não é apenas inspiração**. O redesign deve preservar claramente sua arquitetura, hierarquia, densidade e linguagem visual. Ajustes são esperados para dados reais, acessibilidade, responsividade e capacidades existentes, mas nenhuma tela deve reinterpretar o produto do zero.
+
+Consequência para R1: não existe mais uma etapa de escolha entre direções concorrentes. R1 deve **refinar, sistematizar e expandir o Protótipo 3** para auth, onboarding, dashboard, carteira, estados e mobile.
+
 ## Escopo
 
 O redesign cobre todas as superfícies atuais e futuras de `apps/web`:
@@ -38,24 +50,25 @@ A inspeção atual mostra uma interface construída incrementalmente por superf�
 - auth, shell e componentes financeiros possuem decisões visuais locais;
 - a hierarquia de algumas telas dá peso demais a informação operacional/técnica;
 - cards e containers são usados com frequência como mecanismo primário de hierarquia;
-- não há um contrato suficientemente explícito de tokens, primitives, iconografia e estados;
+- não há contrato suficientemente explícito de tokens, primitives, iconografia e estados;
 - responsividade é resolvida localmente por componente/tela;
 - novas features correm risco de ampliar a inconsistência existente.
 
-A tela de sign-in é um bom exemplo do problema sistêmico: autenticação, status de segurança, perfil local e health competem na mesma superfície. O redesign precisa resolver a jornada, não apenas alterar o CSS desse card.
+A tela de sign-in é um exemplo do problema sistêmico: autenticação, status de segurança, perfil local e health competem na mesma superfície. O redesign precisa resolver a jornada, não apenas alterar o CSS desse card.
 
 ## Princípios
 
-1. **Design antes de código.** Conceitos completos precisam ser aprovados antes da migração visual ampla.
+1. **Design antes de código.** Conceitos completos precisam existir antes da migração visual ampla.
 2. **Um app, um sistema.** Toda tela usa os mesmos tokens, primitives e regras de composição.
-3. **Uma prioridade visual por contexto.** A ação principal não compete com mensagens operacionais secundárias.
-4. **Menos chrome, mais estrutura.** Usar tipografia, grid, whitespace e alinhamento antes de adicionar cards, borders ou badges.
-5. **Produto financeiro, não dashboard genérico.** Dados devem ser legíveis, comparáveis, explicáveis e confiáveis.
-6. **Segurança por comportamento e clareza.** Informação técnica aparece quando ajuda o usuário, não como decoração de confiança.
-7. **Responsive desde a concepção.** Mobile e desktop são estados da mesma solução.
-8. **WCAG 2.2 AA.** Foco, teclado, contraste, semantics e reduced motion são critérios de produto.
-9. **Sem regressão de domínio.** Nenhuma mudança visual altera cálculo, ownership, auth ou fronteira de segurança.
-10. **Fidelidade verificável.** Conceito aprovado, implementação, browser QA e comparação visual antes do merge.
+3. **Protótipo 3 como referência.** Novas superfícies derivam da direção aprovada; não recebem linguagem visual independente.
+4. **Uma prioridade visual por contexto.** A ação principal não compete com mensagens operacionais secundárias.
+5. **Menos chrome, mais estrutura.** Usar tipografia, grid, whitespace e alinhamento antes de adicionar cards, borders ou badges.
+6. **Produto financeiro, não dashboard genérico.** Dados devem ser legíveis, comparáveis, explicáveis e confiáveis.
+7. **Segurança por comportamento e clareza.** Informação técnica aparece quando ajuda o usuário, não como decoração de confiança.
+8. **Responsive desde a concepção.** Mobile e desktop são estados da mesma solução.
+9. **WCAG 2.2 AA.** Foco, teclado, contraste, semantics e reduced motion são critérios de produto.
+10. **Sem regressão de domínio.** Nenhuma mudança visual altera cálculo, ownership, auth ou fronteira de segurança.
+11. **Fidelidade verificável.** Conceito aprovado, implementação, browser QA e comparação visual antes do merge.
 
 ## Estratégia de execução
 
@@ -67,7 +80,7 @@ Cada fase gera seu próprio gate. Child issues podem ser criadas depois do audit
 
 ### Objetivo
 
-Entender exatamente o frontend atual antes de tomar decisões de redesign.
+Entender exatamente o frontend atual antes de migrá-lo para a nova direção.
 
 ### Entregas
 
@@ -85,32 +98,29 @@ Entender exatamente o frontend atual antes de tomar decisões de redesign.
 
 Nenhum redesign estrutural é implementado antes de concluir o audit.
 
-## R1 — Arquitetura da informação e direção visual
+## R1 — Arquitetura da informação + expansão do Protótipo 3
 
 ### Objetivo
 
-Definir como o Portfolio Copilot deve parecer, se comportar e organizar informação.
+Transformar a direção visual já aprovada em uma especificação completa para o app inteiro.
 
 ### Entregas
 
-- personalidade visual do produto;
-- arquitetura da informação e modelo de navegação;
+- arquitetura da informação e modelo de navegação derivados do protótipo;
 - container/grid/density model;
 - direção tipográfica;
 - direção de cor e superfície;
 - direção de iconografia;
 - conceitos completos para sign-in/auth, onboarding, dashboard e carteira;
+- painel Copiloto e comportamento de colapso/ausência;
 - variações desktop e mobile;
 - estados importantes de erro/empty/loading;
-- escolha de uma única direção canônica.
-
-### Processo de conceito
-
-Para superfícies importantes, gerar conceitos visuais completos antes de codar. Um conceito de header/hero isolado não é suficiente para representar uma tela de produto.
+- inventário de componentes e interações visíveis;
+- registro explícito de qualquer desvio necessário em relação ao Protótipo 3.
 
 ### Gate
 
-A implementação ampla só começa após aprovação explícita da direção visual.
+R2 só começa quando as superfícies principais e os estados responsivos estiverem definidos na mesma linguagem do Protótipo 3.
 
 ## R2 — Design system foundation
 
@@ -165,7 +175,7 @@ Avaliar conscientemente se CSS Modules + CSS custom properties continuam sendo a
 
 ### Entregas
 
-- shell canônico;
+- shell canônico baseado na sidebar do Protótipo 3;
 - navegação primária/secundária;
 - account/session affordances;
 - page header pattern;
@@ -191,6 +201,7 @@ Esse shell passa a ser obrigatório para todas as superfícies protegidas.
 ### Objetivos
 
 - tornar login uma jornada simples, focada e confiável;
+- traduzir a linguagem do Protótipo 3 para uma superfície sem sidebar quando apropriado;
 - retirar informação operacional da hierarquia principal;
 - preservar transparência sobre privacidade sem transformar a tela em documentação técnica;
 - manter todas as garantias de segurança existentes.
@@ -204,24 +215,26 @@ Esse shell passa a ser obrigatório para todas as superfícies protegidas.
 - melhorar progress/progression;
 - criar padrões consistentes para choice, input e validation;
 - definir save/resume/re-entry states;
+- aplicar a tipografia, controles, spacing e feedback do novo sistema;
 - garantir boa experiência em telas pequenas.
 
 ## R6 — Dashboard completo
 
 ### Objetivos
 
-- redefinir a primeira hierarquia após login;
+- implementar a superfície mais diretamente representada pelo Protótipo 3;
 - mostrar situação, decisão e contexto antes de detalhe secundário;
-- criar padrões claros para resumo, alocação, objetivos, recomendação e explicações;
-- usar cards somente onde representem uma unidade real;
-- definir padrões de visualização de dados;
-- manter informação financeira comparável e escaneável.
+- manter KPIs compactos no topo;
+- consolidar panorama da carteira como bloco central dominante;
+- reservar painel lateral para Copiloto/contexto sem transformar o produto em chat;
+- integrar teses, eventos e próximos passos como informação secundária;
+- definir padrões de visualização de dados sem inventar métricas.
 
 ## R7 — Carteira completa
 
 ### Objetivos
 
-- refazer holdings/list/table experience;
+- refazer holdings/list/table experience na mesma fundação do dashboard;
 - alocação e gaps;
 - concentração;
 - agrupamentos;
@@ -277,8 +290,9 @@ Validar do mínimo de 320px até desktop largo, incluindo pelo menos:
 
 - browser QA dos fluxos críticos;
 - screenshots da implementação;
-- comparação com conceitos aprovados;
+- comparação com o Protótipo 3 e conceitos derivados aprovados;
 - revisão de tipografia, spacing, palette, icons e estados;
+- fidelity ledger para desvios materiais;
 - correção de regressões visuais antes do merge.
 
 ## R10 — Gate de continuidade do produto
@@ -298,14 +312,14 @@ Trabalho puramente de backend/contratos da #45 pode continuar em paralelo apenas
 A #69 só pode ser fechada quando:
 
 - todas as telas atuais estiverem migradas;
-- auth, onboarding, dashboard e carteira parecerem partes do mesmo produto;
+- auth, onboarding, dashboard e carteira parecerem partes do mesmo produto e da mesma direção do Protótipo 3;
 - shell e navegação forem únicos;
 - tokens fundamentais forem centralizados;
 - estados comuns forem canônicos;
 - desktop/mobile tiverem qualidade equivalente;
 - WCAG 2.2 AA tiver sido auditado;
 - fluxos críticos tiverem browser QA;
-- os conceitos aprovados tiverem fidelidade verificada;
+- fidelidade à direção aprovada tiver sido verificada;
 - regras financeiras, auth, segurança e persistência continuarem corretas;
 - `pnpm check` estiver verde nos PRs finais;
 - nenhuma superfície relevante permanecer visualmente no sistema antigo.
@@ -318,14 +332,15 @@ A #69 só pode ser fechada quando:
 - alterar ownership/persistência;
 - execução financeira;
 - adicionar biblioteca visual sem necessidade concreta;
-- preservar compatibilidade visual com o frontend atual.
+- preservar compatibilidade visual com o frontend atual;
+- inventar dados ou capacidades apenas para reproduzir conteúdo ilustrativo do protótipo.
 
 ## Sequência canônica
 
 ```text
 #69 R0 audit
-  -> R1 direção visual + IA
-  -> aprovação de conceito
+  -> R1 expandir Protótipo 3 para todas as superfícies
+  -> aprovação dos conceitos derivados
   -> R2 design system
   -> R3 shell
   -> R4 auth
