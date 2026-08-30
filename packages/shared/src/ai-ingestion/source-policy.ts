@@ -42,7 +42,8 @@ export class ExternalSourceNotAllowedError extends Error {
 const IDENTIFIER_PATTERN = /^[A-Z0-9][A-Z0-9._:-]{0,127}$/;
 const PROVIDER_PATTERN = /^[A-Z0-9][A-Z0-9._-]{0,63}$/;
 const VERSION_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$/;
-const HOST_PATTERN = /^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)*[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/;
+const HOST_PATTERN =
+  /^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)*[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/;
 const MAX_CONTENT_CHARS = 200_000;
 const MAX_POLICY_DAYS = 36_500;
 
@@ -111,8 +112,16 @@ function normalizePositiveInteger(field: string, value: number, max: number): nu
 }
 
 export function createExternalSourcePolicy(input: ExternalSourcePolicyInput): ExternalSourcePolicy {
-  const staleAfterDays = normalizePositiveInteger("staleAfterDays", input.staleAfterDays, MAX_POLICY_DAYS);
-  const retentionDays = normalizePositiveInteger("retentionDays", input.retentionDays, MAX_POLICY_DAYS);
+  const staleAfterDays = normalizePositiveInteger(
+    "staleAfterDays",
+    input.staleAfterDays,
+    MAX_POLICY_DAYS,
+  );
+  const retentionDays = normalizePositiveInteger(
+    "retentionDays",
+    input.retentionDays,
+    MAX_POLICY_DAYS,
+  );
   if (retentionDays < staleAfterDays) {
     throw new InvalidExternalSourcePolicyError("retentionDays", input.retentionDays);
   }
@@ -162,7 +171,9 @@ export class ExternalSourcePolicyRegistry {
   }
 
   public list(): readonly ExternalSourcePolicy[] {
-    return Object.freeze([...this.#policies.values()].sort((a, b) => a.sourceId.localeCompare(b.sourceId)));
+    return Object.freeze(
+      [...this.#policies.values()].sort((a, b) => a.sourceId.localeCompare(b.sourceId)),
+    );
   }
 }
 
