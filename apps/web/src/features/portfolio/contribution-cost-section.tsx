@@ -4,6 +4,8 @@ import { useState, type FormEvent } from "react";
 
 import { Money, type MoneySnapshot } from "@portfolio-copilot/domain";
 
+import { Button, EmptyState, Field, FieldError, HelpText, Label, Status, TextInput } from "@/components/ui";
+
 import { type ContributionBaselineSnapshot } from "./contribution-baseline-form";
 import { type ContributionConcentrationSnapshot } from "./contribution-concentration-form";
 import {
@@ -38,13 +40,9 @@ function costStatusLabel(status: "EXECUTABLE" | "BLOCKED_KNOWN_COSTS"): string {
   return status === "EXECUTABLE" ? "Executável" : "Bloqueado: custos conhecidos";
 }
 
-function ErrorText({ id, message }: Readonly<{ id: string; message: string | undefined }>) {
+function ErrorMessage({ id, message }: Readonly<{ id: string; message: string | undefined }>) {
   if (message === undefined) return null;
-  return (
-    <p className={styles.fieldError} id={id} role="alert">
-      {message}
-    </p>
-  );
+  return <FieldError id={id}>{message}</FieldError>;
 }
 
 export function ContributionCostSection({
@@ -107,16 +105,16 @@ export function ContributionCostSection({
             vazio significa custo conhecido zero; nenhuma tarifa ou regra fiscal é descoberta aqui.
           </p>
         </div>
-        <span className={styles.status}>{cost === null ? "Configurar" : "Aplicado"}</span>
+        <Status tone={cost === null ? "neutral" : "success"}>
+          {cost === null ? "Configurar" : "Aplicado"}
+        </Status>
       </div>
 
       {draft.rows.length === 0 ? (
-        <div className={costStyles.costEmpty}>
-          <strong>Nenhum destino executável para custos</strong>
-          <p>
-            Os bloqueios anteriores já estão refletidos na sobra e não recebem custos hipotéticos.
-          </p>
-        </div>
+        <EmptyState
+          title="Nenhum destino executável para custos"
+          description="Os bloqueios anteriores já estão refletidos na sobra e não recebem custos hipotéticos."
+        />
       ) : (
         <form className={costStyles.costForm} noValidate onSubmit={handleSubmit}>
           <div className={costStyles.costRows}>
@@ -139,15 +137,15 @@ export function ContributionCostSection({
                     </span>
                   </div>
 
-                  <div className={styles.fieldGroup}>
-                    <label htmlFor={transactionId}>Custo transacional conhecido</label>
-                    <input
+                  <Field>
+                    <Label htmlFor={transactionId}>Custo transacional conhecido</Label>
+                    <TextInput
                       id={transactionId}
                       type="text"
                       inputMode="decimal"
                       autoComplete="off"
                       value={row.transactionCost}
-                      aria-invalid={rowErrors?.transactionCost !== undefined}
+                      invalid={rowErrors?.transactionCost !== undefined}
                       aria-describedby={
                         rowErrors?.transactionCost
                           ? `${transactionId}-error`
@@ -157,21 +155,21 @@ export function ContributionCostSection({
                         updateRow(row.assetId, "transactionCost", event.target.value)
                       }
                     />
-                    <p className={styles.helpText} id={`${transactionId}-help`}>
+                    <HelpText id={`${transactionId}-help`}>
                       Valor informado em {baseline.contribution.currency}; vazio representa zero.
-                    </p>
-                    <ErrorText id={`${transactionId}-error`} message={rowErrors?.transactionCost} />
-                  </div>
+                    </HelpText>
+                    <ErrorMessage id={`${transactionId}-error`} message={rowErrors?.transactionCost} />
+                  </Field>
 
-                  <div className={styles.fieldGroup}>
-                    <label htmlFor={taxId}>Impacto tributário reservado</label>
-                    <input
+                  <Field>
+                    <Label htmlFor={taxId}>Impacto tributário reservado</Label>
+                    <TextInput
                       id={taxId}
                       type="text"
                       inputMode="decimal"
                       autoComplete="off"
                       value={row.estimatedTaxImpact}
-                      aria-invalid={rowErrors?.estimatedTaxImpact !== undefined}
+                      invalid={rowErrors?.estimatedTaxImpact !== undefined}
                       aria-describedby={
                         rowErrors?.estimatedTaxImpact ? `${taxId}-error` : `${taxId}-help`
                       }
@@ -179,25 +177,18 @@ export function ContributionCostSection({
                         updateRow(row.assetId, "estimatedTaxImpact", event.target.value)
                       }
                     />
-                    <p className={styles.helpText} id={`${taxId}-help`}>
+                    <HelpText id={`${taxId}-help`}>
                       Reserva monetária informada por você; não é imposto calculado pelo domínio.
-                    </p>
-                    <ErrorText id={`${taxId}-error`} message={rowErrors?.estimatedTaxImpact} />
-                  </div>
+                    </HelpText>
+                    <ErrorMessage id={`${taxId}-error`} message={rowErrors?.estimatedTaxImpact} />
+                  </Field>
                 </div>
               );
             })}
           </div>
 
-          {errors.form ? (
-            <p className={styles.formError} role="alert">
-              {errors.form}
-            </p>
-          ) : null}
-
-          <button className={styles.primaryAction} type="submit">
-            Aplicar custos conhecidos
-          </button>
+          {errors.form ? <FieldError>{errors.form}</FieldError> : null}
+          <Button type="submit">Aplicar custos conhecidos</Button>
         </form>
       )}
 
@@ -241,9 +232,11 @@ export function ContributionCostSection({
                         {moneyLabel(destination.investableAmount)}
                       </td>
                       <td>
-                        <span className={costStyles.costState} data-status={destination.status}>
+                        <Status
+                          tone={destination.status === "EXECUTABLE" ? "success" : "danger"}
+                        >
                           {costStatusLabel(destination.status)}
-                        </span>
+                        </Status>
                       </td>
                     </tr>
                   );
