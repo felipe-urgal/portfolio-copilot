@@ -7,7 +7,7 @@ type FeedbackTone = "neutral" | "info" | "success" | "warning" | "danger";
 type BadgeTone = "neutral" | "accent";
 type SkeletonVariant = "text" | "block" | "circle";
 
-const toneClass: Record<FeedbackTone, string> = {
+const toneClass: Record<FeedbackTone, string | undefined> = {
   neutral: styles.toneNeutral,
   info: styles.toneInfo,
   success: styles.toneSuccess,
@@ -36,7 +36,7 @@ export function Badge({ tone = "neutral", className, ...props }: BadgeProps) {
   );
 }
 
-export interface AlertProps extends HTMLAttributes<HTMLDivElement> {
+export interface AlertProps extends Omit<HTMLAttributes<HTMLDivElement>, "title"> {
   tone?: Exclude<FeedbackTone, "neutral">;
   title: ReactNode;
 }
@@ -56,7 +56,7 @@ export function Alert({ tone = "info", title, className, children, role, ...prop
   );
 }
 
-export interface EmptyStateProps extends HTMLAttributes<HTMLDivElement> {
+export interface EmptyStateProps extends Omit<HTMLAttributes<HTMLDivElement>, "title"> {
   title: ReactNode;
   description: ReactNode;
   icon?: ReactNode;
@@ -112,7 +112,7 @@ export interface SkeletonProps extends HTMLAttributes<HTMLSpanElement> {
   variant?: SkeletonVariant;
 }
 
-const skeletonVariantClass: Record<SkeletonVariant, string> = {
+const skeletonVariantClass: Record<SkeletonVariant, string | undefined> = {
   text: styles.skeletonText,
   block: styles.skeletonBlock,
   circle: styles.skeletonCircle,
