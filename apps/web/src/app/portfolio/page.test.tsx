@@ -43,7 +43,9 @@ describe("PortfolioPage financial session", () => {
     expect(html).toContain("Não configurado");
     expect(html).toContain("Criar carteira");
     expect(html).toContain("Estado local");
-    expect(html).toContain("O domínio valida nome e moeda antes de liberar ativos e Transaction Ledger.");
+    expect(html).toContain(
+      "O domínio valida nome e moeda antes de liberar ativos e Transaction Ledger.",
+    );
   });
 
   it("reads the same validated profile snapshot used by other product surfaces", async () => {
