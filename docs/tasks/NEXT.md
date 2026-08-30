@@ -1,121 +1,87 @@
-# Próxima Atividade — UX/UI R0: audit completo do app
+# Próxima Atividade — UX/UI R1: expandir o Protótipo 3 para o app inteiro
 
 **Status:** READY
 
 ## Issue canônica
 
-- #69 — `UX/UI: redesign completo do app e novo design system`
+- #73 — `UX/UI R1: expandir Protótipo 3 para arquitetura e todas as superfícies`
+- iniciativa guarda-chuva: #69
+
+## R0 concluído
+
+O audit de frontend foi registrado em:
+
+- #72 — `UX/UI R0: audit completo do frontend atual`;
+- `docs/design/FRONTEND-AUDIT.md`.
+
+O audit confirmou três necessidades estruturais antes das migrações por tela:
+
+1. arquitetura de informação canônica;
+2. design tokens/primitives compartilhadas;
+3. shell único e responsivo.
+
+A experiência mobile atual foi auditada por código/breakpoints, mas não recebeu visual QA em viewport real. Isso está explicitamente registrado e será validado no produto redesenhado em #81.
 
 ## Objetivo
 
-Executar o R0 da iniciativa de redesign completo do Portfolio Copilot: auditar todas as telas, fluxos, componentes, estilos e estados atuais antes de definir a nova arquitetura da informação e direção visual.
+Transformar o **Protótipo 3 — Assistant-First Workspace** já aprovado em uma especificação completa do Portfolio Copilot, sem reabrir a escolha da direção visual.
 
-Esta atividade substitui temporariamente a #45 como próxima atividade visual. A UI do copiloto de IA deve nascer sobre o novo design system/shell, não criar uma terceira linguagem visual paralela.
+R1 deve definir como essa mesma linguagem se aplica a:
+
+- auth/sign-in/sign-out;
+- onboarding;
+- dashboard;
+- carteira;
+- shell/navegação;
+- sessão/conta;
+- estados empty/loading/error/success;
+- desktop/tablet/mobile;
+- futura presença do Copiloto.
 
 ## Escopo
 
-### Rotas e superfícies
+- arquitetura da informação e navigation model;
+- mapa de tarefas por superfície;
+- grid/container/density model;
+- tipografia, cor, superfície e iconografia;
+- conceitos derivados completos para auth, onboarding e carteira;
+- refinamento do dashboard aprovado;
+- comportamento responsive da sidebar e painel Copiloto;
+- progressive disclosure para segurança, provenance e informação operacional;
+- registro de desvios materiais do Protótipo 3 quando necessários.
 
-Inventariar e revisar pelo menos:
+## Regras
 
-- `/`;
-- `/sign-in`;
-- `/sign-out`;
-- `/onboarding`;
-- `/dashboard`;
-- `/portfolio`;
-- `/health` quando houver apresentação para usuário;
-- shell/navegação/sessão;
-- componentes financeiros compartilhados.
-
-### Estados
-
-Mapear quando aplicável:
-
-- default;
-- empty;
-- loading;
-- error;
-- success;
-- hover;
-- focus;
-- active/selected;
-- disabled;
-- sessão expirada/reentrada;
-- mobile/tablet/desktop.
-
-### Front-end inventory
-
-- CSS global;
-- CSS Modules;
-- cores/spacing/radius/shadow hardcoded;
-- padrões tipográficos;
-- componentes duplicados ou visualmente divergentes;
-- layout primitives implícitas;
-- breakpoints/responsividade;
-- iconografia;
-- padrões de formulários e feedback.
-
-### UX audit
-
-Para cada fluxo relevante, registrar:
-
-- tarefa principal do usuário;
-- hierarquia atual;
-- informação secundária competindo com a ação principal;
-- carga cognitiva;
-- inconsistências de navegação;
-- fricções;
-- conteúdo técnico desnecessário na primeira ordem visual;
-- oportunidades de progressive disclosure.
-
-### Accessibility audit
-
-- landmarks/semantics;
-- keyboard navigation;
-- focus visibility/order;
-- contraste;
-- accessible names;
-- touch targets;
-- reduced motion quando houver motion.
-
-## Entregáveis
-
-- documento de audit;
-- inventário de páginas/estados/componentes;
-- screenshots de referência desktop + mobile;
-- findings classificados em `UX`, `VISUAL`, `A11Y` e `FRONTEND_DEBT`;
-- severidade/prioridade dos findings;
-- lista de padrões a preservar, remover ou consolidar;
-- critérios mensuráveis para a nova direção;
-- recomendação de decomposição da #69 em child issues/PRs após o R0.
-
-## Fora de escopo deste R0
-
-- implementar o redesign;
-- escolher biblioteca UI antes do audit;
-- trocar auth/persistência;
-- alterar regras financeiras;
-- iniciar a UI da #45;
-- tentar preservar o visual atual por compatibilidade.
+- Protótipo 3 é referência canônica, não inspiração opcional;
+- não criar rotas vazias para imitar o mockup;
+- não inventar métricas, market data, patrimônio, retorno ou capacidades;
+- não alterar regras financeiras, auth, ownership ou persistência por motivo visual;
+- conceitos precisam cobrir desktop e mobile antes da implementação ampla.
 
 ## Gate
 
-O R1 só começa quando o audit estiver completo e houver entendimento claro de todas as superfícies relevantes.
+R2 (#74) só começa quando arquitetura, superfícies principais e estados responsivos estiverem definidos suficientemente para evitar decisões visuais ad hoc durante coding.
 
-Depois do R0:
+## Sequência já decomposta
 
 ```text
-R1 arquitetura da informação + direção visual
-  -> conceitos desktop/mobile
-  -> aprovação explícita
-  -> R2 design system
-  -> migração completa do app
+#73 R1 direção/arquitetura
+  -> #74 R2 tokens + primitives
+  -> #75 R3 shell/sidebar
+  -> #76 R4 auth
+  -> #77 R5 onboarding
+  -> #78 R6 dashboard
+  -> #79 R7 carteira
+  -> #80 R8 estados transversais
+  -> #81 R9 accessibility/responsive/fidelity QA
+  -> R10 fechamento da #69
 ```
 
 ## Referências canônicas
 
-- issue #69;
+- `docs/design/PROTOTYPE-3-DIRECTION.md`;
+- `docs/design/FRONTEND-AUDIT.md`;
 - `docs/UX-UI-REDESIGN-ROADMAP.md`;
-- `docs/ROADMAP.md`;
-- #45 permanece próxima iniciativa funcional de IA, mas sua superfície visual depende da nova fundação.
+- `docs/ROADMAP.md`.
+
+A #45 permanece a próxima iniciativa funcional de IA, mas sua superfície visual só nasce sobre a nova fundação.
