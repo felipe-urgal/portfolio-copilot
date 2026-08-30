@@ -18,6 +18,7 @@ export type PortfolioFitReasonCode =
   | "NO_ALLOCATION_GAP"
   | "CONTRIBUTION_EXECUTABLE"
   | "CONTRIBUTION_POLICY_ADJUSTED"
+  | "WITHIN_CONCENTRATION_LIMITS"
   | "SOFT_CONCENTRATION_LIMIT_EXCEEDED"
   | "HARD_CONCENTRATION_LIMIT_APPLIED"
   | "EXECUTION_DESTINATION_INELIGIBLE"
@@ -275,9 +276,28 @@ export function evaluatePortfolioFit(
 
   const decisionReasons = decisionReasonCodes(decision);
   const reasons = uniqueReasons(["ALLOCATION_GAP_PRESENT", ...decisionReasons]);
-  const concentrationScoreBps = decision.reasonCodes.includes("SOFT_CONCENTRATION_LIMIT_EXCEEDED")
-    ? methodology.softConcentrationScoreBps
-    : 10_000;
+  const hardBlockStatus = BLOCKED_STATUSES.has(decision.status) ? decision.status : null;
+  const hardConcentrationLimitApplied =
+    decision.status === "BLOCKED_CONCENTRATION_LIMIT" ||
+    decision.reasonCodes.includes("HARD_CONCENTRATION_LIMIT_APPLIED");
+  const softConcentrationLimitExceeded = decision.reasonCodes.includes(
+    "SOFT_CONCENTRATION_LIMIT_EXCEEDED",
+  );
+  const concentrationScoreBps = hardConcentrationLimitApplied
+    ? 0
+    : softConcentrationLimitExceeded
+      ? methodology.softConcentrationScoreBps
+      : 10_000;
+  const concentrationReasonCodes: PortfolioFitReasonCode[] = [];
+  if (hardConcentrationLimitApplied) {
+    concentrationReasonCodes.push("HARD_CONCENTRATION_LIMIT_APPLIED");
+  }
+  if (softConcentrationLimitExceeded) {
+    concentrationReasonCodes.push("SOFT_CONCENTRATION_LIMIT_EXCEEDED");
+  }
+  if (concentrationReasonCodes.length === 0) {
+    concentrationReasonCodes.push("WITHIN_CONCENTRATION_LIMITS");
+  }
   const contributionEligibilityScoreBps = decision.status === "EXECUTABLE" ? 10_000 : 0;
 
   const components = Object.freeze([
@@ -291,9 +311,7 @@ export function evaluatePortfolioFit(
       "CONCENTRATION",
       concentrationScoreBps,
       methodology.portfolioFitWeights.concentrationWeightBps,
-      decision.reasonCodes.includes("SOFT_CONCENTRATION_LIMIT_EXCEEDED")
-        ? ["SOFT_CONCENTRATION_LIMIT_EXCEEDED"]
-        : ["ALLOCATION_GAP_PRESENT"],
+      uniqueReasons(concentrationReasonCodes),
     ),
     component(
       "CONTRIBUTION_ELIGIBILITY",
@@ -302,8 +320,6 @@ export function evaluatePortfolioFit(
       decisionReasons,
     ),
   ]);
-
-  const hardBlockStatus = BLOCKED_STATUSES.has(decision.status) ? decision.status : null;
 
   return Object.freeze({
     status: "SCORED",
