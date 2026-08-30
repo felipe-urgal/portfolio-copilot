@@ -153,7 +153,7 @@ function insufficientQuality(assetId: string): InvestmentScoreInsufficientData {
     methodologyId: "EQUITY_STOCK_GENERAL",
     methodologyVersion: "1.0.0",
     classification: STOCK_CLASSIFICATION,
-    reasonCodes: Object.freeze(["STALE_EVIDENCE"]),
+    reasonCodes: Object.freeze(["STALE_EVIDENCE"] as const),
     affectedComponents: Object.freeze(["ROE"]),
     components: Object.freeze([]),
     valuation: null,
