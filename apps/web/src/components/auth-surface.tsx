@@ -111,7 +111,7 @@ export function SignOutAuthView({
           <form className={styles.form} action={action}>
             <AuthSubmitButton>Encerrar sessão</AuthSubmitButton>
           </form>
-          <LinkButton className={styles.fullAction} href="/dashboard" variant="secondary" size="lg">
+          <LinkButton href="/dashboard" variant="secondary" size="lg">
             Continuar no produto
           </LinkButton>
         </div>
