@@ -2,7 +2,7 @@
 
 Copiloto inteligente de investimentos para organizar patrimônio, estruturar aportes e tornar decisões financeiras **explicáveis, auditáveis e disciplinadas**.
 
-> **Estado atual:** o repositório já possui domínio financeiro determinístico, Transaction Ledger, pipeline de aporte, PostgreSQL com ownership, autenticação, Asset Master, Market Data foundation, Investment Engine, teses versionadas e ingestão segura de conteúdo externo. No frontend, o redesign baseado no **Protótipo 3 — Assistant-First Workspace** concluiu R0–R5; o próximo vertical é **R6 Dashboard (#78)** após o merge do PR #88.
+> **Estado atual:** o repositório já possui domínio financeiro determinístico, Transaction Ledger, pipeline de aporte, PostgreSQL com ownership, autenticação, Asset Master, Market Data foundation, Investment Engine, teses versionadas e ingestão segura de conteúdo externo. No frontend, o redesign baseado no **Protótipo 3 — Assistant-First Workspace** concluiu R0–R6; o próximo vertical é **R7 Carteira (#79)** após o merge do PR #89.
 
 ![Direção visual canônica — Protótipo 3](docs/design/prototypes/prototype-3-assistant-first-dashboard.jpg)
 
@@ -46,11 +46,11 @@ A resposta precisa ser reconstruível: quais fatos foram usados, quais regras bl
 - perfil financeiro compartilhado em sessão;
 - persistência local opt-in do perfil;
 - migração opt-in/conflict-safe do perfil local para a conta;
-- Dashboard atual;
+- Dashboard Assistant-First R6 com contexto real, panorama e próxima ação;
 - Carteira com Portfolio, Assets, ledger, posições e aporte;
 - rota pública `/health`.
 
-O shell, auth e onboarding já usam a fundação visual nova. Dashboard, Carteira e estados transversais ainda passam pelos R6–R8; R9 fecha accessibility/responsive/visual QA.
+Shell, auth, onboarding e Dashboard já usam a fundação visual nova. Carteira e estados transversais ainda passam pelos R7–R8; R9 fecha accessibility/responsive/visual QA.
 
 ### Domínio financeiro — `packages/domain`
 
@@ -131,7 +131,6 @@ Essa fundação **não significa que o Copiloto conversacional já esteja pronto
 
 ## O que ainda não está concluído
 
-- Dashboard final do Protótipo 3 — #78/R6;
 - Carteira final — #79/R7;
 - componentes/estados transversais restantes — #80/R8;
 - accessibility/responsive/visual fidelity QA final — #81/R9;
@@ -265,7 +264,7 @@ Leia [`docs/AI-CONTENT-INGESTION.md`](docs/AI-CONTENT-INGESTION.md).
 
 A iniciativa #69 usa o **Protótipo 3 — Assistant-First Workspace** como direção canônica.
 
-Estado após o PR #88:
+Estado após o PR #89:
 
 ```text
 R0 audit ✓           #72
@@ -274,8 +273,8 @@ R2 design system ✓   #74
 R3 AppShell ✓        #75
 R4 focused auth ✓    #76
 R5 onboarding ✓      #77 / PR #88
-R6 dashboard         #78  <- próximo
-R7 carteira          #79
+R6 dashboard ✓       #78 / PR #89
+R7 carteira          #79  <- próximo
 R8 estados           #80
 R9 a11y/responsive/fidelity #81
 R10 gate final       #69
@@ -288,6 +287,7 @@ Contratos atuais:
 - AppShell único para superfícies protegidas;
 - focused auth fora do shell;
 - onboarding guiado no shell;
+- Dashboard R6 em `docs/design/DASHBOARD.md`;
 - nenhuma rota, métrica ou UI de Copiloto fictícia para copiar mockup.
 
 Leia [`docs/UX-UI-REDESIGN-ROADMAP.md`](docs/UX-UI-REDESIGN-ROADMAP.md).
@@ -299,7 +299,7 @@ Leia [`docs/UX-UI-REDESIGN-ROADMAP.md`](docs/UX-UI-REDESIGN-ROADMAP.md).
 | `/` | público | redireciona para `/dashboard` |
 | `/sign-in` | público | GitHub OAuth |
 | `/sign-out` | autenticado/contextual | saída da sessão |
-| `/dashboard` | autenticado | visão geral atual |
+| `/dashboard` | autenticado | contexto financeiro, panorama e próxima ação |
 | `/onboarding` | autenticado | perfil financeiro e objetivos |
 | `/portfolio` | autenticado | Portfolio, Assets, ledger, posições e aporte |
 | `/health` | público | health operacional |
@@ -478,6 +478,7 @@ Principais entradas:
 - [AppShell](docs/design/APP-SHELL.md)
 - [Auth/Session](docs/design/AUTH-SESSION.md)
 - [Onboarding](docs/design/ONBOARDING.md)
+- [Dashboard](docs/design/DASHBOARD.md)
 - [Frontend Audit R0](docs/design/FRONTEND-AUDIT.md)
 
 ### Tarefas
