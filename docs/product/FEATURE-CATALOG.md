@@ -16,16 +16,16 @@ Este catálogo separa **capability implementada**, **superfície web atual**, **
 | autenticação GitHub + sessão server-side | IMPLEMENTADO — web | focused auth R4 concluído |
 | onboarding financeiro | IMPLEMENTADO — web | guided flow R5 sobre AppShell/design system |
 | perfil financeiro local e migração opt-in para conta | IMPLEMENTADO — web | contratos de conflito/ownership preservados |
-| Portfolio/Asset/Transaction Ledger/positions | IMPLEMENTADO — web + domínio | conteúdo da Carteira ainda entra no R7 |
-| pipeline determinístico de aporte | IMPLEMENTADO — domínio + web atual | allocator, política, concentração, execução, custos e snapshot |
-| explicação determinística do aporte | IMPLEMENTADO — web | reason codes/status, sem IA |
+| Portfolio/Asset/Transaction Ledger/positions | IMPLEMENTADO — web + domínio | Carteira R7 organizada por tarefas no PR #92 |
+| pipeline determinístico de aporte | IMPLEMENTADO — domínio + web | allocator, política, concentração, execução, custos e snapshot preservados no R7 |
+| explicação determinística do aporte | IMPLEMENTADO — web | reason codes/status, sem IA, em progressive disclosure |
 | Asset Master | IMPLEMENTADO — domínio | matching e provenance; exposição visual futura quando necessária |
 | Market Data | IMPLEMENTADO — foundation | snapshots, freshness/cache/fallback; cobertura de providers ainda parcial |
 | Investment Engine | IMPLEMENTADO — engine | Quality, Opportunity, Dividend, valuation, Portfolio Fit e ranking |
 | Investment Thesis | IMPLEMENTADO — engine | versionamento, eventos, reviews e lifecycle |
 | ingestão segura para IA | IMPLEMENTADO — foundation | conteúdo permanece untrusted; não equivale a Copiloto pronto |
 | Dashboard Assistant-First | IMPLEMENTADO — web | R6 / #78 / PR #91; somente fatos reais e estados honestos |
-| Carteira final | REDESIGN | #79 / R7 |
+| Carteira Assistant-First | IMPLEMENTADO — web | R7 / #79 / PR #92; overview, ativos/posições, transações, aporte e configuração por tarefa |
 | estados transversais finais | REDESIGN | #80 / R8 |
 | visual/a11y/responsive QA completo | REDESIGN | #81 / R9 |
 | Copiloto conversacional | BACKLOG | #45, UI somente sobre a fundação final da #69 |
@@ -52,20 +52,26 @@ A integração futura de fatos de Portfolio/ledger ao Dashboard deve preservar `
 
 ## Carteira
 
-Capabilities existentes:
+Implementado no R7 (#79 / PR #92):
 
-- Portfolio canônico;
-- catálogo local de Assets;
-- Transaction Ledger;
-- `BUY`, `SELL`, `CASH_IN`, `CASH_OUT`;
-- posições projetadas a partir do ledger;
-- TargetAllocation e aporte determinístico;
-- elegibilidade/quantidade mínima;
-- concentração;
-- custos/impacto tributário conhecido informado;
-- RecommendationSnapshot e explicação determinística.
+- criação/configuração inicial focada;
+- navegação local por Visão geral, Ativos e posições, Transações, Aporte e Configuração;
+- overview com nome/moeda, contagens factuais, posições projetadas e próxima ação;
+- catálogo local de Assets separado de posições;
+- Transaction Ledger separado dos formulários de criação;
+- `BUY`, `SELL`, `CASH_IN`, `CASH_OUT` preservados sem fato parcial;
+- posições projetadas exclusivamente a partir do ledger;
+- TargetAllocation e aporte determinístico preservados;
+- elegibilidade/quantidade mínima, concentração e custos conhecidos preservados;
+- RecommendationSnapshot e explicação determinística preservados;
+- UUIDs, reason codes e reconciliações técnicas em progressive disclosure;
+- forms/actions/status/feedback sobre primitives R2;
+- desktop/tablet/mobile definidos por composição responsiva;
+- perfil financeiro da sessão disponível como contexto secundário.
 
-O R7 (#79) reorganiza essa capacidade sem trocar as fontes de verdade. Valor atual, P&L e métricas dependentes de Market Data não podem ser inventados para completar o layout.
+Valor atual, P&L e métricas dependentes de Market Data continuam ausentes quando a superfície não possui fonte real. O R7 também não conecta persistência server-side implicitamente e não executa ordens financeiras.
+
+Contrato canônico: `docs/design/PORTFOLIO.md`.
 
 ## Perfil, objetivos e reserva
 
@@ -96,6 +102,8 @@ Implementado de forma determinística:
 - permitir sobra em caixa;
 - produzir snapshot versionado/auditável;
 - explicar status e reason codes sem LLM.
+
+Na Carteira R7, o pipeline é apresentado como planejamento auditável: nenhuma etapa envia ordem para corretora ou transforma orçamento monetário em quantidade recomendada sem Market Data real.
 
 A seleção/ranking analítico por ativo é uma capability separada do Investment Engine; integração de produto deve preservar essa separação.
 

@@ -79,7 +79,7 @@ describe("FinancialProfileSessionSummary", () => {
     const html = renderSummary(PROFILE, "persisted");
 
     expect(html).toContain("Salvo neste dispositivo");
-    expect(html).toContain("remover");
+    expect(html).toContain("Remover cópia local do perfil");
     expect(html).toContain("salvo localmente neste navegador");
     expect(html).toContain("Não existe sincronização automática com conta ou outro dispositivo");
     expect(html).toContain("A migração para a conta é uma ação separada no Dashboard");

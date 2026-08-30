@@ -2,7 +2,7 @@
 
 ## Status
 
-**Documento vivo.** Última reconciliação da iniciativa UX/UI: **2026-08-30**, no PR #91.
+**Documento vivo.** Última reconciliação da iniciativa UX/UI: **2026-08-30**, no PR #92.
 
 Este mapa define qual documento responde por cada tipo de informação e como tratar divergências. O objetivo é impedir que roadmap, backlog, README, ADRs e documentos de descoberta virem fontes concorrentes de verdade.
 
@@ -71,6 +71,7 @@ Mudanças materiais nesses contratos exigem decisão registrada e, quando arquit
 | `docs/design/AUTH-SESSION.md` | canônico | focused auth R4 |
 | `docs/design/ONBOARDING.md` | canônico | guided onboarding R5 |
 | `docs/design/DASHBOARD.md` | canônico | Dashboard orientado a contexto/panorama/próxima ação R6 |
+| `docs/design/PORTFOLIO.md` | canônico | Carteira R7 organizada por tarefas, ledger/positions/aporte e progressive disclosure |
 | `docs/UX-UI-REDESIGN-ROADMAP.md` | vivo | sequência R0–R10 e gates |
 | `docs/design/FRONTEND-AUDIT.md` | baseline histórico | fotografia do frontend anterior no R0 |
 
@@ -106,9 +107,9 @@ Issues do GitHub são o backlog executável detalhado. `BACKLOG.md` é uma visã
 - R3 #75 — concluído;
 - R4 #76 — concluído;
 - R5 #77 — concluído via PR #88;
-- R6 #78 — entregue no PR #91 e considerado concluído após o merge desse PR;
-- R7 #79 — próximo;
-- R8 #80 — pendente;
+- R6 #78 — concluído via PR #91;
+- R7 #79 — entregue no PR #92 e considerado concluído após o merge desse PR;
+- R8 #80 — próxima atividade após o merge do #92;
 - R9 #81 — pendente;
 - R10 — gate final e fechamento da #69.
 
@@ -133,4 +134,8 @@ A reconciliação ampla de 2026-08-30 revisou o inventário completo de Markdown
 
 ### PR #91
 
-A reconciliação do R6 adiciona `docs/design/DASHBOARD.md`, promove #79/R7 como próxima atividade e atualiza roadmap/backlog para refletir que o Dashboard já segue AppShell/tokens/primitives e preserva ausências de dados de forma explícita.
+A reconciliação do R6 adicionou `docs/design/DASHBOARD.md`, promoveu #79/R7 como próxima atividade e atualizou roadmap/backlog para refletir que o Dashboard já segue AppShell/tokens/primitives e preserva ausências de dados de forma explícita.
+
+### PR #92
+
+A reconciliação do R7 adiciona `docs/design/PORTFOLIO.md`, registra a Carteira por tarefas como contrato canônico, promove #80/R8 como próxima atividade após o merge e atualiza roadmap, catálogo, backlog, histórico e issues relacionadas sem alterar decisões normativas de domínio/persistência.

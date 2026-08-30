@@ -16,15 +16,15 @@ O **Protótipo 3 — Assistant-First Workspace** é a direção visual canônica
 - [x] R3 — AppShell/sidebar/drawer/navegação — #75;
 - [x] R4 — focused auth e sessão — #76;
 - [x] R5 — onboarding guiado — #77 / PR #88;
-- [x] R6 — dashboard orientado a contexto/panorama/próxima ação — #78 / PR #91.
+- [x] R6 — dashboard orientado a contexto/panorama/próxima ação — #78 / PR #91;
+- [x] R7 — carteira organizada por tarefas — #79 / PR #92.
 
 ### Próximo
 
-- [ ] **R7 — carteira completa — #79**.
+- [ ] **R8 — componentes/estados transversais — #80**.
 
 ### Depois
 
-- [ ] R8 — componentes/estados transversais — #80;
 - [ ] R9 — accessibility, responsive e visual fidelity QA — #81;
 - [ ] R10 — gate final e fechamento da #69.
 
@@ -37,6 +37,7 @@ Referências canônicas:
 - `docs/design/AUTH-SESSION.md`;
 - `docs/design/ONBOARDING.md`;
 - `docs/design/DASHBOARD.md`;
+- `docs/design/PORTFOLIO.md`;
 - `docs/UX-UI-REDESIGN-ROADMAP.md`.
 
 Enquanto #69 estiver ativa, novas surfaces não podem criar um sistema visual paralelo nem inventar rota, KPI, dado ou Copiloto para copiar o mockup.
@@ -93,12 +94,12 @@ Existem hoje:
 - persistência PostgreSQL com ownership;
 - migração local → conta opt-in/conflict-safe;
 - Dashboard R6 sobre AppShell/tokens/primitives, sem métricas fictícias;
-- Carteira com Portfolio/Assets/Ledger/positions;
-- fluxo local do aporte do mês e explicação determinística.
+- Carteira R7 por tarefas, preservando Portfolio/Assets/Ledger/positions;
+- fluxo local do aporte do mês e explicação determinística com progressive disclosure.
 
 Pendências:
 
-- #79 — concluir a experiência visual da Carteira;
+- #80 — consolidar estados/componentes transversais restantes;
 - #47 — fechar a jornada ponta a ponta do MVP sobre as surfaces migradas.
 
 ## Asset Master e Market Data — FOUNDATION IMPLEMENTADA, COBERTURA EVOLUTIVA

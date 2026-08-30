@@ -7,6 +7,8 @@ import {
   type ContributionRecommendationSnapshot,
 } from "@portfolio-copilot/domain";
 
+import { Button, Field, FieldError, HelpText, Label, Status, TextInput } from "@/components/ui";
+
 import { type ContributionBaselineSnapshot } from "./contribution-baseline-form";
 import { type ContributionConcentrationSnapshot } from "./contribution-concentration-form";
 import { type ContributionCostSnapshot } from "./contribution-cost-form";
@@ -46,6 +48,14 @@ function statusLabel(
   if (status === "BLOCKED_CONCENTRATION_LIMIT") return "Bloqueado: concentração";
   if (status === "BLOCKED_INELIGIBLE") return "Bloqueado: inelegível";
   return "Bloqueado: custos conhecidos";
+}
+
+function statusTone(
+  status: ContributionRecommendationSnapshot["decisions"][number]["status"],
+): "neutral" | "success" | "danger" {
+  if (status === "EXECUTABLE") return "success";
+  if (status === "NOT_SELECTED_BY_POLICY") return "neutral";
+  return "danger";
 }
 
 export function ContributionRecommendationSection({
@@ -108,18 +118,20 @@ export function ContributionRecommendationSection({
             reason codes vêm diretamente do domínio; nenhuma regra é reconstruída nesta tela.
           </p>
         </div>
-        <span className={styles.status}>{recommendation === null ? "Gerar" : "Consolidado"}</span>
+        <Status tone={recommendation === null ? "neutral" : "success"}>
+          {recommendation === null ? "Gerar" : "Consolidado"}
+        </Status>
       </div>
 
       <form className={recommendationStyles.form} noValidate onSubmit={handleSubmit}>
-        <div className={styles.fieldGroup}>
-          <label htmlFor="contribution-methodology-version">Versão da metodologia</label>
-          <input
+        <Field>
+          <Label htmlFor="contribution-methodology-version">Versão da metodologia</Label>
+          <TextInput
             id="contribution-methodology-version"
             type="text"
             autoComplete="off"
             value={draft.methodologyVersion}
-            aria-invalid={errors.methodologyVersion !== undefined}
+            invalid={errors.methodologyVersion !== undefined}
             aria-describedby={
               errors.methodologyVersion
                 ? "contribution-methodology-version-error"
@@ -127,24 +139,18 @@ export function ContributionRecommendationSection({
             }
             onChange={(event) => updateMethodologyVersion(event.target.value)}
           />
-          <p className={styles.helpText} id="contribution-methodology-version-help">
+          <HelpText id="contribution-methodology-version-help">
             Identificador local explícito, por exemplo `local-mvp-v1`. Não é gerado nem normalizado
             automaticamente.
-          </p>
+          </HelpText>
           {errors.methodologyVersion ? (
-            <p
-              className={styles.fieldError}
-              id="contribution-methodology-version-error"
-              role="alert"
-            >
+            <FieldError id="contribution-methodology-version-error">
               {errors.methodologyVersion}
-            </p>
+            </FieldError>
           ) : null}
-        </div>
+        </Field>
 
-        <button className={styles.primaryAction} type="submit">
-          Gerar snapshot consolidado
-        </button>
+        <Button type="submit">Gerar snapshot consolidado</Button>
       </form>
 
       {recommendation !== null ? (
@@ -168,41 +174,44 @@ export function ContributionRecommendationSection({
             </div>
           </dl>
 
-          <dl className={recommendationStyles.remainders}>
-            <div>
-              <dt>Após allocator</dt>
-              <dd>
-                {moneyLabel(recommendation.currency, recommendation.cashRemainder.afterAllocator)}
-              </dd>
-            </div>
-            <div>
-              <dt>Após política</dt>
-              <dd>
-                {moneyLabel(recommendation.currency, recommendation.cashRemainder.afterPolicy)}
-              </dd>
-            </div>
-            <div>
-              <dt>Após concentração</dt>
-              <dd>
-                {moneyLabel(
-                  recommendation.currency,
-                  recommendation.cashRemainder.afterConcentration,
-                )}
-              </dd>
-            </div>
-            <div>
-              <dt>Após execução</dt>
-              <dd>
-                {moneyLabel(recommendation.currency, recommendation.cashRemainder.afterExecution)}
-              </dd>
-            </div>
-            <div>
-              <dt>Após custos</dt>
-              <dd>
-                {moneyLabel(recommendation.currency, recommendation.cashRemainder.afterCosts)}
-              </dd>
-            </div>
-          </dl>
+          <details className={recommendationStyles.remainderDetails}>
+            <summary>Ver reconciliação das sobras por etapa</summary>
+            <dl className={recommendationStyles.remainders}>
+              <div>
+                <dt>Após allocator</dt>
+                <dd>
+                  {moneyLabel(recommendation.currency, recommendation.cashRemainder.afterAllocator)}
+                </dd>
+              </div>
+              <div>
+                <dt>Após política</dt>
+                <dd>
+                  {moneyLabel(recommendation.currency, recommendation.cashRemainder.afterPolicy)}
+                </dd>
+              </div>
+              <div>
+                <dt>Após concentração</dt>
+                <dd>
+                  {moneyLabel(
+                    recommendation.currency,
+                    recommendation.cashRemainder.afterConcentration,
+                  )}
+                </dd>
+              </div>
+              <div>
+                <dt>Após execução</dt>
+                <dd>
+                  {moneyLabel(recommendation.currency, recommendation.cashRemainder.afterExecution)}
+                </dd>
+              </div>
+              <div>
+                <dt>Após custos</dt>
+                <dd>
+                  {moneyLabel(recommendation.currency, recommendation.cashRemainder.afterCosts)}
+                </dd>
+              </div>
+            </dl>
+          </details>
 
           <div className={styles.tableScroller}>
             <table className={styles.resultTable}>
@@ -215,7 +224,7 @@ export function ContributionRecommendationSection({
                   <th scope="col">Concentração</th>
                   <th scope="col">Investível</th>
                   <th scope="col">Estado</th>
-                  <th scope="col">Reason codes</th>
+                  <th scope="col">Detalhes</th>
                 </tr>
               </thead>
               <tbody>
@@ -241,20 +250,23 @@ export function ContributionRecommendationSection({
                         {moneyLabel(recommendation.currency, decision.investableAmount)}
                       </td>
                       <td>
-                        <span className={recommendationStyles.state} data-status={decision.status}>
+                        <Status tone={statusTone(decision.status)}>
                           {statusLabel(decision.status)}
-                        </span>
+                        </Status>
                       </td>
                       <td>
-                        {decision.reasonCodes.length === 0 ? (
-                          <span className={recommendationStyles.emptyReason}>—</span>
-                        ) : (
-                          <div className={recommendationStyles.reasonList}>
-                            {decision.reasonCodes.map((reasonCode) => (
-                              <code key={reasonCode}>{reasonCode}</code>
-                            ))}
-                          </div>
-                        )}
+                        <details className={recommendationStyles.reasonDetails}>
+                          <summary>Reason codes</summary>
+                          {decision.reasonCodes.length === 0 ? (
+                            <p>Nenhum reason code adicional.</p>
+                          ) : (
+                            <div className={recommendationStyles.reasonList}>
+                              {decision.reasonCodes.map((reasonCode) => (
+                                <code key={reasonCode}>{reasonCode}</code>
+                              ))}
+                            </div>
+                          )}
+                        </details>
                       </td>
                     </tr>
                   );

@@ -10,6 +10,24 @@ import {
 } from "@portfolio-copilot/domain";
 
 import {
+  Alert,
+  Badge,
+  Button,
+  EmptyState,
+  Field,
+  FieldError,
+  HelpText,
+  Label,
+  PageHeader,
+  SegmentedControl,
+  SegmentedControlOption,
+  Select,
+  Status,
+  Surface,
+  TextInput,
+} from "@/components/ui";
+
+import {
   createAssetTradeSnapshot,
   createInitialAssetTradeDraft,
   projectLocalAssetPositions,
@@ -42,19 +60,26 @@ import {
 } from "./portfolio-form";
 import styles from "./portfolio-workspace.module.css";
 
+type PortfolioTask = "overview" | "assets" | "transactions" | "contribution" | "settings";
+
 type PortfolioWorkspaceProps = Readonly<{
   initialSnapshot?: PortfolioSnapshot | null;
   initialAssets?: readonly LocalAssetSnapshot[];
   initialTransactions?: readonly TransactionSnapshot[];
+  initialTask?: PortfolioTask;
 }>;
 
-function FieldError({ id, message }: Readonly<{ id: string; message: string | undefined }>) {
+const PORTFOLIO_TASKS: readonly Readonly<{ id: PortfolioTask; label: string }>[] = [
+  { id: "overview", label: "Visão geral" },
+  { id: "assets", label: "Ativos e posições" },
+  { id: "transactions", label: "Transações" },
+  { id: "contribution", label: "Aporte" },
+  { id: "settings", label: "Configuração" },
+];
+
+function ErrorMessage({ id, message }: Readonly<{ id: string; message: string | undefined }>) {
   if (message === undefined) return null;
-  return (
-    <p className={styles.fieldError} id={id} role="alert">
-      {message}
-    </p>
-  );
+  return <FieldError id={id}>{message}</FieldError>;
 }
 
 function transactionLabel(type: string): string {
@@ -88,11 +113,21 @@ function countLabel(count: number, singular: string, plural: string, empty: stri
   return `${count} ${plural}`;
 }
 
+function formatOccurredAt(value: string): string {
+  return new Intl.DateTimeFormat("pt-BR", {
+    dateStyle: "medium",
+    timeStyle: "short",
+    timeZone: "UTC",
+  }).format(new Date(value));
+}
+
 export function PortfolioWorkspace({
   initialSnapshot = null,
   initialAssets = [],
   initialTransactions = [],
+  initialTask = "overview",
 }: PortfolioWorkspaceProps) {
+  const [activeTask, setActiveTask] = useState<PortfolioTask>(initialTask);
   const [draft, setDraft] = useState<PortfolioDraft>(createInitialPortfolioDraft);
   const [errors, setErrors] = useState<PortfolioFieldErrors>({});
   const [snapshot, setSnapshot] = useState<PortfolioSnapshot | null>(initialSnapshot);
@@ -138,6 +173,7 @@ export function PortfolioWorkspace({
     setSnapshot(result.snapshot);
     setAssetDraft(createInitialLocalAssetDraft(result.snapshot.referenceCurrency));
     setErrors({});
+    setActiveTask("overview");
   }
 
   function handleAssetSubmit(event: FormEvent<HTMLFormElement>): void {
@@ -205,6 +241,7 @@ export function PortfolioWorkspace({
     setTradeDraft(createInitialAssetTradeDraft());
     setTradeErrors({});
     setTransactions([]);
+    setActiveTask("overview");
   }
 
   const positions = snapshot === null ? [] : projectLocalAssetPositions(snapshot.id, transactions);
@@ -225,156 +262,231 @@ export function PortfolioWorkspace({
           ? "Somente fluxos de caixa"
           : "Sem transações";
 
-  return (
-    <>
-      <header className={styles.pageHeader}>
-        <div>
-          <h1>Carteira</h1>
-          <p>
-            Cadastre carteira e ativos, registre fatos no ledger e acompanhe somente posições
-            projetadas pelo domínio — sem holdings, preços ou patrimônio inventados.
-          </p>
-        </div>
-        <span className={styles.localState}>Estado local</span>
-      </header>
+  const nextAction =
+    assets.length === 0
+      ? {
+          task: "assets" as const,
+          title: "Cadastre o primeiro ativo",
+          description:
+            "O catálogo local libera seleção humana nas transações sem expor AssetId como campo.",
+          label: "Ir para Ativos e posições",
+        }
+      : transactions.length === 0
+        ? {
+            task: "transactions" as const,
+            title: "Registre o primeiro fato no ledger",
+            description:
+              "Posições só existem depois de BUY/SELL; fluxos de caixa permanecem separados.",
+            label: "Ir para Transações",
+          }
+        : {
+            task: "contribution" as const,
+            title: "Estruture o próximo aporte",
+            description:
+              "Use baseline manual, política, concentração e restrições antes da recomendação determinística.",
+            label: "Ir para Aporte",
+          };
 
-      <section className={styles.persistenceNotice} aria-labelledby="portfolio-persistence-title">
-        <h2 id="portfolio-persistence-title">Nada é persistido nesta versão</h2>
-        <p>
-          Carteira, ativos e movimentações existem somente enquanto esta tela permanecer aberta.
-          Recarregar ou sair remove todo o estado criado aqui.
-        </p>
-      </section>
+  return (
+    <div className={styles.workspace}>
+      <PageHeader
+        title="Carteira"
+        description={
+          snapshot === null
+            ? "Configure a carteira local antes de cadastrar ativos, registrar fatos no Transaction Ledger e estruturar aportes."
+            : "Consulte e mantenha fatos da carteira por tarefa. Posições continuam derivadas do ledger e nenhum preço, patrimônio ou P&L é inferido."
+        }
+        actions={<Badge tone="accent">Estado local</Badge>}
+      />
 
       {snapshot === null ? (
         <div className={styles.creationLayout}>
-          <section className={styles.formSurface} aria-labelledby="portfolio-form-title">
+          <Surface padding="lg" aria-labelledby="portfolio-form-title">
             <div className={styles.sectionHeading}>
               <div>
+                <span className={styles.eyebrow}>Configuração inicial</span>
                 <h2 id="portfolio-form-title">Criar carteira</h2>
-                <p>O domínio valida identidade, nome e moeda antes de liberar o ledger.</p>
+                <p>O domínio valida nome e moeda antes de liberar ativos e Transaction Ledger.</p>
               </div>
+              <Status tone="neutral">Ainda não configurada</Status>
             </div>
+
             <form className={styles.form} noValidate onSubmit={handlePortfolioSubmit}>
-              <div className={styles.fieldGroup}>
-                <label htmlFor="portfolio-name">Nome da carteira</label>
-                <input
+              <Field>
+                <Label htmlFor="portfolio-name">Nome da carteira</Label>
+                <TextInput
                   id="portfolio-name"
                   type="text"
                   maxLength={120}
                   autoComplete="off"
                   value={draft.name}
-                  aria-invalid={errors.name !== undefined}
+                  invalid={errors.name !== undefined}
                   aria-describedby={errors.name ? "portfolio-name-error" : undefined}
                   onChange={(event) => updateDraft("name", event.target.value)}
                 />
-                <FieldError id="portfolio-name-error" message={errors.name} />
-              </div>
-              <div className={styles.fieldGroup}>
-                <label htmlFor="portfolio-currency">Moeda de referência</label>
-                <input
+                <ErrorMessage id="portfolio-name-error" message={errors.name} />
+              </Field>
+
+              <Field>
+                <Label htmlFor="portfolio-currency">Moeda de referência</Label>
+                <TextInput
                   id="portfolio-currency"
                   type="text"
                   maxLength={3}
                   autoCapitalize="characters"
                   autoComplete="off"
                   value={draft.referenceCurrency}
-                  aria-invalid={errors.referenceCurrency !== undefined}
+                  invalid={errors.referenceCurrency !== undefined}
                   aria-describedby={
-                    errors.referenceCurrency ? "portfolio-currency-error" : undefined
+                    errors.referenceCurrency
+                      ? "portfolio-currency-error"
+                      : "portfolio-currency-help"
                   }
                   onChange={(event) =>
                     updateDraft("referenceCurrency", event.target.value.toUpperCase())
                   }
                 />
-                <p className={styles.helpText}>Código de três letras, como BRL, USD ou EUR.</p>
-                <FieldError id="portfolio-currency-error" message={errors.referenceCurrency} />
-              </div>
-              {errors.form ? (
-                <p className={styles.formError} role="alert">
-                  {errors.form}
-                </p>
-              ) : null}
-              <button className={styles.primaryAction} type="submit">
-                Criar carteira local
-              </button>
-            </form>
-          </section>
+                <HelpText id="portfolio-currency-help">
+                  Código de três letras, como BRL, USD ou EUR.
+                </HelpText>
+                <ErrorMessage id="portfolio-currency-error" message={errors.referenceCurrency} />
+              </Field>
 
-          <aside className={styles.truthRail} aria-labelledby="portfolio-truth-title">
-            <h2 id="portfolio-truth-title">Fonte de verdade</h2>
-            <p>
-              O <strong>Portfolio</strong> guarda só identidade, nome e moeda. Ativos têm identidade
-              própria; posições nascem exclusivamente do Transaction Ledger.
-            </p>
-            <div className={styles.ruleList}>
-              <div>
-                <strong>Seleção humana</strong>
-                <span>Ativos aparecem por nome e contexto, nunca como campo de UUID.</span>
+              {errors.form ? <FieldError>{errors.form}</FieldError> : null}
+
+              <div className={styles.actionRow}>
+                <Button type="submit">Criar carteira local</Button>
               </div>
+            </form>
+          </Surface>
+
+          <Surface tone="subtle" padding="lg" aria-labelledby="portfolio-principles-title">
+            <div className={styles.sectionHeading}>
               <div>
-                <strong>Posições derivadas</strong>
-                <span>
-                  BUY/SELL alimentam `projectAssetPositions`; cash flows não alteram quantidade.
-                </span>
-              </div>
-              <div>
-                <strong>Sem Market Data</strong>
-                <span>Quantidade não é preço, patrimônio, custo médio ou P&amp;L.</span>
+                <span className={styles.eyebrow}>Contrato de dados</span>
+                <h2 id="portfolio-principles-title">O que a carteira representa</h2>
               </div>
             </div>
-          </aside>
+            <dl className={styles.factList}>
+              <div>
+                <dt>Portfolio</dt>
+                <dd>Identidade, nome e moeda de referência.</dd>
+              </div>
+              <div>
+                <dt>Ativos</dt>
+                <dd>Catálogo local com identidade própria e seleção por contexto humano.</dd>
+              </div>
+              <div>
+                <dt>Posições</dt>
+                <dd>Projeção exclusiva de BUY/SELL no Transaction Ledger.</dd>
+              </div>
+              <div>
+                <dt>Market Data</dt>
+                <dd>Não participa desta superfície; preço e patrimônio não são inventados.</dd>
+              </div>
+            </dl>
+          </Surface>
         </div>
       ) : (
-        <div className={styles.sessionStack}>
-          <div className={styles.snapshotLayout}>
-            <section className={styles.snapshotSurface} aria-labelledby="portfolio-snapshot-title">
-              <div className={styles.sectionHeading}>
-                <div>
-                  <h2 id="portfolio-snapshot-title">Carteira desta sessão</h2>
-                  <p>Snapshot validado pelo agregado Portfolio.</p>
-                </div>
-                <span className={styles.validState}>Validada</span>
-              </div>
-              <dl className={styles.snapshotList}>
-                <div>
-                  <dt>Nome</dt>
-                  <dd>{snapshot.name}</dd>
-                </div>
-                <div>
-                  <dt>Moeda de referência</dt>
-                  <dd>{snapshot.referenceCurrency}</dd>
-                </div>
-                <div>
-                  <dt>Identidade</dt>
-                  <dd className={styles.identifier}>{snapshot.id}</dd>
-                </div>
-              </dl>
-              <button className={styles.secondaryAction} type="button" onClick={resetPortfolio}>
-                Criar outra carteira
-              </button>
-            </section>
+        <>
+          <nav className={styles.taskTabs} aria-label="Tarefas da carteira">
+            {PORTFOLIO_TASKS.map((task) => (
+              <Button
+                key={task.id}
+                size="sm"
+                variant={activeTask === task.id ? "secondary" : "ghost"}
+                aria-current={activeTask === task.id ? "page" : undefined}
+                aria-controls={`portfolio-panel-${task.id}`}
+                id={`portfolio-task-${task.id}`}
+                onClick={() => setActiveTask(task.id)}
+              >
+                {task.label}
+              </Button>
+            ))}
+          </nav>
 
-            <section className={styles.positionsSurface} aria-labelledby="positions-title">
-              <div className={styles.sectionHeading}>
-                <div>
-                  <h2 id="positions-title">Posições</h2>
-                  <p>Quantidade aberta derivada pelo projetor do domínio.</p>
-                </div>
-                <span className={styles.emptyStatus}>{positionStatus}</span>
-              </div>
-              {positions.length === 0 ? (
-                <div className={styles.emptyState}>
-                  <span className={styles.emptyMark} aria-hidden="true" />
+          <section
+            className={styles.taskPanel}
+            id="portfolio-panel-overview"
+            aria-labelledby="portfolio-task-overview"
+            hidden={activeTask !== "overview"}
+          >
+            <div className={styles.overviewGrid}>
+              <Surface padding="lg" className={styles.overviewPrimary}>
+                <div className={styles.sectionHeading}>
                   <div>
-                    <strong>Nenhuma posição de ativo aberta</strong>
-                    <p>
-                      {hasTrades
-                        ? "Os fatos de compra e venda resultam em quantidade aberta zero. Nenhum holding paralelo é mantido."
-                        : "Registre uma compra para projetar quantidade. CASH_IN e CASH_OUT não alteram posições."}
-                    </p>
+                    <span className={styles.eyebrow}>Visão geral</span>
+                    <h2>{snapshot.name}</h2>
+                    <p>Moeda de referência {snapshot.referenceCurrency}.</p>
+                  </div>
+                  <Status tone="success">Configurada</Status>
+                </div>
+
+                <dl className={styles.summaryList}>
+                  <div>
+                    <dt>Ativos cadastrados</dt>
+                    <dd>{assets.length}</dd>
+                  </div>
+                  <div>
+                    <dt>Posições abertas</dt>
+                    <dd>{positions.length}</dd>
+                  </div>
+                  <div>
+                    <dt>Movimentações</dt>
+                    <dd>{transactions.length}</dd>
+                  </div>
+                </dl>
+
+                <Alert tone="info" title="Sem valuation implícito">
+                  Quantidade, settlement e base manual não são preço de mercado, patrimônio, custo
+                  médio ou P&amp;L. Essas métricas permanecem ausentes até existir fonte real.
+                </Alert>
+              </Surface>
+
+              <Surface tone="subtle" padding="lg">
+                <div className={styles.sectionHeading}>
+                  <div>
+                    <span className={styles.eyebrow}>Próxima ação</span>
+                    <h2>{nextAction.title}</h2>
+                    <p>{nextAction.description}</p>
                   </div>
                 </div>
+                <Button size="sm" onClick={() => setActiveTask(nextAction.task)}>
+                  {nextAction.label}
+                </Button>
+              </Surface>
+            </div>
+
+            <Surface padding="lg">
+              <div className={styles.sectionHeading}>
+                <div>
+                  <span className={styles.eyebrow}>Posições</span>
+                  <h2>Posições projetadas</h2>
+                  <p>Quantidade aberta derivada exclusivamente do Transaction Ledger.</p>
+                </div>
+                <Status tone="neutral">{positionStatus}</Status>
+              </div>
+
+              {positions.length === 0 ? (
+                <EmptyState
+                  title="Nenhuma posição de ativo aberta"
+                  description={
+                    hasTrades
+                      ? "As compras e vendas registradas resultam em quantidade aberta zero. Nenhum holding paralelo é mantido."
+                      : hasCashFlows
+                        ? "Existem somente fluxos de caixa. CASH_IN e CASH_OUT não alteram posições."
+                        : "Registre uma compra para projetar quantidade. CASH_IN e CASH_OUT não alteram posições."
+                  }
+                  action={
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => setActiveTask("transactions")}
+                    >
+                      Abrir Transações
+                    </Button>
+                  }
+                />
               ) : (
                 <ul className={styles.positionList}>
                   {positions.map((position) => {
@@ -397,320 +509,394 @@ export function PortfolioWorkspace({
                   })}
                 </ul>
               )}
-            </section>
-          </div>
+            </Surface>
+          </section>
 
-          <section className={styles.assetSurface} aria-labelledby="assets-title">
-            <div className={styles.sectionHeading}>
-              <div>
-                <h2 id="assets-title">Ativos da sessão</h2>
-                <p>Cadastro mínimo local, sem ticker, busca remota ou Asset Master improvisado.</p>
-              </div>
-              <span className={styles.emptyStatus}>
-                {countLabel(assets.length, "ativo", "ativos", "Nenhum ativo")}
-              </span>
-            </div>
-            <div className={styles.assetLayout}>
-              <form className={styles.assetForm} noValidate onSubmit={handleAssetSubmit}>
-                <div className={styles.fieldGroup}>
-                  <label htmlFor="asset-name">Nome do ativo</label>
-                  <input
-                    id="asset-name"
-                    type="text"
-                    maxLength={160}
-                    autoComplete="off"
-                    value={assetDraft.name}
-                    aria-invalid={assetErrors.name !== undefined}
-                    aria-describedby={assetErrors.name ? "asset-name-error" : "asset-name-help"}
-                    onChange={(event) => updateAssetDraft("name", event.target.value)}
-                  />
-                  <p className={styles.helpText} id="asset-name-help">
-                    Nome usado na seleção de compra e venda; UUID permanece interno.
-                  </p>
-                  <FieldError id="asset-name-error" message={assetErrors.name} />
-                </div>
-                <div className={styles.fieldRow}>
-                  <div className={styles.fieldGroup}>
-                    <label htmlFor="asset-class">Classe econômica</label>
-                    <select
-                      id="asset-class"
-                      value={assetDraft.assetClass}
-                      onChange={(event) => updateAssetDraft("assetClass", event.target.value)}
-                    >
-                      {LOCAL_ASSET_CLASS_OPTIONS.map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {option.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className={styles.fieldGroup}>
-                    <label htmlFor="asset-instrument">Instrumento</label>
-                    <select
-                      id="asset-instrument"
-                      value={assetDraft.instrumentType}
-                      onChange={(event) => updateAssetDraft("instrumentType", event.target.value)}
-                    >
-                      {LOCAL_INSTRUMENT_TYPE_OPTIONS.map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {option.label}
-                        </option>
-                      ))}
-                    </select>
+          <section
+            className={styles.taskPanel}
+            id="portfolio-panel-assets"
+            aria-labelledby="portfolio-task-assets"
+            hidden={activeTask !== "assets"}
+          >
+            <div className={styles.assetGrid}>
+              <Surface padding="lg">
+                <div className={styles.sectionHeading}>
+                  <div>
+                    <span className={styles.eyebrow}>Ativos</span>
+                    <h2>Cadastrar ativo local</h2>
+                    <p>O ativo entra no catálogo da sessão sem ticker, busca remota ou preço.</p>
                   </div>
                 </div>
-                <div className={styles.fieldGroup}>
-                  <label htmlFor="asset-currency">Moeda de referência do ativo</label>
-                  <input
-                    id="asset-currency"
-                    type="text"
-                    maxLength={3}
-                    autoCapitalize="characters"
-                    autoComplete="off"
-                    value={assetDraft.referenceCurrency}
-                    aria-invalid={assetErrors.referenceCurrency !== undefined}
-                    aria-describedby={
-                      assetErrors.referenceCurrency ? "asset-currency-error" : "asset-currency-help"
-                    }
-                    onChange={(event) =>
-                      updateAssetDraft("referenceCurrency", event.target.value.toUpperCase())
-                    }
-                  />
-                  <p className={styles.helpText} id="asset-currency-help">
-                    Não implica cotação nem conversão FX.
-                  </p>
-                  <FieldError id="asset-currency-error" message={assetErrors.referenceCurrency} />
-                </div>
-                {assetErrors.form ? (
-                  <p className={styles.formError} role="alert">
-                    {assetErrors.form}
-                  </p>
-                ) : null}
-                <button className={styles.primaryAction} type="submit">
-                  Cadastrar ativo local
-                </button>
-              </form>
 
-              <div className={styles.assetCatalog}>
-                <div className={styles.ledgerHistoryHeading}>
-                  <h3>Disponíveis para transações</h3>
-                  <p>Seleção visível por nome, classe e instrumento.</p>
+                <form className={styles.form} noValidate onSubmit={handleAssetSubmit}>
+                  <Field>
+                    <Label htmlFor="asset-name">Nome do ativo</Label>
+                    <TextInput
+                      id="asset-name"
+                      type="text"
+                      maxLength={160}
+                      autoComplete="off"
+                      value={assetDraft.name}
+                      invalid={assetErrors.name !== undefined}
+                      aria-describedby={assetErrors.name ? "asset-name-error" : "asset-name-help"}
+                      onChange={(event) => updateAssetDraft("name", event.target.value)}
+                    />
+                    <HelpText id="asset-name-help">
+                      Nome usado na seleção de compra e venda; UUID permanece em detalhe técnico.
+                    </HelpText>
+                    <ErrorMessage id="asset-name-error" message={assetErrors.name} />
+                  </Field>
+
+                  <div className={styles.fieldRow}>
+                    <Field>
+                      <Label htmlFor="asset-class">Classe econômica</Label>
+                      <Select
+                        id="asset-class"
+                        value={assetDraft.assetClass}
+                        onChange={(event) => updateAssetDraft("assetClass", event.target.value)}
+                      >
+                        {LOCAL_ASSET_CLASS_OPTIONS.map((option) => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        ))}
+                      </Select>
+                    </Field>
+                    <Field>
+                      <Label htmlFor="asset-instrument">Instrumento</Label>
+                      <Select
+                        id="asset-instrument"
+                        value={assetDraft.instrumentType}
+                        onChange={(event) => updateAssetDraft("instrumentType", event.target.value)}
+                      >
+                        {LOCAL_INSTRUMENT_TYPE_OPTIONS.map((option) => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        ))}
+                      </Select>
+                    </Field>
+                  </div>
+
+                  <Field>
+                    <Label htmlFor="asset-currency">Moeda de referência do ativo</Label>
+                    <TextInput
+                      id="asset-currency"
+                      type="text"
+                      maxLength={3}
+                      autoCapitalize="characters"
+                      autoComplete="off"
+                      value={assetDraft.referenceCurrency}
+                      invalid={assetErrors.referenceCurrency !== undefined}
+                      aria-describedby={
+                        assetErrors.referenceCurrency
+                          ? "asset-currency-error"
+                          : "asset-currency-help"
+                      }
+                      onChange={(event) =>
+                        updateAssetDraft("referenceCurrency", event.target.value.toUpperCase())
+                      }
+                    />
+                    <HelpText id="asset-currency-help">
+                      Não implica cotação nem conversão FX.
+                    </HelpText>
+                    <ErrorMessage
+                      id="asset-currency-error"
+                      message={assetErrors.referenceCurrency}
+                    />
+                  </Field>
+
+                  {assetErrors.form ? <FieldError>{assetErrors.form}</FieldError> : null}
+
+                  <div className={styles.actionRow}>
+                    <Button type="submit">Cadastrar ativo local</Button>
+                  </div>
+                </form>
+              </Surface>
+
+              <Surface tone="subtle" padding="lg">
+                <div className={styles.sectionHeading}>
+                  <div>
+                    <span className={styles.eyebrow}>Catálogo</span>
+                    <h2>Ativos disponíveis</h2>
+                    <p>Catálogo e posição são conceitos separados.</p>
+                  </div>
+                  <Status tone="neutral">
+                    {countLabel(assets.length, "ativo", "ativos", "Nenhum ativo")}
+                  </Status>
                 </div>
+
                 {assets.length === 0 ? (
-                  <div className={styles.ledgerEmptyState}>
-                    <strong>Nenhum ativo cadastrado</strong>
-                    <p>Cadastre um ativo para liberar compra e venda.</p>
-                  </div>
+                  <EmptyState
+                    title="Nenhum ativo cadastrado"
+                    description="Cadastre um ativo para liberar compra e venda com seleção por nome e contexto."
+                  />
                 ) : (
                   <ul className={styles.assetList}>
                     {assets.map((asset) => (
                       <li key={asset.id}>
-                        <strong>{asset.name}</strong>
-                        <span>
-                          {assetClassLabel(asset.assetClass)} ·{" "}
-                          {instrumentTypeLabel(asset.instrumentType)}
-                          {" · "}
-                          {asset.referenceCurrency}
-                        </span>
+                        <div>
+                          <strong>{asset.name}</strong>
+                          <span>
+                            {assetClassLabel(asset.assetClass)} ·{" "}
+                            {instrumentTypeLabel(asset.instrumentType)} · {asset.referenceCurrency}
+                          </span>
+                        </div>
+                        <details className={styles.inlineDetails}>
+                          <summary>Identidade técnica</summary>
+                          <code>{asset.id}</code>
+                        </details>
                       </li>
                     ))}
                   </ul>
                 )}
-              </div>
+              </Surface>
             </div>
+
+            <Surface padding="lg">
+              <div className={styles.sectionHeading}>
+                <div>
+                  <span className={styles.eyebrow}>Posições</span>
+                  <h2>Posições abertas</h2>
+                  <p>Quantidade projetada pelo domínio; não existe campo de holding editável.</p>
+                </div>
+                <Status tone="neutral">{positionStatus}</Status>
+              </div>
+
+              {positions.length === 0 ? (
+                <EmptyState
+                  title="Nenhuma posição de ativo aberta"
+                  description={
+                    hasTrades
+                      ? "Os fatos de compra e venda resultam em quantidade aberta zero. Nenhum holding paralelo é mantido."
+                      : "Registre uma compra para projetar quantidade. CASH_IN e CASH_OUT não alteram posições."
+                  }
+                  action={
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => setActiveTask("transactions")}
+                    >
+                      Registrar transação
+                    </Button>
+                  }
+                />
+              ) : (
+                <ul className={styles.positionList}>
+                  {positions.map((position) => {
+                    const asset = assetsById.get(position.assetId);
+                    return (
+                      <li key={position.assetId}>
+                        <div>
+                          <strong>{asset?.name ?? "Ativo não disponível nesta sessão"}</strong>
+                          <span>
+                            {asset
+                              ? `${assetClassLabel(asset.assetClass)} · ${instrumentTypeLabel(asset.instrumentType)}`
+                              : "Identidade presente no ledger"}
+                          </span>
+                        </div>
+                        <span className={styles.positionQuantity}>
+                          {compactQuantity(position.quantity)} un.
+                        </span>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+            </Surface>
           </section>
 
-          <section className={styles.ledgerSurface} aria-labelledby="ledger-title">
-            <div className={styles.sectionHeading}>
-              <div>
-                <h2 id="ledger-title">Transaction Ledger</h2>
-                <p>
-                  Transações são fatos históricos; posições são projeções, não campos editáveis.
-                </p>
-              </div>
-              <span className={styles.emptyStatus}>
-                {countLabel(transactions.length, "movimentação", "movimentações", "Ledger vazio")}
-              </span>
-            </div>
-            <div className={styles.ledgerLayout}>
-              <div className={styles.transactionForms}>
-                <form className={styles.transactionForm} noValidate onSubmit={handleCashSubmit}>
-                  <div className={styles.formHeading}>
-                    <h3>Fluxo de caixa</h3>
-                    <p>Entrada ou saída sem ativo ou quantidade.</p>
+          <section
+            className={styles.taskPanel}
+            id="portfolio-panel-transactions"
+            aria-labelledby="portfolio-task-transactions"
+            hidden={activeTask !== "transactions"}
+          >
+            <div className={styles.transactionGrid}>
+              <Surface padding="lg">
+                <div className={styles.sectionHeading}>
+                  <div>
+                    <span className={styles.eyebrow}>Registrar fato</span>
+                    <h2>Nova movimentação</h2>
+                    <p>Erros de validação não entram parcialmente no ledger.</p>
                   </div>
-                  <fieldset className={styles.transactionTypeFieldset}>
-                    <legend>Tipo</legend>
-                    <div className={styles.transactionTypeOptions}>
-                      {(["CASH_IN", "CASH_OUT"] as const).map((type) => (
-                        <label key={type}>
-                          <input
-                            type="radio"
-                            name="cashTransactionType"
-                            value={type}
-                            checked={cashDraft.type === type}
-                            onChange={() => {
-                              setCashDraft((current) => ({ ...current, type }));
-                              setCashErrors({});
-                            }}
-                          />
-                          <span>{type === "CASH_IN" ? "Entrada" : "Saída"}</span>
-                        </label>
-                      ))}
-                    </div>
-                  </fieldset>
-                  <div className={styles.fieldGroup}>
-                    <label htmlFor="cash-transaction-amount">Valor</label>
-                    <input
-                      id="cash-transaction-amount"
-                      type="text"
-                      inputMode="decimal"
-                      autoComplete="off"
-                      value={cashDraft.amount}
-                      aria-invalid={cashErrors.amount !== undefined}
-                      aria-describedby={
-                        cashErrors.amount ? "cash-amount-error" : "cash-amount-help"
-                      }
-                      onChange={(event) => {
-                        setCashDraft((current) => ({ ...current, amount: event.target.value }));
-                        setCashErrors({});
-                      }}
-                    />
-                    <p className={styles.helpText} id="cash-amount-help">
-                      Valor positivo em {snapshot.referenceCurrency}; vírgula ou ponto decimal.
-                    </p>
-                    <FieldError id="cash-amount-error" message={cashErrors.amount} />
-                  </div>
-                  {cashErrors.form ? (
-                    <p className={styles.formError} role="alert">
-                      {cashErrors.form}
-                    </p>
-                  ) : null}
-                  <button className={styles.primaryAction} type="submit">
-                    Registrar fluxo de caixa
-                  </button>
-                </form>
-
-                <form className={styles.transactionForm} noValidate onSubmit={handleTradeSubmit}>
-                  <div className={styles.formHeading}>
-                    <h3>Compra e venda</h3>
-                    <p>Asset selecionado por nome; identidade interna resolvida pela interface.</p>
-                  </div>
-                  <fieldset className={styles.transactionTypeFieldset}>
-                    <legend>Operação</legend>
-                    <div className={styles.transactionTypeOptions}>
-                      {(["BUY", "SELL"] as const).map((type) => (
-                        <label key={type}>
-                          <input
-                            type="radio"
-                            name="assetTradeType"
-                            value={type}
-                            checked={tradeDraft.type === type}
-                            onChange={() => updateTradeDraft("type", type)}
-                          />
-                          <span>{type === "BUY" ? "Compra" : "Venda"}</span>
-                        </label>
-                      ))}
-                    </div>
-                  </fieldset>
-                  <div className={styles.fieldGroup}>
-                    <label htmlFor="trade-asset">Ativo</label>
-                    <select
-                      id="trade-asset"
-                      value={tradeDraft.assetId}
-                      disabled={assets.length === 0}
-                      aria-invalid={tradeErrors.assetId !== undefined}
-                      aria-describedby={
-                        tradeErrors.assetId ? "trade-asset-error" : "trade-asset-help"
-                      }
-                      onChange={(event) => updateTradeDraft("assetId", event.target.value)}
-                    >
-                      <option value="">Selecione um ativo</option>
-                      {assets.map((asset) => (
-                        <option key={asset.id} value={asset.id}>
-                          {asset.name} — {assetClassLabel(asset.assetClass)}
-                        </option>
-                      ))}
-                    </select>
-                    <p className={styles.helpText} id="trade-asset-help">
-                      {assets.length === 0
-                        ? "Cadastre um ativo local antes de negociar."
-                        : "O AssetId não é solicitado ao usuário."}
-                    </p>
-                    <FieldError id="trade-asset-error" message={tradeErrors.assetId} />
-                  </div>
-                  <div className={styles.fieldRow}>
-                    <div className={styles.fieldGroup}>
-                      <label htmlFor="trade-quantity">Quantidade</label>
-                      <input
-                        id="trade-quantity"
-                        type="text"
-                        inputMode="decimal"
-                        autoComplete="off"
-                        value={tradeDraft.quantity}
-                        aria-invalid={tradeErrors.quantity !== undefined}
-                        aria-describedby={
-                          tradeErrors.quantity ? "trade-quantity-error" : "trade-quantity-help"
-                        }
-                        onChange={(event) => updateTradeDraft("quantity", event.target.value)}
-                      />
-                      <p className={styles.helpText} id="trade-quantity-help">
-                        Até 12 casas decimais.
-                      </p>
-                      <FieldError id="trade-quantity-error" message={tradeErrors.quantity} />
-                    </div>
-                    <div className={styles.fieldGroup}>
-                      <label htmlFor="trade-settlement">Valor de liquidação</label>
-                      <input
-                        id="trade-settlement"
-                        type="text"
-                        inputMode="decimal"
-                        autoComplete="off"
-                        value={tradeDraft.settlementAmount}
-                        aria-invalid={tradeErrors.settlementAmount !== undefined}
-                        aria-describedby={
-                          tradeErrors.settlementAmount
-                            ? "trade-settlement-error"
-                            : "trade-settlement-help"
-                        }
-                        onChange={(event) =>
-                          updateTradeDraft("settlementAmount", event.target.value)
-                        }
-                      />
-                      <p className={styles.helpText} id="trade-settlement-help">
-                        Valor positivo em {snapshot.referenceCurrency}; não é preço de mercado.
-                      </p>
-                      <FieldError
-                        id="trade-settlement-error"
-                        message={tradeErrors.settlementAmount}
-                      />
-                    </div>
-                  </div>
-                  {tradeErrors.form ? (
-                    <p className={styles.formError} role="alert">
-                      {tradeErrors.form}
-                    </p>
-                  ) : null}
-                  <button
-                    className={styles.primaryAction}
-                    type="submit"
-                    disabled={assets.length === 0}
-                  >
-                    Registrar {tradeDraft.type === "BUY" ? "compra" : "venda"}
-                  </button>
-                </form>
-              </div>
-
-              <div className={styles.ledgerHistory}>
-                <div className={styles.ledgerHistoryHeading}>
-                  <h3>Movimentações desta sessão</h3>
-                  <p>Mais recentes primeiro; cada item é um snapshot validado.</p>
                 </div>
-                {displayTransactions.length === 0 ? (
-                  <div className={styles.ledgerEmptyState}>
-                    <strong>Ledger sem movimentações</strong>
-                    <p>Nenhum saldo, posição ou transação inicial é presumido.</p>
+
+                <div className={styles.transactionForms}>
+                  <form className={styles.form} noValidate onSubmit={handleCashSubmit}>
+                    <div className={styles.formHeading}>
+                      <h3>Fluxo de caixa</h3>
+                      <p>Entrada ou saída sem ativo ou quantidade.</p>
+                    </div>
+
+                    <SegmentedControl legend="Tipo do fluxo de caixa">
+                      {(["CASH_IN", "CASH_OUT"] as const).map((type) => (
+                        <SegmentedControlOption
+                          key={type}
+                          name="cashTransactionType"
+                          value={type}
+                          checked={cashDraft.type === type}
+                          onChange={() => {
+                            setCashDraft((current) => ({ ...current, type }));
+                            setCashErrors({});
+                          }}
+                        >
+                          {type === "CASH_IN" ? "Entrada" : "Saída"}
+                        </SegmentedControlOption>
+                      ))}
+                    </SegmentedControl>
+
+                    <Field>
+                      <Label htmlFor="cash-transaction-amount">Valor</Label>
+                      <TextInput
+                        id="cash-transaction-amount"
+                        type="text"
+                        inputMode="decimal"
+                        autoComplete="off"
+                        value={cashDraft.amount}
+                        invalid={cashErrors.amount !== undefined}
+                        aria-describedby={
+                          cashErrors.amount ? "cash-amount-error" : "cash-amount-help"
+                        }
+                        onChange={(event) => {
+                          setCashDraft((current) => ({ ...current, amount: event.target.value }));
+                          setCashErrors({});
+                        }}
+                      />
+                      <HelpText id="cash-amount-help">
+                        Valor positivo em {snapshot.referenceCurrency}; vírgula ou ponto decimal.
+                      </HelpText>
+                      <ErrorMessage id="cash-amount-error" message={cashErrors.amount} />
+                    </Field>
+
+                    {cashErrors.form ? <FieldError>{cashErrors.form}</FieldError> : null}
+                    <Button type="submit">Registrar fluxo de caixa</Button>
+                  </form>
+
+                  <form className={styles.form} noValidate onSubmit={handleTradeSubmit}>
+                    <div className={styles.formHeading}>
+                      <h3>Compra e venda</h3>
+                      <p>Ativo selecionado por nome; AssetId permanece interno à interface.</p>
+                    </div>
+
+                    <SegmentedControl legend="Operação com ativo">
+                      {(["BUY", "SELL"] as const).map((type) => (
+                        <SegmentedControlOption
+                          key={type}
+                          name="assetTradeType"
+                          value={type}
+                          checked={tradeDraft.type === type}
+                          onChange={() => updateTradeDraft("type", type)}
+                        >
+                          {type === "BUY" ? "Compra" : "Venda"}
+                        </SegmentedControlOption>
+                      ))}
+                    </SegmentedControl>
+
+                    <Field>
+                      <Label htmlFor="trade-asset">Ativo</Label>
+                      <Select
+                        id="trade-asset"
+                        disabled={assets.length === 0}
+                        value={tradeDraft.assetId}
+                        invalid={tradeErrors.assetId !== undefined}
+                        aria-describedby={
+                          tradeErrors.assetId ? "trade-asset-error" : "trade-asset-help"
+                        }
+                        onChange={(event) => updateTradeDraft("assetId", event.target.value)}
+                      >
+                        <option value="">Selecione um ativo</option>
+                        {assets.map((asset) => (
+                          <option key={asset.id} value={asset.id}>
+                            {asset.name} — {assetClassLabel(asset.assetClass)}
+                          </option>
+                        ))}
+                      </Select>
+                      <HelpText id="trade-asset-help">
+                        {assets.length === 0
+                          ? "Cadastre um ativo local antes de negociar."
+                          : "O AssetId não é solicitado ao usuário."}
+                      </HelpText>
+                      <ErrorMessage id="trade-asset-error" message={tradeErrors.assetId} />
+                    </Field>
+
+                    <div className={styles.fieldRow}>
+                      <Field>
+                        <Label htmlFor="trade-quantity">Quantidade</Label>
+                        <TextInput
+                          id="trade-quantity"
+                          type="text"
+                          inputMode="decimal"
+                          autoComplete="off"
+                          value={tradeDraft.quantity}
+                          invalid={tradeErrors.quantity !== undefined}
+                          aria-describedby={
+                            tradeErrors.quantity ? "trade-quantity-error" : "trade-quantity-help"
+                          }
+                          onChange={(event) => updateTradeDraft("quantity", event.target.value)}
+                        />
+                        <HelpText id="trade-quantity-help">Até 12 casas decimais.</HelpText>
+                        <ErrorMessage id="trade-quantity-error" message={tradeErrors.quantity} />
+                      </Field>
+
+                      <Field>
+                        <Label htmlFor="trade-settlement">Valor de liquidação</Label>
+                        <TextInput
+                          id="trade-settlement"
+                          type="text"
+                          inputMode="decimal"
+                          autoComplete="off"
+                          value={tradeDraft.settlementAmount}
+                          invalid={tradeErrors.settlementAmount !== undefined}
+                          aria-describedby={
+                            tradeErrors.settlementAmount
+                              ? "trade-settlement-error"
+                              : "trade-settlement-help"
+                          }
+                          onChange={(event) =>
+                            updateTradeDraft("settlementAmount", event.target.value)
+                          }
+                        />
+                        <HelpText id="trade-settlement-help">
+                          Valor positivo em {snapshot.referenceCurrency}; não é preço de mercado.
+                        </HelpText>
+                        <ErrorMessage
+                          id="trade-settlement-error"
+                          message={tradeErrors.settlementAmount}
+                        />
+                      </Field>
+                    </div>
+
+                    {tradeErrors.form ? <FieldError>{tradeErrors.form}</FieldError> : null}
+                    <Button type="submit" disabled={assets.length === 0}>
+                      Registrar {tradeDraft.type === "BUY" ? "compra" : "venda"}
+                    </Button>
+                  </form>
+                </div>
+              </Surface>
+
+              <Surface tone="subtle" padding="lg">
+                <div className={styles.sectionHeading}>
+                  <div>
+                    <span className={styles.eyebrow}>Histórico</span>
+                    <h2>Transaction Ledger</h2>
+                    <p>Mais recentes primeiro; cada item é um snapshot validado.</p>
                   </div>
+                  <Status tone="neutral">
+                    {countLabel(
+                      transactions.length,
+                      "movimentação",
+                      "movimentações",
+                      "Ledger vazio",
+                    )}
+                  </Status>
+                </div>
+
+                {displayTransactions.length === 0 ? (
+                  <EmptyState
+                    title="Ledger sem movimentações"
+                    description="Nenhum saldo, posição ou transação inicial é presumido."
+                  />
                 ) : (
                   <ol className={styles.ledgerList}>
                     {displayTransactions.map((transaction) => {
@@ -730,26 +916,102 @@ export function PortfolioWorkspace({
                                 </span>
                               ) : null}
                               <time dateTime={transaction.occurredAt}>
-                                {transaction.occurredAt}
+                                {formatOccurredAt(transaction.occurredAt)} UTC
                               </time>
                             </div>
                             <span className={styles.transactionAmount}>
                               {transactionAmount(transaction)}
                             </span>
                           </div>
-                          <code>{transaction.id}</code>
+                          <details className={styles.inlineDetails}>
+                            <summary>Detalhes técnicos</summary>
+                            <code>{transaction.id}</code>
+                          </details>
                         </li>
                       );
                     })}
                   </ol>
                 )}
-              </div>
+              </Surface>
             </div>
           </section>
 
-          <ContributionBaselinePanel portfolio={snapshot} assets={assets} />
-        </div>
+          <section
+            className={styles.taskPanel}
+            id="portfolio-panel-contribution"
+            aria-labelledby="portfolio-task-contribution"
+            hidden={activeTask !== "contribution"}
+          >
+            <Alert tone="info" title="Aporte é planejamento, não execução de ordem">
+              O fluxo usa valores manuais e regras determinísticas para produzir um plano auditável.
+              Nada aqui envia ordem para corretora ou transforma quantidade do ledger em valuation.
+            </Alert>
+            <ContributionBaselinePanel portfolio={snapshot} assets={assets} />
+          </section>
+
+          <section
+            className={styles.taskPanel}
+            id="portfolio-panel-settings"
+            aria-labelledby="portfolio-task-settings"
+            hidden={activeTask !== "settings"}
+          >
+            <div className={styles.settingsGrid}>
+              <Surface padding="lg">
+                <div className={styles.sectionHeading}>
+                  <div>
+                    <span className={styles.eyebrow}>Configuração</span>
+                    <h2>Carteira desta sessão</h2>
+                    <p>Snapshot validado pelo agregado Portfolio.</p>
+                  </div>
+                  <Status tone="success">Validada</Status>
+                </div>
+
+                <dl className={styles.factList}>
+                  <div>
+                    <dt>Nome</dt>
+                    <dd>{snapshot.name}</dd>
+                  </div>
+                  <div>
+                    <dt>Moeda de referência</dt>
+                    <dd>{snapshot.referenceCurrency}</dd>
+                  </div>
+                </dl>
+
+                <details className={styles.technicalDetails}>
+                  <summary>Detalhes técnicos e identidade</summary>
+                  <div className={styles.detailsBody}>
+                    <p>
+                      A identidade canônica é mantida para os snapshots e regras do domínio, mas não
+                      participa da primeira ordem da experiência.
+                    </p>
+                    <code>{snapshot.id}</code>
+                  </div>
+                </details>
+              </Surface>
+
+              <Surface tone="subtle" padding="lg">
+                <Alert tone="warning" title="Nada é persistido nesta versão">
+                  Carteira, ativos e movimentações existem somente enquanto esta tela permanecer
+                  aberta. Recarregar ou sair remove todo o estado criado aqui.
+                </Alert>
+
+                <div className={styles.resetBlock}>
+                  <div>
+                    <h2>Recomeçar o estado local</h2>
+                    <p>
+                      Remove carteira, ativos, movimentações e estados de aporte desta sessão. A
+                      ação não altera perfil financeiro ou dados da conta.
+                    </p>
+                  </div>
+                  <Button variant="danger" onClick={resetPortfolio}>
+                    Criar outra carteira
+                  </Button>
+                </div>
+              </Surface>
+            </div>
+          </section>
+        </>
       )}
-    </>
+    </div>
   );
 }

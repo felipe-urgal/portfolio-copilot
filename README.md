@@ -2,7 +2,7 @@
 
 Copiloto inteligente de investimentos para organizar patrimônio, estruturar aportes e tornar decisões financeiras **explicáveis, auditáveis e disciplinadas**.
 
-> **Estado atual:** o repositório já possui domínio financeiro determinístico, Transaction Ledger, pipeline de aporte, PostgreSQL com ownership, autenticação, Asset Master, Market Data foundation, Investment Engine, teses versionadas e ingestão segura de conteúdo externo. No frontend, o redesign baseado no **Protótipo 3 — Assistant-First Workspace** concluiu R0–R6; o próximo vertical é **R7 Carteira (#79)** após o merge do PR #91.
+> **Estado atual:** o repositório já possui domínio financeiro determinístico, Transaction Ledger, pipeline de aporte, PostgreSQL com ownership, autenticação, Asset Master, Market Data foundation, Investment Engine, teses versionadas e ingestão segura de conteúdo externo. No frontend, o redesign baseado no **Protótipo 3 — Assistant-First Workspace** concluiu R0–R7 com o PR #92; o próximo vertical é **R8 estados/componentes transversais (#80)** após o merge do R7.
 
 ![Direção visual canônica — Protótipo 3](docs/design/prototypes/prototype-3-assistant-first-dashboard.jpg)
 
@@ -47,10 +47,10 @@ A resposta precisa ser reconstruível: quais fatos foram usados, quais regras bl
 - persistência local opt-in do perfil;
 - migração opt-in/conflict-safe do perfil local para a conta;
 - Dashboard Assistant-First R6 com contexto real, panorama e próxima ação;
-- Carteira com Portfolio, Assets, ledger, posições e aporte;
+- Carteira Assistant-First R7 por tarefas com Portfolio, Assets, ledger, posições e aporte determinístico;
 - rota pública `/health`.
 
-Shell, auth, onboarding e Dashboard já usam a fundação visual nova. Carteira e estados transversais ainda passam pelos R7–R8; R9 fecha accessibility/responsive/visual QA.
+Shell, auth, onboarding, Dashboard e Carteira já usam a fundação visual nova. Estados/componentes transversais ainda passam pelo R8; R9 fecha accessibility/responsive/visual QA.
 
 ### Domínio financeiro — `packages/domain`
 
@@ -131,7 +131,6 @@ Essa fundação **não significa que o Copiloto conversacional já esteja pronto
 
 ## O que ainda não está concluído
 
-- Carteira final — #79/R7;
 - componentes/estados transversais restantes — #80/R8;
 - accessibility/responsive/visual fidelity QA final — #81/R9;
 - fechamento R10 da iniciativa #69;
@@ -264,7 +263,7 @@ Leia [`docs/AI-CONTENT-INGESTION.md`](docs/AI-CONTENT-INGESTION.md).
 
 A iniciativa #69 usa o **Protótipo 3 — Assistant-First Workspace** como direção canônica.
 
-Estado após o PR #91:
+Estado após o PR #92:
 
 ```text
 R0 audit ✓           #72
@@ -274,8 +273,8 @@ R3 AppShell ✓        #75
 R4 focused auth ✓    #76
 R5 onboarding ✓      #77 / PR #88
 R6 dashboard ✓       #78 / PR #91
-R7 carteira          #79  <- próximo
-R8 estados           #80
+R7 carteira ✓        #79 / PR #92
+R8 estados           #80  <- próximo após merge do #92
 R9 a11y/responsive/fidelity #81
 R10 gate final       #69
 ```
@@ -288,6 +287,7 @@ Contratos atuais:
 - focused auth fora do shell;
 - onboarding guiado no shell;
 - Dashboard R6 em `docs/design/DASHBOARD.md`;
+- Carteira R7 em `docs/design/PORTFOLIO.md`;
 - nenhuma rota, métrica ou UI de Copiloto fictícia para copiar mockup.
 
 Leia [`docs/UX-UI-REDESIGN-ROADMAP.md`](docs/UX-UI-REDESIGN-ROADMAP.md).
@@ -301,7 +301,7 @@ Leia [`docs/UX-UI-REDESIGN-ROADMAP.md`](docs/UX-UI-REDESIGN-ROADMAP.md).
 | `/sign-out` | autenticado/contextual | saída da sessão |
 | `/dashboard` | autenticado | contexto financeiro, panorama e próxima ação |
 | `/onboarding` | autenticado | perfil financeiro e objetivos |
-| `/portfolio` | autenticado | Portfolio, Assets, ledger, posições e aporte |
+| `/portfolio` | autenticado | workspace por tarefas para Portfolio, Assets, ledger, posições, transações e aporte |
 | `/health` | público | health operacional |
 | `/api/auth/[...nextauth]` | API | Auth.js |
 | `/api/financial-profile` | autenticado | perfil financeiro server-side/migração |
@@ -479,6 +479,7 @@ Principais entradas:
 - [Auth/Session](docs/design/AUTH-SESSION.md)
 - [Onboarding](docs/design/ONBOARDING.md)
 - [Dashboard](docs/design/DASHBOARD.md)
+- [Carteira](docs/design/PORTFOLIO.md)
 - [Frontend Audit R0](docs/design/FRONTEND-AUDIT.md)
 
 ### Tarefas
