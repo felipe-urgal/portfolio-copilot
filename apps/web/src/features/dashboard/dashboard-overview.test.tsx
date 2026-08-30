@@ -32,15 +32,9 @@ function renderDashboard(initialFinancialProfile: FinancialProfileSnapshot | nul
 }
 
 describe("DashboardOverview honest states", () => {
-  it("renders product navigation and keeps unavailable financial metrics explicit", () => {
+  it("keeps unavailable financial metrics explicit", () => {
     const html = renderDashboard();
 
-    expect(html).toContain('aria-label="Navegação principal"');
-    expect(html).toContain('aria-current="page"');
-    expect(html).toContain('href="/dashboard"');
-    expect(html).toContain('href="/portfolio"');
-    expect(html).toContain('href="/onboarding"');
-    expect(html).toContain('href="/health"');
     expect(html).toContain("Patrimônio total");
     expect(html).toContain("Dado indisponível");
     expect(html).toContain("Aporte do mês");

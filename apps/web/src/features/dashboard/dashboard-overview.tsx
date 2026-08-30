@@ -2,8 +2,6 @@ import Link from "next/link";
 
 import { FinancialProfileAccountMigration } from "@/components/financial-profile-account-migration";
 import { FinancialProfileSessionSummary } from "@/components/financial-profile-session-summary";
-import { ProductShell } from "@/components/product-shell";
-import type { AuthenticatedIdentity } from "@/lib/identity";
 
 import styles from "./dashboard-overview.module.css";
 
@@ -37,13 +35,9 @@ const CONTEXT_RULES = [
   },
 ] as const;
 
-type DashboardOverviewProps = Readonly<{
-  identity?: AuthenticatedIdentity;
-}>;
-
-export function DashboardOverview({ identity }: DashboardOverviewProps = {}) {
+export function DashboardOverview() {
   return (
-    <ProductShell activeRoute="/dashboard" identity={identity}>
+    <>
       <FinancialProfileSessionSummary />
       <FinancialProfileAccountMigration />
 
@@ -166,6 +160,6 @@ export function DashboardOverview({ identity }: DashboardOverviewProps = {}) {
           </li>
         </ol>
       </section>
-    </ProductShell>
+    </>
   );
 }

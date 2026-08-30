@@ -15,7 +15,6 @@ import {
   type MoneySnapshot,
   type RiskToleranceCode,
 } from "@portfolio-copilot/domain";
-import { APP_NAME } from "@portfolio-copilot/shared";
 
 import {
   useFinancialSession,
@@ -646,115 +645,105 @@ export function FinancialOnboardingFlow() {
   }
 
   return (
-    <div className={styles.pageShell}>
-      <header className={styles.topbar}>
-        <Link className={styles.brand} href="/">
-          {APP_NAME}
-        </Link>
-        <span className={styles.topbarTitle}>Onboarding financeiro</span>
-        <span className={styles.ephemeralLabel}>Sessão local</span>
-      </header>
+    <div className={styles.layout}>
+      <aside className={styles.progressPanel} aria-label="Progresso do onboarding">
+        <ol className={styles.progressList}>
+          {ONBOARDING_STEPS.map((step, index) => {
+            const copy = STEP_COPY[step];
+            const isCurrent = step === state.step;
+            const isCompleted = index < activeIndex;
 
-      <div className={styles.layout}>
-        <aside className={styles.progressPanel} aria-label="Progresso do onboarding">
-          <ol className={styles.progressList}>
-            {ONBOARDING_STEPS.map((step, index) => {
-              const copy = STEP_COPY[step];
-              const isCurrent = step === state.step;
-              const isCompleted = index < activeIndex;
+            return (
+              <li
+                className={isCurrent ? styles.progressCurrent : styles.progressItem}
+                key={step}
+                aria-current={isCurrent ? "step" : undefined}
+              >
+                <span className={isCompleted ? styles.progressDone : styles.progressNumber}>
+                  {isCompleted ? "✓" : index + 1}
+                </span>
+                <span>
+                  <strong>{copy.label}</strong>
+                  <small>{copy.summary}</small>
+                </span>
+              </li>
+            );
+          })}
+        </ol>
 
-              return (
-                <li
-                  className={isCurrent ? styles.progressCurrent : styles.progressItem}
-                  key={step}
-                  aria-current={isCurrent ? "step" : undefined}
-                >
-                  <span className={isCompleted ? styles.progressDone : styles.progressNumber}>
-                    {isCompleted ? "✓" : index + 1}
-                  </span>
-                  <span>
-                    <strong>{copy.label}</strong>
-                    <small>{copy.summary}</small>
-                  </span>
-                </li>
-              );
-            })}
-          </ol>
+        <div className={styles.persistenceNote}>
+          <strong>Persistência sob seu controle</strong>
+          <p>
+            Por padrão, o perfil fica só nesta sessão. Na revisão, você decide se quer salvá-lo
+            neste dispositivo para restaurá-lo após recarregar.
+          </p>
+        </div>
+      </aside>
 
-          <div className={styles.persistenceNote}>
-            <strong>Persistência sob seu controle</strong>
-            <p>
-              Por padrão, o perfil fica só nesta sessão. Na revisão, você decide se quer salvá-lo
-              neste dispositivo para restaurá-lo após recarregar.
-            </p>
+      <div className={styles.mainContent}>
+        <section className={styles.formSurface} aria-labelledby="onboarding-title">
+          <div className={styles.formHeader}>
+            <span className={styles.stepCounter}>
+              Etapa {activeIndex + 1} de {ONBOARDING_STEPS.length}
+            </span>
+            <h1 id="onboarding-title">{activeCopy.title}</h1>
+            <p>{activeCopy.description}</p>
           </div>
-        </aside>
 
-        <main className={styles.mainContent}>
-          <section className={styles.formSurface} aria-labelledby="onboarding-title">
-            <div className={styles.formHeader}>
-              <span className={styles.stepCounter}>
-                Etapa {activeIndex + 1} de {ONBOARDING_STEPS.length}
-              </span>
-              <h1 id="onboarding-title">{activeCopy.title}</h1>
-              <p>{activeCopy.description}</p>
-            </div>
-
-            {state.step === "review" && state.snapshot !== null ? (
-              <ReviewStep
-                snapshot={state.snapshot}
-                persistenceStatus={persistenceStatus}
-                onPersist={persistFinancialProfile}
-                onRemovePersisted={removePersistedFinancialProfile}
-                onEdit={() => dispatch({ type: "go-to-step", step: "profile" })}
-                onReset={() => {
-                  nextGoalSequence.current = 1;
-                  clearFinancialProfile();
-                  dispatch({ type: "reset" });
-                }}
-              />
-            ) : (
-              <form className={styles.form} noValidate onSubmit={handleSubmit}>
-                {errorMessage === null ? null : (
-                  <div className={styles.errorSummary} role="alert" tabIndex={-1}>
-                    <strong>Revise os campos destacados.</strong>
-                    <span>{errorMessage}</span>
-                  </div>
-                )}
-
-                {state.step === "profile" ? (
-                  <ProfileStep draft={state.draft} errors={state.errors} dispatch={dispatch} />
-                ) : null}
-                {state.step === "reserve" ? (
-                  <ReserveStep draft={state.draft} errors={state.errors} dispatch={dispatch} />
-                ) : null}
-                {state.step === "goals" ? (
-                  <GoalsStep
-                    draft={state.draft}
-                    errors={state.errors}
-                    nextGoalId={nextGoalId}
-                    dispatch={dispatch}
-                  />
-                ) : null}
-
-                <div className={styles.formActions}>
-                  {state.step === "profile" ? (
-                    <Link className={styles.backLink} href="/">
-                      Voltar ao início
-                    </Link>
-                  ) : (
-                    <button className={styles.backButton} type="button" onClick={goBack}>
-                      Voltar
-                    </button>
-                  )}
-                  <button className={styles.primaryButton} type="submit">
-                    {state.step === "goals" ? "Revisar perfil" : "Continuar"}
-                  </button>
+          {state.step === "review" && state.snapshot !== null ? (
+            <ReviewStep
+              snapshot={state.snapshot}
+              persistenceStatus={persistenceStatus}
+              onPersist={persistFinancialProfile}
+              onRemovePersisted={removePersistedFinancialProfile}
+              onEdit={() => dispatch({ type: "go-to-step", step: "profile" })}
+              onReset={() => {
+                nextGoalSequence.current = 1;
+                clearFinancialProfile();
+                dispatch({ type: "reset" });
+              }}
+            />
+          ) : (
+            <form className={styles.form} noValidate onSubmit={handleSubmit}>
+              {errorMessage === null ? null : (
+                <div className={styles.errorSummary} role="alert" tabIndex={-1}>
+                  <strong>Revise os campos destacados.</strong>
+                  <span>{errorMessage}</span>
                 </div>
-              </form>
-            )}
-          </section>
-        </main>
+              )}
+
+              {state.step === "profile" ? (
+                <ProfileStep draft={state.draft} errors={state.errors} dispatch={dispatch} />
+              ) : null}
+              {state.step === "reserve" ? (
+                <ReserveStep draft={state.draft} errors={state.errors} dispatch={dispatch} />
+              ) : null}
+              {state.step === "goals" ? (
+                <GoalsStep
+                  draft={state.draft}
+                  errors={state.errors}
+                  nextGoalId={nextGoalId}
+                  dispatch={dispatch}
+                />
+              ) : null}
+
+              <div className={styles.formActions}>
+                {state.step === "profile" ? (
+                  <Link className={styles.backLink} href="/dashboard">
+                    Voltar ao dashboard
+                  </Link>
+                ) : (
+                  <button className={styles.backButton} type="button" onClick={goBack}>
+                    Voltar
+                  </button>
+                )}
+                <button className={styles.primaryButton} type="submit">
+                  {state.step === "goals" ? "Revisar perfil" : "Continuar"}
+                </button>
+              </div>
+            </form>
+          )}
+        </section>
       </div>
     </div>
   );

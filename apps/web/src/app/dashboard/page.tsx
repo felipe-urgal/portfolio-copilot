@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 
 import { APP_NAME } from "@portfolio-copilot/shared";
 
+import { AppShell } from "@/components/app-shell";
 import { DashboardOverview } from "@/features/dashboard/dashboard-overview";
 import { requireAuthenticatedIdentity } from "@/lib/identity-server";
 
@@ -14,5 +15,9 @@ export const metadata: Metadata = {
 export default async function DashboardPage() {
   const identity = await requireAuthenticatedIdentity();
 
-  return <DashboardOverview identity={identity} />;
+  return (
+    <AppShell activeRoute="/dashboard" identity={identity}>
+      <DashboardOverview />
+    </AppShell>
+  );
 }

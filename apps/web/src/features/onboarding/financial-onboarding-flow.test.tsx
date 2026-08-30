@@ -13,7 +13,7 @@ function renderFlow(): string {
   );
 }
 
-describe("FinancialOnboardingFlow accessibility shell", () => {
+describe("FinancialOnboardingFlow accessibility", () => {
   it("renders labelled progress, grouped choices and the opt-in persistence contract", () => {
     const html = renderFlow();
 
@@ -39,5 +39,15 @@ describe("FinancialOnboardingFlow accessibility shell", () => {
     expect(html).toContain("Moeda de referência");
     expect(html).toContain("Tolerância a risco");
     expect(html).toContain("Horizonte financeiro");
+  });
+
+  it("does not recreate protected-app landmarks or global navigation chrome", () => {
+    const html = renderFlow();
+
+    expect(html).not.toContain("<main");
+    expect(html).not.toContain("<header");
+    expect(html).not.toContain('aria-label="Navegação principal"');
+    expect(html).toContain('href="/dashboard"');
+    expect(html).toContain("Voltar ao dashboard");
   });
 });

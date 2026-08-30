@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { ButtonHTMLAttributes, ComponentProps, ReactNode } from "react";
+import type { ButtonHTMLAttributes, ComponentProps, ReactNode, Ref } from "react";
 
 import { classNames } from "./class-names";
 import styles from "./ui.module.css";
@@ -21,12 +21,14 @@ const sizeClass: Record<ButtonSize, string | undefined> = {
 };
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  ref?: Ref<HTMLButtonElement>;
   variant?: ButtonVariant;
   size?: ButtonSize;
   loading?: boolean;
 }
 
 export function Button({
+  ref,
   variant = "primary",
   size = "md",
   loading = false,
@@ -42,6 +44,7 @@ export function Button({
   return (
     <button
       {...props}
+      ref={ref}
       type={type}
       className={classNames(styles.button, variantClass[variant], sizeClass[size], className)}
       disabled={isDisabled}
