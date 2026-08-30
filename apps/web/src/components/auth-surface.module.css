@@ -120,8 +120,7 @@
 
 .disclosure summary {
   min-height: var(--touch-target-min);
-  display: flex;
-  align-items: center;
+  padding-block: var(--space-3);
   border-radius: var(--radius-sm);
   color: var(--color-text-secondary);
   font-size: var(--font-size-sm);
