@@ -26,47 +26,50 @@ const PROFILE: FinancialProfileSnapshot = {
 function renderDashboard(initialFinancialProfile: FinancialProfileSnapshot | null = null): string {
   return renderToStaticMarkup(
     <FinancialSessionProvider initialFinancialProfile={initialFinancialProfile}>
-      <DashboardOverview />
+      <DashboardOverview displayName="Felipe" />
     </FinancialSessionProvider>,
   );
 }
 
-describe("DashboardOverview honest states", () => {
-  it("keeps unavailable financial metrics explicit", () => {
+describe("DashboardOverview R6", () => {
+  it("prioritizes honest context and a concrete next action when the profile is absent", () => {
     const html = renderDashboard();
 
-    expect(html).toContain("Patrimônio total");
-    expect(html).toContain("Dado indisponível");
-    expect(html).toContain("Aporte do mês");
-    expect(html).toContain("Ainda não calculado");
-    expect(html).toContain("Carteira não disponível no dashboard");
+    expect(html).toContain("Olá, Felipe");
+    expect(html).toContain("Perfil pendente");
+    expect(html).toContain("Panorama");
+    expect(html).toContain("Construa a base factual da sua carteira");
+    expect(html).toContain("Complete seu perfil financeiro");
+    expect(html).toContain("Contexto ainda não configurado");
     expect(html).not.toMatch(/R\$\s*\d/);
     expect(html).not.toContain("0,00");
     expect(html).not.toMatch(/>\s*0%\s*</);
   });
 
-  it("shows the honest profile-absent session state", () => {
-    const html = renderDashboard();
-
-    expect(html).toContain('aria-label="Perfil financeiro da sessão"');
-    expect(html).toContain("Não configurado");
-    expect(html).toContain("Dashboard e Carteira não inventam moeda, risco, horizonte, reserva");
-    expect(html).toContain("Somente em memória");
-  });
-
-  it("reads the shared validated profile without turning targets into current values", () => {
+  it("uses only validated profile facts as compact dashboard metrics and context", () => {
     const html = renderDashboard(PROFILE);
 
-    expect(html).toContain("Somente nesta sessão");
-    expect(html).toContain("BRL");
+    expect(html).toContain("Perfil configurado");
+    expect(html).toContain("Objetivos declarados");
+    expect(html).toContain("BRL 15.000,00");
+    expect(html).toContain("Meta declarada; não representa saldo atual");
     expect(html).toContain("Média");
     expect(html).toContain("Longo prazo");
-    expect(html).toContain("BRL 15000,00");
-    expect(html).toContain("Aposentadoria");
-    expect(html).toContain("BRL 2000000,00");
-    expect(html).toContain("Meta desejada declarada; não representa saldo atual");
+    expect(html).toContain("Estruture os fatos da carteira");
     expect(html).not.toContain(PROFILE.id);
     expect(html).not.toContain("saldo atual da reserva");
     expect(html).not.toMatch(/>\s*\d+%\s*</);
+  });
+
+  it("keeps unavailable portfolio and market metrics out of the primary hierarchy", () => {
+    const html = renderDashboard(PROFILE);
+
+    expect(html).not.toContain("Patrimônio total");
+    expect(html).not.toContain("Aporte do mês");
+    expect(html).not.toContain("Dado indisponível");
+    expect(html).toContain("O que ainda não aparece neste Dashboard");
+    expect(html).toContain("Patrimônio, retorno, composição, posições");
+    expect(html).toContain("Market Data");
+    expect(html).toContain("Aguardando base compartilhada");
   });
 });
