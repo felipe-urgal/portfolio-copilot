@@ -37,6 +37,7 @@ Este arquivo resume decisões. Decisões arquiteturais importantes também ganha
 | D-031 | Asset Master preserva `AssetId` como identidade; listings atuais/históricos e identificadores externos carregam provenance, e matching exato retorna `UNMATCHED`, `PARTIAL_MATCH`, `MATCH` ou `CONFLICT` sem dedupe heurístico | Aceita — ADR-0022 |
 | D-032 | Market Data vive em package próprio; snapshots materiais usam decimal exato, provenance e `asOf`, freshness/cache são independentes, e fallback só ocorre para falhas explicitamente autorizadas | Aceita — ADR-0023 |
 | D-033 | Investment Engine mantém Quality, Opportunity e Dividend separados, usa metodologias versionadas por classe/setor, bloqueia missing/stale/conflict/look-ahead e exige valuation auditável para Opportunity | Aceita — ADR-0024 |
+| D-034 | Portfolio Fit consome contexto da mesma carteira e permanece separado de Quality/Opportunity; ranking preserva componentes, rejeita dados/contextos incompatíveis e desempata por `AssetId` canônico | Aceita — ADR-0025 |
 
 ## Como alterar uma decisão
 

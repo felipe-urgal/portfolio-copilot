@@ -29,6 +29,40 @@ export {
   type ScoreComponentDefinitionInput,
 } from "./methodology";
 export {
+  evaluatePortfolioFit,
+  InvalidPortfolioFitInputError,
+  type PortfolioFitComponentId,
+  type PortfolioFitComponentSnapshot,
+  type PortfolioFitEvaluationInput,
+  type PortfolioFitInsufficientData,
+  type PortfolioFitInsufficientReason,
+  type PortfolioFitReasonCode,
+  type PortfolioFitResult,
+  type PortfolioFitSnapshot,
+} from "./portfolio-fit";
+export {
+  BASELINE_PORTFOLIO_RANKING_METHODOLOGY,
+  createPortfolioRankingMethodology,
+  InvalidPortfolioRankingMethodologyError,
+  type InvestmentRankingWeights,
+  type InvestmentRankingWeightsInput,
+  type PortfolioFitWeights,
+  type PortfolioFitWeightsInput,
+  type PortfolioRankingMethodology,
+  type PortfolioRankingMethodologyInput,
+} from "./portfolio-ranking-methodology";
+export {
+  rankInvestmentCandidates,
+  InvalidInvestmentRankingInputError,
+  type InvestmentCandidateRankingInput,
+  type InvestmentCandidateRankingInsufficientData,
+  type InvestmentCandidateRankingSnapshot,
+  type InvestmentRadarSnapshot,
+  type InvestmentRankingDimensionContribution,
+  type InvestmentRankingEvaluationInput,
+  type InvestmentRankingInsufficientReason,
+} from "./ranking";
+export {
   evaluateDividendScore,
   evaluateOpportunityScore,
   evaluateQualityScore,
