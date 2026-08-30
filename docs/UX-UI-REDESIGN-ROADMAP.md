@@ -4,7 +4,7 @@
 
 **INICIATIVA ATIVA — #69**
 
-Estado após o PR #89:
+Estado após o PR #90:
 
 - R0 #72 — concluído;
 - R1 #73 — concluído;
@@ -134,7 +134,7 @@ Implementado:
 - objetivos como seções abertas, evitando card dentro de card;
 - CSS local limitado a anatomy/ritmo/responsividade.
 
-## R6 — Dashboard completo — CONCLUÍDO — #78 / PR #89
+## R6 — Dashboard completo — CONCLUÍDO — #78 / PR #90
 
 Entrega: `docs/design/DASHBOARD.md`.
 
