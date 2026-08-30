@@ -9,15 +9,7 @@ import {
 
 import { FinancialProfileAccountMigration } from "@/components/financial-profile-account-migration";
 import { useFinancialSession } from "@/components/financial-session";
-import {
-  EmptyState,
-  Grid,
-  LinkButton,
-  Metric,
-  PageHeader,
-  Status,
-  Surface,
-} from "@/components/ui";
+import { EmptyState, Grid, LinkButton, Metric, PageHeader, Status, Surface } from "@/components/ui";
 
 import styles from "./dashboard-overview.module.css";
 
@@ -38,16 +30,12 @@ type DashboardOverviewProps = Readonly<{
 }>;
 
 function formatMoney(snapshot: MoneySnapshot): string {
-  const [whole = "0", fraction = "00"] = Money.fromSnapshot(snapshot)
-    .toDecimalString()
-    .split(".");
+  const [whole = "0", fraction = "00"] = Money.fromSnapshot(snapshot).toDecimalString().split(".");
   const groupedWhole = whole.replace(/\B(?=(\d{3})+(?!\d))/gu, ".");
   return `${snapshot.currency} ${groupedWhole},${fraction}`;
 }
 
-function persistenceLabel(
-  status: "memory-only" | "persisted" | "unavailable",
-): string {
+function persistenceLabel(status: "memory-only" | "persisted" | "unavailable"): string {
   if (status === "persisted") return "Salvo neste dispositivo";
   if (status === "unavailable") return "Armazenamento local indisponível";
   return "Somente nesta sessão";
@@ -81,10 +69,7 @@ export function DashboardOverview({ displayName }: DashboardOverviewProps) {
       />
 
       {financialProfile === null ? null : (
-        <section
-          className={styles.metricsSection}
-          aria-labelledby="dashboard-metrics-title"
-        >
+        <section className={styles.metricsSection} aria-labelledby="dashboard-metrics-title">
           <div className={styles.sectionIntro}>
             <div>
               <span className={styles.eyebrow}>Contexto validado</span>
