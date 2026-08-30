@@ -34,7 +34,9 @@ function evidence(
   };
 }
 
-function thesisInput(overrides: Partial<CreateInvestmentThesisInput> = {}): CreateInvestmentThesisInput {
+function thesisInput(
+  overrides: Partial<CreateInvestmentThesisInput> = {},
+): CreateInvestmentThesisInput {
   return {
     thesisId: "PETR4_BASE_CASE",
     assetId: ASSET_ID,
@@ -100,23 +102,13 @@ function revisedThesis(previous: InvestmentThesisSnapshot): InvestmentThesisSnap
       {
         factId: "FREE_CASH_FLOW",
         statement: "O resultado mais recente mostrou menor geração de caixa livre.",
-        evidence: [
-          evidence(
-            "FCF_Q4_2025",
-            "2026-01-15T00:00:00.000Z",
-            "2026-01-20T09:00:00.000Z",
-          ),
-        ],
+        evidence: [evidence("FCF_Q4_2025", "2026-01-15T00:00:00.000Z", "2026-01-20T09:00:00.000Z")],
       },
       {
         factId: "LEVERAGE",
         statement: "A alavancagem segue dentro da faixa acompanhada.",
         evidence: [
-          evidence(
-            "LEVERAGE_Q4_2025",
-            "2026-01-15T00:00:00.000Z",
-            "2026-01-20T09:00:00.000Z",
-          ),
+          evidence("LEVERAGE_Q4_2025", "2026-01-15T00:00:00.000Z", "2026-01-20T09:00:00.000Z"),
         ],
       },
     ],
@@ -190,11 +182,7 @@ describe("InvestmentThesis", () => {
           factId: "FUTURE_FACT",
           statement: "Fato conhecido apenas depois da tese.",
           evidence: [
-            evidence(
-              "FUTURE_EVIDENCE",
-              "2026-01-02T00:00:00.000Z",
-              "2026-01-02T01:00:00.000Z",
-            ),
+            evidence("FUTURE_EVIDENCE", "2026-01-02T00:00:00.000Z", "2026-01-02T01:00:00.000Z"),
           ],
         },
       ],
@@ -243,13 +231,7 @@ describe("InvestmentThesis events and reviews", () => {
       recordedAt: "2026-01-15T13:00:00.000Z",
       type: "RESULT",
       summary: "Resultado trimestral publicado.",
-      evidence: [
-        evidence(
-          "Q4_RELEASE",
-          "2026-01-15T12:00:00.000Z",
-          "2026-01-15T12:30:00.000Z",
-        ),
-      ],
+      evidence: [evidence("Q4_RELEASE", "2026-01-15T12:00:00.000Z", "2026-01-15T12:30:00.000Z")],
     });
 
     expect(event).toMatchObject({
@@ -287,26 +269,14 @@ describe("InvestmentThesis events and reviews", () => {
       recordedAt: "2026-01-15T13:00:00.000Z",
       type: "RESULT",
       summary: "Resultado trimestral alterou a leitura da tese.",
-      evidence: [
-        evidence(
-          "Q4_RELEASE",
-          "2026-01-15T12:00:00.000Z",
-          "2026-01-15T12:30:00.000Z",
-        ),
-      ],
+      evidence: [evidence("Q4_RELEASE", "2026-01-15T12:00:00.000Z", "2026-01-15T12:30:00.000Z")],
     });
     const review = createInvestmentThesisReview(first, {
       reviewId: "Q4_REVIEW",
       reviewedAt: "2026-01-20T10:00:00.000Z",
       outcome: "REVISED",
       notes: "Mudança material exige uma nova versão da tese.",
-      evidence: [
-        evidence(
-          "REVIEW_BASIS",
-          "2026-01-15T12:00:00.000Z",
-          "2026-01-20T09:00:00.000Z",
-        ),
-      ],
+      evidence: [evidence("REVIEW_BASIS", "2026-01-15T12:00:00.000Z", "2026-01-20T09:00:00.000Z")],
       relatedEventIds: [event.eventId],
       resultingVersion: 2,
     });
@@ -342,6 +312,37 @@ describe("InvestmentThesis events and reviews", () => {
     ]);
   });
 
+  it("rejects an event assigned to a version after its successor becomes effective", () => {
+    const first = initialThesis();
+    const second = revisedThesis(first);
+    const review = createInvestmentThesisReview(first, {
+      reviewId: "VERSION_2_REVIEW",
+      reviewedAt: "2026-01-20T10:00:00.000Z",
+      outcome: "REVISED",
+      notes: "Mudança material aprovada para a versão dois.",
+      evidence: [evidence("VERSION_2_BASIS", "2026-01-19T00:00:00.000Z", "2026-01-20T09:00:00.000Z")],
+      relatedEventIds: [],
+      resultingVersion: 2,
+    });
+    const lateEvent = createInvestmentThesisEvent(first, {
+      eventId: "LATE_OLD_VERSION_EVENT",
+      occurredAt: "2026-01-25T12:00:00.000Z",
+      recordedAt: "2026-01-25T13:00:00.000Z",
+      type: "RESULT",
+      summary: "Evento que já pertence ao período de vigência da versão dois.",
+      evidence: [evidence("LATE_EVENT", "2026-01-25T12:00:00.000Z", "2026-01-25T12:30:00.000Z")],
+    });
+
+    expect(() =>
+      buildInvestmentThesisTimeline({
+        asOf: "2026-02-01T00:00:00.000Z",
+        versions: [first, second],
+        events: [lateEvent],
+        reviews: [review],
+      }),
+    ).toThrowError(InvalidInvestmentThesisTimelineError);
+  });
+
   it("marks an active thesis stale when its periodic review is overdue", () => {
     const thesis = initialThesis();
     const timeline = buildInvestmentThesisTimeline({
@@ -367,11 +368,7 @@ describe("InvestmentThesis events and reviews", () => {
       outcome: "INVALIDATED",
       notes: "O critério de invalidação foi confirmado pelos fatos disponíveis.",
       evidence: [
-        evidence(
-          "INVALIDATION_EVIDENCE",
-          "2026-01-24T00:00:00.000Z",
-          "2026-01-25T09:00:00.000Z",
-        ),
+        evidence("INVALIDATION_EVIDENCE", "2026-01-24T00:00:00.000Z", "2026-01-25T09:00:00.000Z"),
       ],
       relatedEventIds: [],
       resultingVersion: null,
