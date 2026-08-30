@@ -90,17 +90,18 @@ export function EmptyState({
   );
 }
 
-export interface LoadingStateProps extends HTMLAttributes<HTMLDivElement> {
+export interface LoadingStateProps
+  extends Omit<HTMLAttributes<HTMLDivElement>, "role" | "aria-live"> {
   label?: ReactNode;
 }
 
 export function LoadingState({ label = "Carregando…", className, ...props }: LoadingStateProps) {
   return (
     <div
+      {...props}
       className={classNames(styles.loadingState, className)}
       role="status"
       aria-live="polite"
-      {...props}
     >
       <span className={styles.spinner} aria-hidden="true" />
       <span>{label}</span>
@@ -108,7 +109,8 @@ export function LoadingState({ label = "Carregando…", className, ...props }: L
   );
 }
 
-export interface SkeletonProps extends HTMLAttributes<HTMLSpanElement> {
+export interface SkeletonProps
+  extends Omit<HTMLAttributes<HTMLSpanElement>, "aria-hidden" | "children"> {
   variant?: SkeletonVariant;
 }
 
@@ -121,9 +123,9 @@ const skeletonVariantClass: Record<SkeletonVariant, string | undefined> = {
 export function Skeleton({ variant = "text", className, ...props }: SkeletonProps) {
   return (
     <span
+      {...props}
       className={classNames(styles.skeleton, skeletonVariantClass[variant], className)}
       aria-hidden="true"
-      {...props}
     />
   );
 }
