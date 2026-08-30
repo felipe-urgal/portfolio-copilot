@@ -1,87 +1,99 @@
-# Próxima Atividade — UX/UI R5: redesenhar onboarding financeiro completo
+# Próxima Atividade — UX/UI R6: implementar dashboard baseado no Protótipo 3
 
-**Status:** READY após merge da #76
+**Status:** READY após merge da #77
 
 ## Issue canônica
 
-- #77 — `UX/UI R5: redesenhar onboarding financeiro completo`
+- #78 — `UX/UI R6: implementar dashboard baseado no Protótipo 3`
 - iniciativa guarda-chuva: #69
 
 ## Fundação concluída
 
-O R5 parte dos contratos visuais já implementados e não deve recriar uma arquitetura paralela:
+O R6 parte das principais estruturas do produto já padronizadas:
 
 - #72 — R0 audit do frontend anterior;
 - #73 — R1 arquitetura da informação + direção do Protótipo 3;
 - #74 — R2 design tokens e primitives canônicas;
 - #75 — R3 AppShell/sidebar/navegação responsiva;
 - #76 — R4 focused auth e sessão;
+- #77 — R5 onboarding guiado sobre primitives R2;
 - `docs/design/R1-ASSISTANT-FIRST-APP-SPEC.md`;
 - `docs/design/DESIGN-SYSTEM.md`;
 - `docs/design/APP-SHELL.md`;
-- `docs/design/AUTH-SESSION.md`.
+- `docs/design/AUTH-SESSION.md`;
+- `docs/design/ONBOARDING.md`.
 
-O R3 já colocou `/onboarding` dentro do `AppShell` e removeu o chrome global paralelo. O R5 deve redesenhar o **conteúdo guiado** do onboarding: progressão, hierarchy, campos, choices, goals, review e estados de validação, preservando a lógica de domínio existente.
+O Dashboard é a superfície mais diretamente representada pelo Protótipo 3, mas a implementação deve usar somente fatos realmente disponíveis no sistema. A aparência do mockup é referência de hierarchy/composição, não autorização para inventar patrimônio, retorno, market data, teses, eventos ou recomendações.
 
-## Objetivo do R5
+## Objetivo do R6
 
-Transformar o onboarding financeiro atual em um guided flow mais leve, consistente e responsivo, consumindo as primitives do R2 e o AppShell do R3 sem mudar o significado dos dados, validações ou snapshot financeiro.
+Transformar `/dashboard` em um workspace financeiro reconhecível como a direção aprovada: panorama primeiro, atenção/próxima ação depois e informação técnica somente em segunda ordem.
 
 ## Escopo
 
-### Progressão
+### Contexto inicial
 
-- quatro etapas existentes: Perfil, Reserva, Objetivos e Revisão;
-- progress/stepper visualmente subordinado ao AppShell;
-- uma decisão principal por bloco;
-- Back/Continue claros;
-- re-entry/resume existente preservado.
+- greeting/contexto curto quando houver fonte real;
+- estado do onboarding/perfil financeiro;
+- próxima ação segura e concreta;
+- nenhuma limitação técnica do MVP como título dominante da página.
 
-### Form primitives
+### KPIs
 
-- migrar inputs/selects para `Field` e contratos canônicos quando compatíveis;
-- choices de risco e horizonte sobre primitives R2;
-- switch/reserva sem controle paralelo desnecessário;
-- goals editáveis com hierarchy clara e sem cards dentro de cards;
-- review final legível antes da confirmação;
-- ações sobre `Button`/`LinkButton` canônicos.
+- compactos e somente para métricas calculáveis a partir de fontes reais;
+- ausência de dado não vira `R$ 0`, número ilustrativo ou placeholder enganoso;
+- quando necessário, usar estado explícito de `não calculável` com ação possível;
+- primitives `Metric` / `FinancialValue` quando compatíveis.
 
-### Validação e estado
+### Panorama da carteira
 
-- regras de domínio e reducer atuais preservados;
-- erros próximos aos campos e summary somente quando necessário;
-- foco no primeiro erro permanece previsível;
-- estado salvo/persistido aparece em segunda ordem;
-- nenhum erro parcial vira snapshot válido.
+- principal bloco analítico da página quando houver carteira/dados;
+- composição, posição agregada, target vs. atual e gaps somente quando derivados de fontes existentes;
+- estados vazios orientam criação/configuração em vez de preencher layout com dados fictícios;
+- provenance/IDs/reason codes ficam em detalhe e não na primeira hierarquia.
 
-### Responsividade e acessibilidade
+### Atenção e próximos passos
+
+- completar perfil;
+- criar/configurar carteira;
+- registrar transações;
+- revisar aporte quando houver baseline real;
+- stale/missing data quando realmente detectado;
+- teses/eventos somente quando capacidades reais já existirem e houver dado disponível.
+
+### Copiloto/context rail
+
+- respeitar a arquitetura Assistant-First do R1;
+- não inventar a UI funcional da #45;
+- context rail pode existir somente como composição neutra útil ou para capacidade real já entregue;
+- nenhuma resposta falsa, sugestão gerada ou CTA que simule inteligência inexistente.
+
+### Estados e responsive
 
 - desktop/tablet/mobile;
-- stepper compacto em telas pequenas;
-- choices/goals empilham sem reduzir legibilidade;
-- touch targets canônicos;
-- keyboard-only flow;
-- labels, fieldsets, legends, `aria-describedby` e `aria-invalid` preservados ou melhorados;
-- focus-visible herdado do R2.
+- empty/loading/error/stale quando aplicável;
+- layout central permanece dominante quando context rail deixa de caber;
+- nenhuma informação essencial depende de hover;
+- usar tokens/primitives R2 e AppShell R3.
 
 ## Regras
 
-- não alterar regras de domínio, Money, goals ou snapshot por motivo visual;
-- não recriar shell/header/navigation dentro da feature;
-- não criar Button/Field/Choice/Alert/Loading paralelos se houver primitive canônica;
-- não ampliar escopo para Dashboard (#78) ou Carteira (#79);
-- preservar persistência local/conta e seus contratos atuais;
-- nenhuma capability fictícia;
-- progressive disclosure para detalhes de persistência e implementação.
+- não inventar market data, patrimônio, retorno, score ou recomendação;
+- não usar números do Protótipo 3 como seed funcional;
+- não criar rota/capability fictícia para completar a composição;
+- não reabrir AppShell, auth ou onboarding;
+- não iniciar redesign completo da Carteira (#79);
+- não implementar a #45 como efeito colateral;
+- preservar ownership e fontes de verdade atuais.
 
 ## Gate
 
-R6 (#78) só começa quando:
+R7 (#79) só começa quando:
 
-- onboarding não possuir primitive visual paralela evitável;
-- progressão das quatro etapas estiver clara e mais leve;
-- validações e focus order continuarem acessíveis;
-- lógica funcional/testes atuais estiverem preservados;
+- Dashboard priorizar panorama/contexto/próxima ação em vez de limitações técnicas;
+- todos os números visíveis tiverem fonte real e determinística;
+- ausência de dados estiver representada honestamente;
+- layout estiver alinhado ao Protótipo 3 sem capabilities falsas;
 - desktop/mobile estiverem definidos no código;
 - `pnpm check` estiver verde;
 - auto code review estiver sem finding aberto.
@@ -94,7 +106,7 @@ R6 (#78) só começa quando:
   -> #74 R2 design system ✓
   -> #75 R3 AppShell/sidebar ✓
   -> #76 R4 auth ✓
-  -> #77 R5 onboarding
+  -> #77 R5 onboarding ✓
   -> #78 R6 dashboard
   -> #79 R7 carteira
   -> #80 R8 estados transversais
@@ -109,7 +121,8 @@ R6 (#78) só começa quando:
 - `docs/design/DESIGN-SYSTEM.md`;
 - `docs/design/APP-SHELL.md`;
 - `docs/design/AUTH-SESSION.md`;
+- `docs/design/ONBOARDING.md`;
 - `docs/UX-UI-REDESIGN-ROADMAP.md`;
 - `docs/ROADMAP.md`.
 
-A #45 continua sem UI temporária durante o redesign. Qualquer superfície futura deve nascer sobre os contratos visuais já fechados.
+A #45 continua sem UI funcional temporária durante o redesign. Qualquer futura superfície de Copiloto deve nascer sobre os contratos visuais fechados e sobre dados estruturados reais.
