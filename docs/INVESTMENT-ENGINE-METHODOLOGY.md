@@ -191,11 +191,11 @@ Quando não existe gap positivo, Portfolio Fit retorna score zero com `NO_ALLOCA
 
 ### Concentração
 
-Sem alerta de concentração, o componente recebe `10000` bps.
+Sem alerta de concentração, o componente recebe `10000` bps e registra `WITHIN_CONCENTRATION_LIMITS`.
 
-No baseline atual, `SOFT_CONCENTRATION_LIMIT_EXCEEDED` reduz esse componente para `5000` bps. A penalidade faz parte da metodologia versionada e deve ser recalibrada por pesquisa/backtesting antes de uso financeiro relevante.
+No baseline atual, `SOFT_CONCENTRATION_LIMIT_EXCEEDED` reduz esse componente para `5000` bps. Quando o Portfolio Engine informa `HARD_CONCENTRATION_LIMIT_APPLIED`, o componente de concentração recebe `0` bps mesmo que ainda reste uma parcela executável. Essas penalidades fazem parte da metodologia versionada e devem ser recalibradas por pesquisa/backtesting antes de uso financeiro relevante.
 
-Hard limits não são recalculados no Investment Engine. O engine respeita o status já produzido pelo contribution pipeline.
+Hard limits não são recalculados no Investment Engine. O engine apenas consome o reason code/status já produzido pelo contribution pipeline.
 
 ### Elegibilidade de aporte e hard blocks
 
@@ -244,7 +244,8 @@ Para um candidato entrar no ranking:
 - todas precisam usar o mesmo `evaluationAsOf` do radar;
 - Quality e Opportunity precisam usar o mesmo `methodologyId`, versão e classificação analítica;
 - Portfolio Fit precisa usar a metodologia de ranking selecionada;
-- Portfolio Fit precisa pertencer ao `portfolioId` do radar.
+- Portfolio Fit precisa pertencer ao `portfolioId` do radar;
+- `PortfolioFit.assetClass` precisa coincidir com a classe da classificação analítica de Quality/Opportunity.
 
 Falhar em qualquer regra mantém o candidato em `insufficient`, com razões explícitas.
 
