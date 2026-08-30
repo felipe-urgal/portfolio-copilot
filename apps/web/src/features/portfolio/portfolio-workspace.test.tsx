@@ -1,8 +1,6 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 
-import { ProductShell } from "@/components/product-shell";
-
 import { PortfolioWorkspace } from "./portfolio-workspace";
 
 const SNAPSHOT = {
@@ -50,23 +48,16 @@ const SELL = {
 } as const;
 
 describe("PortfolioWorkspace", () => {
-  it("renders the local portfolio creation form and product navigation", () => {
-    const html = renderToStaticMarkup(
-      <ProductShell activeRoute="/portfolio">
-        <PortfolioWorkspace />
-      </ProductShell>,
-    );
+  it("renders the local portfolio creation form without owning global navigation", () => {
+    const html = renderToStaticMarkup(<PortfolioWorkspace />);
 
-    expect(html).toContain('aria-label="Navegação principal"');
-    expect(html).toContain('href="/dashboard"');
-    expect(html).toContain('href="/portfolio"');
-    expect(html).toContain('href="/onboarding"');
-    expect(html).toContain('aria-current="page"');
     expect(html).toContain("Criar carteira");
     expect(html).toContain("Nome da carteira");
     expect(html).toContain("Criar carteira local");
     expect(html).toContain("Nada é persistido nesta versão");
     expect(html).toContain("Transaction Ledger");
+    expect(html).not.toContain('aria-label="Navegação principal"');
+    expect(html).not.toContain('href="/dashboard"');
   });
 
   it("renders local asset registration and the manual contribution baseline after portfolio creation", () => {
