@@ -9,13 +9,13 @@ type Alignment = "start" | "center" | "end" | "baseline";
 type Justification = "start" | "center" | "end" | "between";
 type GridMinimum = "sm" | "md" | "lg" | "xl";
 
-const containerSizeClass: Record<ContainerSize, string> = {
+const containerSizeClass: Record<ContainerSize, string | undefined> = {
   narrow: styles.containerNarrow,
   content: styles.containerContent,
   wide: styles.containerWide,
 };
 
-const spaceClass: Record<Space, string> = {
+const spaceClass: Record<Space, string | undefined> = {
   none: styles.spaceNone,
   "2xs": styles.space2xs,
   xs: styles.spaceXs,
@@ -27,21 +27,21 @@ const spaceClass: Record<Space, string> = {
   "3xl": styles.space3xl,
 };
 
-const alignmentClass: Record<Alignment, string> = {
+const alignmentClass: Record<Alignment, string | undefined> = {
   start: styles.alignStart,
   center: styles.alignCenter,
   end: styles.alignEnd,
   baseline: styles.alignBaseline,
 };
 
-const justificationClass: Record<Justification, string> = {
+const justificationClass: Record<Justification, string | undefined> = {
   start: styles.justifyStart,
   center: styles.justifyCenter,
   end: styles.justifyEnd,
   between: styles.justifyBetween,
 };
 
-const gridMinimumClass: Record<GridMinimum, string> = {
+const gridMinimumClass: Record<GridMinimum, string | undefined> = {
   sm: styles.gridSm,
   md: styles.gridMd,
   lg: styles.gridLg,
