@@ -46,11 +46,6 @@ export {
   type GridProps,
   type StackProps,
 } from "./layout";
-export {
-  FinancialValue,
-  Metric,
-  type FinancialValueProps,
-  type MetricProps,
-} from "./metric";
+export { FinancialValue, Metric, type FinancialValueProps, type MetricProps } from "./metric";
 export { PageHeader, type PageHeaderProps } from "./page-header";
 export { Surface, type SurfaceProps } from "./surface";
