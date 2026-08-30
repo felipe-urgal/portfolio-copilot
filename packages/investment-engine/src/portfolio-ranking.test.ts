@@ -5,6 +5,7 @@ import {
   calculateAllocationGaps,
   type AllocationGap,
   type ContributionRecommendationDecisionSnapshot,
+  type ContributionRecommendationSnapshot,
 } from "@portfolio-copilot/domain";
 import { describe, expect, it } from "vitest";
 
@@ -19,6 +20,7 @@ import {
 } from "./index";
 
 const PORTFOLIO_ID = "650e8400-e29b-41d4-a716-446655440000";
+const OTHER_PORTFOLIO_ID = "650e8400-e29b-41d4-a716-446655440001";
 const ASSET_A = "550e8400-e29b-41d4-a716-446655440000";
 const ASSET_B = "550e8400-e29b-41d4-a716-446655440001";
 const EVALUATION_AS_OF = "2026-08-30T10:00:00.000Z";
@@ -76,6 +78,36 @@ function contributionDecision(
     status: "EXECUTABLE",
     reasonCodes: [],
     ...overrides,
+  };
+}
+
+function contributionRecommendation(
+  assetId: string,
+  decisionOverrides: Partial<ContributionRecommendationDecisionSnapshot> = {},
+  portfolioId = PORTFOLIO_ID,
+): ContributionRecommendationSnapshot {
+  return {
+    methodologyVersion: "test-v1",
+    portfolioId,
+    currency: "BRL",
+    portfolioValue: "1000",
+    contribution: "100",
+    postContributionValue: "1100",
+    policy: {
+      minimumMeaningfulContribution: "1",
+      maxDestinationsPerContribution: 1,
+    },
+    cashRemainder: {
+      afterAllocator: "0",
+      afterPolicy: "0",
+      afterConcentration: "0",
+      afterExecution: "0",
+      afterCosts: "0",
+    },
+    totalInvestableAmount: "100",
+    totalConsumedKnownCost: "0",
+    unallocatedContribution: "0",
+    decisions: [contributionDecision(assetId, decisionOverrides)],
   };
 }
 
@@ -137,7 +169,7 @@ function portfolioFit(assetId: string, softLimit = false) {
     assetClass: "EQUITY",
     evaluationAsOf: EVALUATION_AS_OF,
     allocationGap: equityGap("300", "700"),
-    contributionDecision: contributionDecision(assetId, {
+    contributionRecommendation: contributionRecommendation(assetId, {
       reasonCodes: softLimit ? ["SOFT_CONCENTRATION_LIMIT_EXCEEDED"] : [],
     }),
   });
@@ -205,7 +237,7 @@ describe("Portfolio Fit", () => {
       assetClass: "EQUITY",
       evaluationAsOf: EVALUATION_AS_OF,
       allocationGap: equityGap("300", "700"),
-      contributionDecision: contributionDecision(ASSET_A, {
+      contributionRecommendation: contributionRecommendation(ASSET_A, {
         status: "BLOCKED_CONCENTRATION_LIMIT",
         concentrationAllocatedAmount: "0",
         concentrationBlockedAmount: "100",
@@ -231,7 +263,7 @@ describe("Portfolio Fit", () => {
       assetClass: "EQUITY",
       evaluationAsOf: EVALUATION_AS_OF,
       allocationGap: equityGap("600", "400"),
-      contributionDecision: null,
+      contributionRecommendation: null,
     });
 
     expect(result).toMatchObject({
@@ -247,12 +279,31 @@ describe("Portfolio Fit", () => {
       assetClass: "EQUITY",
       evaluationAsOf: EVALUATION_AS_OF,
       allocationGap: equityGap("300", "700"),
-      contributionDecision: null,
+      contributionRecommendation: null,
     });
 
     expect(result).toMatchObject({
       status: "INSUFFICIENT_DATA",
       reasonCodes: ["MISSING_CONTRIBUTION_CONTEXT"],
+    });
+  });
+
+  it("rejects contribution context from another portfolio", () => {
+    const result = evaluatePortfolioFit(BASELINE_PORTFOLIO_RANKING_METHODOLOGY, {
+      assetId: ASSET_A,
+      assetClass: "EQUITY",
+      evaluationAsOf: EVALUATION_AS_OF,
+      allocationGap: equityGap("300", "700"),
+      contributionRecommendation: contributionRecommendation(
+        ASSET_A,
+        {},
+        OTHER_PORTFOLIO_ID,
+      ),
+    });
+
+    expect(result).toMatchObject({
+      status: "INSUFFICIENT_DATA",
+      reasonCodes: ["CONTRIBUTION_PORTFOLIO_MISMATCH"],
     });
   });
 });
