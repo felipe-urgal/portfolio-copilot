@@ -1,5 +1,4 @@
-import type { ExternalContentAuditStore } from "./audit-store";
-import type { ExternalContentKind, ExternalSourcePolicyRegistry } from "./source-policy";
+import type { ExternalContentKind } from "./source-policy";
 
 export type ExternalContentParseFailureReason =
   "MALFORMED_PAYLOAD" | "MISSING_REQUIRED_FIELD" | "UNSUPPORTED_CONTENT" | "ADAPTER_ERROR";
@@ -159,10 +158,3 @@ export type ExternalContentIngestionSuccess = Readonly<{
 
 export type ExternalContentIngestionResult =
   ExternalContentIngestionSuccess | ExternalContentIngestionFailure;
-
-export type ExternalContentIngestionDependencies<TRaw> = Readonly<{
-  registry: ExternalSourcePolicyRegistry;
-  store: ExternalContentAuditStore;
-  adapter: ExternalContentSourceAdapter<TRaw>;
-  classifier: ExternalContentClassifier;
-}>;
