@@ -24,12 +24,7 @@ export interface SurfaceProps extends HTMLAttributes<HTMLDivElement> {
   padding?: SurfacePadding;
 }
 
-export function Surface({
-  tone = "default",
-  padding = "md",
-  className,
-  ...props
-}: SurfaceProps) {
+export function Surface({ tone = "default", padding = "md", className, ...props }: SurfaceProps) {
   return (
     <div
       className={classNames(styles.surface, toneClass[tone], paddingClass[padding], className)}
