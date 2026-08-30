@@ -47,11 +47,16 @@ export interface TextInputProps extends InputHTMLAttributes<HTMLInputElement> {
   invalid?: boolean;
 }
 
-export function TextInput({ invalid = false, className, ...props }: TextInputProps) {
+export function TextInput({
+  invalid = false,
+  className,
+  "aria-invalid": ariaInvalid,
+  ...props
+}: TextInputProps) {
   return (
     <input
       className={classNames(styles.control, invalid && styles.controlInvalid, className)}
-      aria-invalid={invalid || props["aria-invalid"] || undefined}
+      aria-invalid={invalid ? true : ariaInvalid}
       {...props}
     />
   );
@@ -61,7 +66,12 @@ export interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
   invalid?: boolean;
 }
 
-export function Select({ invalid = false, className, ...props }: SelectProps) {
+export function Select({
+  invalid = false,
+  className,
+  "aria-invalid": ariaInvalid,
+  ...props
+}: SelectProps) {
   return (
     <select
       className={classNames(
@@ -70,7 +80,7 @@ export function Select({ invalid = false, className, ...props }: SelectProps) {
         invalid && styles.controlInvalid,
         className,
       )}
-      aria-invalid={invalid || props["aria-invalid"] || undefined}
+      aria-invalid={invalid ? true : ariaInvalid}
       {...props}
     />
   );
