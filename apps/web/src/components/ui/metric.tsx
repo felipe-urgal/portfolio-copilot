@@ -6,7 +6,7 @@ import styles from "./ui.module.css";
 type FinancialValueSize = "sm" | "md" | "lg";
 type FinancialValueTone = "default" | "positive" | "negative" | "muted";
 
-const sizeClass: Record<FinancialValueSize, string> = {
+const sizeClass: Record<FinancialValueSize, string | undefined> = {
   sm: styles.financialValueSm,
   md: styles.financialValueMd,
   lg: styles.financialValueLg,
