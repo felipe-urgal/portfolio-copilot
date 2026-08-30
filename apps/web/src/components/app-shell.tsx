@@ -19,7 +19,7 @@ export function AppShell({ activeRoute, children, identity }: AppShellProps) {
         Pular para o conteúdo
       </a>
 
-      <AppShellNavigation activeRoute={activeRoute} identity={identity} />
+      <AppShellNavigation activeRoute={activeRoute} accountDisplayName={identity?.displayName} />
 
       <div className={styles.workspace}>
         <main className={styles.main} id="main-content" tabIndex={-1}>
