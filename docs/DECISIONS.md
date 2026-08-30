@@ -40,6 +40,7 @@ Este arquivo resume decisões. Decisões arquiteturais importantes também ganha
 | D-034 | Portfolio Fit consome contexto da mesma carteira e permanece separado de Quality/Opportunity; ranking preserva componentes, rejeita dados/contextos incompatíveis e desempata por `AssetId` canônico | Aceita — ADR-0025 |
 | D-035 | `InvestmentThesis` é snapshot imutável/versionado; fatos carregam provenance, mudanças materiais exigem review `REVISED` ligada à nova versão e stale/invalidação são estados explícitos da timeline | Aceita — ADR-0026 |
 | D-036 | Conteúdo externo de IA é sempre `UNTRUSTED_EXTERNAL_CONTENT` com autoridade de instrução `NONE`; fontes são allowlisted, prompt injection suspeito é quarantined antes do classifier e dedupe/classificação permanecem auditáveis | Aceita — ADR-0027 |
+| D-037 | A arquitetura visual do app deriva do Protótipo 3/R1: sidebar persistente apenas quando comportada, drawer/sheet em viewports menores, informação técnica em progressive disclosure e nenhuma rota, métrica ou UI de Copiloto fictícia pode ser criada para reproduzir o mockup | Aceita — `docs/design/R1-ASSISTANT-FIRST-APP-SPEC.md` |
 
 ## Como alterar uma decisão
 
