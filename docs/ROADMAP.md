@@ -2,6 +2,30 @@
 
 O roadmap é ordenado por redução de risco. Fases posteriores não devem bloquear a criação de um núcleo correto e testável.
 
+## Intervenção estratégica — Redesign completo UX/UI — EM ANDAMENTO
+
+A evolução das superfícies visuais entra em uma pausa estratégica para executar a issue #69 — `UX/UI: redesign completo do app e novo design system`.
+
+O redesign cobre **todo o app web**, não apenas uma tela: auth, onboarding, shell, dashboard, carteira, componentes financeiros, estados transversais e responsividade.
+
+Roadmap detalhado: `docs/UX-UI-REDESIGN-ROADMAP.md`.
+
+Sequência canônica:
+
+- [ ] R0 — audit completo e inventário;
+- [ ] R1 — arquitetura da informação + direção visual;
+- [ ] R2 — design system foundation;
+- [ ] R3 — app shell e navegação;
+- [ ] R4 — auth e sessão;
+- [ ] R5 — onboarding completo;
+- [ ] R6 — dashboard completo;
+- [ ] R7 — carteira completa;
+- [ ] R8 — componentes de domínio e estados transversais;
+- [ ] R9 — acessibilidade, responsividade e visual QA;
+- [ ] R10 — gate para novas superfícies.
+
+Enquanto esta intervenção estiver ativa, novas interfaces relevantes — incluindo a UI da #45 — não devem criar um sistema visual paralelo. Trabalho puramente de backend/contratos pode avançar quando não produzir superfície temporária.
+
 ## Fase 0 — Fundação e governança — EM ANDAMENTO
 
 - [x] visão do produto;
