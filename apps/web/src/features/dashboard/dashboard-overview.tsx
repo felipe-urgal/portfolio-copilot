@@ -45,7 +45,9 @@ function formatMoney(snapshot: MoneySnapshot): string {
   return `${snapshot.currency} ${groupedWhole},${fraction}`;
 }
 
-function persistenceLabel(status: "memory-only" | "persisted" | "unavailable"): string {
+function persistenceLabel(
+  status: "memory-only" | "persisted" | "unavailable",
+): string {
   if (status === "persisted") return "Salvo neste dispositivo";
   if (status === "unavailable") return "Armazenamento local indisponível";
   return "Somente nesta sessão";
@@ -79,7 +81,10 @@ export function DashboardOverview({ displayName }: DashboardOverviewProps) {
       />
 
       {financialProfile === null ? null : (
-        <section className={styles.metricsSection} aria-labelledby="dashboard-metrics-title">
+        <section
+          className={styles.metricsSection}
+          aria-labelledby="dashboard-metrics-title"
+        >
           <div className={styles.sectionIntro}>
             <div>
               <span className={styles.eyebrow}>Contexto validado</span>
