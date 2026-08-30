@@ -6,7 +6,8 @@
 
 - R0 concluído — #72;
 - R1 concluído — #73;
-- próxima fase: **R2 — #74 design tokens e primitives canônicas**.
+- R2 concluído — #74;
+- próxima fase: **R3 — #75 AppShell, sidebar e navegação**.
 
 O Portfolio Copilot está refazendo a experiência completa do app antes de adicionar novas superfícies visuais relevantes. O objetivo não é aplicar um tema novo sobre o frontend existente: é migrar o produto inteiro para uma arquitetura visual única, preservando domínio, autenticação, segurança, persistência e honestidade dos dados.
 
@@ -15,7 +16,8 @@ O Portfolio Copilot está refazendo a experiência completa do app antes de adic
 1. `docs/design/PROTOTYPE-3-DIRECTION.md` — direção visual aprovada;
 2. `docs/design/FRONTEND-AUDIT.md` — audit R0 do frontend anterior;
 3. `docs/design/R1-ASSISTANT-FIRST-APP-SPEC.md` — arquitetura da informação e comportamento canônico do app;
-4. esta página — sequência de execução e gates.
+4. `docs/design/DESIGN-SYSTEM.md` — semantic tokens, primitives, estados e regras de uso do R2;
+5. esta página — sequência de execução e gates.
 
 ## Direção visual canônica — APROVADA
 
@@ -23,7 +25,7 @@ O **Protótipo 3 — Assistant-First Workspace** é a referência visual oficial
 
 ![Protótipo 3 — Assistant-First Workspace](./design/prototypes/prototype-3-assistant-first-dashboard.jpg)
 
-A referência não é apenas inspiração. O redesign deve preservar claramente sua arquitetura, hierarquia, densidade e linguagem visual. O R1 definiu como essa direção se adapta a dados reais, auth, onboarding, carteira, estados e viewports menores sem copiar literalmente elementos fictícios do conceito.
+A referência não é apenas inspiração. O redesign deve preservar claramente sua arquitetura, hierarquia, densidade e linguagem visual. O R1 definiu como essa direção se adapta a dados reais, auth, onboarding, carteira, estados e viewports menores sem copiar literalmente elementos fictícios do conceito. O R2 converteu essa decisão em contratos reutilizáveis de UI.
 
 ### Decisões fechadas no R1
 
@@ -38,6 +40,21 @@ A referência não é apenas inspiração. O redesign deve preservar claramente 
 - nenhuma rota futura vazia é criada para completar a sidebar;
 - nenhuma métrica ilustrativa vira dado real;
 - nenhuma UI de Copiloto fictícia aparece antes da capacidade funcional correspondente.
+
+### Fundação fechada no R2
+
+- semantic tokens de cor, tipografia, spacing, layout, geometry, focus, elevation, motion e layering;
+- `Container`, `Stack`, `Cluster` e `Grid`;
+- `PageHeader`;
+- `Button` e `LinkButton`;
+- fields, inputs, select e feedback de validação;
+- `ChoiceCard` e `SegmentedControl` sobre inputs nativos;
+- `Surface`, `Status`, `Badge`, `Alert` e `EmptyState`;
+- loading/skeleton;
+- apresentação canônica de valor/métrica financeira sem cálculo em UI;
+- icon wrapper com accessibility explícita;
+- reduced motion e touch target base;
+- CSS específico de feature continua permitido somente para anatomy/composição que não replique primitive fundamental.
 
 ## Escopo da iniciativa
 
@@ -141,45 +158,34 @@ R2 pode começar sem reabrir arquitetura da informação ou direção visual.
 
 ---
 
-## R2 — Design system foundation — #74
+## R2 — Design system foundation — CONCLUÍDO — #74
 
-### Objetivo
+### Entrega
 
-Transformar a direção aprovada em contratos reutilizáveis antes das migrações por tela.
+- `apps/web/src/styles/tokens.css`;
+- `apps/web/src/components/ui/`;
+- `docs/design/DESIGN-SYSTEM.md`;
+- D-038 em `docs/DECISIONS.md`.
 
-### Tokens
+### Contratos fechados
 
-- semantic colors;
+- cores semânticas de canvas/surface/text/border/accent/feedback;
 - typography e hierarchy financeira;
-- spacing;
-- grid/gutters/content widths;
-- radius;
-- elevation;
-- focus ring;
-- motion/reduced motion;
-- z-index quando necessário;
-- semantic feedback colors.
+- spacing e content widths;
+- radius, elevation, focus e motion;
+- reduced motion no boundary dos tokens e animations;
+- z-index base para shell/overlay futuros;
+- layout primitives;
+- controles e fields compartilhados;
+- choice/segmented com semantics nativas;
+- feedback, empty, loading e skeleton;
+- apresentação tipográfica de valores financeiros sem cálculo de domínio;
+- wrapper de ícones e família Lucide outline como referência para glyphs reais;
+- documentação de ownership, anti-patterns e migração progressiva.
 
-### Primitives
+### Gate atendido
 
-- `Container`, `Stack`, `Cluster`, `Grid`;
-- `PageHeader`;
-- `Button`/`LinkButton`;
-- fields, labels, help e errors;
-- input/select;
-- choice/segmented patterns apenas quando necessários;
-- `Surface`;
-- `Status`/`Badge` restritos;
-- `Alert`;
-- `EmptyState`;
-- loading/skeleton;
-- apresentação de valores/métricas financeiras;
-- icon wrapper;
-- composição responsiva suficiente para R3–R7.
-
-### Gate
-
-R3 só começa quando o shell puder ser composto com a fundação canônica sem styling fundamental paralelo.
+R3 pode construir o shell sobre semantic tokens + `@/components/ui` sem recriar styling fundamental em CSS específico de feature.
 
 ---
 
@@ -374,7 +380,7 @@ A #69 só pode ser fechada quando:
 ```text
 #72 R0 audit ✓
   -> #73 R1 Assistant-First app spec ✓
-  -> #74 R2 design system
+  -> #74 R2 design system ✓
   -> #75 R3 shell
   -> #76 R4 auth
   -> #77 R5 onboarding

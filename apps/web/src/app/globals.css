@@ -1,14 +1,9 @@
+@import "../styles/tokens.css";
+
 :root {
-  color-scheme: light;
-  font-family:
-    Inter,
-    ui-sans-serif,
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    sans-serif;
-  background: #f7f8fb;
-  color: #161922;
+  font-family: var(--font-family-sans);
+  background: var(--color-canvas);
+  color: var(--color-text-primary);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
 }
@@ -19,49 +14,56 @@
 
 html {
   min-width: 320px;
-  background: #f7f8fb;
+  background: var(--color-canvas);
 }
 
 body {
   min-width: 320px;
   min-height: 100vh;
   margin: 0;
-  background: #f7f8fb;
+  background: var(--color-canvas);
 }
 
 button,
 input,
-select {
+select,
+textarea {
   font: inherit;
 }
 
 button,
 a,
 input,
-select {
+select,
+textarea {
   -webkit-tap-highlight-color: transparent;
+}
+
+:where(button, a, input, select, textarea, [tabindex]):focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus-ring);
+  outline-offset: var(--focus-ring-offset);
 }
 
 [data-onboarding-choice]:focus-within,
 [data-onboarding-segment]:focus-within {
-  outline: 3px solid rgba(79, 70, 229, 0.22);
-  outline-offset: 3px;
+  outline: var(--focus-ring-width) solid var(--color-focus-ring);
+  outline-offset: var(--focus-ring-offset);
 }
 
 .shell {
   min-height: 100vh;
   display: grid;
   place-items: center;
-  padding: 2rem;
+  padding: var(--space-8);
 }
 
 .card {
-  width: min(42rem, 100%);
-  padding: clamp(1.5rem, 5vw, 3rem);
-  border: 1px solid #e0e3ea;
-  border-radius: 1.25rem;
-  background: #fff;
-  box-shadow: 0 22px 60px rgba(36, 40, 56, 0.08);
+  width: min(var(--layout-content-narrow), 100%);
+  padding: clamp(var(--space-6), 5vw, var(--space-12));
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-lg);
 }
 
 .card h1 {
@@ -72,55 +74,49 @@ select {
 }
 
 .card > p {
-  margin: 1rem 0 0;
-  color: #666d7b;
-  font-size: 1rem;
-  line-height: 1.65;
+  margin: var(--space-4) 0 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-md);
+  line-height: var(--line-height-body);
 }
 
 .card-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem;
+  gap: var(--space-3);
   margin-top: 1.7rem;
 }
 
 .primary-link,
 .secondary-link {
-  min-height: 2.8rem;
+  min-height: var(--control-height-md);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0.65rem 0.95rem;
-  border-radius: 0.7rem;
-  font-size: 0.84rem;
-  font-weight: 720;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
   text-decoration: none;
 }
 
 .primary-link {
-  border: 1px solid #4f46e5;
-  background: #4f46e5;
-  color: #fff;
+  border: 1px solid var(--color-accent);
+  background: var(--color-accent);
+  color: var(--color-accent-contrast);
 }
 
 .secondary-link {
-  border: 1px solid #d8dce5;
-  background: #fff;
-  color: #353a47;
-}
-
-.primary-link:focus-visible,
-.secondary-link:focus-visible {
-  outline: 3px solid rgba(79, 70, 229, 0.22);
-  outline-offset: 3px;
+  border: 1px solid var(--color-border-strong);
+  background: var(--color-surface);
+  color: var(--color-text-primary);
 }
 
 .eyebrow {
-  margin: 0 0 0.5rem;
-  color: #646b79;
-  font-size: 0.75rem;
-  font-weight: 750;
+  margin: 0 0 var(--space-2);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -132,12 +128,12 @@ dl {
 dl > div {
   display: flex;
   justify-content: space-between;
-  gap: 1rem;
-  padding-block: 0.5rem;
+  gap: var(--space-4);
+  padding-block: var(--space-2);
 }
 
 dt {
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
 }
 
 dd {
@@ -146,7 +142,7 @@ dd {
 
 @media (max-width: 560px) {
   .shell {
-    padding: 1rem;
+    padding: var(--space-4);
   }
 
   .card-actions {

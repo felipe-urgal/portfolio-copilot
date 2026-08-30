@@ -41,6 +41,7 @@ Este arquivo resume decisões. Decisões arquiteturais importantes também ganha
 | D-035 | `InvestmentThesis` é snapshot imutável/versionado; fatos carregam provenance, mudanças materiais exigem review `REVISED` ligada à nova versão e stale/invalidação são estados explícitos da timeline | Aceita — ADR-0026 |
 | D-036 | Conteúdo externo de IA é sempre `UNTRUSTED_EXTERNAL_CONTENT` com autoridade de instrução `NONE`; fontes são allowlisted, prompt injection suspeito é quarantined antes do classifier e dedupe/classificação permanecem auditáveis | Aceita — ADR-0027 |
 | D-037 | A arquitetura visual do app deriva do Protótipo 3/R1: sidebar persistente apenas quando comportada, drawer/sheet em viewports menores, informação técnica em progressive disclosure e nenhuma rota, métrica ou UI de Copiloto fictícia pode ser criada para reproduzir o mockup | Aceita — `docs/design/R1-ASSISTANT-FIRST-APP-SPEC.md` |
+| D-038 | A fundação visual de `apps/web` usa semantic CSS tokens e React primitives canônicas; novos controles fundamentais não podem recriar styling por feature, R2 não adiciona biblioteca visual externa e Lucide outline é a família de ícones de referência quando glyphs reais entrarem | Aceita — `docs/design/DESIGN-SYSTEM.md` |
 
 ## Como alterar uma decisão
 
