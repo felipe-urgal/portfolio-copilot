@@ -1,87 +1,87 @@
-# Próxima Atividade — UX/UI R4: redesenhar autenticação e sessão
+# Próxima Atividade — UX/UI R5: redesenhar onboarding financeiro completo
 
-**Status:** READY após merge da #75
+**Status:** READY após merge da #76
 
 ## Issue canônica
 
-- #76 — `UX/UI R4: redesenhar autenticação e sessão`
+- #77 — `UX/UI R5: redesenhar onboarding financeiro completo`
 - iniciativa guarda-chuva: #69
 
 ## Fundação concluída
 
-O R4 parte de uma arquitetura visual já fechada e não deve reabrir decisões fundamentais:
+O R5 parte dos contratos visuais já implementados e não deve recriar uma arquitetura paralela:
 
 - #72 — R0 audit do frontend anterior;
 - #73 — R1 arquitetura da informação + direção do Protótipo 3;
 - #74 — R2 design tokens e primitives canônicas;
 - #75 — R3 AppShell/sidebar/navegação responsiva;
+- #76 — R4 focused auth e sessão;
 - `docs/design/R1-ASSISTANT-FIRST-APP-SPEC.md`;
 - `docs/design/DESIGN-SYSTEM.md`;
-- `docs/design/APP-SHELL.md`.
+- `docs/design/APP-SHELL.md`;
+- `docs/design/AUTH-SESSION.md`.
 
-O R3 deixa Dashboard, Carteira e Onboarding consumindo o mesmo shell protegido. Auth continua deliberadamente fora desse shell: a arquitetura do R1 define `/sign-in` e estados de reentrada como uma superfície focada, sem sidebar concorrendo com a ação de autenticação.
+O R3 já colocou `/onboarding` dentro do `AppShell` e removeu o chrome global paralelo. O R5 deve redesenhar o **conteúdo guiado** do onboarding: progressão, hierarchy, campos, choices, goals, review e estados de validação, preservando a lógica de domínio existente.
 
-## Objetivo do R4
+## Objetivo do R5
 
-Redesenhar autenticação e sessão para que a jornada tenha **uma ação principal clara**, preserve as garantias atuais de GitHub OAuth/ownership e mantenha privacidade, segurança e diagnóstico acessíveis por progressive disclosure em vez de colocá-los na primeira hierarquia visual.
+Transformar o onboarding financeiro atual em um guided flow mais leve, consistente e responsivo, consumindo as primitives do R2 e o AppShell do R3 sem mudar o significado dos dados, validações ou snapshot financeiro.
 
 ## Escopo
 
-### Sign-in
+### Progressão
 
-- `/sign-in` com composição focused-auth canônica;
-- brand e contexto mínimo do produto;
-- uma CTA principal para GitHub OAuth;
-- loading/disabled/error/re-entry usando primitives do R2;
-- remover `/health` como CTA concorrente do login;
-- informação de privacidade/segurança disponível sem dominar a tarefa;
-- desktop/tablet/mobile.
+- quatro etapas existentes: Perfil, Reserva, Objetivos e Revisão;
+- progress/stepper visualmente subordinado ao AppShell;
+- uma decisão principal por bloco;
+- Back/Continue claros;
+- re-entry/resume existente preservado.
 
-### Sessão e saída
+### Form primitives
 
-- `/sign-out`;
-- affordance de conta/sessão já exposta pelo AppShell;
-- expired/re-entry quando aplicável;
-- estados de erro/recovery existentes;
-- copy clara sobre sessão sem expor subject interno ou detalhes técnicos desnecessários.
+- migrar inputs/selects para `Field` e contratos canônicos quando compatíveis;
+- choices de risco e horizonte sobre primitives R2;
+- switch/reserva sem controle paralelo desnecessário;
+- goals editáveis com hierarchy clara e sem cards dentro de cards;
+- review final legível antes da confirmação;
+- ações sobre `Button`/`LinkButton` canônicos.
 
-### Segurança e compatibilidade
+### Validação e estado
 
-- preservar provider GitHub atual;
-- preservar callback/redirect validation existente;
-- preservar ownership e canonical identity;
-- não alterar contratos de persistência financeira;
-- não transformar health ou diagnóstico em sinal visual de confiança artificial;
-- nenhuma mudança de regra financeira.
+- regras de domínio e reducer atuais preservados;
+- erros próximos aos campos e summary somente quando necessário;
+- foco no primeiro erro permanece previsível;
+- estado salvo/persistido aparece em segunda ordem;
+- nenhum erro parcial vira snapshot válido.
 
-### Accessibility
+### Responsividade e acessibilidade
 
+- desktop/tablet/mobile;
+- stepper compacto em telas pequenas;
+- choices/goals empilham sem reduzir legibilidade;
+- touch targets canônicos;
 - keyboard-only flow;
-- focus order e focus-visible canônicos;
-- accessible names e status de loading/error;
-- sem ação concorrente ambígua;
-- touch targets adequados;
-- reduced motion herdado do R2.
+- labels, fieldsets, legends, `aria-describedby` e `aria-invalid` preservados ou melhorados;
+- focus-visible herdado do R2.
 
 ## Regras
 
-- usar tokens/primitives R2;
-- respeitar o AppShell R3, mas **não** inserir sidebar no focused auth;
-- não criar Button/Field/Alert/Loading paralelos;
-- não trocar provider ou fluxo OAuth por motivo visual;
-- não ampliar o escopo para redesign completo do onboarding/dashboard/carteira;
-- nenhuma rota ou capability fictícia;
-- informação técnica permanece auditável em segunda ordem.
+- não alterar regras de domínio, Money, goals ou snapshot por motivo visual;
+- não recriar shell/header/navigation dentro da feature;
+- não criar Button/Field/Choice/Alert/Loading paralelos se houver primitive canônica;
+- não ampliar escopo para Dashboard (#78) ou Carteira (#79);
+- preservar persistência local/conta e seus contratos atuais;
+- nenhuma capability fictícia;
+- progressive disclosure para detalhes de persistência e implementação.
 
 ## Gate
 
-R5 (#77) só começa quando:
+R6 (#78) só começa quando:
 
-- sign-in possuir uma CTA primária inequívoca;
-- auth errors/re-entry estiverem claros;
-- `/health` não competir com login;
-- account/session affordance estiver coerente com o AppShell;
-- provider, redirect safety e ownership permanecerem inalterados;
+- onboarding não possuir primitive visual paralela evitável;
+- progressão das quatro etapas estiver clara e mais leve;
+- validações e focus order continuarem acessíveis;
+- lógica funcional/testes atuais estiverem preservados;
 - desktop/mobile estiverem definidos no código;
 - `pnpm check` estiver verde;
 - auto code review estiver sem finding aberto.
@@ -93,7 +93,7 @@ R5 (#77) só começa quando:
   -> #73 R1 app spec ✓
   -> #74 R2 design system ✓
   -> #75 R3 AppShell/sidebar ✓
-  -> #76 R4 auth
+  -> #76 R4 auth ✓
   -> #77 R5 onboarding
   -> #78 R6 dashboard
   -> #79 R7 carteira
@@ -108,7 +108,8 @@ R5 (#77) só começa quando:
 - `docs/design/R1-ASSISTANT-FIRST-APP-SPEC.md`;
 - `docs/design/DESIGN-SYSTEM.md`;
 - `docs/design/APP-SHELL.md`;
+- `docs/design/AUTH-SESSION.md`;
 - `docs/UX-UI-REDESIGN-ROADMAP.md`;
 - `docs/ROADMAP.md`.
 
-A #45 continua sem UI temporária durante o redesign. Qualquer superfície futura deve nascer sobre os contratos visuais fechados pelos R2/R3.
+A #45 continua sem UI temporária durante o redesign. Qualquer superfície futura deve nascer sobre os contratos visuais já fechados.
