@@ -1,116 +1,100 @@
-# Próxima Atividade — UX/UI R2: design tokens e primitives canônicas
+# Próxima Atividade — UX/UI R3: novo AppShell, sidebar e navegação responsiva
 
-**Status:** READY
+**Status:** READY após merge da #74
 
 ## Issue canônica
 
-- #74 — `UX/UI R2: design tokens e primitives canônicas`
+- #75 — `UX/UI R3: novo app shell, sidebar e navegação responsiva`
 - iniciativa guarda-chuva: #69
 
-## R0 e R1 concluídos
+## Fundação concluída
 
-A fundação de decisão visual está registrada em:
+As fases anteriores deixam o R3 sem necessidade de reabrir direção visual ou criar styling fundamental paralelo:
 
-- #72 — audit do frontend atual;
-- #73 — arquitetura e expansão da direção aprovada;
+- #72 — R0 audit do frontend anterior;
+- #73 — R1 arquitetura da informação + expansão do Protótipo 3;
+- #74 — R2 design tokens e primitives canônicas;
 - `docs/design/FRONTEND-AUDIT.md`;
 - `docs/design/PROTOTYPE-3-DIRECTION.md`;
-- `docs/design/R1-ASSISTANT-FIRST-APP-SPEC.md`.
+- `docs/design/R1-ASSISTANT-FIRST-APP-SPEC.md`;
+- `docs/design/DESIGN-SYSTEM.md`.
 
-O R1 definiu:
+O R2 centraliza semantic tokens, layout primitives, actions, fields, choice patterns, surfaces, feedback, loading, apresentação financeira e iconografia. O R3 deve consumir essa fundação; não deve recriar botão, field, focus ring, container, status, loading ou outras primitives equivalentes dentro do shell.
 
-- navigation model sem rotas futuras fictícias;
-- AppShell com sidebar no desktop e drawer em tablet/mobile;
-- context rail/Copiloto responsivo e opcional;
-- focused auth sem sidebar;
-- onboarding dentro do shell canônico;
-- dashboard orientado a panorama e ação, sem métricas inventadas;
-- carteira dividida progressivamente por tarefa;
-- estados loading/empty/missing/stale/error/success/disabled;
-- progressive disclosure de provenance, reason codes e detalhe técnico;
-- accessibility como contrato desde a fundação.
+## Objetivo do R3
 
-## Objetivo do R2
+Construir o **AppShell canônico** reconhecível como derivação do Protótipo 3 e torná-lo a composição compartilhada das superfícies protegidas.
 
-Transformar a arquitetura aprovada em contratos reutilizáveis de interface antes de migrar qualquer tela grande.
-
-R2 deve eliminar a autoridade visual local das features para os padrões fundamentais. Depois dele, R3–R8 não devem recriar botão, field, focus ring, container, status ou loading por módulo.
+O shell deve resolver navegação, landmarks, brand, conta/sessão e comportamento responsive sem inventar rotas ou capacidades ainda inexistentes.
 
 ## Escopo
 
-### Semantic tokens
+### Desktop
 
-- cores de superfície, texto, border, accent e feedback;
-- tipografia e hierarchy financeira;
-- spacing;
-- radius;
-- elevation;
-- focus ring;
-- motion e reduced motion;
-- largura/container/grid/gutters;
-- z-index somente onde houver necessidade real.
+- sidebar persistente quando houver espaço funcional;
+- brand do Portfolio Copilot;
+- primary navigation baseada somente em rotas/capacidades reais;
+- secondary/utilities navigation quando necessária;
+- active, hover, focus-visible e disabled states;
+- account/session affordance no rodapé;
+- page content/container model;
+- suporte ao futuro context rail sem renderizar uma UI fictícia de Copiloto.
 
-### Primitives mínimas
+### Tablet e mobile
 
-- `Container`;
-- `Stack`;
-- `Cluster`;
-- `Grid`;
-- `PageHeader`;
-- `Button` e `LinkButton`;
-- `Field`, `Label`, `HelpText`, `FieldError`;
-- `TextInput` e `Select`;
-- `ChoiceCard`/`SegmentedControl` apenas se necessários aos fluxos aprovados;
-- `Surface`;
-- `Status`/`Badge` com variantes restritas;
-- `Alert`;
-- `EmptyState`;
-- loading/skeleton;
-- apresentação canônica de valores/métricas financeiras;
-- icon wrapper;
-- helpers de composição responsiva suficientes para R3–R7.
+- sidebar não deve ser comprimida;
+- navegação passa para drawer quando necessário;
+- trigger com accessible name;
+- fechamento por ação explícita e Escape;
+- focus management e retorno ao trigger;
+- backdrop e layering derivados dos tokens canônicos;
+- conteúdo principal mantém leitura e touch targets adequados.
 
-### Estados
+### Accessibility
 
-Quando aplicável:
+- skip link;
+- `header`/`nav`/`main`/landmarks coerentes;
+- foco visível;
+- navegação por teclado;
+- active state não depende apenas de cor;
+- drawer com semântica e focus lifecycle corretos;
+- `prefers-reduced-motion` respeitado pela fundação R2.
 
-- default;
-- hover;
-- focus-visible;
-- active/pressed;
-- selected;
-- disabled;
-- loading;
-- error;
-- success.
+### Integração
+
+- superfícies protegidas devem poder usar o mesmo shell;
+- onboarding deixa de depender arquiteturalmente de um shell paralelo, sem executar ainda o redesign completo da #77;
+- auth focused (`/sign-in`) permanece fora da sidebar conforme R1;
+- não alterar domínio, OAuth, ownership ou persistência.
 
 ## Regras
 
-- não criar framework genérico interno;
-- não introduzir biblioteca visual por conveniência;
-- promover apenas padrões comprovadamente necessários pelo R1 e pelo frontend existente;
-- nenhuma primitive pode alterar regra de domínio;
-- nenhuma primitive pode depender de dados fictícios do Protótipo 3;
-- WCAG 2.2 AA e `prefers-reduced-motion` fazem parte da implementação, não são polish posterior;
-- CSS local de uma feature não deve redefinir semantic token fundamental.
+- usar tokens/primitives do R2;
+- nenhuma rota futura vazia para reproduzir o mockup;
+- nenhuma métrica fictícia;
+- nenhuma UI funcional de Copiloto antes da capacidade correspondente;
+- não reescrever dashboard, carteira ou onboarding neste PR além do necessário para adoção estrutural do shell;
+- comportamento responsive faz parte da implementação, não é polish posterior;
+- manter progressive disclosure para informação operacional/técnica.
 
 ## Gate
 
-R3 (#75) só começa quando o shell puder ser composto exclusivamente com a fundação canônica, sem inventar styling paralelo.
+R4 (#76) só começa quando:
 
-O R2 deve entregar:
-
-- tokens documentados;
-- primitives testadas;
-- contratos de variantes/estados claros;
-- exemplos suficientes para R3–R7;
-- `pnpm check` verde;
-- auto code review sem finding aberto.
+- AppShell estiver compartilhado e consumível pelas superfícies protegidas;
+- desktop/tablet/mobile estiverem definidos no código;
+- sidebar/drawer tiverem keyboard/focus behavior correto;
+- landmarks e skip link estiverem presentes;
+- não houver shell visual fundamental paralelo necessário para as próximas migrações;
+- `pnpm check` estiver verde;
+- auto code review estiver sem finding aberto.
 
 ## Sequência
 
 ```text
-#74 R2 tokens + primitives
+#72 R0 audit ✓
+  -> #73 R1 app spec ✓
+  -> #74 R2 design system ✓
   -> #75 R3 AppShell/sidebar
   -> #76 R4 auth
   -> #77 R5 onboarding
@@ -124,9 +108,9 @@ O R2 deve entregar:
 ## Referências canônicas
 
 - `docs/design/PROTOTYPE-3-DIRECTION.md`;
-- `docs/design/FRONTEND-AUDIT.md`;
 - `docs/design/R1-ASSISTANT-FIRST-APP-SPEC.md`;
+- `docs/design/DESIGN-SYSTEM.md`;
 - `docs/UX-UI-REDESIGN-ROADMAP.md`;
 - `docs/ROADMAP.md`.
 
-A #45 continua funcionalmente posterior à nova fundação visual: não criar uma UI temporária de Copiloto durante R2.
+A #45 continua sem UI temporária durante o redesign. Superfícies futuras devem nascer sobre AppShell + design system canônicos.
