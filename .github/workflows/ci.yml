@@ -62,12 +62,6 @@ jobs:
       - name: Format check
         run: pnpm format:check
 
-      - name: Show investment-engine formatting diff
-        if: failure()
-        run: |
-          pnpm exec prettier --write packages/investment-engine/src/portfolio-fit.ts packages/investment-engine/src/ranking.ts
-          git diff -- packages/investment-engine/src/portfolio-fit.ts packages/investment-engine/src/ranking.ts
-
       - name: Lint
         run: pnpm lint
 
