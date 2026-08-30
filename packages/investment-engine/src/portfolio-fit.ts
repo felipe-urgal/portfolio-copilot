@@ -3,6 +3,7 @@ import {
   AssetId,
   type AllocationGap,
   type ContributionRecommendationDecisionSnapshot,
+  type ContributionRecommendationSnapshot,
   type ContributionRecommendationStatus,
 } from "@portfolio-copilot/domain";
 
@@ -31,7 +32,7 @@ export type PortfolioFitReasonCode =
 export type PortfolioFitInsufficientReason =
   | "MISSING_CONTRIBUTION_CONTEXT"
   | "ALLOCATION_GAP_ASSET_CLASS_MISMATCH"
-  | "CONTRIBUTION_ASSET_CLASS_MISMATCH"
+  | "CONTRIBUTION_PORTFOLIO_MISMATCH"
   | "CONTRIBUTION_ASSET_MISMATCH";
 
 export type PortfolioFitComponentSnapshot = Readonly<{
@@ -76,7 +77,7 @@ export type PortfolioFitEvaluationInput = Readonly<{
   assetClass: AssetClass | string;
   evaluationAsOf: string;
   allocationGap: AllocationGap;
-  contributionDecision: ContributionRecommendationDecisionSnapshot | null;
+  contributionRecommendation: ContributionRecommendationSnapshot | null;
 }>;
 
 export class InvalidPortfolioFitInputError extends Error {
@@ -134,11 +135,7 @@ function uniqueReasons(values: readonly PortfolioFitReasonCode[]): readonly Port
 function decisionReasonCodes(
   decision: ContributionRecommendationDecisionSnapshot,
 ): readonly PortfolioFitReasonCode[] {
-  const reasons: PortfolioFitReasonCode[] = [];
-
-  for (const reasonCode of decision.reasonCodes) {
-    reasons.push(reasonCode);
-  }
+  const reasons: PortfolioFitReasonCode[] = [...decision.reasonCodes];
 
   switch (decision.status) {
     case "EXECUTABLE":
@@ -182,6 +179,22 @@ function insufficient(
     methodologyVersion: methodology.version,
     reasonCodes: Object.freeze([...new Set(reasonCodes)].sort()),
   });
+}
+
+function findContributionDecision(
+  recommendation: ContributionRecommendationSnapshot,
+  assetClass: string,
+): ContributionRecommendationDecisionSnapshot | null {
+  const matches = recommendation.decisions.filter(
+    (decision) => decision.assetClass === assetClass,
+  );
+  if (matches.length > 1) {
+    throw new InvalidPortfolioFitInputError(
+      `Contribution recommendation contains duplicate decisions for ${assetClass}.`,
+    );
+  }
+
+  return matches[0] ?? null;
 }
 
 export function evaluatePortfolioFit(
@@ -252,18 +265,24 @@ export function evaluatePortfolioFit(
     });
   }
 
-  const decision = input.contributionDecision;
-  if (decision === null) {
+  const recommendation = input.contributionRecommendation;
+  if (recommendation === null) {
     return insufficient(methodology, base, ["MISSING_CONTRIBUTION_CONTEXT"]);
   }
-  if (decision.assetClass !== assetClass.code) {
-    return insufficient(methodology, base, ["CONTRIBUTION_ASSET_CLASS_MISMATCH"]);
+  if (recommendation.portfolioId !== portfolioId) {
+    return insufficient(methodology, base, ["CONTRIBUTION_PORTFOLIO_MISMATCH"]);
+  }
+
+  const decision = findContributionDecision(recommendation, assetClass.code);
+  if (decision === null) {
+    return insufficient(methodology, base, ["MISSING_CONTRIBUTION_CONTEXT"]);
   }
   if (decision.assetId !== null && decision.assetId !== assetId) {
     return insufficient(methodology, base, ["CONTRIBUTION_ASSET_MISMATCH"]);
   }
 
-  const reasons = uniqueReasons(["ALLOCATION_GAP_PRESENT", ...decisionReasonCodes(decision)]);
+  const decisionReasons = decisionReasonCodes(decision);
+  const reasons = uniqueReasons(["ALLOCATION_GAP_PRESENT", ...decisionReasons]);
   const concentrationScoreBps = decision.reasonCodes.includes("SOFT_CONCENTRATION_LIMIT_EXCEEDED")
     ? methodology.softConcentrationScoreBps
     : 10_000;
@@ -288,7 +307,7 @@ export function evaluatePortfolioFit(
       "CONTRIBUTION_ELIGIBILITY",
       contributionEligibilityScoreBps,
       methodology.portfolioFitWeights.contributionEligibilityWeightBps,
-      decisionReasonCodes(decision),
+      decisionReasons,
     ),
   ]);
 
