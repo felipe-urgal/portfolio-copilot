@@ -4,9 +4,18 @@
 
 **INICIATIVA ATIVA — issue #69**
 
-O Portfolio Copilot entrou em uma pausa estratégica de evolução visual para refazer a experiência completa do app antes de adicionar novas superfícies relevantes.
+- R0 concluído — #72;
+- R1 concluído — #73;
+- próxima fase: **R2 — #74 design tokens e primitives canônicas**.
 
-O objetivo não é aplicar um tema novo por cima do frontend existente. É redesenhar a experiência inteira como um único produto, preservando regras de negócio, autenticação, segurança e persistência.
+O Portfolio Copilot está refazendo a experiência completa do app antes de adicionar novas superfícies visuais relevantes. O objetivo não é aplicar um tema novo sobre o frontend existente: é migrar o produto inteiro para uma arquitetura visual única, preservando domínio, autenticação, segurança, persistência e honestidade dos dados.
+
+## Referências canônicas
+
+1. `docs/design/PROTOTYPE-3-DIRECTION.md` — direção visual aprovada;
+2. `docs/design/FRONTEND-AUDIT.md` — audit R0 do frontend anterior;
+3. `docs/design/R1-ASSISTANT-FIRST-APP-SPEC.md` — arquitetura da informação e comportamento canônico do app;
+4. esta página — sequência de execução e gates.
 
 ## Direção visual canônica — APROVADA
 
@@ -14,13 +23,23 @@ O **Protótipo 3 — Assistant-First Workspace** é a referência visual oficial
 
 ![Protótipo 3 — Assistant-First Workspace](./design/prototypes/prototype-3-assistant-first-dashboard.jpg)
 
-Especificação completa: `docs/design/PROTOTYPE-3-DIRECTION.md`.
+A referência não é apenas inspiração. O redesign deve preservar claramente sua arquitetura, hierarquia, densidade e linguagem visual. O R1 definiu como essa direção se adapta a dados reais, auth, onboarding, carteira, estados e viewports menores sem copiar literalmente elementos fictícios do conceito.
 
-A referência **não é apenas inspiração**. O redesign deve preservar claramente sua arquitetura, hierarquia, densidade e linguagem visual. Ajustes são esperados para dados reais, acessibilidade, responsividade e capacidades existentes, mas nenhuma tela deve reinterpretar o produto do zero.
+### Decisões fechadas no R1
 
-Consequência para R1: não existe mais uma etapa de escolha entre direções concorrentes. R1 deve **refinar, sistematizar e expandir o Protótipo 3** para auth, onboarding, dashboard, carteira, estados e mobile.
+- sidebar persistente no desktop quando houver espaço funcional;
+- drawer em tablet/mobile em vez de sidebar comprimida;
+- Copiloto como context rail opcional, drawer ou bottom sheet — nunca como chat que substitui o produto;
+- auth usa uma superfície focada sem sidebar;
+- onboarding entra no AppShell canônico;
+- dashboard prioriza panorama e ação, com KPI apenas quando calculável;
+- carteira usa progressive disclosure por tarefa;
+- informação técnica/provenance/reason codes permanece auditável em segunda ordem;
+- nenhuma rota futura vazia é criada para completar a sidebar;
+- nenhuma métrica ilustrativa vira dado real;
+- nenhuma UI de Copiloto fictícia aparece antes da capacidade funcional correspondente.
 
-## Escopo
+## Escopo da iniciativa
 
 O redesign cobre todas as superfícies atuais e futuras de `apps/web`:
 
@@ -35,320 +54,334 @@ O redesign cobre todas as superfícies atuais e futuras de `apps/web`:
 - conta/sessão;
 - componentes financeiros compartilhados;
 - formulários e ações;
-- empty/loading/error/success states;
-- hover/focus/active/disabled;
+- empty/loading/missing/stale/error/success states;
+- hover/focus/active/selected/disabled;
 - desktop/tablet/mobile;
 - novas superfícies, incluindo a futura UI da #45.
 
-Compatibilidade funcional é obrigatória. Compatibilidade visual com o layout atual não é objetivo.
-
-## Diagnóstico inicial
-
-A inspeção atual mostra uma interface construída incrementalmente por superfície:
-
-- valores fundamentais de cor, radius, spacing e elevation aparecem hardcoded em CSS global e CSS Modules;
-- auth, shell e componentes financeiros possuem decisões visuais locais;
-- a hierarquia de algumas telas dá peso demais a informação operacional/técnica;
-- cards e containers são usados com frequência como mecanismo primário de hierarquia;
-- não há contrato suficientemente explícito de tokens, primitives, iconografia e estados;
-- responsividade é resolvida localmente por componente/tela;
-- novas features correm risco de ampliar a inconsistência existente.
-
-A tela de sign-in é um exemplo do problema sistêmico: autenticação, status de segurança, perfil local e health competem na mesma superfície. O redesign precisa resolver a jornada, não apenas alterar o CSS desse card.
+Compatibilidade funcional é obrigatória. Compatibilidade visual com o layout antigo não é objetivo.
 
 ## Princípios
 
-1. **Design antes de código.** Conceitos completos precisam existir antes da migração visual ampla.
+1. **Design antes de código.** R1 fecha a arquitetura; implementação não reabre decisões por feature.
 2. **Um app, um sistema.** Toda tela usa os mesmos tokens, primitives e regras de composição.
-3. **Protótipo 3 como referência.** Novas superfícies derivam da direção aprovada; não recebem linguagem visual independente.
+3. **Protótipo 3 + R1 são canônicos.** Novas superfícies derivam da direção aprovada.
 4. **Uma prioridade visual por contexto.** A ação principal não compete com mensagens operacionais secundárias.
-5. **Menos chrome, mais estrutura.** Usar tipografia, grid, whitespace e alinhamento antes de adicionar cards, borders ou badges.
-6. **Produto financeiro, não dashboard genérico.** Dados devem ser legíveis, comparáveis, explicáveis e confiáveis.
-7. **Segurança por comportamento e clareza.** Informação técnica aparece quando ajuda o usuário, não como decoração de confiança.
+5. **Menos chrome, mais estrutura.** Tipografia, grid, whitespace e alinhamento vêm antes de card/border/badge.
+6. **Produto financeiro, não dashboard genérico.** Valores precisam ser legíveis, comparáveis, explicáveis e confiáveis.
+7. **Segurança por comportamento e clareza.** Informação técnica aparece quando ajuda, não como decoração de confiança.
 8. **Responsive desde a concepção.** Mobile e desktop são estados da mesma solução.
-9. **WCAG 2.2 AA.** Foco, teclado, contraste, semantics e reduced motion são critérios de produto.
-10. **Sem regressão de domínio.** Nenhuma mudança visual altera cálculo, ownership, auth ou fronteira de segurança.
-11. **Fidelidade verificável.** Conceito aprovado, implementação, browser QA e comparação visual antes do merge.
+9. **WCAG 2.2 AA.** Foco, teclado, contraste, semantics, touch targets e reduced motion são critérios de produto.
+10. **Sem regressão de domínio.** Visual nunca altera cálculo, ownership, auth ou fronteira de segurança.
+11. **Fidelidade verificável.** Browser QA e comparação visual entram antes de concluir superfícies.
+12. **Sem ficção visual.** Mockup não autoriza dado, rota ou capacidade inexistente.
 
 ## Estratégia de execução
 
-A iniciativa será dividida em PRs pequenos e revisáveis. Não haverá um único PR com o redesign inteiro.
+A iniciativa é dividida em PRs pequenos e revisáveis. Cada fase possui issue e gate próprios:
 
-Cada fase gera seu próprio gate. Child issues podem ser criadas depois do audit R0, quando o inventário real permitir decompor trabalho sem especulação.
+- #72 — R0 audit;
+- #73 — R1 arquitetura e expansão da direção;
+- #74 — R2 design tokens e primitives;
+- #75 — R3 AppShell/sidebar/navegação;
+- #76 — R4 auth e sessão;
+- #77 — R5 onboarding;
+- #78 — R6 dashboard;
+- #79 — R7 carteira;
+- #80 — R8 estados/componentes transversais;
+- #81 — R9 accessibility/responsive/visual fidelity QA;
+- R10 — fechamento da #69 e gate para novas superfícies.
 
-## R0 — Audit completo e inventário
+---
+
+## R0 — Audit completo e inventário — CONCLUÍDO
+
+### Entrega
+
+`docs/design/FRONTEND-AUDIT.md`
+
+O audit inventariou rotas, estados, CSS, componentes, responsividade, UX, visual e a11y do frontend anterior. Ele confirmou, entre outros pontos:
+
+- design system implícito distribuído em CSS Modules;
+- form primitives duplicadas;
+- onboarding com shell próprio;
+- portfolio excessivamente concentrado;
+- informação operacional ocupando hierarquia excessiva;
+- boas bases de accessibility que precisam ser preservadas.
+
+O frontend antigo não recebeu visual QA mobile em viewport real; breakpoints foram auditados por código. Isso não bloqueou R1 porque o layout antigo não será preservado, mas validação visual mobile real é obrigatória no produto redesenhado.
+
+---
+
+## R1 — Arquitetura da informação + expansão do Protótipo 3 — CONCLUÍDO
+
+### Entrega
+
+`docs/design/R1-ASSISTANT-FIRST-APP-SPEC.md`
+
+### Contratos fechados
+
+- navigation model baseado em capacidades reais;
+- AppShell desktop/laptop/tablet/mobile;
+- modelos de densidade `calm`, `guided`, `analytical` e `operational`;
+- focused auth;
+- onboarding no shell canônico;
+- dashboard orientado a panorama/ação;
+- carteira organizada em `Overview / Ativos e posições / Transações / Aporte / Configuração`;
+- papel e limites do Copiloto;
+- loading/empty/missing/stale/error/success/disabled;
+- progressive disclosure de auditoria;
+- accessibility como contrato desde a fundação;
+- matriz responsive;
+- desvios permitidos do protótipo e gate de fidelidade.
+
+### Gate atendido
+
+R2 pode começar sem reabrir arquitetura da informação ou direção visual.
+
+---
+
+## R2 — Design system foundation — #74
 
 ### Objetivo
 
-Entender exatamente o frontend atual antes de migrá-lo para a nova direção.
-
-### Entregas
-
-- inventário de rotas, páginas e estados;
-- screenshots desktop e mobile das superfícies atuais;
-- inventário de componentes e CSS Modules;
-- mapa de tokens implícitos/hardcoded;
-- mapa das jornadas críticas;
-- findings classificados como UX, visual, accessibility ou front-end debt;
-- lista de padrões repetidos e divergentes;
-- lista de estados ausentes/inconsistentes;
-- critérios mensuráveis de sucesso do redesign.
-
-### Gate
-
-Nenhum redesign estrutural é implementado antes de concluir o audit.
-
-## R1 — Arquitetura da informação + expansão do Protótipo 3
-
-### Objetivo
-
-Transformar a direção visual já aprovada em uma especificação completa para o app inteiro.
-
-### Entregas
-
-- arquitetura da informação e modelo de navegação derivados do protótipo;
-- container/grid/density model;
-- direção tipográfica;
-- direção de cor e superfície;
-- direção de iconografia;
-- conceitos completos para sign-in/auth, onboarding, dashboard e carteira;
-- painel Copiloto e comportamento de colapso/ausência;
-- variações desktop e mobile;
-- estados importantes de erro/empty/loading;
-- inventário de componentes e interações visíveis;
-- registro explícito de qualquer desvio necessário em relação ao Protótipo 3.
-
-### Gate
-
-R2 só começa quando as superfícies principais e os estados responsivos estiverem definidos na mesma linguagem do Protótipo 3.
-
-## R2 — Design system foundation
-
-### Objetivo
-
-Transformar a direção aprovada em contratos reutilizáveis.
+Transformar a direção aprovada em contratos reutilizáveis antes das migrações por tela.
 
 ### Tokens
 
 - semantic colors;
-- typography scale;
-- spacing scale;
+- typography e hierarchy financeira;
+- spacing;
 - grid/gutters/content widths;
 - radius;
 - elevation;
-- motion;
+- focus ring;
+- motion/reduced motion;
 - z-index quando necessário;
 - semantic feedback colors.
 
 ### Primitives
 
-- text/heading;
-- button/link;
-- input/select/textarea;
-- label/help/error;
-- divider;
-- stack/cluster/container/grid;
-- focus ring;
-- icon wrapper;
-- feedback/alert;
-- empty state;
+- `Container`, `Stack`, `Cluster`, `Grid`;
+- `PageHeader`;
+- `Button`/`LinkButton`;
+- fields, labels, help e errors;
+- input/select;
+- choice/segmented patterns apenas quando necessários;
+- `Surface`;
+- `Status`/`Badge` restritos;
+- `Alert`;
+- `EmptyState`;
 - loading/skeleton;
-- surface/panel apenas quando houver necessidade semântica.
+- apresentação de valores/métricas financeiras;
+- icon wrapper;
+- composição responsiva suficiente para R3–R7.
 
-### Estados
+### Gate
 
-- default;
-- hover;
-- focus-visible;
-- active/pressed;
-- selected;
-- disabled;
-- loading;
-- error;
-- success.
+R3 só começa quando o shell puder ser composto com a fundação canônica sem styling fundamental paralelo.
 
-### Decisão técnica
+---
 
-Avaliar conscientemente se CSS Modules + CSS custom properties continuam sendo a melhor base ou se alguma biblioteca de primitives é necessária. Não introduzir framework visual por conveniência.
-
-## R3 — App shell e navegação
+## R3 — App shell e navegação — #75
 
 ### Entregas
 
-- shell canônico baseado na sidebar do Protótipo 3;
-- navegação primária/secundária;
-- account/session affordances;
-- page header pattern;
-- content width/density por tipo de página;
-- desktop/tablet/mobile;
-- keyboard navigation;
+- AppShell canônico;
+- sidebar desktop;
+- drawer tablet/mobile;
+- brand;
+- primary/secondary navigation baseada em capacidades reais;
+- account/session affordance;
+- skip link e landmarks;
+- page container model;
+- context rail/drawer contract;
 - active/hover/focus states;
-- comportamento de navegação responsiva.
+- keyboard navigation e focus management.
 
-Esse shell passa a ser obrigatório para todas as superfícies protegidas.
+O shell passa a ser obrigatório para superfícies protegidas, respeitando a exceção de focused auth definida no R1.
 
-## R4 — Auth e sessão
+---
+
+## R4 — Auth e sessão — #76
 
 ### Cobertura
 
 - `/sign-in`;
 - `/sign-out`;
 - auth errors;
-- expired/re-entry state;
-- callback/recovery states;
-- session/account affordances do shell.
+- expired/re-entry;
+- callback/recovery;
+- account/session affordances.
 
 ### Objetivos
 
-- tornar login uma jornada simples, focada e confiável;
-- traduzir a linguagem do Protótipo 3 para uma superfície sem sidebar quando apropriado;
-- retirar informação operacional da hierarquia principal;
-- preservar transparência sobre privacidade sem transformar a tela em documentação técnica;
-- manter todas as garantias de segurança existentes.
+- uma ação primária clara;
+- sem CTA de health concorrendo com login;
+- privacidade e segurança em segunda ordem sem perder transparência;
+- preservação integral do GitHub OAuth, callback seguro e ownership existente.
 
-## R5 — Onboarding completo
+---
+
+## R5 — Onboarding completo — #77
 
 ### Objetivos
 
-- revisar ordem e agrupamento das perguntas;
+- migrar para o AppShell/primitives canônicos;
+- preservar regras de domínio e snapshot;
 - reduzir carga cognitiva;
-- melhorar progress/progression;
-- criar padrões consistentes para choice, input e validation;
-- definir save/resume/re-entry states;
-- aplicar a tipografia, controles, spacing e feedback do novo sistema;
-- garantir boa experiência em telas pequenas.
+- progressão consistente;
+- validation acessível;
+- save/resume/re-entry claros;
+- desktop/tablet/mobile;
+- nenhuma primitive local equivalente à canônica.
 
-## R6 — Dashboard completo
+---
+
+## R6 — Dashboard completo — #78
 
 ### Objetivos
 
-- implementar a superfície mais diretamente representada pelo Protótipo 3;
+- aplicar a superfície mais diretamente representada pelo Protótipo 3;
 - mostrar situação, decisão e contexto antes de detalhe secundário;
-- manter KPIs compactos no topo;
+- usar KPIs somente quando calculáveis;
 - consolidar panorama da carteira como bloco central dominante;
-- reservar painel lateral para Copiloto/contexto sem transformar o produto em chat;
-- integrar teses, eventos e próximos passos como informação secundária;
-- definir padrões de visualização de dados sem inventar métricas.
+- reservar arquitetura do context rail sem inventar a #45;
+- integrar teses, eventos e próximos passos somente quando houver capacidades/dados reais;
+- estados missing/stale/empty claros.
 
-## R7 — Carteira completa
+---
+
+## R7 — Carteira completa — #79
 
 ### Objetivos
 
-- refazer holdings/list/table experience na mesma fundação do dashboard;
-- alocação e gaps;
-- concentração;
-- agrupamentos;
-- ações/transações relacionadas;
-- detalhes progressivos;
-- estados de dado incompleto/stale quando aplicáveis;
-- comportamento responsivo sem degradar leitura financeira.
+- implementar a arquitetura progressiva definida no R1;
+- melhorar leitura de posições e alocação;
+- separar manutenção de ativos de posição;
+- tornar ledger escaneável;
+- organizar o pipeline de aporte por etapas reais;
+- reduzir UUIDs/detalhes técnicos da primeira ordem;
+- preservar Transaction Ledger e demais contratos como fontes de verdade;
+- garantir leitura financeira em desktop e mobile.
 
-## R8 — Componentes de domínio e estados transversais
+---
 
-Migrar para o novo sistema:
+## R8 — Componentes de domínio e estados transversais — #80
+
+Migrar/consolidar:
 
 - recommendation/reason-code surfaces;
 - financial profile/session summary;
-- account migration surfaces;
-- formulários;
+- account migration;
+- provenance/stale/missing-data;
+- formulários restantes;
 - transaction patterns;
-- feedback;
+- alerts/feedback;
 - empty states;
-- errors;
+- errors/recovery;
 - loading/skeleton;
 - confirmations;
 - permission/auth transitions;
 - health/operational UI quando exposta a humano.
 
-Nenhum componente visual antigo relevante deve permanecer como ilha de styling independente.
+Nenhuma ilha visual relevante do sistema antigo deve permanecer.
 
-## R9 — Acessibilidade, responsividade e visual QA
+---
+
+## R9 — Acessibilidade, responsividade e visual QA — #81
 
 ### Accessibility
 
 - WCAG 2.2 AA;
-- keyboard-only flow;
-- focus order;
-- focus visibility;
-- contrast;
-- semantics/landmarks;
+- keyboard-only flows;
+- focus order e visibility;
+- landmarks/semantics;
 - accessible names;
-- screen reader smoke test;
+- contraste;
+- status que não depende apenas de cor;
+- touch targets;
+- screen-reader smoke test;
 - reduced motion.
 
 ### Responsive
 
-Validar do mínimo de 320px até desktop largo, incluindo pelo menos:
+Validar pelo menos:
 
-- small mobile;
-- large mobile;
+- 320px;
+- mobile largo;
 - tablet;
 - laptop;
-- desktop.
+- desktop largo.
 
-### Visual QA
+### Visual fidelity
 
 - browser QA dos fluxos críticos;
 - screenshots da implementação;
-- comparação com o Protótipo 3 e conceitos derivados aprovados;
-- revisão de tipografia, spacing, palette, icons e estados;
+- comparação com Protótipo 3 + R1;
 - fidelity ledger para desvios materiais;
-- correção de regressões visuais antes do merge.
+- correção de regressões antes do fechamento.
+
+### Gate
+
+Nenhum blocker P0/P1 conhecido de a11y, responsive ou fidelity.
+
+---
 
 ## R10 — Gate de continuidade do produto
 
-Após a migração das superfícies atuais:
+Após R9:
 
-- novas telas só usam o design system canônico;
+- novas telas usam somente design system canônico;
 - styling paralelo não é aceito;
-- #45 pode construir sua interface sobre o novo shell e primitives;
-- documentação de frontend registra padrões e ownership;
-- novos PRs visuais incluem desktop/mobile, accessibility e visual QA.
+- #45 pode construir sua interface sobre shell/primitives aprovados;
+- documentação registra padrões e ownership;
+- novos PRs visuais incluem desktop/mobile, accessibility e visual QA;
+- #69 só fecha quando não houver superfície relevante restante no sistema antigo.
 
-Trabalho puramente de backend/contratos da #45 pode continuar em paralelo apenas se não criar uma interface temporária ou sistema visual concorrente.
+Trabalho puramente de backend/contratos da #45 pode continuar em paralelo desde que não crie UI temporária concorrente.
 
 ## Critérios de conclusão da iniciativa
 
 A #69 só pode ser fechada quando:
 
 - todas as telas atuais estiverem migradas;
-- auth, onboarding, dashboard e carteira parecerem partes do mesmo produto e da mesma direção do Protótipo 3;
+- auth, onboarding, dashboard e carteira parecerem partes do mesmo produto;
 - shell e navegação forem únicos;
 - tokens fundamentais forem centralizados;
 - estados comuns forem canônicos;
 - desktop/mobile tiverem qualidade equivalente;
 - WCAG 2.2 AA tiver sido auditado;
 - fluxos críticos tiverem browser QA;
-- fidelidade à direção aprovada tiver sido verificada;
+- fidelidade ao Protótipo 3/R1 tiver sido verificada;
 - regras financeiras, auth, segurança e persistência continuarem corretas;
 - `pnpm check` estiver verde nos PRs finais;
 - nenhuma superfície relevante permanecer visualmente no sistema antigo.
 
 ## Fora de escopo
 
-- mudar metodologia financeira;
-- modificar Investment Engine/Portfolio Engine por motivo visual;
+- mudar metodologia financeira por motivo visual;
+- modificar Investment Engine/Portfolio Engine para “bater” com mockup;
 - trocar provider de autenticação;
 - alterar ownership/persistência;
 - execução financeira;
 - adicionar biblioteca visual sem necessidade concreta;
-- preservar compatibilidade visual com o frontend atual;
-- inventar dados ou capacidades apenas para reproduzir conteúdo ilustrativo do protótipo.
+- preservar compatibilidade visual com o frontend antigo;
+- inventar dados, rotas ou capacidades para reproduzir o protótipo.
 
 ## Sequência canônica
 
 ```text
-#69 R0 audit
-  -> R1 expandir Protótipo 3 para todas as superfícies
-  -> aprovação dos conceitos derivados
-  -> R2 design system
-  -> R3 shell
-  -> R4 auth
-  -> R5 onboarding
-  -> R6 dashboard
-  -> R7 portfolio
-  -> R8 estados/componentes transversais
-  -> R9 accessibility/responsive/visual QA
-  -> R10 gate para novas superfícies
+#72 R0 audit ✓
+  -> #73 R1 Assistant-First app spec ✓
+  -> #74 R2 design system
+  -> #75 R3 shell
+  -> #76 R4 auth
+  -> #77 R5 onboarding
+  -> #78 R6 dashboard
+  -> #79 R7 portfolio
+  -> #80 R8 estados/componentes transversais
+  -> #81 R9 accessibility/responsive/fidelity QA
+  -> R10 / fechamento da #69
   -> UI da #45 sobre a nova fundação
 ```
