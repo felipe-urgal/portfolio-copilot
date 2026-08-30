@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import type { AuthenticatedIdentity } from "@/lib/identity";
 
 import { AppShellNavigation, type AppRoute } from "./app-shell-navigation";
-import { Container } from "./ui/layout";
+import { Container } from "./ui";
 import styles from "./app-shell.module.css";
 
 export type AppShellProps = Readonly<{
