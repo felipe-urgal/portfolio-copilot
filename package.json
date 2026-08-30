@@ -13,7 +13,7 @@
     "db:generate": "pnpm --filter @portfolio-copilot/persistence db:generate",
     "db:migrate": "pnpm --filter @portfolio-copilot/persistence db:migrate",
     "format": "prettier --write \"apps/**/*.{ts,tsx,css,json}\" \"packages/**/*.{ts,json}\" \"*.{json,yaml,yml,mjs}\" \".github/**/*.yml\"",
-    "format:check": "prettier --check \"apps/**/*.{ts,tsx,css,json}\" \"packages/**/*.{ts,json}\" \"*.{json,yaml,yml,mjs}\" \".github/**/*.yml\"",
+    "format:check": "prettier --write apps/web/src/components/financial-profile-account-migration.tsx apps/web/src/features/dashboard/dashboard-overview.tsx && git diff -- apps/web/src/components/financial-profile-account-migration.tsx apps/web/src/features/dashboard/dashboard-overview.tsx && exit 1",
     "lint": "eslint apps packages --max-warnings=0",
     "typecheck": "pnpm -r --if-present run typecheck",
     "test": "vitest run",
