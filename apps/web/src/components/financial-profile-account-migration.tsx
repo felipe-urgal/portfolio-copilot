@@ -49,7 +49,8 @@ export function FinancialProfileAccountMigration({
 }: FinancialProfileAccountMigrationProps = {}) {
   const { financialProfile, persistenceStatus, removePersistedFinancialProfile } =
     useFinancialSession();
-  const hasPersistedLocalProfile = financialProfile !== null && persistenceStatus === "persisted";
+  const hasPersistedLocalProfile =
+    financialProfile !== null && persistenceStatus === "persisted";
   const [accountState, setAccountState] = useState<AccountLoadState>(() =>
     initialAccountProfile === undefined
       ? { status: "idle" }
@@ -127,7 +128,9 @@ export function FinancialProfileAccountMigration({
         const latestAccountProfile =
           payload.accountProfile === null
             ? null
-            : canonicalFinancialProfileSnapshot(payload.accountProfile as FinancialProfileSnapshot);
+            : canonicalFinancialProfileSnapshot(
+                payload.accountProfile as FinancialProfileSnapshot,
+              );
         setAccountState({ status: "ready", profile: latestAccountProfile });
         setStatusMessage(
           "O perfil da conta mudou. Revise o conflito atualizado antes de substituir qualquer dado.",
@@ -209,7 +212,7 @@ export function FinancialProfileAccountMigration({
                   loading={isSaving}
                   onClick={() => void migrateLocalProfile(false)}
                 >
-                  Salvar perfil local na conta
+                  {isSaving ? "Salvando…" : "Salvar perfil local na conta"}
                 </Button>
                 <Button
                   variant="secondary"
@@ -226,7 +229,9 @@ export function FinancialProfileAccountMigration({
               <Status tone="success">Perfis alinhados</Status>
               <div>
                 <strong>Perfil local e perfil da conta estão alinhados.</strong>
-                <p>Nenhuma gravação adicional é necessária. As duas cópias permanecem independentes.</p>
+                <p>
+                  Nenhuma gravação adicional é necessária. As duas cópias permanecem independentes.
+                </p>
               </div>
             </div>
           ) : comparison?.relation === "conflict" ? (
@@ -237,7 +242,10 @@ export function FinancialProfileAccountMigration({
                   explicitamente qual ação deseja executar.
                 </p>
               </Alert>
-              <ul className={styles.differences} aria-label="Diferenças entre perfil local e da conta">
+              <ul
+                className={styles.differences}
+                aria-label="Diferenças entre perfil local e da conta"
+              >
                 {comparison.differences.map((difference) => (
                   <li key={difference}>{DIFFERENCE_LABELS[difference]}</li>
                 ))}
@@ -248,7 +256,7 @@ export function FinancialProfileAccountMigration({
                   loading={isSaving}
                   onClick={() => void migrateLocalProfile(true)}
                 >
-                  Substituir perfil da conta pelo local
+                  {isSaving ? "Substituindo…" : "Substituir perfil da conta pelo local"}
                 </Button>
                 <Button
                   variant="secondary"
