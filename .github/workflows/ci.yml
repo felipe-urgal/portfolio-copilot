@@ -7,7 +7,7 @@ on:
       - main
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
@@ -37,11 +37,10 @@ jobs:
           --health-retries=10
 
     steps:
-      - name: Checkout branch
+      - name: Checkout
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
-          ref: feature/onboarding-redesign
-          persist-credentials: true
+          persist-credentials: false
 
       - name: Setup Node.js
         uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
@@ -57,15 +56,29 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Apply canonical Prettier and push
+      - name: Validate local Docker Compose
+        run: docker compose config --quiet
+
+      - name: Format check
+        run: pnpm format:check
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Apply database migrations
+        run: pnpm db:migrate
+
+      - name: Verify root .env.local database fallback
         run: |
-          pnpm exec prettier --write apps/web/src/features/onboarding/financial-onboarding-flow.tsx
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add apps/web/src/features/onboarding/financial-onboarding-flow.tsx
-          if git diff --cached --quiet; then
-            echo "No formatting changes required"
-          else
-            git commit -m "style: apply canonical onboarding formatting"
-            git push origin HEAD:feature/onboarding-redesign
-          fi
+          trap 'rm -f .env.local' EXIT
+          printf 'DATABASE_URL="%s"\n' "$DATABASE_URL" > .env.local
+          DATABASE_URL= pnpm db:migrate
+
+      - name: Test
+        run: pnpm test
+
+      - name: Build
+        run: pnpm build
