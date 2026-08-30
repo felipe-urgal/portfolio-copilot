@@ -6,13 +6,13 @@ import styles from "./ui.module.css";
 type SurfaceTone = "default" | "subtle" | "elevated";
 type SurfacePadding = "none" | "sm" | "md" | "lg";
 
-const toneClass: Record<SurfaceTone, string> = {
+const toneClass: Record<SurfaceTone, string | undefined> = {
   default: styles.surfaceDefault,
   subtle: styles.surfaceSubtle,
   elevated: styles.surfaceElevated,
 };
 
-const paddingClass: Record<SurfacePadding, string> = {
+const paddingClass: Record<SurfacePadding, string | undefined> = {
   none: styles.surfacePaddingNone,
   sm: styles.surfacePaddingSm,
   md: styles.surfacePaddingMd,
