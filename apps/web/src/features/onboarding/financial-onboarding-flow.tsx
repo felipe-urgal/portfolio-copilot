@@ -219,7 +219,6 @@ function ProfileStep({
                 title={content.title}
                 description={content.description}
                 data-invalid={index === 0 && riskError !== undefined ? "true" : undefined}
-                aria-invalid={riskError !== undefined}
                 onChange={() =>
                   dispatch({ type: "update-profile", field: "riskTolerance", value: risk })
                 }
@@ -246,7 +245,6 @@ function ProfileStep({
               value={horizon}
               checked={draft.horizon === horizon}
               data-invalid={index === 0 && horizonError !== undefined ? "true" : undefined}
-              aria-invalid={horizonError !== undefined}
               onChange={() =>
                 dispatch({ type: "update-profile", field: "horizon", value: horizon })
               }

@@ -55,6 +55,14 @@ describe("FinancialOnboardingFlow", () => {
     expect(html).toContain("Moeda de referência");
     expect(html).toContain("Tolerância a risco");
     expect(html).toContain("Horizonte financeiro");
+    expect(FLOW_SOURCE).not.toContain("aria-invalid={riskError !== undefined}");
+    expect(FLOW_SOURCE).not.toContain("aria-invalid={horizonError !== undefined}");
+    expect(FLOW_SOURCE).toContain(
+      'data-invalid={index === 0 && riskError !== undefined ? "true" : undefined}',
+    );
+    expect(FLOW_SOURCE).toContain(
+      'data-invalid={index === 0 && horizonError !== undefined ? "true" : undefined}',
+    );
   });
 
   it("moves persistence detail to progressive disclosure without changing its opt-in contract", () => {
