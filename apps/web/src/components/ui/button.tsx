@@ -34,17 +34,18 @@ export function Button({
   className,
   children,
   type = "button",
+  "aria-busy": ariaBusy,
   ...props
 }: ButtonProps) {
   const isDisabled = disabled === true || loading;
 
   return (
     <button
+      {...props}
       type={type}
       className={classNames(styles.button, variantClass[variant], sizeClass[size], className)}
       disabled={isDisabled}
-      aria-busy={loading || undefined}
-      {...props}
+      aria-busy={loading ? true : ariaBusy}
     >
       {loading ? <span className={styles.spinner} aria-hidden="true" /> : null}
       <span className={styles.buttonContent}>{children}</span>
@@ -52,7 +53,8 @@ export function Button({
   );
 }
 
-export interface LinkButtonProps extends Omit<ComponentProps<typeof Link>, "children" | "className"> {
+export interface LinkButtonProps
+  extends Omit<ComponentProps<typeof Link>, "children" | "className"> {
   children: ReactNode;
   className?: string;
   variant?: ButtonVariant;
@@ -67,6 +69,11 @@ export function LinkButton({
   className,
   children,
   href,
+  id,
+  title,
+  "aria-label": ariaLabel,
+  "aria-labelledby": ariaLabelledBy,
+  "aria-describedby": ariaDescribedBy,
   ...props
 }: LinkButtonProps) {
   const classes = classNames(
@@ -79,14 +86,31 @@ export function LinkButton({
 
   if (disabled) {
     return (
-      <span className={classes} aria-disabled="true">
+      <span
+        id={id}
+        title={title}
+        className={classes}
+        aria-disabled="true"
+        aria-label={ariaLabel}
+        aria-labelledby={ariaLabelledBy}
+        aria-describedby={ariaDescribedBy}
+      >
         <span className={styles.buttonContent}>{children}</span>
       </span>
     );
   }
 
   return (
-    <Link className={classes} href={href} {...props}>
+    <Link
+      {...props}
+      id={id}
+      title={title}
+      className={classes}
+      href={href}
+      aria-label={ariaLabel}
+      aria-labelledby={ariaLabelledBy}
+      aria-describedby={ariaDescribedBy}
+    >
       <span className={styles.buttonContent}>{children}</span>
     </Link>
   );
