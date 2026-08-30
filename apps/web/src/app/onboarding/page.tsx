@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 
 import { APP_NAME } from "@portfolio-copilot/shared";
 
+import { AppShell } from "@/components/app-shell";
 import { FinancialOnboardingFlow } from "@/features/onboarding/financial-onboarding-flow";
 import { requireAuthenticatedIdentity } from "@/lib/identity-server";
 
@@ -12,7 +13,11 @@ export const metadata: Metadata = {
 };
 
 export default async function OnboardingPage() {
-  await requireAuthenticatedIdentity();
+  const identity = await requireAuthenticatedIdentity();
 
-  return <FinancialOnboardingFlow />;
+  return (
+    <AppShell activeRoute="/onboarding" identity={identity}>
+      <FinancialOnboardingFlow />
+    </AppShell>
+  );
 }
