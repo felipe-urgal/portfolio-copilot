@@ -48,54 +48,56 @@ const SELL = {
 } as const;
 
 describe("PortfolioWorkspace", () => {
-  it("renders the local portfolio creation form without owning global navigation", () => {
+  it("starts with one focused configuration task and no local copy of global navigation", () => {
     const html = renderToStaticMarkup(<PortfolioWorkspace />);
 
     expect(html).toContain("Criar carteira");
     expect(html).toContain("Nome da carteira");
     expect(html).toContain("Criar carteira local");
-    expect(html).toContain("Nada é persistido nesta versão");
     expect(html).toContain("Transaction Ledger");
+    expect(html).toContain("Estado local");
+    expect(html).not.toContain('role="tablist"');
     expect(html).not.toContain('aria-label="Navegação principal"');
     expect(html).not.toContain('href="/dashboard"');
   });
 
-  it("renders local asset registration and the manual contribution baseline after portfolio creation", () => {
+  it("exposes the R7 task model after portfolio creation and keeps secondary tasks disclosed", () => {
     const html = renderToStaticMarkup(<PortfolioWorkspace initialSnapshot={SNAPSHOT} />);
 
-    expect(html).toContain("Carteira desta sessão");
-    expect(html).toContain("Ativos da sessão");
-    expect(html).toContain("Nome do ativo");
-    expect(html).toContain("Classe econômica");
-    expect(html).toContain("Instrumento");
-    expect(html).toContain("Cadastrar ativo local");
-    expect(html).toContain("Nenhum ativo cadastrado");
-    expect(html).toContain("Compra e venda");
-    expect(html).toContain("Cadastre um ativo local antes de negociar");
-    expect(html).toContain('id="trade-asset" disabled=""');
-    expect(html).toContain("Nenhuma posição de ativo aberta");
-    expect(html).toContain("Sem transações");
-    expect(html).toContain("Baseline do aporte");
-    expect(html).toContain("Base monetária manual");
-    expect(html).toContain("Baseline ainda não calculado");
+    expect(html).toContain('role="tablist"');
+    expect(html).toContain("Visão geral");
+    expect(html).toContain("Ativos e posições");
+    expect(html).toContain("Transações");
+    expect(html).toContain("Aporte");
+    expect(html).toContain("Configuração");
+    expect(html).toContain('id="portfolio-tab-overview"');
+    expect(html).toContain('aria-selected="true"');
+    expect(html).toContain('id="portfolio-panel-assets"');
+    expect(html).toContain('hidden=""');
+    expect(html).toContain("Detalhes técnicos e identidade");
+    expect(html).toContain("Nada é persistido nesta versão");
   });
 
-  it("renders a human asset selection and positions projected from BUY/SELL", () => {
+  it("keeps asset registration, human selection and positions projected from BUY/SELL", () => {
     const html = renderToStaticMarkup(
       <PortfolioWorkspace
         initialSnapshot={SNAPSHOT}
         initialAssets={[ASSET]}
         initialTransactions={[CASH_IN, BUY, SELL]}
+        initialTask="assets"
       />,
     );
 
+    expect(html).toContain("Cadastrar ativo local");
+    expect(html).toContain("Nome do ativo");
+    expect(html).toContain("Classe econômica");
+    expect(html).toContain("Instrumento");
     expect(html).toContain("ETF global");
     expect(html).toContain("Ações · ETF · USD");
     expect(html).toContain("ETF global — Ações");
     expect(html).toContain("1 posição");
     expect(html).toContain("1.75 un.");
-    expect(html).toContain("Compra");
-    expect(html).toContain("Venda");
+    expect(html).toContain("Compra e venda");
     expect(html).toContain("3 un.");
     expect(html).toContain("1.25 un.");
     expect(html).toContain("BRL 2500.00");
@@ -108,7 +110,11 @@ describe("PortfolioWorkspace", () => {
 
   it("keeps cash flows from creating asset positions", () => {
     const html = renderToStaticMarkup(
-      <PortfolioWorkspace initialSnapshot={SNAPSHOT} initialTransactions={[CASH_IN]} />,
+      <PortfolioWorkspace
+        initialSnapshot={SNAPSHOT}
+        initialTransactions={[CASH_IN]}
+        initialTask="overview"
+      />,
     );
 
     expect(html).toContain("Entrada de caixa");
@@ -116,5 +122,16 @@ describe("PortfolioWorkspace", () => {
     expect(html).toContain("Somente fluxos de caixa");
     expect(html).toContain("Nenhuma posição de ativo aberta");
     expect(html).toContain("CASH_IN e CASH_OUT não alteram posições");
+  });
+
+  it("keeps the full deterministic contribution journey mounted as a dedicated task", () => {
+    const html = renderToStaticMarkup(
+      <PortfolioWorkspace initialSnapshot={SNAPSHOT} initialTask="contribution" />,
+    );
+
+    expect(html).toContain("Aporte é planejamento, não execução de ordem");
+    expect(html).toContain("Baseline do aporte");
+    expect(html).toContain("Base monetária manual");
+    expect(html).toContain("Baseline ainda não calculado");
   });
 });
