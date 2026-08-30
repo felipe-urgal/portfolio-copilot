@@ -1,18 +1,15 @@
 .surface {
-  overflow: hidden;
-  border: 1px solid #e1e4eb;
-  border-radius: 1.2rem;
-  background: #fff;
-  box-shadow: 0 22px 65px rgba(36, 40, 56, 0.06);
+  display: grid;
+  gap: var(--space-6);
 }
 
-.heading {
+.heading,
+.policyHeading,
+.resultHeading {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 1rem;
-  padding: 1.5rem 1.65rem 1.25rem;
-  border-bottom: 1px solid #eceef3;
+  gap: var(--space-5);
 }
 
 .heading h2,
@@ -20,179 +17,61 @@
 .resultHeading h3,
 .policyHeading h4 {
   margin: 0;
-  color: #1b1e29;
-  letter-spacing: -0.02em;
+  color: var(--color-text-primary);
+  line-height: var(--line-height-heading);
+  letter-spacing: var(--letter-spacing-tight);
 }
 
 .heading h2 {
-  font-size: 1rem;
+  font-size: var(--font-size-xl);
+}
+
+.matrixHeading h3,
+.resultHeading h3,
+.policyHeading h4 {
+  font-size: var(--font-size-lg);
 }
 
 .heading p,
 .matrixHeading p,
 .resultHeading p,
 .policyHeading p,
-.manualNotice p,
-.emptyResult p,
 .resultFootnote {
-  margin: 0.4rem 0 0;
-  color: #747b89;
-  font-size: 0.78rem;
-  line-height: 1.55;
-}
-
-.status {
-  display: inline-flex;
-  align-items: center;
-  width: fit-content;
-  flex: 0 0 auto;
-  padding: 0.36rem 0.62rem;
-  border: 1px solid #dfe3eb;
-  border-radius: 999px;
-  background: #f8f9fb;
-  color: #606776;
-  font-size: 0.75rem;
-  font-weight: 720;
+  margin: var(--space-2) 0 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-body);
 }
 
 .layout {
   display: grid;
-  grid-template-columns: minmax(22rem, 0.92fr) minmax(0, 1.08fr);
+  grid-template-columns: minmax(20rem, 0.9fr) minmax(0, 1.1fr);
+  gap: var(--space-8);
+  align-items: start;
 }
 
 .form,
-.result {
+.result,
+.policyForm,
+.resultFootnotes {
+  display: grid;
+  gap: var(--space-5);
   min-width: 0;
-  padding: 1.65rem;
-}
-
-.form {
-  display: grid;
-  align-content: start;
-  gap: 1.25rem;
-  border-right: 1px solid #eceef3;
 }
 
 .result {
-  display: grid;
-  align-content: start;
-  gap: 1.15rem;
-}
-
-.manualNotice {
-  padding: 1rem 1.05rem;
-  border: 1px solid #cbc9f4;
-  border-radius: 0.85rem;
-  background: #f5f4ff;
-}
-
-.manualNotice strong {
-  color: #3730a3;
-  font-size: 0.82rem;
+  padding-left: var(--space-6);
+  border-left: 1px solid var(--color-border-subtle);
 }
 
 .fieldRow {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.85rem;
+  gap: var(--space-4);
 }
 
-.fieldGroup {
-  display: grid;
-  gap: 0.48rem;
-}
-
-.fieldGroup label {
-  color: #292d38;
-  font-size: 0.82rem;
-  font-weight: 730;
-}
-
-.fieldGroup input,
-.inputTable input {
-  min-height: 2.75rem;
-  width: 100%;
-  padding: 0.65rem 0.75rem;
-  border: 1px solid #d9dde6;
-  border-radius: 0.68rem;
-  background: #fff;
-  color: #20242f;
-  font: inherit;
-  font-size: 0.86rem;
-  outline: none;
-}
-
-.fieldGroup input:hover,
-.inputTable input:hover {
-  border-color: #c5cad5;
-}
-
-.fieldGroup input:focus-visible,
-.inputTable input:focus-visible {
-  border-color: #8179ee;
-  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
-}
-
-.fieldGroup input[aria-invalid="true"],
-.inputTable input[aria-invalid="true"] {
-  border-color: #c45c66;
-}
-
-.helpText,
-.fieldError,
-.formError {
-  margin: 0;
-  font-size: 0.75rem;
-  line-height: 1.45;
-}
-
-.helpText {
-  color: #858b98;
-}
-
-.fieldError,
-.formError {
-  color: #a83d48;
-  font-weight: 650;
-}
-
-.formError {
-  padding: 0.8rem 0.9rem;
-  border: 1px solid #efcdd1;
-  border-radius: 0.72rem;
-  background: #fff7f8;
-}
-
-.primaryAction {
-  min-height: 2.7rem;
-  width: fit-content;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.65rem 0.9rem;
-  border: 1px solid #4f46e5;
-  border-radius: 0.7rem;
-  background: #4f46e5;
-  color: #fff;
-  font: inherit;
-  font-size: 0.8rem;
-  font-weight: 730;
-  cursor: pointer;
-}
-
-.primaryAction:hover {
-  background: #4338ca;
-}
-
-.primaryAction:focus-visible {
-  outline: 3px solid rgba(79, 70, 229, 0.22);
-  outline-offset: 3px;
-}
-
-.matrixHeading h3,
-.resultHeading h3,
-.policyHeading h4 {
-  font-size: 0.92rem;
+.matrixHeading {
+  padding-top: var(--space-2);
 }
 
 .tableScroller {
@@ -204,35 +83,33 @@
 .resultTable {
   width: 100%;
   border-collapse: collapse;
-  border-top: 1px solid #e5e8ee;
-  border-bottom: 1px solid #e5e8ee;
+  border-block: 1px solid var(--color-border-subtle);
 }
 
 .inputTable th,
 .inputTable td,
 .resultTable th,
 .resultTable td {
-  padding: 0.72rem 0.65rem;
-  border-bottom: 1px solid #eceef3;
+  padding: var(--space-3);
+  border-bottom: 1px solid var(--color-border-subtle);
   text-align: left;
   vertical-align: middle;
 }
 
 .inputTable thead th,
 .resultTable thead th {
-  background: #fafbfc;
-  color: #737a88;
-  font-size: 0.69rem;
-  font-weight: 760;
-  letter-spacing: 0.015em;
+  background: var(--color-surface-subtle);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
   white-space: nowrap;
 }
 
 .inputTable tbody th,
 .resultTable tbody th {
-  color: #343945;
-  font-size: 0.76rem;
-  font-weight: 720;
+  color: var(--color-text-primary);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
   white-space: nowrap;
 }
 
@@ -241,57 +118,24 @@
 }
 
 .resultTable td {
-  color: #59606d;
-  font-size: 0.74rem;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
   white-space: nowrap;
 }
 
-.baselineAmount {
-  color: #2f3192 !important;
-  font-weight: 760;
-}
-
+.baselineAmount,
 .policyAmount {
-  color: #245d4a !important;
-  font-weight: 760;
-}
-
-.policyState {
-  color: #606776;
-  font-size: 0.72rem;
-  font-weight: 700;
-}
-
-.policyState[data-status="KEPT"] {
-  color: #245d4a;
-}
-
-.policyState[data-status="REMOVED"] {
-  color: #9a4e58;
-}
-
-.policyState[data-status="NO_BASELINE"] {
-  color: #7a808d;
-}
-
-.emptyResult {
-  padding: 1.2rem;
-  border: 1px dashed #d8dce5;
-  border-radius: 0.85rem;
-  background: #fafbfc;
-}
-
-.emptyResult strong {
-  color: #353a46;
-  font-size: 0.84rem;
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family-mono);
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--font-weight-semibold);
 }
 
 .summary,
 .policySummary {
   display: grid;
+  gap: var(--space-3);
   margin: 0;
-  border-top: 1px solid #eceef3;
-  border-left: 1px solid #eceef3;
 }
 
 .summary {
@@ -305,39 +149,39 @@
 .summary > div,
 .policySummary > div {
   display: grid;
-  gap: 0.3rem;
-  padding: 0.9rem 1rem;
-  border-right: 1px solid #eceef3;
-  border-bottom: 1px solid #eceef3;
+  gap: var(--space-1);
+  padding: var(--space-4);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-subtle);
 }
 
 .summary dt,
 .policySummary dt {
-  color: #858b98;
-  font-size: 0.7rem;
-  font-weight: 700;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
 }
 
 .summary dd,
 .policySummary dd {
   margin: 0;
-  color: #2c313d;
-  font-size: 0.84rem;
-  font-weight: 760;
+  color: var(--color-text-primary);
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-sm);
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--font-weight-semibold);
 }
 
 .policySection {
   display: grid;
-  gap: 1rem;
-  padding: 1.05rem;
-  border: 1px solid #e0e3eb;
-  border-radius: 0.9rem;
-  background: #fbfbfd;
+  gap: var(--space-5);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--color-border-subtle);
 }
 
-.policyForm {
-  display: grid;
-  gap: 0.95rem;
+.resultFootnotes {
+  gap: var(--space-2);
 }
 
 .resultFootnote {
@@ -361,23 +205,20 @@
     grid-template-columns: 1fr;
   }
 
-  .form {
-    border-right: 0;
-    border-bottom: 1px solid #eceef3;
+  .result {
+    padding-top: var(--space-6);
+    padding-left: 0;
+    border-top: 1px solid var(--color-border-subtle);
+    border-left: 0;
   }
 }
 
-@media (max-width: 620px) {
-  .heading {
-    flex-direction: column;
-    gap: 0.9rem;
-  }
-
+@media (max-width: 680px) {
   .heading,
-  .form,
-  .result {
-    padding-right: 1.15rem;
-    padding-left: 1.15rem;
+  .policyHeading,
+  .resultHeading {
+    display: grid;
+    gap: var(--space-3);
   }
 
   .fieldRow,
