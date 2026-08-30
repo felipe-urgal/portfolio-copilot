@@ -1,0 +1,71 @@
+import { readFileSync } from "node:fs";
+
+import { renderToStaticMarkup } from "react-dom/server";
+import { describe, expect, it } from "vitest";
+
+import { AppShell } from "./app-shell";
+
+const IDENTITY = {
+  subject: "github:38505458",
+  displayName: "Felipe Urgal",
+  email: "felipe@example.com",
+  avatarUrl: null,
+} as const;
+
+const SHELL_CSS = readFileSync(new URL("./app-shell.module.css", import.meta.url), "utf8");
+
+function renderShell(activeRoute: "/dashboard" | "/portfolio" | "/onboarding" = "/dashboard") {
+  return renderToStaticMarkup(
+    <AppShell activeRoute={activeRoute} identity={IDENTITY}>
+      <h1>Conteúdo protegido</h1>
+    </AppShell>,
+  );
+}
+
+describe("AppShell", () => {
+  it("renders only real product routes and marks the active route", () => {
+    const html = renderShell("/portfolio");
+
+    expect(html).toContain('aria-label="Navegação principal"');
+    expect(html).toContain('href="/dashboard"');
+    expect(html).toContain('href="/portfolio"');
+    expect(html).toContain('href="/onboarding"');
+    expect(html).toContain('href="/health"');
+    expect(html).toContain('href="/sign-out"');
+    expect(html).toContain('aria-current="page"');
+    expect(html).not.toContain('href="/assistant"');
+    expect(html).not.toContain('href="/reports"');
+    expect(html).not.toContain('href="/theses"');
+  });
+
+  it("provides skip navigation, landmarks and a closed mobile drawer trigger", () => {
+    const html = renderShell();
+
+    expect(html).toContain('href="#main-content"');
+    expect(html).toContain('id="main-content"');
+    expect(html).toContain('tabindex="-1"');
+    expect(html).toContain('aria-label="Navegação do produto"');
+    expect(html).toContain('aria-haspopup="dialog"');
+    expect(html).toContain('aria-expanded="false"');
+    expect(html).toContain('aria-controls="app-navigation-drawer"');
+  });
+
+  it("shows useful account context without leaking the canonical identity subject", () => {
+    const html = renderShell();
+
+    expect(html).toContain("Felipe Urgal");
+    expect(html).toContain("FU");
+    expect(html).toContain("Sessão autenticada como Felipe Urgal");
+    expect(html).not.toContain(IDENTITY.subject);
+  });
+
+  it("defines desktop sidebar, responsive drawer and reduced-motion contracts", () => {
+    expect(SHELL_CSS).toContain(".desktopSidebar");
+    expect(SHELL_CSS).toContain("@media (max-width: 960px)");
+    expect(SHELL_CSS).toContain(".drawerLayer");
+    expect(SHELL_CSS).toContain(".drawerBackdrop");
+    expect(SHELL_CSS).toContain("@media (prefers-reduced-motion: reduce)");
+    expect(SHELL_CSS).toContain("var(--color-focus-ring)");
+    expect(SHELL_CSS).toContain("var(--z-modal)");
+  });
+});
