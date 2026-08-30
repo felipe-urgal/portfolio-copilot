@@ -329,104 +329,102 @@ function GoalEditor({
 
   return (
     <section className={styles.goalEditor} aria-labelledby={`${goal.clientId}-title`}>
-      <Surface tone="subtle" padding="md">
-        <Stack space="lg">
-          <div className={styles.goalHeader}>
-            <div>
-              <span className={styles.goalNumber}>Objetivo {index + 1}</span>
-              <h3 id={`${goal.clientId}-title`}>
-                {goal.type === "" ? "Novo objetivo" : GOAL_LABELS[goal.type]}
-              </h3>
-            </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              type="button"
-              onClick={() => dispatch({ type: "remove-goal", clientId: goal.clientId })}
-            >
-              Remover
-            </Button>
+      <Stack space="lg">
+        <div className={styles.goalHeader}>
+          <div>
+            <span className={styles.goalNumber}>Objetivo {index + 1}</span>
+            <h3 id={`${goal.clientId}-title`}>
+              {goal.type === "" ? "Novo objetivo" : GOAL_LABELS[goal.type]}
+            </h3>
           </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            type="button"
+            onClick={() => dispatch({ type: "remove-goal", clientId: goal.clientId })}
+          >
+            Remover
+          </Button>
+        </div>
 
-          <Grid minimum="md" space="md">
-            <Field>
-              <Label htmlFor={`${goal.clientId}-type`}>Tipo</Label>
-              <Select
-                id={`${goal.clientId}-type`}
-                value={goal.type}
-                invalid={typeError !== undefined}
-                aria-describedby={
-                  typeError === undefined ? undefined : `${goal.clientId}-type-error`
-                }
-                onChange={(event) =>
-                  dispatch({
-                    type: "update-goal",
-                    clientId: goal.clientId,
-                    patch: { type: event.target.value as FinancialGoalTypeCode | "" },
-                  })
-                }
-              >
-                <option value="">Selecione</option>
-                {FINANCIAL_GOAL_TYPES.map((type) => (
-                  <option key={type} value={type}>
-                    {GOAL_LABELS[type]}
-                  </option>
-                ))}
-              </Select>
-              <FieldValidationError id={`${goal.clientId}-type-error`} message={typeError} />
-            </Field>
+        <Grid minimum="md" space="md">
+          <Field>
+            <Label htmlFor={`${goal.clientId}-type`}>Tipo</Label>
+            <Select
+              id={`${goal.clientId}-type`}
+              value={goal.type}
+              invalid={typeError !== undefined}
+              aria-describedby={
+                typeError === undefined ? undefined : `${goal.clientId}-type-error`
+              }
+              onChange={(event) =>
+                dispatch({
+                  type: "update-goal",
+                  clientId: goal.clientId,
+                  patch: { type: event.target.value as FinancialGoalTypeCode | "" },
+                })
+              }
+            >
+              <option value="">Selecione</option>
+              {FINANCIAL_GOAL_TYPES.map((type) => (
+                <option key={type} value={type}>
+                  {GOAL_LABELS[type]}
+                </option>
+              ))}
+            </Select>
+            <FieldValidationError id={`${goal.clientId}-type-error`} message={typeError} />
+          </Field>
 
-            <Field>
-              <Label htmlFor={`${goal.clientId}-amount`}>
-                {goal.type === "PASSIVE_INCOME_MONTHLY" ? "Valor mensal-alvo" : "Valor-alvo"}
-              </Label>
-              <TextInput
-                id={`${goal.clientId}-amount`}
-                inputMode="decimal"
-                autoComplete="off"
-                placeholder="50000,00"
-                value={goal.targetAmount}
-                invalid={amountError !== undefined}
-                aria-describedby={
-                  amountError === undefined ? undefined : `${goal.clientId}-amount-error`
-                }
-                onChange={(event) =>
-                  dispatch({
-                    type: "update-goal",
-                    clientId: goal.clientId,
-                    patch: { targetAmount: event.target.value },
-                  })
-                }
-              />
-              <FieldValidationError id={`${goal.clientId}-amount-error`} message={amountError} />
-            </Field>
+          <Field>
+            <Label htmlFor={`${goal.clientId}-amount`}>
+              {goal.type === "PASSIVE_INCOME_MONTHLY" ? "Valor mensal-alvo" : "Valor-alvo"}
+            </Label>
+            <TextInput
+              id={`${goal.clientId}-amount`}
+              inputMode="decimal"
+              autoComplete="off"
+              placeholder="50000,00"
+              value={goal.targetAmount}
+              invalid={amountError !== undefined}
+              aria-describedby={
+                amountError === undefined ? undefined : `${goal.clientId}-amount-error`
+              }
+              onChange={(event) =>
+                dispatch({
+                  type: "update-goal",
+                  clientId: goal.clientId,
+                  patch: { targetAmount: event.target.value },
+                })
+              }
+            />
+            <FieldValidationError id={`${goal.clientId}-amount-error`} message={amountError} />
+          </Field>
 
-            <Field>
-              <Label htmlFor={`${goal.clientId}-date`} required={dateRequiredByDomain}>
-                Data-alvo {dateRequiredByDomain ? "" : "(opcional)"}
-              </Label>
-              <TextInput
-                id={`${goal.clientId}-date`}
-                type="date"
-                value={goal.targetDate}
-                aria-required={dateRequiredByDomain}
-                invalid={dateError !== undefined}
-                aria-describedby={
-                  dateError === undefined ? undefined : `${goal.clientId}-date-error`
-                }
-                onChange={(event) =>
-                  dispatch({
-                    type: "update-goal",
-                    clientId: goal.clientId,
-                    patch: { targetDate: event.target.value },
-                  })
-                }
-              />
-              <FieldValidationError id={`${goal.clientId}-date-error`} message={dateError} />
-            </Field>
-          </Grid>
-        </Stack>
-      </Surface>
+          <Field>
+            <Label htmlFor={`${goal.clientId}-date`} required={dateRequiredByDomain}>
+              Data-alvo {dateRequiredByDomain ? "" : "(opcional)"}
+            </Label>
+            <TextInput
+              id={`${goal.clientId}-date`}
+              type="date"
+              value={goal.targetDate}
+              aria-required={dateRequiredByDomain}
+              invalid={dateError !== undefined}
+              aria-describedby={
+                dateError === undefined ? undefined : `${goal.clientId}-date-error`
+              }
+              onChange={(event) =>
+                dispatch({
+                  type: "update-goal",
+                  clientId: goal.clientId,
+                  patch: { targetDate: event.target.value },
+                })
+              }
+            />
+            <FieldValidationError id={`${goal.clientId}-date-error`} message={dateError} />
+          </Field>
+        </Grid>
+      </Stack>
     </section>
   );
 }
