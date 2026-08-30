@@ -62,12 +62,6 @@ jobs:
       - name: Format check
         run: pnpm format:check
 
-      - name: Show R2 formatting diff
-        if: failure()
-        run: |
-          pnpm exec prettier --write apps/web/src/components/ui apps/web/src/styles/tokens.css apps/web/src/app/globals.css
-          git diff -- apps/web/src/components/ui apps/web/src/styles/tokens.css apps/web/src/app/globals.css
-
       - name: Lint
         run: pnpm lint
 
