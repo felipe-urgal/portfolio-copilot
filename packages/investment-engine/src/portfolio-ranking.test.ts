@@ -24,6 +24,11 @@ const OTHER_PORTFOLIO_ID = "650e8400-e29b-41d4-a716-446655440001";
 const ASSET_A = "550e8400-e29b-41d4-a716-446655440000";
 const ASSET_B = "550e8400-e29b-41d4-a716-446655440001";
 const EVALUATION_AS_OF = "2026-08-30T10:00:00.000Z";
+const STOCK_CLASSIFICATION = Object.freeze({
+  assetClass: "EQUITY",
+  instrumentType: "STOCK",
+  sector: "GENERAL",
+} as const);
 
 function equityGap(equityValue: string, fixedIncomeValue: string): AllocationGap {
   const portfolioId = PortfolioId.from(PORTFOLIO_ID);
@@ -124,11 +129,7 @@ function scoredDimension(
     evaluationAsOf: EVALUATION_AS_OF,
     methodologyId: "EQUITY_STOCK_GENERAL",
     methodologyVersion: "1.0.0",
-    classification: {
-      assetClass: "EQUITY",
-      instrumentType: "STOCK",
-      sector: "GENERAL",
-    },
+    classification: STOCK_CLASSIFICATION,
     components: Object.freeze([
       Object.freeze({
         componentId: `${kind}_SYNTHETIC`,
@@ -151,11 +152,7 @@ function insufficientQuality(assetId: string): InvestmentScoreInsufficientData {
     evaluationAsOf: EVALUATION_AS_OF,
     methodologyId: "EQUITY_STOCK_GENERAL",
     methodologyVersion: "1.0.0",
-    classification: {
-      assetClass: "EQUITY",
-      instrumentType: "STOCK",
-      sector: "GENERAL",
-    },
+    classification: STOCK_CLASSIFICATION,
     reasonCodes: Object.freeze(["STALE_EVIDENCE"]),
     affectedComponents: Object.freeze(["ROE"]),
     components: Object.freeze([]),
