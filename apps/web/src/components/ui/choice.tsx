@@ -1,14 +1,12 @@
-import type {
-  FieldsetHTMLAttributes,
-  InputHTMLAttributes,
-  ReactNode,
-} from "react";
+import type { FieldsetHTMLAttributes, InputHTMLAttributes, ReactNode } from "react";
 
 import { classNames } from "./class-names";
 import styles from "./ui.module.css";
 
-export interface ChoiceCardProps
-  extends Omit<InputHTMLAttributes<HTMLInputElement>, "type" | "title" | "className"> {
+export interface ChoiceCardProps extends Omit<
+  InputHTMLAttributes<HTMLInputElement>,
+  "type" | "title" | "className"
+> {
   type?: "radio" | "checkbox";
   title: ReactNode;
   description?: ReactNode;
@@ -59,8 +57,10 @@ export function SegmentedControl({
   );
 }
 
-export interface SegmentedControlOptionProps
-  extends Omit<InputHTMLAttributes<HTMLInputElement>, "type" | "className"> {
+export interface SegmentedControlOptionProps extends Omit<
+  InputHTMLAttributes<HTMLInputElement>,
+  "type" | "className"
+> {
   children: ReactNode;
   className?: string;
 }
