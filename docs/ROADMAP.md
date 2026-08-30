@@ -8,20 +8,21 @@ A evolução das superfícies visuais está priorizando a issue #69 — `UX/UI: 
 
 O redesign cobre **todo o app web**: auth, onboarding, shell, dashboard, carteira, componentes financeiros, estados transversais e responsividade.
 
-### Direção visual aprovada
+### Direção visual e arquitetura aprovadas
 
-O **Protótipo 3 — Assistant-First Workspace** é a referência visual canônica. R1 deve refiná-lo e expandi-lo para todas as superfícies, preservando arquitetura, hierarquia e linguagem visual, sem inventar métricas ou alterar regras de domínio para reproduzir dados ilustrativos.
+O **Protótipo 3 — Assistant-First Workspace** é a referência visual canônica. O R1 expandiu essa direção para uma arquitetura completa do app: navigation model, shell desktop/tablet/mobile, auth, onboarding, dashboard, carteira, estados transversais e papel do Copiloto.
 
 Referências obrigatórias:
 
 - `docs/design/PROTOTYPE-3-DIRECTION.md`;
 - `docs/design/FRONTEND-AUDIT.md`;
+- `docs/design/R1-ASSISTANT-FIRST-APP-SPEC.md`;
 - `docs/UX-UI-REDESIGN-ROADMAP.md`.
 
 ### Sequência canônica
 
 - [x] R0 — audit completo e inventário — #72;
-- [ ] R1 — arquitetura da informação + expansão do Protótipo 3 — #73;
+- [x] R1 — arquitetura da informação + expansão do Protótipo 3 — #73;
 - [ ] R2 — design tokens e primitives — #74;
 - [ ] R3 — app shell/sidebar/navegação — #75;
 - [ ] R4 — auth e sessão — #76;
@@ -32,7 +33,7 @@ Referências obrigatórias:
 - [ ] R9 — acessibilidade, responsividade e visual QA — #81;
 - [ ] R10 — gate final e fechamento da #69.
 
-O R0 concluiu o inventário de código e a revisão visual desktop atual. O responsive atual foi auditado pelos breakpoints existentes; não houve visual QA mobile do frontend antigo. Essa limitação está registrada e será tratada no produto redesenhado em #81.
+O R0 concluiu o inventário de código e a revisão visual desktop do frontend antigo. O R1 definiu a nova arquitetura sem criar rotas, métricas ou uma UI de Copiloto fictícias. A partir de R2, novas decisões visuais devem derivar dos contratos canônicos do R1.
 
 Enquanto esta intervenção estiver ativa, novas interfaces relevantes — incluindo a UI da #45 — não devem criar um sistema visual paralelo. Trabalho puramente de backend/contratos pode avançar quando não produzir superfície temporária.
 
