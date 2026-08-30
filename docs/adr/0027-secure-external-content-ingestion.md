@@ -61,7 +61,15 @@ securityDisposition = QUARANTINED
 classification.status = SKIPPED_SECURITY
 ```
 
-O classificador não recebe o conteúdo quarantined. Detecção por padrão não é tratada como solução completa para prompt injection; a #46 adicionará uma suíte adversarial/eval mais ampla.
+Quando nenhum padrão coberto é detectado, o máximo que a pipeline afirma é:
+
+```text
+securityDisposition = PASSED_INITIAL_SCREENING
+```
+
+Esse nome é deliberadamente restrito: ele não significa que o conteúdo é confiável ou seguro contra prompt injection ainda desconhecido.
+
+O classificador não recebe conteúdo quarantined. Quarantine tem precedência inclusive quando o mesmo conteúdo também é uma duplicata. Detecção por padrão não é tratada como solução completa; a #46 adicionará uma suíte adversarial/eval mais ampla.
 
 ### Provenance e temporalidade permanecem no snapshot
 
@@ -108,11 +116,13 @@ O classificador pode associar o documento a:
 - referências de tese (`thesisId`, `assetId`, versão opcional);
 - referências de evento (`eventId`, `thesisId`, `assetId`, versão da tese).
 
-A pipeline valida o shape e a consistência das referências. Erro do classificador produz `FAILED/CLASSIFIER_ERROR`; saída inválida produz `FAILED/INVALID_CLASSIFICATION`.
+A pipeline valida o shape e a consistência das referências. `CLASSIFIED` vazio é inválido, referências de tese/evento precisam apontar para um ativo presente em `assetIds` e referências idênticas são deduplicadas deterministicamente.
+
+Erro do classificador produz `FAILED/CLASSIFIER_ERROR`; saída inválida produz `FAILED/INVALID_CLASSIFICATION`.
 
 Falha de classificação nunca promove conteúdo a fato e não interrompe a trilha de auditoria do documento recebido.
 
-Duplicatas não são classificadas novamente nessa ingestão e usam `SKIPPED_DUPLICATE`.
+Duplicatas não são classificadas novamente nessa ingestão e usam `SKIPPED_DUPLICATE`, exceto quando também estiverem quarantined — nesse caso `SKIPPED_SECURITY` tem precedência.
 
 ### Audit store é append-only por contrato
 
@@ -129,6 +139,7 @@ Cada record contém `retentionUntil`, derivado da policy da fonte. Retenção f�
 - payload suspeito não chega ao classificador;
 - duplicatas, stale e mutação da fonte ficam explícitos;
 - falhas de parser/classificação são estados observáveis;
+- classificação vazia ou inconsistente não passa silenciosamente;
 - toda classificação consegue apontar para o documento/provenance que a originou;
 - #45 pode construir contexto de IA sobre snapshots já delimitados por trust boundary.
 
