@@ -6,9 +6,8 @@ A prioridade corrente está sempre em `NEXT.md`. Este arquivo não substitui `do
 
 ## UX/UI — iniciativa #69
 
-A fundação visual R0–R6 está concluída após o PR #91. Permanecem:
+A fundação visual R0–R7 está concluída após o merge do PR #92. Permanecem:
 
-- #79 — R7: carteira completa e progressive disclosure;
 - #80 — R8: componentes/estados transversais restantes;
 - #81 — R9: acessibilidade, responsividade e visual fidelity QA;
 - R10 — gate final e fechamento da #69.
@@ -22,7 +21,7 @@ A fundação de ingestão segura de conteúdo externo (#44) já foi concluída. 
 
 ## Convergência do MVP
 
-- #47 — fechar jornada ponta a ponta de carteira, transações e aporte do mês depois da migração visual de Dashboard/Carteira.
+- #47 — fechar jornada ponta a ponta de carteira, transações e aporte do mês depois da consolidação visual principal e dos estados transversais aplicáveis.
 
 Os contratos de domínio, ledger, contribuição, persistência e autenticação já existem. O trabalho restante é integração de jornada e acabamento, não reconstrução dessas fundações.
 
