@@ -1,91 +1,88 @@
-# Próxima Atividade — UX/UI R3: novo AppShell, sidebar e navegação responsiva
+# Próxima Atividade — UX/UI R4: redesenhar autenticação e sessão
 
-**Status:** READY após merge da #74
+**Status:** READY após merge da #75
 
 ## Issue canônica
 
-- #75 — `UX/UI R3: novo app shell, sidebar e navegação responsiva`
+- #76 — `UX/UI R4: redesenhar autenticação e sessão`
 - iniciativa guarda-chuva: #69
 
 ## Fundação concluída
 
-As fases anteriores deixam o R3 sem necessidade de reabrir direção visual ou criar styling fundamental paralelo:
+O R4 parte de uma arquitetura visual já fechada e não deve reabrir decisões fundamentais:
 
 - #72 — R0 audit do frontend anterior;
-- #73 — R1 arquitetura da informação + expansão do Protótipo 3;
+- #73 — R1 arquitetura da informação + direção do Protótipo 3;
 - #74 — R2 design tokens e primitives canônicas;
-- `docs/design/FRONTEND-AUDIT.md`;
-- `docs/design/PROTOTYPE-3-DIRECTION.md`;
+- #75 — R3 AppShell/sidebar/navegação responsiva;
 - `docs/design/R1-ASSISTANT-FIRST-APP-SPEC.md`;
-- `docs/design/DESIGN-SYSTEM.md`.
+- `docs/design/DESIGN-SYSTEM.md`;
+- `docs/design/APP-SHELL.md`.
 
-O R2 centraliza semantic tokens, layout primitives, actions, fields, choice patterns, surfaces, feedback, loading, apresentação financeira e iconografia. O R3 deve consumir essa fundação; não deve recriar botão, field, focus ring, container, status, loading ou outras primitives equivalentes dentro do shell.
+O R3 deixa Dashboard, Carteira e Onboarding consumindo o mesmo shell protegido. Auth continua deliberadamente fora desse shell: a arquitetura do R1 define `/sign-in` e estados de reentrada como uma superfície focada, sem sidebar concorrendo com a ação de autenticação.
 
-## Objetivo do R3
+## Objetivo do R4
 
-Construir o **AppShell canônico** reconhecível como derivação do Protótipo 3 e torná-lo a composição compartilhada das superfícies protegidas.
-
-O shell deve resolver navegação, landmarks, brand, conta/sessão e comportamento responsive sem inventar rotas ou capacidades ainda inexistentes.
+Redesenhar autenticação e sessão para que a jornada tenha **uma ação principal clara**, preserve as garantias atuais de GitHub OAuth/ownership e mantenha privacidade, segurança e diagnóstico acessíveis por progressive disclosure em vez de colocá-los na primeira hierarquia visual.
 
 ## Escopo
 
-### Desktop
+### Sign-in
 
-- sidebar persistente quando houver espaço funcional;
-- brand do Portfolio Copilot;
-- primary navigation baseada somente em rotas/capacidades reais;
-- secondary/utilities navigation quando necessária;
-- active, hover, focus-visible e disabled states;
-- account/session affordance no rodapé;
-- page content/container model;
-- suporte ao futuro context rail sem renderizar uma UI fictícia de Copiloto.
+- `/sign-in` com composição focused-auth canônica;
+- brand e contexto mínimo do produto;
+- uma CTA principal para GitHub OAuth;
+- loading/disabled/error/re-entry usando primitives do R2;
+- remover `/health` como CTA concorrente do login;
+- informação de privacidade/segurança disponível sem dominar a tarefa;
+- desktop/tablet/mobile.
 
-### Tablet e mobile
+### Sessão e saída
 
-- sidebar não deve ser comprimida;
-- navegação passa para drawer quando necessário;
-- trigger com accessible name;
-- fechamento por ação explícita e Escape;
-- focus management e retorno ao trigger;
-- backdrop e layering derivados dos tokens canônicos;
-- conteúdo principal mantém leitura e touch targets adequados.
+- `/sign-out`;
+- affordance de conta/sessão já exposta pelo AppShell;
+- expired/re-entry quando aplicável;
+- estados de erro/recovery existentes;
+- copy clara sobre sessão sem expor subject interno ou detalhes técnicos desnecessários.
+
+### Segurança e compatibilidade
+
+- preservar provider GitHub atual;
+- preservar callback/redirect validation existente;
+- preservar ownership e canonical identity;
+- não alterar contratos de persistência financeira;
+- não transformar health ou diagnóstico em sinal visual de confiança artificial;
+- nenhuma mudança de regra financeira.
 
 ### Accessibility
 
-- skip link;
-- `header`/`nav`/`main`/landmarks coerentes;
-- foco visível;
-- navegação por teclado;
-- active state não depende apenas de cor;
-- drawer com semântica e focus lifecycle corretos;
-- `prefers-reduced-motion` respeitado pela fundação R2.
-
-### Integração
-
-- superfícies protegidas devem poder usar o mesmo shell;
-- onboarding deixa de depender arquiteturalmente de um shell paralelo, sem executar ainda o redesign completo da #77;
-- auth focused (`/sign-in`) permanece fora da sidebar conforme R1;
-- não alterar domínio, OAuth, ownership ou persistência.
+- keyboard-only flow;
+- focus order e focus-visible canônicos;
+- accessible names e status de loading/error;
+- sem ação concorrente ambígua;
+- touch targets adequados;
+- reduced motion herdado do R2.
 
 ## Regras
 
-- usar tokens/primitives do R2;
-- nenhuma rota futura vazia para reproduzir o mockup;
-- nenhuma métrica fictícia;
-- nenhuma UI funcional de Copiloto antes da capacidade correspondente;
-- não reescrever dashboard, carteira ou onboarding neste PR além do necessário para adoção estrutural do shell;
-- comportamento responsive faz parte da implementação, não é polish posterior;
-- manter progressive disclosure para informação operacional/técnica.
+- usar tokens/primitives R2;
+- respeitar o AppShell R3, mas **não** inserir sidebar no focused auth;
+- não criar Button/Field/Alert/Loading paralelos;
+- não trocar provider ou fluxo OAuth por motivo visual;
+- não ampliar o escopo para redesign completo do onboarding/dashboard/carteira;
+- nenhuma rota ou capability fictícia;
+- informação técnica permanece auditável em segunda ordem.
 
 ## Gate
 
-R4 (#76) só começa quando:
+R5 (#77) só começa quando:
 
-- AppShell estiver compartilhado e consumível pelas superfícies protegidas;
-- desktop/tablet/mobile estiverem definidos no código;
-- sidebar/drawer tiverem keyboard/focus behavior correto;
-- landmarks e skip link estiverem presentes;
-- não houver shell visual fundamental paralelo necessário para as próximas migrações;
+- sign-in possuir uma CTA primária inequívoca;
+- auth errors/re-entry estiverem claros;
+- `/health` não competir com login;
+- account/session affordance estiver coerente com o AppShell;
+- provider, redirect safety e ownership permanecerem inalterados;
+- desktop/mobile estiverem definidos no código;
 - `pnpm check` estiver verde;
 - auto code review estiver sem finding aberto.
 
@@ -95,7 +92,7 @@ R4 (#76) só começa quando:
 #72 R0 audit ✓
   -> #73 R1 app spec ✓
   -> #74 R2 design system ✓
-  -> #75 R3 AppShell/sidebar
+  -> #75 R3 AppShell/sidebar ✓
   -> #76 R4 auth
   -> #77 R5 onboarding
   -> #78 R6 dashboard
@@ -110,7 +107,8 @@ R4 (#76) só começa quando:
 - `docs/design/PROTOTYPE-3-DIRECTION.md`;
 - `docs/design/R1-ASSISTANT-FIRST-APP-SPEC.md`;
 - `docs/design/DESIGN-SYSTEM.md`;
+- `docs/design/APP-SHELL.md`;
 - `docs/UX-UI-REDESIGN-ROADMAP.md`;
 - `docs/ROADMAP.md`.
 
-A #45 continua sem UI temporária durante o redesign. Superfícies futuras devem nascer sobre AppShell + design system canônicos.
+A #45 continua sem UI temporária durante o redesign. Qualquer superfície futura deve nascer sobre os contratos visuais fechados pelos R2/R3.
