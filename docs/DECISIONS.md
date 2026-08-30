@@ -39,6 +39,7 @@ Este arquivo resume decisões. Decisões arquiteturais importantes também ganha
 | D-033 | Investment Engine mantém Quality, Opportunity e Dividend separados, usa metodologias versionadas por classe/setor, bloqueia missing/stale/conflict/look-ahead e exige valuation auditável para Opportunity | Aceita — ADR-0024 |
 | D-034 | Portfolio Fit consome contexto da mesma carteira e permanece separado de Quality/Opportunity; ranking preserva componentes, rejeita dados/contextos incompatíveis e desempata por `AssetId` canônico | Aceita — ADR-0025 |
 | D-035 | `InvestmentThesis` é snapshot imutável/versionado; fatos carregam provenance, mudanças materiais exigem review `REVISED` ligada à nova versão e stale/invalidação são estados explícitos da timeline | Aceita — ADR-0026 |
+| D-036 | Conteúdo externo de IA é sempre `UNTRUSTED_EXTERNAL_CONTENT` com autoridade de instrução `NONE`; fontes são allowlisted, prompt injection suspeito é quarantined antes do classifier e dedupe/classificação permanecem auditáveis | Aceita — ADR-0027 |
 
 ## Como alterar uma decisão
 

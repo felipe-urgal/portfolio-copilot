@@ -102,6 +102,29 @@ Antes de enviar contexto a um modelo:
 - respostas de IA nunca concedem autorização nem executam ação financeira;
 - ferramentas de IA usam allowlist de ações.
 
+### Ingestão de conteúdo externo
+
+Notícias, documentos e resultados entram por uma fronteira separada e deny-by-default definida no ADR-0027.
+
+Requisitos mínimos:
+
+- adapter precisa declarar `sourceId` existente em allowlist;
+- URL de provenance é HTTPS e precisa pertencer ao host permitido pela policy;
+- parser falha explicitamente; erro não vira fato nem conteúdo vazio silencioso;
+- texto é normalizado e limitado antes de hash/classificação;
+- controles Unicode invisíveis/bidi são neutralizados;
+- metadata possui limites e rejeita chaves de prototype pollution;
+- todo record mantém `trustBoundary = UNTRUSTED_EXTERNAL_CONTENT` e `instructionAuthority = NONE`;
+- padrões de prompt injection de alto risco colocam o conteúdo em `QUARANTINED` antes do classificador;
+- conteúdo quarantined não é enviado ao classificador normal;
+- dedupe usa fingerprint do conteúdo normalizado e mantém revisões da fonte sem sobrescrever histórico;
+- classificação por ativo/tese/evento é derivada, validada e falível; nunca equivale a fato canônico;
+- stale, source mutation e falha do classifier permanecem explícitos;
+- audit store é append-only por contrato e cada source policy define retenção;
+- um adapter de rede futuro precisa aplicar SSRF/redirect/DNS/IP/content-type/timeout/size controls antes dessa pipeline.
+
+A detecção inicial por padrões não é defesa completa. A suíte adversarial contínua entra na #46.
+
 ## Market data
 
 Dados externos são não confiáveis até validação. Validar schema, moeda, escala, timestamp e identificador do ativo. Um preço 100x fora da faixa deve ser sinalizado, não propagado silenciosamente.
