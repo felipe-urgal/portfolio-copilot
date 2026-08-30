@@ -3,10 +3,7 @@ export {
   InMemoryExternalContentAuditStore,
   type ExternalContentAuditStore,
 } from "./audit-store";
-export {
-  ingestExternalContent,
-  type ExternalContentIngestionDependencies,
-} from "./ingestion";
+export { ingestExternalContent, type ExternalContentIngestionDependencies } from "./ingestion";
 export {
   createExternalSourcePolicy,
   ExternalSourceNotAllowedError,
