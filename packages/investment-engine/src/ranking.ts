@@ -12,6 +12,7 @@ export type InvestmentRankingInsufficientReason =
   | "DIMENSION_AS_OF_MISMATCH"
   | "ANALYTICAL_METHODOLOGY_MISMATCH"
   | "ANALYTICAL_CLASSIFICATION_MISMATCH"
+  | "PORTFOLIO_FIT_ASSET_CLASS_MISMATCH"
   | "PORTFOLIO_FIT_METHODOLOGY_MISMATCH"
   | "PORTFOLIO_CONTEXT_MISMATCH";
 
@@ -212,6 +213,10 @@ function scoreCandidate(
 
   if (!sameAnalyticalClassification(candidate.quality, candidate.opportunity)) {
     reasons.push("ANALYTICAL_CLASSIFICATION_MISMATCH");
+  }
+
+  if (candidate.portfolioFit.assetClass !== candidate.quality.classification.assetClass) {
+    reasons.push("PORTFOLIO_FIT_ASSET_CLASS_MISMATCH");
   }
 
   if (
