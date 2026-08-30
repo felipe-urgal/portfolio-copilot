@@ -41,12 +41,13 @@ describe("FinancialOnboardingFlow accessibility", () => {
     expect(html).toContain("Horizonte financeiro");
   });
 
-  it("does not recreate protected-app landmarks or navigation chrome", () => {
+  it("does not recreate protected-app landmarks or global navigation chrome", () => {
     const html = renderFlow();
 
     expect(html).not.toContain("<main");
     expect(html).not.toContain("<header");
     expect(html).not.toContain('aria-label="Navegação principal"');
-    expect(html).not.toContain('href="/dashboard"');
+    expect(html).toContain('href="/dashboard"');
+    expect(html).toContain("Voltar ao dashboard");
   });
 });
