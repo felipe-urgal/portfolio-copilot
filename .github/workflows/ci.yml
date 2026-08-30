@@ -7,7 +7,7 @@ on:
       - main
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
@@ -15,15 +15,32 @@ concurrency:
 
 jobs:
   quality:
-    name: Format R3 head
+    name: Quality gate
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
+    env:
+      DATABASE_URL: postgresql://portfolio:portfolio@127.0.0.1:5432/portfolio_copilot_test
+
+    services:
+      postgres:
+        image: postgres:18.6-alpine
+        env:
+          POSTGRES_USER: portfolio
+          POSTGRES_PASSWORD: portfolio
+          POSTGRES_DB: portfolio_copilot_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U portfolio -d portfolio_copilot_test"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=10
 
     steps:
-      - name: Checkout PR head
+      - name: Checkout
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
-          ref: feature/app-shell-navigation
+          persist-credentials: false
 
       - name: Setup Node.js
         uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
@@ -39,16 +56,29 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Apply Prettier
-        run: pnpm exec prettier --write apps/web/src/components/app-shell-navigation.tsx apps/web/src/features/onboarding/financial-onboarding-flow.tsx
+      - name: Validate local Docker Compose
+        run: docker compose config --quiet
 
-      - name: Commit formatting
+      - name: Format check
+        run: pnpm format:check
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Apply database migrations
+        run: pnpm db:migrate
+
+      - name: Verify root .env.local database fallback
         run: |
-          if git diff --quiet -- apps/web/src/components/app-shell-navigation.tsx apps/web/src/features/onboarding/financial-onboarding-flow.tsx; then
-            exit 0
-          fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add apps/web/src/components/app-shell-navigation.tsx apps/web/src/features/onboarding/financial-onboarding-flow.tsx
-          git commit -m "style(ui): format R3 shell migration"
-          git push origin HEAD:feature/app-shell-navigation
+          trap 'rm -f .env.local' EXIT
+          printf 'DATABASE_URL="%s"\n' "$DATABASE_URL" > .env.local
+          DATABASE_URL= pnpm db:migrate
+
+      - name: Test
+        run: pnpm test
+
+      - name: Build
+        run: pnpm build
