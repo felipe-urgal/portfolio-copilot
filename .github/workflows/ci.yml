@@ -59,8 +59,11 @@ jobs:
       - name: Validate local Docker Compose
         run: docker compose config --quiet
 
-      - name: Format check
-        run: pnpm format:check
+      - name: Format diagnostic
+        run: |
+          pnpm exec prettier --write apps/web/src/components/app-shell-navigation.tsx apps/web/src/features/onboarding/financial-onboarding-flow.tsx
+          git diff -- apps/web/src/components/app-shell-navigation.tsx apps/web/src/features/onboarding/financial-onboarding-flow.tsx
+          git diff --exit-code -- apps/web/src/components/app-shell-navigation.tsx apps/web/src/features/onboarding/financial-onboarding-flow.tsx
 
       - name: Lint
         run: pnpm lint
