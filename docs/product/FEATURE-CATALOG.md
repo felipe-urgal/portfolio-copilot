@@ -24,7 +24,7 @@ Este catálogo separa **capability implementada**, **superfície web atual**, **
 | Investment Engine | IMPLEMENTADO — engine | Quality, Opportunity, Dividend, valuation, Portfolio Fit e ranking |
 | Investment Thesis | IMPLEMENTADO — engine | versionamento, eventos, reviews e lifecycle |
 | ingestão segura para IA | IMPLEMENTADO — foundation | conteúdo permanece untrusted; não equivale a Copiloto pronto |
-| Dashboard final do Protótipo 3 | REDESIGN | #78 / R6 |
+| Dashboard Assistant-First | IMPLEMENTADO — web | R6 / #78 / PR #89; somente fatos reais e estados honestos |
 | Carteira final | REDESIGN | #79 / R7 |
 | estados transversais finais | REDESIGN | #80 / R8 |
 | visual/a11y/responsive QA completo | REDESIGN | #81 / R9 |
@@ -36,17 +36,19 @@ Este catálogo separa **capability implementada**, **superfície web atual**, **
 
 ## Dashboard
 
-Direção de produto:
+Implementado no R6 (#78 / PR #89):
 
+- greeting derivado da identidade autenticada;
+- contexto do perfil financeiro compartilhado;
+- KPIs **somente quando calculáveis por fonte real**;
+- meta de reserva apresentada explicitamente como target declarado, nunca saldo;
 - panorama da carteira como região dominante;
-- patrimônio/resultado/KPIs **somente quando calculáveis por fonte real**;
-- aporte do mês e próximos passos;
-- reserva/meta sem confundir meta com saldo;
-- alocação atual versus alvo quando houver base monetária confiável;
-- teses/eventos quando houver integração real;
-- Copiloto como contexto, sem simular IA inexistente.
+- ausência de carteira compartilhada tratada com empty state e próxima ação real;
+- sem patrimônio, retorno, composição, Market Data, score ou recomendação inventados;
+- context rail neutro, sem simular a capability do Copiloto #45;
+- detalhes de indisponibilidade em progressive disclosure.
 
-Implementação visual final: #78.
+A integração futura de fatos de Portfolio/ledger ao Dashboard deve preservar `docs/design/DASHBOARD.md` e só introduzir métricas quando existir fonte real e determinística para a superfície.
 
 ## Carteira
 
