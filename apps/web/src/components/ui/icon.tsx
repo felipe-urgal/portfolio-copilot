@@ -5,7 +5,7 @@ import styles from "./ui.module.css";
 
 type IconSize = "sm" | "md" | "lg";
 
-const sizeClass: Record<IconSize, string> = {
+const sizeClass: Record<IconSize, string | undefined> = {
   sm: styles.iconSm,
   md: styles.iconMd,
   lg: styles.iconLg,
