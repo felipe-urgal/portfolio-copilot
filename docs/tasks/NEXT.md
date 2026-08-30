@@ -1,6 +1,6 @@
 # Próxima Atividade — UX/UI R6: implementar dashboard baseado no Protótipo 3
 
-**Status:** READY após merge da #77
+**Status:** READY após merge da #77 / PR #88
 
 ## Issue canônica
 
@@ -84,7 +84,8 @@ Transformar `/dashboard` em um workspace financeiro reconhecível como a direç�
 - não reabrir AppShell, auth ou onboarding;
 - não iniciar redesign completo da Carteira (#79);
 - não implementar a #45 como efeito colateral;
-- preservar ownership e fontes de verdade atuais.
+- preservar ownership e fontes de verdade atuais;
+- qualquer agente de IA deve cumprir `AGENTS.md`, inclusive auto code review fullstack sênior completo antes do merge.
 
 ## Gate
 
@@ -96,7 +97,9 @@ R7 (#79) só começa quando:
 - layout estiver alinhado ao Protótipo 3 sem capabilities falsas;
 - desktop/mobile estiverem definidos no código;
 - `pnpm check` estiver verde;
-- auto code review estiver sem finding aberto.
+- CI do head final estiver verde;
+- auto code review fullstack sênior estiver concluído, com findings corrigidos e nenhum finding aberto;
+- docs/issues estiverem reconciliados conforme `docs/DOCUMENTATION-MAP.md`.
 
 ## Sequência
 
@@ -116,6 +119,8 @@ R7 (#79) só começa quando:
 
 ## Referências canônicas
 
+- `AGENTS.md`;
+- `docs/DOCUMENTATION-MAP.md`;
 - `docs/design/PROTOTYPE-3-DIRECTION.md`;
 - `docs/design/R1-ASSISTANT-FIRST-APP-SPEC.md`;
 - `docs/design/DESIGN-SYSTEM.md`;
