@@ -90,8 +90,10 @@ export function EmptyState({
   );
 }
 
-export interface LoadingStateProps
-  extends Omit<HTMLAttributes<HTMLDivElement>, "role" | "aria-live"> {
+export interface LoadingStateProps extends Omit<
+  HTMLAttributes<HTMLDivElement>,
+  "role" | "aria-live"
+> {
   label?: ReactNode;
 }
 
@@ -109,8 +111,10 @@ export function LoadingState({ label = "Carregando…", className, ...props }: L
   );
 }
 
-export interface SkeletonProps
-  extends Omit<HTMLAttributes<HTMLSpanElement>, "aria-hidden" | "children"> {
+export interface SkeletonProps extends Omit<
+  HTMLAttributes<HTMLSpanElement>,
+  "aria-hidden" | "children"
+> {
   variant?: SkeletonVariant;
 }
 
