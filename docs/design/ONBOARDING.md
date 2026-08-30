@@ -56,7 +56,7 @@ A reserva é opcional. O opt-in usa `ChoiceCard` checkbox em vez de um switch vi
 
 - zero objetivos é um estado válido e usa `EmptyState`;
 - adicionar objetivo é uma ação explícita;
-- cada objetivo é uma unidade real e pode usar `Surface` sutil;
+- cada objetivo é uma seção aberta, separada por ritmo e borda sutil, sem card dentro da `Surface` principal;
 - tipo usa `Select`;
 - valor e data usam `TextInput`;
 - remover usa `Button` ghost;
