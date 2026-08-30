@@ -320,7 +320,9 @@ describe("InvestmentThesis events and reviews", () => {
       reviewedAt: "2026-01-20T10:00:00.000Z",
       outcome: "REVISED",
       notes: "Mudança material aprovada para a versão dois.",
-      evidence: [evidence("VERSION_2_BASIS", "2026-01-19T00:00:00.000Z", "2026-01-20T09:00:00.000Z")],
+      evidence: [
+        evidence("VERSION_2_BASIS", "2026-01-19T00:00:00.000Z", "2026-01-20T09:00:00.000Z"),
+      ],
       relatedEventIds: [],
       resultingVersion: 2,
     });
