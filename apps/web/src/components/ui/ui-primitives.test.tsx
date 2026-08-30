@@ -99,7 +99,11 @@ describe("canonical UI primitives", () => {
   it("keeps financial values and feedback explicit in markup", () => {
     const html = renderToStaticMarkup(
       <div>
-        <Metric label="Disponível para aporte" value="R$ 1.250,00" detail="Após custos conhecidos" />
+        <Metric
+          label="Disponível para aporte"
+          value="R$ 1.250,00"
+          detail="Após custos conhecidos"
+        />
         <Status tone="warning">Dados desatualizados</Status>
         <Alert tone="danger" title="Não foi possível calcular">
           Atualize os dados necessários antes de continuar.
