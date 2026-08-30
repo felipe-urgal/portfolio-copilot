@@ -8,20 +8,13 @@ import {
 import type { InvestmentThesisSnapshot } from "./thesis";
 
 export type InvestmentThesisEventType =
-  | "RESULT"
-  | "DRIVER_UPDATE"
-  | "RISK_UPDATE"
-  | "INDICATOR_UPDATE"
-  | "INVALIDATION_SIGNAL"
-  | "OTHER";
+  "RESULT" | "DRIVER_UPDATE" | "RISK_UPDATE" | "INDICATOR_UPDATE" | "INVALIDATION_SIGNAL" | "OTHER";
 
 export type InvestmentThesisReviewOutcome = "CONFIRMED" | "REVISED" | "INVALIDATED";
 export type InvestmentThesisLifecycleStatus = "ACTIVE" | "INVALIDATED";
 export type InvestmentThesisFreshnessStatus = "CURRENT" | "STALE" | "NOT_APPLICABLE";
 export type InvestmentThesisTimelineReasonCode =
-  | "REVIEW_CURRENT"
-  | "REVIEW_OVERDUE"
-  | "THESIS_INVALIDATED";
+  "REVIEW_CURRENT" | "REVIEW_OVERDUE" | "THESIS_INVALIDATED";
 
 export type CreateInvestmentThesisEventInput = Readonly<{
   eventId: string;
@@ -129,11 +122,15 @@ function normalizeEventType(value: InvestmentThesisEventType): InvestmentThesisE
     case "OTHER":
       return value;
     default:
-      throw new InvalidInvestmentThesisTimelineError(`Invalid thesis event type: ${String(value)}.`);
+      throw new InvalidInvestmentThesisTimelineError(
+        `Invalid thesis event type: ${String(value)}.`,
+      );
   }
 }
 
-function normalizeReviewOutcome(value: InvestmentThesisReviewOutcome): InvestmentThesisReviewOutcome {
+function normalizeReviewOutcome(
+  value: InvestmentThesisReviewOutcome,
+): InvestmentThesisReviewOutcome {
   switch (value) {
     case "CONFIRMED":
     case "REVISED":
@@ -192,7 +189,9 @@ export function createInvestmentThesisEvent(
     );
   }
   if (recordedAt < occurredAt) {
-    throw new InvalidInvestmentThesisTimelineError("Thesis event recordedAt cannot precede occurredAt.");
+    throw new InvalidInvestmentThesisTimelineError(
+      "Thesis event recordedAt cannot precede occurredAt.",
+    );
   }
 
   return Object.freeze({
@@ -267,14 +266,18 @@ function normalizeVersions(
   asOf: string,
 ): readonly InvestmentThesisSnapshot[] {
   if (input.length === 0) {
-    throw new InvalidInvestmentThesisTimelineError("Thesis timeline requires at least one version.");
+    throw new InvalidInvestmentThesisTimelineError(
+      "Thesis timeline requires at least one version.",
+    );
   }
 
   const versions = [...input].sort((left, right) => left.version - right.version);
   const thesisId = versions[0]?.thesisId;
   const assetId = versions[0]?.assetId;
   if (thesisId === undefined || assetId === undefined) {
-    throw new InvalidInvestmentThesisTimelineError("Thesis timeline requires a valid first version.");
+    throw new InvalidInvestmentThesisTimelineError(
+      "Thesis timeline requires a valid first version.",
+    );
   }
 
   for (let index = 0; index < versions.length; index += 1) {
@@ -316,14 +319,22 @@ function normalizeEvents(
       throw new InvalidInvestmentThesisTimelineError(`Duplicate thesis event ${event.eventId}.`);
     }
     seen.add(event.eventId);
+
     const version = versionsByNumber.get(event.thesisVersion);
-    if (version === undefined || event.occurredAt < version.effectiveAt) {
+    const nextVersion = versionsByNumber.get(event.thesisVersion + 1);
+    if (
+      version === undefined ||
+      event.occurredAt < version.effectiveAt ||
+      (nextVersion !== undefined && event.occurredAt >= nextVersion.effectiveAt)
+    ) {
       throw new InvalidInvestmentThesisTimelineError(
         `Thesis event ${event.eventId} references an invalid thesis version.`,
       );
     }
     if (event.recordedAt > asOf) {
-      throw new InvalidInvestmentThesisTimelineError(`Thesis event ${event.eventId} is in the future.`);
+      throw new InvalidInvestmentThesisTimelineError(
+        `Thesis event ${event.eventId} is in the future.`,
+      );
     }
   }
 
@@ -353,13 +364,20 @@ function normalizeReviews(
     seen.add(review.reviewId);
 
     const version = versionsByNumber.get(review.thesisVersion);
-    if (version === undefined || review.reviewedAt < version.effectiveAt) {
+    const nextVersion = versionsByNumber.get(review.thesisVersion + 1);
+    if (
+      version === undefined ||
+      review.reviewedAt < version.effectiveAt ||
+      (nextVersion !== undefined && review.reviewedAt > nextVersion.effectiveAt)
+    ) {
       throw new InvalidInvestmentThesisTimelineError(
         `Thesis review ${review.reviewId} references an invalid thesis version.`,
       );
     }
     if (review.reviewedAt > asOf) {
-      throw new InvalidInvestmentThesisTimelineError(`Thesis review ${review.reviewId} is in the future.`);
+      throw new InvalidInvestmentThesisTimelineError(
+        `Thesis review ${review.reviewId} is in the future.`,
+      );
     }
 
     for (const eventId of review.relatedEventIds) {
@@ -373,7 +391,8 @@ function normalizeReviews(
 
     if (review.outcome === "REVISED") {
       const resultingVersion = review.resultingVersion;
-      const revised = resultingVersion === null ? undefined : versionsByNumber.get(resultingVersion);
+      const revised =
+        resultingVersion === null ? undefined : versionsByNumber.get(resultingVersion);
       if (
         revised === undefined ||
         revised.previousVersion !== review.thesisVersion ||
@@ -476,7 +495,13 @@ export function buildInvestmentThesisTimeline(
   }
 
   const versionsByNumber = new Map(versions.map((version) => [version.version, version]));
-  const events = normalizeEvents(input.events, first.thesisId, first.assetId, versionsByNumber, asOf);
+  const events = normalizeEvents(
+    input.events,
+    first.thesisId,
+    first.assetId,
+    versionsByNumber,
+    asOf,
+  );
   const eventsById = new Map(events.map((event) => [event.eventId, event]));
   const reviews = normalizeReviews(
     input.reviews,
