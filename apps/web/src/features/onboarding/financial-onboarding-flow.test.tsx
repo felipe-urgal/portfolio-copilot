@@ -7,7 +7,10 @@ import { FinancialSessionProvider } from "@/components/financial-session";
 
 import { FinancialOnboardingFlow } from "./financial-onboarding-flow";
 
-const FLOW_SOURCE = readFileSync(new URL("./financial-onboarding-flow.tsx", import.meta.url), "utf8");
+const FLOW_SOURCE = readFileSync(
+  new URL("./financial-onboarding-flow.tsx", import.meta.url),
+  "utf8",
+);
 const FLOW_CSS = readFileSync(
   new URL("./financial-onboarding-flow.module.css", import.meta.url),
   "utf8",
