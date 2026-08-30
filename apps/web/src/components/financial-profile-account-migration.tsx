@@ -209,7 +209,7 @@ export function FinancialProfileAccountMigration({
                   loading={isSaving}
                   onClick={() => void migrateLocalProfile(false)}
                 >
-                  {isSaving ? "Salvando…" : "Salvar perfil local na conta"}
+                  Salvar perfil local na conta
                 </Button>
                 <Button variant="secondary" size="sm" disabled={isSaving} onClick={keepLocalOnly}>
                   Manter somente local
@@ -244,7 +244,7 @@ export function FinancialProfileAccountMigration({
               </ul>
               <div className={styles.actions}>
                 <Button size="sm" loading={isSaving} onClick={() => void migrateLocalProfile(true)}>
-                  {isSaving ? "Substituindo…" : "Substituir perfil da conta pelo local"}
+                  Substituir perfil da conta pelo local
                 </Button>
                 <Button variant="secondary" size="sm" disabled={isSaving} onClick={keepLocalOnly}>
                   Manter somente local
