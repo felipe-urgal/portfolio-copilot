@@ -16,7 +16,7 @@ O **Protótipo 3 — Assistant-First Workspace** é a direção visual canônica
 - [x] R3 — AppShell/sidebar/drawer/navegação — #75;
 - [x] R4 — focused auth e sessão — #76;
 - [x] R5 — onboarding guiado — #77 / PR #88;
-- [x] R6 — dashboard orientado a contexto/panorama/próxima ação — #78 / PR #89.
+- [x] R6 — dashboard orientado a contexto/panorama/próxima ação — #78 / PR #90.
 
 ### Próximo
 
