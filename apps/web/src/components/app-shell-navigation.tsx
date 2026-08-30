@@ -5,7 +5,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import { APP_NAME } from "@portfolio-copilot/shared";
 
-import { Button } from "./ui/button";
+import { Button } from "./ui";
 import styles from "./app-shell.module.css";
 
 export type AppRoute = "/dashboard" | "/onboarding" | "/portfolio";
