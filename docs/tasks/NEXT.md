@@ -1,57 +1,58 @@
-# Próxima Atividade — Teses e eventos: InvestmentThesis e critérios de invalidação
+# Próxima Atividade — IA: ingestão segura de notícias, documentos e resultados
 
 **Status:** READY
 
 ## Issue canônica
 
-- #43 — `Teses e eventos: InvestmentThesis, drivers, riscos e critérios de invalidação`
+- #44 — `IA: ingestão segura de notícias, documentos e resultados`
 
 ## Objetivo
 
-Criar a camada versionada de tese de investimento para registrar o racional de cada ativo ao longo do tempo, separar fatos de opinião analítica e detectar quando uma tese precisa ser revisada ou invalidada.
+Criar uma pipeline segura para conteúdo textual externo usado pela futura camada de IA, preservando provenance e temporalidade e garantindo que texto ingerido seja sempre tratado como dado não confiável, nunca como instrução do sistema.
 
 ## Dependências concluídas após este PR
 
 - #39 — Asset Master canônico e resolução de identidade;
 - #40 — Market Data com provenance, freshness e quality gates;
 - #41 — scoring/valuation determinístico com metodologias versionadas;
-- #42 — Portfolio Fit e ranking explicável por carteira.
+- #42 — Portfolio Fit e ranking explicável por carteira;
+- #43 — InvestmentThesis versionada, eventos e timeline auditável.
 
 ## Escopo
 
-- modelar `InvestmentThesis` versionada;
-- registrar drivers principais;
-- registrar riscos principais;
-- definir indicadores monitorados;
-- definir critérios explícitos de invalidação;
-- associar eventos/resultados à tese;
-- manter timeline auditável;
-- suportar revisão periódica;
-- sinalizar tese desatualizada;
-- preservar provenance dos fatos usados;
-- testar lifecycle, revisão e versionamento.
+- adapters para fontes permitidas;
+- normalização de texto e metadata;
+- provenance e `asOf`;
+- deduplicação de notícias/eventos;
+- classificação por ativo/tese/evento;
+- separação rígida entre conteúdo externo e instruções;
+- sanitização e limites de tamanho;
+- proteção inicial contra prompt injection em conteúdo ingerido;
+- armazenamento/auditoria dos documentos relevantes;
+- testes com payloads adversariais;
+- política de retenção e fontes permitidas.
 
 ## Fora de escopo
 
-- alterar fórmulas de Quality/Opportunity/Portfolio Fit;
-- usar IA generativa como fonte de verdade dos fatos;
-- sobrescrever versões históricas de tese;
-- execução automática de ordens;
-- integração de corretora/Open Finance.
+- permitir que conteúdo externo altere regras determinísticas do Portfolio/Investment Engine;
+- usar texto ingerido como fato canônico sem validação/provenance;
+- copiloto conversacional completo da #45;
+- avaliação completa de factualidade/alucinação da #46;
+- execução automática de ordens.
 
 ## Critérios de aceite
 
-- tese nunca sobrescreve histórico relevante;
-- mudança material gera nova versão ou revisão auditável;
-- fatos, opinião analítica e critérios de invalidação ficam separados;
-- eventos associados preservam provenance e temporalidade;
-- revisão periódica e estado de tese desatualizada são explícitos;
+- conteúdo externo nunca redefine regras do sistema;
+- toda saída derivada consegue apontar para suas fontes;
+- duplicatas e conteúdo stale são identificáveis;
+- falhas de parser/classificação não viram fatos silenciosamente;
+- payloads adversariais possuem testes de regressão;
 - `pnpm check` passa integralmente no head final.
 
 ## Referências canônicas
 
-- issue #43;
-- ADR-0024 — Investment Engine scoring e valuation;
-- ADR-0025 — Portfolio Fit e ranking explicável;
-- `docs/INVESTMENT-ENGINE-METHODOLOGY.md`;
-- `docs/ROADMAP.md` — Fase 6.
+- issue #44;
+- ADR-0026 — InvestmentThesis versionada e timeline auditável;
+- `docs/INVESTMENT-THESIS-LIFECYCLE.md`;
+- `docs/SECURITY.md`;
+- `docs/ROADMAP.md` — Fase 7.
