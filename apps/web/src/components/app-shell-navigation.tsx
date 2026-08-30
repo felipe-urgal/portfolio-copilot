@@ -7,6 +7,7 @@ import { APP_NAME } from "@portfolio-copilot/shared";
 
 import type { AuthenticatedIdentity } from "@/lib/identity";
 
+import { Button } from "./ui";
 import styles from "./app-shell.module.css";
 
 export type AppRoute = "/dashboard" | "/onboarding" | "/portfolio";
@@ -214,10 +215,11 @@ export function AppShellNavigation({
 
       <header className={styles.mobileHeader}>
         <Brand />
-        <button
+        <Button
           ref={triggerRef}
           className={styles.menuButton}
-          type="button"
+          variant="secondary"
+          size="sm"
           aria-haspopup="dialog"
           aria-expanded={drawerOpen}
           aria-controls="app-navigation-drawer"
@@ -229,7 +231,7 @@ export function AppShellNavigation({
             <span />
           </span>
           <span className={styles.menuButtonLabel}>Menu</span>
-        </button>
+        </Button>
       </header>
 
       {drawerOpen ? (
@@ -249,14 +251,15 @@ export function AppShellNavigation({
           >
             <div className={styles.drawerHeader}>
               <span id="app-navigation-title">Navegação</span>
-              <button
+              <Button
                 ref={closeRef}
                 className={styles.drawerClose}
-                type="button"
+                variant="ghost"
+                size="sm"
                 onClick={() => closeDrawer(true)}
               >
                 Fechar
-              </button>
+              </Button>
             </div>
             <div className={styles.drawerBody}>
               <NavigationLinks activeRoute={activeRoute} onNavigate={() => closeDrawer(false)} />
