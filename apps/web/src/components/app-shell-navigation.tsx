@@ -7,7 +7,7 @@ import { APP_NAME } from "@portfolio-copilot/shared";
 
 import type { AuthenticatedIdentity } from "@/lib/identity";
 
-import { Button } from "./ui";
+import { Button } from "./ui/button";
 import styles from "./app-shell.module.css";
 
 export type AppRoute = "/dashboard" | "/onboarding" | "/portfolio";
@@ -49,7 +49,7 @@ function getInitials(displayName: string): string {
 function NavigationLinks({
   activeRoute,
   onNavigate,
-}: Readonly<{ activeRoute: AppRoute; onNavigate?: () => void }>) {
+}: Readonly<{ activeRoute: AppRoute; onNavigate?: (href: AppRoute) => void }>) {
   return (
     <nav className={styles.primaryNav} aria-label="Navegação principal">
       <span className={styles.navigationLabel}>Workspace</span>
@@ -63,7 +63,7 @@ function NavigationLinks({
               href={item.href}
               aria-current={isActive ? "page" : undefined}
               key={item.href}
-              onClick={onNavigate}
+              onClick={() => onNavigate?.(item.href)}
             >
               <span className={styles.navMarker} aria-hidden="true" />
               <span>{item.label}</span>
@@ -95,7 +95,7 @@ function AccountArea({
 }: Readonly<{ identity?: AuthenticatedIdentity | undefined; onNavigate?: () => void }>) {
   return (
     <div className={styles.sidebarFooter}>
-      <Link className={styles.utilityLink} href="/health" onClick={onNavigate}>
+      <Link className={styles.utilityLink} href="/health" onClick={() => onNavigate?.()}>
         <span className={styles.utilityMarker} aria-hidden="true" />
         <span>Saúde da aplicação</span>
       </Link>
@@ -105,7 +105,7 @@ function AccountArea({
           className={styles.accountLink}
           href="/sign-out"
           aria-label={`Sessão autenticada como ${identity.displayName}. Abrir opções para sair.`}
-          onClick={onNavigate}
+          onClick={() => onNavigate?.()}
         >
           <span className={styles.accountAvatar} aria-hidden="true">
             {getInitials(identity.displayName)}
@@ -256,7 +256,10 @@ export function AppShellNavigation({
               </Button>
             </div>
             <div className={styles.drawerBody}>
-              <NavigationLinks activeRoute={activeRoute} onNavigate={() => closeDrawer(false)} />
+              <NavigationLinks
+                activeRoute={activeRoute}
+                onNavigate={(href) => closeDrawer(href === activeRoute)}
+              />
               <AccountArea identity={identity} onNavigate={() => closeDrawer(false)} />
             </div>
           </aside>
