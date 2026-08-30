@@ -42,7 +42,8 @@ describe("PortfolioPage financial session", () => {
     expect(html).toContain('aria-label="Perfil financeiro da sessão"');
     expect(html).toContain("Não configurado");
     expect(html).toContain("Criar carteira");
-    expect(html).toContain("Nada é persistido nesta versão");
+    expect(html).toContain("Estado local");
+    expect(html).toContain("O domínio valida nome e moeda antes de liberar ativos e Transaction Ledger.");
   });
 
   it("reads the same validated profile snapshot used by other product surfaces", async () => {
