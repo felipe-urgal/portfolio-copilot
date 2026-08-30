@@ -4,7 +4,7 @@
 
 **INICIATIVA ATIVA — #69**
 
-Estado após o PR #91:
+Estado após o PR #92:
 
 - R0 #72 — concluído;
 - R1 #73 — concluído;
@@ -12,9 +12,9 @@ Estado após o PR #91:
 - R3 #75 — concluído;
 - R4 #76 — concluído;
 - R5 #77 — concluído;
-- R6 #78 — concluído neste PR;
-- **próxima fase: R7 #79 — Carteira**;
-- R8 #80 — estados/componentes transversais;
+- R6 #78 — concluído;
+- R7 #79 — concluído neste PR;
+- **próxima fase: R8 #80 — estados/componentes transversais**;
 - R9 #81 — accessibility/responsive/fidelity QA;
 - R10 — gate final e fechamento da #69.
 
@@ -30,8 +30,9 @@ O objetivo não é aplicar um tema sobre o frontend antigo. É migrar o produto 
 6. `docs/design/AUTH-SESSION.md` — focused auth R4;
 7. `docs/design/ONBOARDING.md` — guided onboarding R5;
 8. `docs/design/DASHBOARD.md` — Dashboard R6;
-9. este documento — sequência/gates R0–R10;
-10. `docs/DOCUMENTATION-MAP.md` — ownership e precedência documental.
+9. `docs/design/PORTFOLIO.md` — Carteira R7;
+10. este documento — sequência/gates R0–R10;
+11. `docs/DOCUMENTATION-MAP.md` — ownership e precedência documental.
 
 ## Direção visual canônica
 
@@ -154,34 +155,46 @@ Implementado:
 
 Gate: todo número visível possui fonte real, ausências permanecem honestas e o Dashboard usa AppShell/R2 sem sistema visual paralelo.
 
-## R7 — Carteira completa — PRÓXIMO — #79
+## R7 — Carteira completa — CONCLUÍDO — #79 / PR #92
 
-Objetivos:
+Entrega: `docs/design/PORTFOLIO.md`.
 
-- organizar a workspace por tarefas reais;
-- melhorar leitura de Portfolio/Assets/positions/ledger;
-- separar manutenção de ativo de posição;
-- tornar o ledger escaneável;
-- organizar pipeline de aporte com progressive disclosure;
-- reduzir UUID/provenance técnico da primeira ordem sem perder auditabilidade;
-- preservar Transaction Ledger e RecommendationSnapshot como fontes de verdade;
-- desktop/tablet/mobile.
+Implementado:
 
-## R8 — Componentes e estados transversais — #80
+- estado inicial focado em criar/configurar o Portfolio;
+- navegação local por Visão geral, Ativos e posições, Transações, Aporte e Configuração;
+- overview com fatos reais, posições projetadas e próxima ação contextual;
+- catálogo de Assets separado conceitualmente de posições;
+- Transaction Ledger separado dos formulários de criação;
+- `CASH_IN`/`CASH_OUT` preservados sem alterar posições;
+- `BUY`/`SELL` preservados como única fonte da projection de posição;
+- UUIDs, reason codes, reconciliação e explicação detalhada em progressive disclosure;
+- pipeline completo de aporte preservado sem reimplementar regra financeira em React;
+- forms/actions/status/feedback migrados para primitives R2;
+- perfil financeiro da sessão reduzido a contexto secundário canônico;
+- nenhuma métrica de preço, patrimônio, market value ou P&L inventada;
+- nenhuma etapa de aporte representa execução de ordem;
+- persistência/ownership permanecem inalterados;
+- desktop/tablet/mobile definidos por composição responsiva.
+
+Gate: tarefas financeiras estão separadas e escaneáveis, fontes de verdade permanecem determinísticas e detalhes técnicos não dominam a primeira hierarquia.
+
+## R8 — Componentes e estados transversais — PRÓXIMO — #80
 
 Consolidar o que ainda restar fora das surfaces principais:
 
-- recommendation/reason codes;
+- recommendation/reason codes reutilizáveis;
 - financial profile/session summary remanescente em outras surfaces;
-- provenance/stale/missing;
+- account migration remanescente;
+- provenance/stale/missing/conflict;
 - forms remanescentes;
-- transaction patterns;
+- transaction patterns reutilizáveis;
 - alerts/feedback;
 - empty/error/recovery/loading/skeleton;
 - confirmations e permission/auth transitions;
 - health operacional quando exposto a humano.
 
-Nenhuma ilha visual relevante do sistema anterior deve permanecer.
+Nenhuma ilha visual relevante do sistema anterior deve permanecer. Dashboard/Carteira só devem ser reabertos por finding transversal concreto.
 
 ## R9 — Accessibility, responsive e visual fidelity QA — #81
 
@@ -247,7 +260,7 @@ Após R9:
   -> #76 R4 auth ✓
   -> #77 R5 onboarding ✓
   -> #78 R6 dashboard ✓
-  -> #79 R7 portfolio
+  -> #79 R7 portfolio ✓
   -> #80 R8 estados/componentes
   -> #81 R9 a11y/responsive/fidelity
   -> R10 / fechamento #69
