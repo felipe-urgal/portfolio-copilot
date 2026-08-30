@@ -78,10 +78,7 @@ export class InvalidInvestmentRankingInputError extends Error {
   }
 }
 
-function contribution(
-  scoreBps: number,
-  weightBps: number,
-): InvestmentRankingDimensionContribution {
+function contribution(scoreBps: number, weightBps: number): InvestmentRankingDimensionContribution {
   return Object.freeze({
     scoreBps,
     weightBps,
