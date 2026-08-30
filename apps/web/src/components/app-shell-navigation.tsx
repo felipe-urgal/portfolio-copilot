@@ -162,7 +162,8 @@ export function AppShellNavigation({
       if (drawer === null) return;
 
       const focusable = Array.from(drawer.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)).filter(
-        (element) => !element.hasAttribute("disabled") && element.getAttribute("aria-hidden") !== "true",
+        (element) =>
+          !element.hasAttribute("disabled") && element.getAttribute("aria-hidden") !== "true",
       );
 
       if (focusable.length === 0) {
@@ -250,12 +251,7 @@ export function AppShellNavigation({
           >
             <div className={styles.drawerHeader}>
               <span id="app-navigation-title">Navegação</span>
-              <Button
-                ref={closeRef}
-                variant="ghost"
-                size="sm"
-                onClick={() => closeDrawer(true)}
-              >
+              <Button ref={closeRef} variant="ghost" size="sm" onClick={() => closeDrawer(true)}>
                 Fechar
               </Button>
             </div>

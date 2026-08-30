@@ -674,8 +674,8 @@ export function FinancialOnboardingFlow() {
         <div className={styles.persistenceNote}>
           <strong>Persistência sob seu controle</strong>
           <p>
-            Por padrão, o perfil fica só nesta sessão. Na revisão, você decide se quer salvá-lo neste
-            dispositivo para restaurá-lo após recarregar.
+            Por padrão, o perfil fica só nesta sessão. Na revisão, você decide se quer salvá-lo
+            neste dispositivo para restaurá-lo após recarregar.
           </p>
         </div>
       </aside>
