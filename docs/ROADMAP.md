@@ -10,7 +10,7 @@ O redesign cobre **todo o app web**: auth, onboarding, shell, dashboard, carteir
 
 ### Direção visual e arquitetura aprovadas
 
-O **Protótipo 3 — Assistant-First Workspace** é a referência visual canônica. O R1 expandiu essa direção para uma arquitetura completa do app: navigation model, shell desktop/tablet/mobile, auth, onboarding, dashboard, carteira, estados transversais e papel do Copiloto. O R2 transformou essa arquitetura em semantic tokens e primitives compartilhadas. O R3 implementou o AppShell canônico com sidebar desktop, drawer responsivo, landmarks, sessão/utility e adoção pelas superfícies protegidas atuais. O R4 consolidou sign-in/sign-out como focused auth: uma ação principal, estados de erro/reentrada claros, progressive disclosure de privacidade e loading sobre primitives canônicas, sem alterar OAuth, callback safety ou ownership.
+O **Protótipo 3 — Assistant-First Workspace** é a referência visual canônica. O R1 expandiu essa direção para uma arquitetura completa do app: navigation model, shell desktop/tablet/mobile, auth, onboarding, dashboard, carteira, estados transversais e papel do Copiloto. O R2 transformou essa arquitetura em semantic tokens e primitives compartilhadas. O R3 implementou o AppShell canônico com sidebar desktop, drawer responsivo, landmarks, sessão/utility e adoção pelas superfícies protegidas atuais. O R4 consolidou sign-in/sign-out como focused auth: uma ação principal, estados de erro/reentrada claros, progressive disclosure de privacidade e loading sobre primitives canônicas, sem alterar OAuth, callback safety ou ownership. O R5 migrou o onboarding completo para um guided flow sobre as primitives do R2, com stepper subordinado ao AppShell, validação/foco preservados e persistência local mantida como opt-in.
 
 Referências obrigatórias:
 
@@ -20,6 +20,7 @@ Referências obrigatórias:
 - `docs/design/DESIGN-SYSTEM.md`;
 - `docs/design/APP-SHELL.md`;
 - `docs/design/AUTH-SESSION.md`;
+- `docs/design/ONBOARDING.md`;
 - `docs/UX-UI-REDESIGN-ROADMAP.md`.
 
 ### Sequência canônica
@@ -29,14 +30,14 @@ Referências obrigatórias:
 - [x] R2 — design tokens e primitives — #74;
 - [x] R3 — app shell/sidebar/navegação — #75;
 - [x] R4 — auth e sessão — #76;
-- [ ] R5 — onboarding completo — #77;
+- [x] R5 — onboarding completo — #77;
 - [ ] R6 — dashboard completo — #78;
 - [ ] R7 — carteira completa — #79;
 - [ ] R8 — componentes/estados transversais — #80;
 - [ ] R9 — acessibilidade, responsividade e visual QA — #81;
 - [ ] R10 — gate final e fechamento da #69.
 
-R0 inventariou o frontend anterior, R1 definiu a arquitetura Assistant-First, R2 estabeleceu a fundação visual canônica, R3 tornou o AppShell único para Dashboard, Carteira e Onboarding e R4 fechou o padrão focused-auth para entrada/saída/reentrada. As próximas migrações devem consumir `apps/web/src/styles/tokens.css`, `@/components/ui` e o shell canônico quando aplicável, sem criar uma segunda implementação de navegação global, botão, field, focus, feedback, loading ou composição fundamental.
+R0 inventariou o frontend anterior, R1 definiu a arquitetura Assistant-First, R2 estabeleceu a fundação visual canônica, R3 tornou o AppShell único para Dashboard, Carteira e Onboarding, R4 fechou o padrão focused-auth para entrada/saída/reentrada e R5 eliminou as primitives visuais paralelas do onboarding sem alterar seu domínio. As próximas migrações devem consumir `apps/web/src/styles/tokens.css`, `@/components/ui` e o shell canônico quando aplicável, sem criar uma segunda implementação de navegação global, botão, field, focus, feedback, loading ou composição fundamental.
 
 Enquanto esta intervenção estiver ativa, novas interfaces relevantes — incluindo a UI da #45 — não devem criar um sistema visual paralelo. Trabalho puramente de backend/contratos pode avançar quando não produzir superfície temporária.
 
