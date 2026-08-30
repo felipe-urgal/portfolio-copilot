@@ -2,7 +2,7 @@
 
 Copiloto inteligente de investimentos para organizar patrimônio, estruturar aportes e tornar decisões financeiras **explicáveis, auditáveis e disciplinadas**.
 
-> **Estado atual:** o repositório já possui domínio financeiro determinístico, Transaction Ledger, pipeline de aporte, PostgreSQL com ownership, autenticação, Asset Master, Market Data foundation, Investment Engine, teses versionadas e ingestão segura de conteúdo externo. No frontend, o redesign baseado no **Protótipo 3 — Assistant-First Workspace** concluiu R0–R6; o próximo vertical é **R7 Carteira (#79)** após o merge do PR #89.
+> **Estado atual:** o repositório já possui domínio financeiro determinístico, Transaction Ledger, pipeline de aporte, PostgreSQL com ownership, autenticação, Asset Master, Market Data foundation, Investment Engine, teses versionadas e ingestão segura de conteúdo externo. No frontend, o redesign baseado no **Protótipo 3 — Assistant-First Workspace** concluiu R0–R6; o próximo vertical é **R7 Carteira (#79)** após o merge do PR #90.
 
 ![Direção visual canônica — Protótipo 3](docs/design/prototypes/prototype-3-assistant-first-dashboard.jpg)
 
@@ -264,7 +264,7 @@ Leia [`docs/AI-CONTENT-INGESTION.md`](docs/AI-CONTENT-INGESTION.md).
 
 A iniciativa #69 usa o **Protótipo 3 — Assistant-First Workspace** como direção canônica.
 
-Estado após o PR #89:
+Estado após o PR #90:
 
 ```text
 R0 audit ✓           #72
@@ -273,7 +273,7 @@ R2 design system ✓   #74
 R3 AppShell ✓        #75
 R4 focused auth ✓    #76
 R5 onboarding ✓      #77 / PR #88
-R6 dashboard ✓       #78 / PR #89
+R6 dashboard ✓       #78 / PR #90
 R7 carteira          #79  <- próximo
 R8 estados           #80
 R9 a11y/responsive/fidelity #81
