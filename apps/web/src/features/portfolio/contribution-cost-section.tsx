@@ -4,7 +4,16 @@ import { useState, type FormEvent } from "react";
 
 import { Money, type MoneySnapshot } from "@portfolio-copilot/domain";
 
-import { Button, EmptyState, Field, FieldError, HelpText, Label, Status, TextInput } from "@/components/ui";
+import {
+  Button,
+  EmptyState,
+  Field,
+  FieldError,
+  HelpText,
+  Label,
+  Status,
+  TextInput,
+} from "@/components/ui";
 
 import { type ContributionBaselineSnapshot } from "./contribution-baseline-form";
 import { type ContributionConcentrationSnapshot } from "./contribution-concentration-form";
@@ -158,7 +167,10 @@ export function ContributionCostSection({
                     <HelpText id={`${transactionId}-help`}>
                       Valor informado em {baseline.contribution.currency}; vazio representa zero.
                     </HelpText>
-                    <ErrorMessage id={`${transactionId}-error`} message={rowErrors?.transactionCost} />
+                    <ErrorMessage
+                      id={`${transactionId}-error`}
+                      message={rowErrors?.transactionCost}
+                    />
                   </Field>
 
                   <Field>
@@ -232,9 +244,7 @@ export function ContributionCostSection({
                         {moneyLabel(destination.investableAmount)}
                       </td>
                       <td>
-                        <Status
-                          tone={destination.status === "EXECUTABLE" ? "success" : "danger"}
-                        >
+                        <Status tone={destination.status === "EXECUTABLE" ? "success" : "danger"}>
                           {costStatusLabel(destination.status)}
                         </Status>
                       </td>

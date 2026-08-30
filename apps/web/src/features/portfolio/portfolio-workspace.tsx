@@ -478,7 +478,11 @@ export function PortfolioWorkspace({
                         : "Registre uma compra para projetar quantidade. CASH_IN e CASH_OUT não alteram posições."
                   }
                   action={
-                    <Button variant="secondary" size="sm" onClick={() => setActiveTask("transactions")}>
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => setActiveTask("transactions")}
+                    >
                       Abrir Transações
                     </Button>
                   }
@@ -585,7 +589,9 @@ export function PortfolioWorkspace({
                       value={assetDraft.referenceCurrency}
                       invalid={assetErrors.referenceCurrency !== undefined}
                       aria-describedby={
-                        assetErrors.referenceCurrency ? "asset-currency-error" : "asset-currency-help"
+                        assetErrors.referenceCurrency
+                          ? "asset-currency-error"
+                          : "asset-currency-help"
                       }
                       onChange={(event) =>
                         updateAssetDraft("referenceCurrency", event.target.value.toUpperCase())
@@ -594,7 +600,10 @@ export function PortfolioWorkspace({
                     <HelpText id="asset-currency-help">
                       Não implica cotação nem conversão FX.
                     </HelpText>
-                    <ErrorMessage id="asset-currency-error" message={assetErrors.referenceCurrency} />
+                    <ErrorMessage
+                      id="asset-currency-error"
+                      message={assetErrors.referenceCurrency}
+                    />
                   </Field>
 
                   {assetErrors.form ? <FieldError>{assetErrors.form}</FieldError> : null}
@@ -629,8 +638,8 @@ export function PortfolioWorkspace({
                         <div>
                           <strong>{asset.name}</strong>
                           <span>
-                            {assetClassLabel(asset.assetClass)} · {instrumentTypeLabel(asset.instrumentType)} ·{" "}
-                            {asset.referenceCurrency}
+                            {assetClassLabel(asset.assetClass)} ·{" "}
+                            {instrumentTypeLabel(asset.instrumentType)} · {asset.referenceCurrency}
                           </span>
                         </div>
                         <details className={styles.inlineDetails}>
@@ -663,7 +672,11 @@ export function PortfolioWorkspace({
                       : "Registre uma compra para projetar quantidade. CASH_IN e CASH_OUT não alteram posições."
                   }
                   action={
-                    <Button variant="secondary" size="sm" onClick={() => setActiveTask("transactions")}>
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => setActiveTask("transactions")}
+                    >
                       Registrar transação
                     </Button>
                   }
@@ -742,7 +755,9 @@ export function PortfolioWorkspace({
                         autoComplete="off"
                         value={cashDraft.amount}
                         invalid={cashErrors.amount !== undefined}
-                        aria-describedby={cashErrors.amount ? "cash-amount-error" : "cash-amount-help"}
+                        aria-describedby={
+                          cashErrors.amount ? "cash-amount-error" : "cash-amount-help"
+                        }
                         onChange={(event) => {
                           setCashDraft((current) => ({ ...current, amount: event.target.value }));
                           setCashErrors({});
@@ -785,7 +800,9 @@ export function PortfolioWorkspace({
                         disabled={assets.length === 0}
                         value={tradeDraft.assetId}
                         invalid={tradeErrors.assetId !== undefined}
-                        aria-describedby={tradeErrors.assetId ? "trade-asset-error" : "trade-asset-help"}
+                        aria-describedby={
+                          tradeErrors.assetId ? "trade-asset-error" : "trade-asset-help"
+                        }
                         onChange={(event) => updateTradeDraft("assetId", event.target.value)}
                       >
                         <option value="">Selecione um ativo</option>
@@ -866,7 +883,12 @@ export function PortfolioWorkspace({
                     <p>Mais recentes primeiro; cada item é um snapshot validado.</p>
                   </div>
                   <Status tone="neutral">
-                    {countLabel(transactions.length, "movimentação", "movimentações", "Ledger vazio")}
+                    {countLabel(
+                      transactions.length,
+                      "movimentação",
+                      "movimentações",
+                      "Ledger vazio",
+                    )}
                   </Status>
                 </div>
 
@@ -889,7 +911,8 @@ export function PortfolioWorkspace({
                               <strong>{transactionLabel(transaction.type)}</strong>
                               {quantity ? (
                                 <span className={styles.transactionContext}>
-                                  {asset?.name ?? "Ativo não disponível nesta sessão"} · {quantity} un.
+                                  {asset?.name ?? "Ativo não disponível nesta sessão"} · {quantity}{" "}
+                                  un.
                                 </span>
                               ) : null}
                               <time dateTime={transaction.occurredAt}>
@@ -976,8 +999,8 @@ export function PortfolioWorkspace({
                   <div>
                     <h2>Recomeçar o estado local</h2>
                     <p>
-                      Remove carteira, ativos, movimentações e estados de aporte desta sessão. A ação
-                      não altera perfil financeiro ou dados da conta.
+                      Remove carteira, ativos, movimentações e estados de aporte desta sessão. A
+                      ação não altera perfil financeiro ou dados da conta.
                     </p>
                   </div>
                   <Button variant="danger" onClick={resetPortfolio}>

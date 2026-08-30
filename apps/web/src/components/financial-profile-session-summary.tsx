@@ -134,7 +134,9 @@ export function FinancialProfileSessionSummary() {
                   <strong>{financialProfile.goals.length}</strong>
                 </div>
                 {financialProfile.goals.length === 0 ? (
-                  <p className={styles.noGoals}>Nenhum objetivo registrado no perfil desta sessão.</p>
+                  <p className={styles.noGoals}>
+                    Nenhum objetivo registrado no perfil desta sessão.
+                  </p>
                 ) : (
                   <ul className={styles.goalList}>
                     {financialProfile.goals.map((goal) => (

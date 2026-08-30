@@ -311,7 +311,9 @@ export function ContributionBaselinePanel({
                             autoComplete="off"
                             value={row.currentValue}
                             invalid={errors.currentValues !== undefined}
-                            aria-describedby={errors.currentValues ? "current-values-error" : undefined}
+                            aria-describedby={
+                              errors.currentValues ? "current-values-error" : undefined
+                            }
                             onChange={(event) =>
                               updateRow(row.assetClass, "currentValue", event.target.value)
                             }
@@ -366,7 +368,10 @@ export function ContributionBaselinePanel({
                   </div>
                 </dl>
 
-                <section className={styles.policySection} aria-labelledby="contribution-policy-title">
+                <section
+                  className={styles.policySection}
+                  aria-labelledby="contribution-policy-title"
+                >
                   <div className={styles.policyHeading}>
                     <h4 id="contribution-policy-title">Política operacional</h4>
                     <p>
@@ -378,7 +383,9 @@ export function ContributionBaselinePanel({
                   <form className={styles.policyForm} noValidate onSubmit={handlePolicySubmit}>
                     <div className={styles.fieldRow}>
                       <Field>
-                        <Label htmlFor="minimum-meaningful-contribution">Mínimo significativo</Label>
+                        <Label htmlFor="minimum-meaningful-contribution">
+                          Mínimo significativo
+                        </Label>
                         <TextInput
                           id="minimum-meaningful-contribution"
                           type="text"
@@ -509,8 +516,8 @@ export function ContributionBaselinePanel({
                 <div className={styles.resultFootnotes}>
                   <p className={styles.resultFootnote}>
                     “Removida pela política” significa que o domínio zerou a alocação final daquela
-                    classe. A UI não atribui uma causa isolada entre mínimo e limite porque o contrato
-                    atual não expõe reason code específico.
+                    classe. A UI não atribui uma causa isolada entre mínimo e limite porque o
+                    contrato atual não expõe reason code específico.
                   </p>
                   <p className={styles.resultFootnote}>
                     Concentração pode apenas sinalizar soft limit ou bloquear novo valor no hard

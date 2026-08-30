@@ -293,9 +293,7 @@ export function ContributionExecutionSection({
                             : moneyLabel(destination.executionAllocatedAmount)}
                         </td>
                         <td>
-                          <Status
-                            tone={destination.status === "EXECUTABLE" ? "success" : "danger"}
-                          >
+                          <Status tone={destination.status === "EXECUTABLE" ? "success" : "danger"}>
                             {executionStatusLabel(destination.status)}
                           </Status>
                         </td>

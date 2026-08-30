@@ -179,11 +179,15 @@ export function ContributionRecommendationSection({
             <dl className={recommendationStyles.remainders}>
               <div>
                 <dt>Após allocator</dt>
-                <dd>{moneyLabel(recommendation.currency, recommendation.cashRemainder.afterAllocator)}</dd>
+                <dd>
+                  {moneyLabel(recommendation.currency, recommendation.cashRemainder.afterAllocator)}
+                </dd>
               </div>
               <div>
                 <dt>Após política</dt>
-                <dd>{moneyLabel(recommendation.currency, recommendation.cashRemainder.afterPolicy)}</dd>
+                <dd>
+                  {moneyLabel(recommendation.currency, recommendation.cashRemainder.afterPolicy)}
+                </dd>
               </div>
               <div>
                 <dt>Após concentração</dt>
@@ -196,11 +200,15 @@ export function ContributionRecommendationSection({
               </div>
               <div>
                 <dt>Após execução</dt>
-                <dd>{moneyLabel(recommendation.currency, recommendation.cashRemainder.afterExecution)}</dd>
+                <dd>
+                  {moneyLabel(recommendation.currency, recommendation.cashRemainder.afterExecution)}
+                </dd>
               </div>
               <div>
                 <dt>Após custos</dt>
-                <dd>{moneyLabel(recommendation.currency, recommendation.cashRemainder.afterCosts)}</dd>
+                <dd>
+                  {moneyLabel(recommendation.currency, recommendation.cashRemainder.afterCosts)}
+                </dd>
               </div>
             </dl>
           </details>
@@ -231,7 +239,9 @@ export function ContributionRecommendationSection({
                           ? "Sem destino"
                           : (asset?.name ?? "Ativo não disponível nesta sessão")}
                       </td>
-                      <td>{moneyLabel(recommendation.currency, decision.baselineAllocatedAmount)}</td>
+                      <td>
+                        {moneyLabel(recommendation.currency, decision.baselineAllocatedAmount)}
+                      </td>
                       <td>{moneyLabel(recommendation.currency, decision.policyAllocatedAmount)}</td>
                       <td>
                         {moneyLabel(recommendation.currency, decision.concentrationAllocatedAmount)}
@@ -240,7 +250,9 @@ export function ContributionRecommendationSection({
                         {moneyLabel(recommendation.currency, decision.investableAmount)}
                       </td>
                       <td>
-                        <Status tone={statusTone(decision.status)}>{statusLabel(decision.status)}</Status>
+                        <Status tone={statusTone(decision.status)}>
+                          {statusLabel(decision.status)}
+                        </Status>
                       </td>
                       <td>
                         <details className={recommendationStyles.reasonDetails}>

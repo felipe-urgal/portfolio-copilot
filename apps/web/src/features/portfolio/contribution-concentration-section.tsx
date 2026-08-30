@@ -177,7 +177,9 @@ export function ContributionConcentrationSection({
                           updateRow(row.assetClass, { softMaxWeight: event.target.value })
                         }
                       />
-                      <HelpText id={`${softId}-help`}>Alert-only. Não reduz valor sozinho.</HelpText>
+                      <HelpText id={`${softId}-help`}>
+                        Alert-only. Não reduz valor sozinho.
+                      </HelpText>
                       <ErrorMessage id={`${softId}-error`} message={rowErrors?.softMaxWeight} />
                     </Field>
 

@@ -41,8 +41,8 @@ export function ContributionRecommendationExplanationSection({
           <div>
             <h6>Explicação determinística</h6>
             <p>
-              Estados vêm apenas de <code>status</code> e causas vêm apenas de <code>reasonCodes</code>,
-              na mesma ordem entregue pelo domínio.
+              Estados vêm apenas de <code>status</code> e causas vêm apenas de{" "}
+              <code>reasonCodes</code>, na mesma ordem entregue pelo domínio.
             </p>
           </div>
           <p className={styles.methodology}>Metodologia: {explanation.methodologyVersion}</p>
@@ -51,9 +51,10 @@ export function ContributionRecommendationExplanationSection({
         <p className={styles.reconciliation}>
           Fatos do snapshot — aporte: {moneyLabel(explanation.currency, explanation.contribution)};
           investível: {moneyLabel(explanation.currency, explanation.totalInvestableAmount)}; custo
-          conhecido consumido: {moneyLabel(explanation.currency, explanation.totalConsumedKnownCost)};
-          sobra final: {moneyLabel(explanation.currency, explanation.unallocatedContribution)}. Nenhum
-          valor é recalculado nesta leitura.
+          conhecido consumido:{" "}
+          {moneyLabel(explanation.currency, explanation.totalConsumedKnownCost)}; sobra final:{" "}
+          {moneyLabel(explanation.currency, explanation.unallocatedContribution)}. Nenhum valor é
+          recalculado nesta leitura.
         </p>
 
         <ol className={styles.decisions}>
@@ -87,7 +88,9 @@ export function ContributionRecommendationExplanationSection({
                   </div>
                   <div>
                     <dt>Após concentração</dt>
-                    <dd>{moneyLabel(explanation.currency, decision.concentrationAllocatedAmount)}</dd>
+                    <dd>
+                      {moneyLabel(explanation.currency, decision.concentrationAllocatedAmount)}
+                    </dd>
                   </div>
                   <div>
                     <dt>Investível</dt>
