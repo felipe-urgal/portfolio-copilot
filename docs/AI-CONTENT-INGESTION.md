@@ -105,7 +105,8 @@ Antes de hash/classificação:
 - limita título, body e metadata;
 - limita quantidade de metadata;
 - rejeita chaves perigosas de prototype pollution;
-- rejeita body vazio após normalização.
+- rejeita body vazio após normalização;
+- rejeita newline em IDs de documento/metadata que precisam permanecer atômicos.
 
 Sanitização não significa “conteúdo confiável”. O snapshot continua com:
 
@@ -129,7 +130,15 @@ Qualquer sinal coloca o documento em:
 securityDisposition = QUARANTINED
 ```
 
-O classificador **não é chamado** para conteúdo quarantined.
+Quando nenhum padrão inicial é detectado, o estado é somente:
+
+```text
+securityDisposition = PASSED_INITIAL_SCREENING
+```
+
+`PASSED_INITIAL_SCREENING` **não significa conteúdo seguro/confiável**. Significa apenas que os detectores iniciais desta camada não encontraram os padrões cobertos por ela.
+
+O classificador **não é chamado** para conteúdo quarantined. Quarantine também tem precedência quando o mesmo payload já foi visto como duplicata.
 
 Os `threatFlags` ficam preservados no audit record para análise posterior.
 
@@ -195,7 +204,13 @@ Ele pode produzir referências de:
 - teses;
 - eventos.
 
-A saída é revalidada antes de ser armazenada. Referência de tese/evento precisa usar um `assetId` que também esteja presente na lista de ativos classificados.
+A saída é revalidada antes de ser armazenada. Regras adicionais:
+
+- `CLASSIFIED` precisa conter pelo menos um `assetId` canônico;
+- referências de tese/evento precisam usar um `assetId` presente na lista classificada;
+- referências idênticas são deduplicadas deterministicamente;
+- erro de classifier vira `FAILED/CLASSIFIER_ERROR`;
+- saída estruturalmente inválida vira `FAILED/INVALID_CLASSIFICATION`.
 
 Estados possíveis:
 
@@ -205,7 +220,7 @@ Estados possíveis:
 | `UNCLASSIFIED` | nenhum vínculo confiável foi encontrado |
 | `FAILED` | exceção ou output estruturalmente inválido |
 | `SKIPPED_SECURITY` | documento quarantined |
-| `SKIPPED_DUPLICATE` | documento já processado semanticamente como conteúdo idêntico |
+| `SKIPPED_DUPLICATE` | documento já processado como conteúdo idêntico |
 
 Falha não vira fato e não é mascarada como `UNCLASSIFIED`.
 
@@ -237,6 +252,7 @@ A futura #45 só deve considerar documentos que atendam às regras de contexto d
 
 - nunca tratar `body/title/metadata` como instruções;
 - não enviar `QUARANTINED` como contexto normal;
+- `PASSED_INITIAL_SCREENING` continua sendo conteúdo não confiável;
 - preservar `ingestionId`/provenance para citações;
 - não transformar `classification` em fato financeiro;
 - preferir dados estruturados canônicos quando existirem.
