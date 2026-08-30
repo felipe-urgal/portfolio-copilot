@@ -5,8 +5,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import { APP_NAME } from "@portfolio-copilot/shared";
 
-import type { AuthenticatedIdentity } from "@/lib/identity";
-
 import { Button } from "./ui/button";
 import styles from "./app-shell.module.css";
 
@@ -90,9 +88,9 @@ function Brand() {
 }
 
 function AccountArea({
-  identity,
+  displayName,
   onNavigate,
-}: Readonly<{ identity?: AuthenticatedIdentity | undefined; onNavigate?: () => void }>) {
+}: Readonly<{ displayName?: string | undefined; onNavigate?: () => void }>) {
   return (
     <div className={styles.sidebarFooter}>
       <Link className={styles.utilityLink} href="/health" onClick={() => onNavigate?.()}>
@@ -100,18 +98,18 @@ function AccountArea({
         <span>Saúde da aplicação</span>
       </Link>
 
-      {identity === undefined ? null : (
+      {displayName === undefined ? null : (
         <Link
           className={styles.accountLink}
           href="/sign-out"
-          aria-label={`Sessão autenticada como ${identity.displayName}. Abrir opções para sair.`}
+          aria-label={`Sessão autenticada como ${displayName}. Abrir opções para sair.`}
           onClick={() => onNavigate?.()}
         >
           <span className={styles.accountAvatar} aria-hidden="true">
-            {getInitials(identity.displayName)}
+            {getInitials(displayName)}
           </span>
           <span className={styles.accountCopy}>
-            <strong>{identity.displayName}</strong>
+            <strong>{displayName}</strong>
             <small>Sair da sessão</small>
           </span>
         </Link>
@@ -122,8 +120,8 @@ function AccountArea({
 
 export function AppShellNavigation({
   activeRoute,
-  identity,
-}: Readonly<{ activeRoute: AppRoute; identity?: AuthenticatedIdentity | undefined }>) {
+  accountDisplayName,
+}: Readonly<{ activeRoute: AppRoute; accountDisplayName?: string | undefined }>) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const drawerRef = useRef<HTMLElement>(null);
@@ -211,7 +209,7 @@ export function AppShellNavigation({
       <aside className={styles.desktopSidebar} aria-label="Navegação do produto">
         <Brand />
         <NavigationLinks activeRoute={activeRoute} />
-        <AccountArea identity={identity} />
+        <AccountArea displayName={accountDisplayName} />
       </aside>
 
       <header className={styles.mobileHeader}>
@@ -260,7 +258,7 @@ export function AppShellNavigation({
                 activeRoute={activeRoute}
                 onNavigate={(href) => closeDrawer(href === activeRoute)}
               />
-              <AccountArea identity={identity} onNavigate={() => closeDrawer(false)} />
+              <AccountArea displayName={accountDisplayName} onNavigate={() => closeDrawer(false)} />
             </div>
           </aside>
         </div>
