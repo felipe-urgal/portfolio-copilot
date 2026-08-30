@@ -2,7 +2,7 @@
 
 ## Status
 
-**Documento vivo.** Última reconciliação da iniciativa UX/UI: **2026-08-30**, no PR #89.
+**Documento vivo.** Última reconciliação da iniciativa UX/UI: **2026-08-30**, no PR #90.
 
 Este mapa define qual documento responde por cada tipo de informação e como tratar divergências. O objetivo é impedir que roadmap, backlog, README, ADRs e documentos de descoberta virem fontes concorrentes de verdade.
 
@@ -106,7 +106,7 @@ Issues do GitHub são o backlog executável detalhado. `BACKLOG.md` é uma visã
 - R3 #75 — concluído;
 - R4 #76 — concluído;
 - R5 #77 — concluído via PR #88;
-- R6 #78 — entregue no PR #89 e considerado concluído após o merge desse PR;
+- R6 #78 — entregue no PR #90 e considerado concluído após o merge desse PR;
 - R7 #79 — próximo;
 - R8 #80 — pendente;
 - R9 #81 — pendente;
@@ -131,6 +131,6 @@ Ao finalizar um PR relevante:
 
 A reconciliação ampla de 2026-08-30 revisou o inventário completo de Markdown do repositório, classificou documentos vivos/normativos/históricos, atualizou status das issues abertas e adicionou `AGENTS.md` como contrato operacional para agentes de IA.
 
-### PR #89
+### PR #90
 
 A reconciliação do R6 adiciona `docs/design/DASHBOARD.md`, promove #79/R7 como próxima atividade e atualiza roadmap/backlog para refletir que o Dashboard já segue AppShell/tokens/primitives e preserva ausências de dados de forma explícita.
