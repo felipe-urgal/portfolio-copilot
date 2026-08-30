@@ -4,16 +4,16 @@
 
 **INICIATIVA ATIVA — #69**
 
-Estado após o PR #88:
+Estado após o PR #91:
 
 - R0 #72 — concluído;
 - R1 #73 — concluído;
 - R2 #74 — concluído;
 - R3 #75 — concluído;
 - R4 #76 — concluído;
-- R5 #77 — concluído neste PR;
-- **próxima fase: R6 #78 — Dashboard**;
-- R7 #79 — Carteira;
+- R5 #77 — concluído;
+- R6 #78 — concluído neste PR;
+- **próxima fase: R7 #79 — Carteira**;
 - R8 #80 — estados/componentes transversais;
 - R9 #81 — accessibility/responsive/fidelity QA;
 - R10 — gate final e fechamento da #69.
@@ -29,8 +29,9 @@ O objetivo não é aplicar um tema sobre o frontend antigo. É migrar o produto 
 5. `docs/design/APP-SHELL.md` — shell/navegação R3;
 6. `docs/design/AUTH-SESSION.md` — focused auth R4;
 7. `docs/design/ONBOARDING.md` — guided onboarding R5;
-8. este documento — sequência/gates R0–R10;
-9. `docs/DOCUMENTATION-MAP.md` — ownership e precedência documental.
+8. `docs/design/DASHBOARD.md` — Dashboard R6;
+9. este documento — sequência/gates R0–R10;
+10. `docs/DOCUMENTATION-MAP.md` — ownership e precedência documental.
 
 ## Direção visual canônica
 
@@ -69,7 +70,7 @@ Fechou:
 - shell desktop/tablet/mobile;
 - densidades de conteúdo;
 - focused auth;
-- onboarding no AppShell;
+- onboarding no shell;
 - dashboard orientado a panorama/ação;
 - carteira por tarefas/progressive disclosure;
 - papel/limites do Copiloto;
@@ -133,23 +134,27 @@ Implementado:
 - objetivos como seções abertas, evitando card dentro de card;
 - CSS local limitado a anatomy/ritmo/responsividade.
 
-## R6 — Dashboard completo — PRÓXIMO — #78
+## R6 — Dashboard completo — CONCLUÍDO — #78 / PR #91
 
-Objetivos:
+Entrega: `docs/design/DASHBOARD.md`.
 
-- aplicar a superfície mais diretamente representada pelo Protótipo 3;
-- header/greeting simples e contextual;
-- KPIs somente com fonte/calculabilidade real;
-- panorama da carteira como bloco dominante;
-- estados honestos para ausência de valuation/market data;
-- próximos passos a partir de capabilities reais;
-- teses/eventos somente quando integrados;
-- arquitetura neutra para futuro context rail, sem fingir a #45;
-- desktop/tablet/mobile.
+Implementado:
 
-Gate: layout reconhecível como Protótipo 3 sem dado inventado, sobre AppShell/R2, com `pnpm check` e auto-review verdes.
+- greeting derivado somente de identidade autenticada real;
+- primeira hierarquia orientada a contexto, panorama e próxima ação;
+- métricas compactas somente a partir do perfil financeiro validado;
+- meta de reserva explicitamente tratada como target declarado, nunca saldo atual;
+- panorama de Carteira como bloco dominante;
+- empty state de Carteira enquanto Portfolio/Assets/Ledger permanecerem locais à própria tela;
+- nenhuma inferência de patrimônio, composição, retorno, Market Data, score ou recomendação;
+- context rail neutro com fatos do perfil, sem simular a capability da #45;
+- indisponibilidades técnicas em progressive disclosure;
+- account migration opt-in migrada para primitives/tokens canônicos sem alterar seu fluxo de segurança;
+- desktop/tablet/mobile definidos por composição responsiva.
 
-## R7 — Carteira completa — #79
+Gate: todo número visível possui fonte real, ausências permanecem honestas e o Dashboard usa AppShell/R2 sem sistema visual paralelo.
+
+## R7 — Carteira completa — PRÓXIMO — #79
 
 Objetivos:
 
@@ -167,7 +172,7 @@ Objetivos:
 Consolidar o que ainda restar fora das surfaces principais:
 
 - recommendation/reason codes;
-- financial profile/session summary e account migration;
+- financial profile/session summary remanescente em outras surfaces;
 - provenance/stale/missing;
 - forms remanescentes;
 - transaction patterns;
@@ -241,7 +246,7 @@ Após R9:
   -> #75 R3 AppShell ✓
   -> #76 R4 auth ✓
   -> #77 R5 onboarding ✓
-  -> #78 R6 dashboard
+  -> #78 R6 dashboard ✓
   -> #79 R7 portfolio
   -> #80 R8 estados/componentes
   -> #81 R9 a11y/responsive/fidelity

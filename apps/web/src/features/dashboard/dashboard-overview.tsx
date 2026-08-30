@@ -1,165 +1,218 @@
-import Link from "next/link";
+"use client";
+
+import {
+  Money,
+  type FinancialHorizonCode,
+  type MoneySnapshot,
+  type RiskToleranceCode,
+} from "@portfolio-copilot/domain";
 
 import { FinancialProfileAccountMigration } from "@/components/financial-profile-account-migration";
-import { FinancialProfileSessionSummary } from "@/components/financial-profile-session-summary";
+import { useFinancialSession } from "@/components/financial-session";
+import { EmptyState, Grid, LinkButton, Metric, PageHeader, Status, Surface } from "@/components/ui";
 
 import styles from "./dashboard-overview.module.css";
 
-const SUMMARY_STATES = [
-  {
-    label: "Patrimônio total",
-    state: "Dado indisponível",
-    detail:
-      "O dashboard ainda não recebe carteira compartilhada nem preços para calcular este resumo.",
-  },
-  {
-    label: "Aporte do mês",
-    state: "Ainda não calculado",
-    detail:
-      "O cálculo depende de carteira, baseline de aporte e demais fatos que ainda vivem na tela de carteira.",
-  },
-] as const;
+const RISK_LABELS: Record<RiskToleranceCode, string> = {
+  LOW: "Baixa",
+  MEDIUM: "Média",
+  HIGH: "Alta",
+};
 
-const CONTEXT_RULES = [
-  {
-    label: "Perfil financeiro",
-    state: "Snapshot validado no onboarding",
-  },
-  {
-    label: "Objetivos",
-    state: "Metas declaradas, sem progresso calculado",
-  },
-  {
-    label: "Reserva",
-    state: "Meta desejada, sem saldo atual inferido",
-  },
-] as const;
+const HORIZON_LABELS: Record<FinancialHorizonCode, string> = {
+  SHORT: "Curto prazo",
+  MEDIUM: "Médio prazo",
+  LONG: "Longo prazo",
+};
 
-export function DashboardOverview() {
+type DashboardOverviewProps = Readonly<{
+  displayName: string;
+}>;
+
+function formatMoney(snapshot: MoneySnapshot): string {
+  const [whole = "0", fraction = "00"] = Money.fromSnapshot(snapshot).toDecimalString().split(".");
+  const groupedWhole = whole.replace(/\B(?=(\d{3})+(?!\d))/gu, ".");
+  return `${snapshot.currency} ${groupedWhole},${fraction}`;
+}
+
+function persistenceLabel(status: "memory-only" | "persisted" | "unavailable"): string {
+  if (status === "persisted") return "Salvo neste dispositivo";
+  if (status === "unavailable") return "Armazenamento local indisponível";
+  return "Somente nesta sessão";
+}
+
+export function DashboardOverview({ displayName }: DashboardOverviewProps) {
+  const { financialProfile, persistenceStatus } = useFinancialSession();
+  const hasProfile = financialProfile !== null;
+
+  const nextActionTitle = hasProfile
+    ? "Estruture os fatos da carteira"
+    : "Complete seu perfil financeiro";
+  const nextActionDescription = hasProfile
+    ? "Abra a Carteira para cadastrar a estrutura e registrar transações. O Dashboard só mostrará patrimônio, composição ou posições quando esses fatos puderem ser compartilhados de forma confiável."
+    : "Risco, horizonte, moeda, reserva e objetivos precisam vir de um snapshot validado antes de contextualizar o restante da experiência.";
+
   return (
-    <>
-      <FinancialProfileSessionSummary />
-      <FinancialProfileAccountMigration />
+    <div className={styles.dashboard}>
+      <PageHeader
+        title={`Olá, ${displayName}`}
+        description={
+          hasProfile
+            ? "Seu contexto financeiro está disponível. Agora o foco é construir uma base factual de carteira antes de qualquer análise patrimonial."
+            : "Comece pelo contexto financeiro. O Dashboard não preenche lacunas com patrimônio, retorno ou recomendações fictícias."
+        }
+        actions={
+          <Status tone={hasProfile ? "success" : "warning"}>
+            {hasProfile ? "Perfil configurado" : "Perfil pendente"}
+          </Status>
+        }
+      />
 
-      <header className={styles.pageHeader}>
-        <div>
-          <h1>Dashboard</h1>
-          <p>
-            Uma visão geral que mostra apenas o que o produto realmente sabe hoje e deixa claro o
-            que ainda não pode calcular.
-          </p>
-        </div>
-        <span className={styles.dataMode}>Sessão local</span>
-      </header>
-
-      <section className={styles.overviewSurface} aria-labelledby="overview-title">
-        <div className={styles.sectionHeading}>
-          <div>
-            <h2 id="overview-title">Visão geral</h2>
-            <p>Contexto declarado não é confundido com patrimônio, saldo ou progresso.</p>
+      {financialProfile === null ? null : (
+        <section className={styles.metricsSection} aria-labelledby="dashboard-metrics-title">
+          <div className={styles.sectionIntro}>
+            <div>
+              <span className={styles.eyebrow}>Contexto validado</span>
+              <h2 id="dashboard-metrics-title">O que já é possível afirmar</h2>
+            </div>
+            <Status tone="neutral">{persistenceLabel(persistenceStatus)}</Status>
           </div>
-          <span className={styles.sectionStatus}>Sem métricas patrimoniais calculáveis</span>
+
+          <Grid minimum="sm" space="sm" className={styles.metricsGrid}>
+            <Metric
+              label="Objetivos declarados"
+              value={financialProfile.goals.length.toString()}
+              detail="Quantidade registrada no perfil financeiro."
+            />
+            {financialProfile.emergencyReserveTarget === null ? null : (
+              <Metric
+                label="Meta de reserva"
+                value={formatMoney(financialProfile.emergencyReserveTarget)}
+                detail="Meta declarada; não representa saldo atual."
+                valueSize="sm"
+              />
+            )}
+          </Grid>
+        </section>
+      )}
+
+      <div className={styles.workspaceGrid}>
+        <div className={styles.primaryColumn}>
+          <Surface
+            tone="elevated"
+            padding="lg"
+            className={styles.portfolioSurface}
+            aria-labelledby="portfolio-panorama-title"
+          >
+            <div className={styles.surfaceHeading}>
+              <div>
+                <span className={styles.eyebrow}>Panorama</span>
+                <h2 id="portfolio-panorama-title">Carteira</h2>
+                <p>
+                  A região principal fica reservada para patrimônio, composição, posições e gaps
+                  somente quando houver fatos compartilhados suficientes.
+                </p>
+              </div>
+              <Status tone="info">Aguardando base compartilhada</Status>
+            </div>
+
+            <EmptyState
+              className={styles.portfolioEmptyState}
+              title="Construa a base factual da sua carteira"
+              description="Cadastre a carteira e registre transações na superfície de Carteira. Enquanto esse estado permanecer local àquela tela, o Dashboard não infere patrimônio, composição, retorno ou alocação."
+              action={<LinkButton href="/portfolio">Abrir carteira</LinkButton>}
+            />
+          </Surface>
+
+          <Surface padding="lg" aria-labelledby="attention-title">
+            <div className={styles.surfaceHeading}>
+              <div>
+                <span className={styles.eyebrow}>Atenção agora</span>
+                <h2 id="attention-title">{nextActionTitle}</h2>
+                <p>{nextActionDescription}</p>
+              </div>
+            </div>
+
+            <div className={styles.actionRow}>
+              <LinkButton href={hasProfile ? "/portfolio" : "/onboarding"}>
+                {hasProfile ? "Ir para a carteira" : "Configurar perfil"}
+              </LinkButton>
+              {hasProfile ? (
+                <LinkButton href="/onboarding" variant="secondary">
+                  Revisar perfil
+                </LinkButton>
+              ) : null}
+            </div>
+          </Surface>
         </div>
 
-        <dl className={styles.summaryGrid}>
-          {SUMMARY_STATES.map((item) => (
-            <div className={styles.summaryItem} key={item.label}>
-              <dt>{item.label}</dt>
-              <dd>
-                <strong>{item.state}</strong>
-                <span>{item.detail}</span>
-              </dd>
-            </div>
-          ))}
-        </dl>
-
-        <div className={styles.detailGrid}>
-          <section className={styles.detailRegion} aria-labelledby="portfolio-title">
-            <div className={styles.detailHeading}>
+        <aside className={styles.contextRail} aria-label="Contexto financeiro">
+          <Surface padding="lg" className={styles.contextSurface}>
+            <div className={styles.surfaceHeading}>
               <div>
-                <h2 id="portfolio-title">Carteira</h2>
-                <p>Cadastro local disponível; posições continuam dependentes de transações.</p>
-              </div>
-              <span>Cadastro disponível</span>
-            </div>
-
-            <div className={styles.emptyState}>
-              <span className={styles.emptyMark} aria-hidden="true" />
-              <div>
-                <strong>Carteira não disponível no dashboard</strong>
+                <span className={styles.eyebrow}>Seu contexto</span>
+                <h2>Perfil financeiro</h2>
                 <p>
-                  Portfolio, ativos e ledger ainda vivem somente na tela de carteira e não são
-                  compartilhados com esta visão geral.
+                  Fatos declarados ajudam a orientar a experiência sem virar resultado financeiro.
                 </p>
               </div>
             </div>
 
-            <Link className={styles.secondaryAction} href="/portfolio">
-              Abrir carteira
-            </Link>
-          </section>
-
-          <section className={styles.detailRegion} aria-labelledby="context-rules-title">
-            <div className={styles.detailHeading}>
-              <div>
-                <h2 id="context-rules-title">Como o contexto é usado</h2>
-                <p>O snapshot compartilhado continua sendo contexto declarado, não resultado.</p>
-              </div>
-            </div>
-
-            <dl className={styles.configurationList}>
-              {CONTEXT_RULES.map((item) => (
-                <div key={item.label}>
-                  <dt>{item.label}</dt>
-                  <dd>{item.state}</dd>
+            {financialProfile === null ? (
+              <EmptyState
+                className={styles.contextEmptyState}
+                title="Contexto ainda não configurado"
+                description="Conclua o onboarding para compartilhar um snapshot validado com Dashboard e Carteira."
+                action={
+                  <LinkButton href="/onboarding" variant="secondary">
+                    Abrir onboarding
+                  </LinkButton>
+                }
+              />
+            ) : (
+              <dl className={styles.contextList}>
+                <div>
+                  <dt>Moeda de referência</dt>
+                  <dd>{financialProfile.referenceCurrency}</dd>
                 </div>
-              ))}
-            </dl>
+                <div>
+                  <dt>Tolerância a risco</dt>
+                  <dd>{RISK_LABELS[financialProfile.riskTolerance]}</dd>
+                </div>
+                <div>
+                  <dt>Horizonte</dt>
+                  <dd>{HORIZON_LABELS[financialProfile.horizon]}</dd>
+                </div>
+                <div>
+                  <dt>Objetivos</dt>
+                  <dd>{financialProfile.goals.length}</dd>
+                </div>
+                <div>
+                  <dt>Persistência</dt>
+                  <dd>{persistenceLabel(persistenceStatus)}</dd>
+                </div>
+              </dl>
+            )}
+          </Surface>
+        </aside>
+      </div>
 
-            <Link className={styles.secondaryAction} href="/onboarding">
-              Abrir onboarding
-            </Link>
-          </section>
+      <FinancialProfileAccountMigration />
+
+      <details className={styles.disclosure}>
+        <summary>O que ainda não aparece neste Dashboard</summary>
+        <div className={styles.disclosureBody}>
+          <p>
+            Patrimônio, retorno, composição, posições, target versus atual, gaps, Market Data e
+            recomendações ficam ausentes enquanto não existir uma fonte real e determinística
+            disponível para esta superfície.
+          </p>
+          <p>
+            O estado atual da Carteira ainda vive somente na própria tela. IDs, provenance e reason
+            codes continuam em segunda ordem e não são usados para preencher a hierarquia principal.
+          </p>
         </div>
-      </section>
-
-      <section className={styles.nextSteps} aria-labelledby="next-steps-title">
-        <div className={styles.nextStepsHeading}>
-          <h2 id="next-steps-title">Próximos passos</h2>
-          <p>A sequência preserva as dependências reais da jornada do MVP.</p>
-        </div>
-
-        <ol className={styles.stepsList}>
-          <li>
-            <span className={styles.stepNumber}>1</span>
-            <div>
-              <strong>Defina seu contexto financeiro</strong>
-              <p>
-                Perfil, reserva e objetivos validados passam a acompanhar a navegação desta sessão.
-              </p>
-              <Link href="/onboarding">Ir para o onboarding</Link>
-            </div>
-          </li>
-          <li>
-            <span className={styles.stepNumber}>2</span>
-            <div>
-              <strong>Cadastre sua carteira</strong>
-              <p>Crie localmente a identidade, o nome e a moeda de referência do Portfolio.</p>
-              <Link href="/portfolio">Ir para a carteira</Link>
-            </div>
-          </li>
-          <li>
-            <span className={styles.stepNumber}>3</span>
-            <div>
-              <strong>Registre transações</strong>
-              <p>
-                Posições só aparecem quando o Transaction Ledger possui fatos suficientes para
-                projetá-las.
-              </p>
-            </div>
-          </li>
-        </ol>
-      </section>
-    </>
+      </details>
+    </div>
   );
 }

@@ -15,15 +15,15 @@ O **Protótipo 3 — Assistant-First Workspace** é a direção visual canônica
 - [x] R2 — design tokens e primitives — #74;
 - [x] R3 — AppShell/sidebar/drawer/navegação — #75;
 - [x] R4 — focused auth e sessão — #76;
-- [x] R5 — onboarding guiado — #77 / PR #88.
+- [x] R5 — onboarding guiado — #77 / PR #88;
+- [x] R6 — dashboard orientado a contexto/panorama/próxima ação — #78 / PR #91.
 
 ### Próximo
 
-- [ ] **R6 — dashboard completo — #78**.
+- [ ] **R7 — carteira completa — #79**.
 
 ### Depois
 
-- [ ] R7 — carteira completa — #79;
 - [ ] R8 — componentes/estados transversais — #80;
 - [ ] R9 — accessibility, responsive e visual fidelity QA — #81;
 - [ ] R10 — gate final e fechamento da #69.
@@ -36,6 +36,7 @@ Referências canônicas:
 - `docs/design/APP-SHELL.md`;
 - `docs/design/AUTH-SESSION.md`;
 - `docs/design/ONBOARDING.md`;
+- `docs/design/DASHBOARD.md`;
 - `docs/UX-UI-REDESIGN-ROADMAP.md`.
 
 Enquanto #69 estiver ativa, novas surfaces não podem criar um sistema visual paralelo nem inventar rota, KPI, dado ou Copiloto para copiar o mockup.
@@ -91,13 +92,13 @@ Existem hoje:
 - persistência local opt-in;
 - persistência PostgreSQL com ownership;
 - migração local → conta opt-in/conflict-safe;
-- Dashboard atual;
+- Dashboard R6 sobre AppShell/tokens/primitives, sem métricas fictícias;
 - Carteira com Portfolio/Assets/Ledger/positions;
 - fluxo local do aporte do mês e explicação determinística.
 
 Pendências:
 
-- #78/#79 — concluir a experiência visual de Dashboard/Carteira;
+- #79 — concluir a experiência visual da Carteira;
 - #47 — fechar a jornada ponta a ponta do MVP sobre as surfaces migradas.
 
 ## Asset Master e Market Data — FOUNDATION IMPLEMENTADA, COBERTURA EVOLUTIVA

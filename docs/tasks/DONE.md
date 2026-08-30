@@ -254,15 +254,31 @@ Hardening sobre domínio, persistência, Asset Master, Market Data e Investment 
 - `docs/design/ONBOARDING.md` / D-041;
 - PR #88 também reconciliou documentação/issue status do repositório e adicionou `AGENTS.md` como contrato operacional para agentes de IA.
 
-Este último marco é considerado concluído quando o próprio PR #88 é mergeado.
+Este marco é considerado concluído com o merge do PR #88.
 
-## Estado após #88
+## 2026-08-30 — UX/UI R6 Dashboard Assistant-First — #78 / PR #91
 
-Próxima atividade canônica: **#78 — R6 Dashboard**.
+- greeting derivado somente do `displayName` da identidade autenticada;
+- hierarquia principal reorganizada em contexto, panorama e próxima ação;
+- métricas compactas exibidas somente a partir do perfil financeiro validado;
+- meta de reserva tratada explicitamente como target declarado, nunca saldo atual;
+- panorama de Carteira como bloco dominante com estado vazio honesto enquanto Portfolio/Assets/Ledger não são compartilhados com o Dashboard;
+- patrimônio, retorno, composição, Market Data, scores e recomendações permanecem ausentes sem fonte real;
+- context rail neutro com fatos do perfil, sem simular a UI funcional do Copiloto #45;
+- migração opt-in do perfil para a conta passou a usar primitives/tokens canônicos sem alterar concorrência, consentimento ou ownership;
+- regression tests cobrem hierarquia, ausência de números fictícios e fatos válidos do perfil;
+- `docs/design/DASHBOARD.md` registra o contrato canônico do R6;
+- README, roadmap, catálogo de funcionalidades e fila operacional reconciliados.
+
+Este marco é considerado concluído quando o próprio PR #91 é mergeado.
+
+## Estado após #91
+
+Próxima atividade canônica: **#79 — R7 Carteira**.
 
 Backlog aberto principal:
 
-- #78–#81 e R10 para concluir #69;
+- #79–#81 e R10 para concluir #69;
 - #45/#46 para Copiloto e avaliação de IA;
 - #47 para convergência ponta a ponta do MVP;
 - #48 simulação/backtesting;

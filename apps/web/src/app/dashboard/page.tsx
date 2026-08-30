@@ -9,7 +9,7 @@ import { requireAuthenticatedIdentity } from "@/lib/identity-server";
 export const metadata: Metadata = {
   title: `Dashboard | ${APP_NAME}`,
   description:
-    "Visão geral do MVP com estados vazios explícitos e sem métricas financeiras fictícias.",
+    "Workspace financeiro com contexto real, próximos passos explícitos e nenhuma métrica inventada.",
 };
 
 export default async function DashboardPage() {
@@ -17,7 +17,7 @@ export default async function DashboardPage() {
 
   return (
     <AppShell activeRoute="/dashboard" identity={identity}>
-      <DashboardOverview />
+      <DashboardOverview displayName={identity.displayName} />
     </AppShell>
   );
 }

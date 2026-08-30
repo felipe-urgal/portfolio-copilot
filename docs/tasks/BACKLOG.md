@@ -6,9 +6,8 @@ A prioridade corrente está sempre em `NEXT.md`. Este arquivo não substitui `do
 
 ## UX/UI — iniciativa #69
 
-A fundação visual R0–R5 está concluída após o PR #88. Permanecem:
+A fundação visual R0–R6 está concluída após o PR #91. Permanecem:
 
-- #78 — R6: dashboard baseado no Protótipo 3;
 - #79 — R7: carteira completa e progressive disclosure;
 - #80 — R8: componentes/estados transversais restantes;
 - #81 — R9: acessibilidade, responsividade e visual fidelity QA;
