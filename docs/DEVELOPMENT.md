@@ -1,5 +1,13 @@
 # Desenvolvimento
 
+## Contratos operacionais
+
+Este documento define o fluxo geral de engenharia do repositório.
+
+Para agentes de IA, `AGENTS.md` é **obrigatório** e complementa este guia com o padrão esperado de engenharia fullstack sênior, revisão automática completa, segurança, domínio financeiro, UI/UX, banco e supply chain.
+
+Consulte também `docs/DOCUMENTATION-MAP.md` para saber quais documentos são vivos, normativos ou históricos.
+
 ## Estratégia de branches
 
 ```text
@@ -14,44 +22,87 @@ feature/* | bugfix/* | docs/* | refactor/* | test/* | chore/*
 
 ## Fluxo obrigatório por atividade e PR
 
-Este fluxo é uma regra do projeto. Nenhum PR deve ser mergeado antes de completar todas as etapas aplicáveis.
+Nenhum PR deve ser mergeado antes de completar as etapas aplicáveis:
 
-1. ler `docs/tasks/NEXT.md` e os documentos canônicos relacionados;
+1. ler a issue canônica, `docs/tasks/NEXT.md` e os contratos relevantes;
 2. confirmar escopo, critérios de aceite e fora de escopo;
-3. criar uma branch dedicada;
+3. criar branch dedicada a partir de `main` atualizada;
 4. implementar a menor entrega vertical coerente;
-5. criar/atualizar testes e tratar edge cases;
-6. atualizar os `.md` afetados pela implementação, decisões ou novos aprendizados;
-7. abrir o PR com problema, solução, riscos, como testar e documentação alterada;
-8. acompanhar o CI do **head atual do PR** até conclusão quando o GitHub Actions puder executar;
-9. se qualquer job funcional falhar, ler o log, corrigir a causa raiz e acompanhar o novo quality gate;
+5. adicionar/ajustar testes e edge cases;
+6. atualizar documentação viva/normativa afetada;
+7. abrir PR com problema, solução, riscos, teste e docs alteradas;
+8. acompanhar o CI do **head atual**;
+9. corrigir causa raiz de qualquer falha real;
 10. executar auto code review completo em nível sênior sobre o diff integral;
-11. revisar arquitetura, legibilidade, coesão, acoplamento, tipos, erros, testes, segurança, supply chain, desempenho e aderência ao escopo;
-12. para mudanças financeiras, revisar fórmulas, unidades, precisão, arredondamento, invariantes e auditabilidade;
-13. aplicar todos os ajustes encontrados no auto review;
-14. atualizar novamente documentação, ADRs, `NEXT.md`, `DONE.md` e backlog quando o review alterar decisões ou escopo;
-15. executar novamente o quality gate após o **último push**; resultado verde antigo não vale para um head novo;
-16. fazer uma checagem final do diff e confirmar que não há findings pendentes nem arquivos temporários;
-17. mergear somente quando o quality gate do head final estiver integralmente verde e o review estiver encerrado sem findings abertos;
-18. confirmar o merge em `main`;
-19. entregar ao usuário os comandos exatos para sincronizar o repositório e rodar/validar localmente;
-20. usar o `NEXT.md` já promovido para iniciar a próxima atividade somente depois do fechamento correto da atual.
+11. aplicar todos os findings relevantes ou registrar adiamento deliberado em issue/backlog;
+12. reconciliar `NEXT.md`, `BACKLOG.md`, `DONE.md`, roadmap e issues quando aplicável;
+13. executar novamente o quality gate após o **último push**;
+14. revisar a diff/changed-file list final e remover qualquer artefato temporário;
+15. mergear somente quando CI final estiver verde e o review estiver encerrado sem finding aberto;
+16. confirmar o merge e o CI pós-merge de `main` quando disponível;
+17. entregar handoff local com comandos exatos e próximos passos.
 
 ### Regra de ouro
 
 ```text
-quality gate verde + auto review sênior + findings corrigidos + docs atualizados + diff final revisado = elegível para merge
+CI do head final verde
++ auto code review sênior independente
++ findings corrigidos
++ docs/issues coerentes
++ diff final limpa
+= elegível para merge
 ```
 
-Qualquer push novo invalida a checagem final anterior e exige validar novamente o novo head.
+Qualquer push novo invalida a checagem final anterior.
 
-## Quality gate: CI preferido e fallback local controlado
+## Quality gate atual
 
-O GitHub Actions continua sendo o caminho preferido porque fornece validação reproduzível fora da máquina do desenvolvedor.
+O GitHub Actions é a validação preferida porque executa o gate fora da máquina do desenvolvedor.
 
-Quando o Actions **não consegue iniciar o job** por motivo externo confirmado, como billing/limite de minutos ou indisponibilidade de infraestrutura antes de qualquer step, é permitido usar fallback local temporário. Esse fallback não pode ser usado para esconder ou contornar um erro funcional que o CI realmente executou e encontrou.
+O job atual executa:
 
-O fallback local obrigatório é:
+```text
+pnpm install --frozen-lockfile
+Docker Compose config validation
+pnpm format:check
+pnpm lint
+pnpm typecheck
+pnpm db:migrate
+root .env.local database fallback migration
+pnpm test
+pnpm build
+```
+
+Baseline de runtime:
+
+- Node.js 24 (`>=24 <25`);
+- pnpm `11.24.0`;
+- PostgreSQL `18.6-alpine` no ambiente local/CI.
+
+### Gate local
+
+```bash
+corepack enable
+corepack prepare pnpm@11.24.0 --activate
+pnpm install --frozen-lockfile
+pnpm db:up
+pnpm db:migrate
+pnpm check
+```
+
+`pnpm check` executa:
+
+```text
+format:check -> lint -> typecheck -> test -> build
+```
+
+Ele não substitui migration validation quando persistência/schema são afetados.
+
+## Fallback local controlado
+
+Fallback local só é permitido quando o Actions **não consegue iniciar o job** por motivo externo confirmado — por exemplo billing/limite/runner/infra antes de executar qualquer step do projeto.
+
+Nunca usar fallback para esconder falha funcional que o CI realmente encontrou.
 
 ```bash
 git fetch origin
@@ -61,78 +112,103 @@ git rev-parse HEAD
 corepack enable
 corepack prepare pnpm@11.24.0 --activate
 pnpm install --frozen-lockfile
+pnpm db:up
+pnpm db:migrate
 pnpm check
 git status --short
 ```
 
-Regras do fallback:
+Regras:
 
-- validar exatamente o SHA atual do head do PR;
-- registrar esse SHA na descrição/comentário do PR;
-- registrar que `install --frozen-lockfile`, `format:check`, `lint`, `typecheck`, `test` e `build` passaram;
-- `git status --short` não pode revelar artefatos ou alterações inesperadas;
-- qualquer push posterior invalida a validação local anterior;
-- se o Actions voltar a executar normalmente antes do merge, o CI volta a ser a evidência preferida;
-- falha real de lint, typecheck, teste ou build deve ser corrigida no PR, nunca ignorada por causa do fallback.
+- validar o SHA exato do head;
+- registrar SHA e resultado no PR;
+- qualquer push posterior invalida a validação;
+- se Actions voltar antes do merge, CI volta a ser a evidência preferida;
+- workspace deve terminar sem alteração inesperada.
 
-## Handoff obrigatório após merge
+## Auto code review sênior
 
-Depois de cada merge, a resposta de entrega deve conter, conforme aplicável:
+CI não substitui review.
 
-- confirmação do PR e commit mergeado;
-- resumo objetivo do que entrou;
-- comandos para atualizar a `main` local;
-- comandos de instalação/migração/configuração necessários;
-- comando para executar o app;
-- comando do quality gate local;
-- variáveis de ambiente novas ou alteradas;
-- observações de compatibilidade ou passos manuais, se existirem.
+A revisão deve cobrir, no mínimo:
 
-Exemplo base, adaptado a cada PR:
+- critérios de aceite/correção funcional;
+- arquitetura, módulos e dependências;
+- simplicidade, coesão e fontes de verdade;
+- tipos, invalid states e erros;
+- testes e regressões;
+- segurança, auth/authz, ownership, secrets e logs;
+- supply chain, lockfile e lifecycle scripts;
+- compatibilidade/runtime/desempenho material;
+- documentação e rastreabilidade;
+- escopo e dívidas descobertas.
 
-```bash
-git checkout main
-git pull --ff-only origin main
-corepack enable
-corepack prepare pnpm@11.24.0 --activate
-pnpm install --frozen-lockfile
-pnpm check
-pnpm dev
-```
+Para agentes de IA, o checklist completo e os gates específicos estão em `AGENTS.md`.
 
-Nunca fornecer comandos genéricos se o PR exigir passos específicos adicionais.
+### Review financeiro
+
+Toda mudança de cálculo deve responder:
+
+- qual fórmula mudou?
+- qual unidade/moeda/escala?
+- qual arredondamento?
+- quais invariantes/reconciliações?
+- há impacto em snapshots históricos?
+- há risco de look-ahead?
+- há migration/version bump de metodologia?
+
+### Review de segurança
+
+Perguntas mínimas:
+
+- amplia acesso a dados?
+- adiciona input/fonte externa?
+- adiciona segredo?
+- altera auth/authz/ownership?
+- pode vazar PII/dado financeiro em log/telemetria?
+- adiciona integração/dependência/lifecycle script?
+- exige exceção de supply chain?
+
+## Gate para mudanças visuais
+
+Durante a iniciativa #69 e para surfaces futuras relevantes:
+
+- seguir Protótipo 3 + R1;
+- consumir semantic tokens e `@/components/ui` quando houver primitive canônica;
+- usar AppShell nas superfícies protegidas, salvo focused auth;
+- não criar rota/KPI/dado/capability fictícia;
+- cobrir estados empty/missing/stale/error/loading/disabled aplicáveis;
+- revisar teclado, foco, landmarks, labels/accessible names, contraste e touch targets;
+- considerar desktop/tablet/mobile;
+- R9 fará o browser QA/fidelity gate final, mas PRs anteriores não podem introduzir regressões conhecidas.
+
+## Pull request
+
+O template em `.github/pull_request_template.md` é o mínimo operacional.
+
+Todo PR não-trivial deve explicar:
+
+- contexto/problema;
+- solução e decisões importantes;
+- fora de escopo;
+- como testar;
+- riscos/segurança;
+- documentação/issues atualizadas;
+- auto code review sênior e findings;
+- SHA exato do head final e resultado do quality gate.
 
 ## Arquivos gerados localmente
 
-Alguns comandos do Next.js e do TypeScript geram arquivos no workspace local. Eles devem ser tratados de forma explícita para não poluir commits:
+Não versionar artefatos locais não intencionais:
 
-- `*.tsbuildinfo`: cache do modo incremental do TypeScript. É artefato local, não deve ser versionado e está coberto pelo `.gitignore`;
-- `next-env.d.ts`: arquivo gerado automaticamente pelo Next.js durante `next dev`, `next build` e `next typegen`. Conforme a recomendação atual do Next.js, não deve ser versionado; permanece referenciado no `include` do `tsconfig.json` e está coberto pelo `.gitignore`;
-- `.next/`, `dist/` e `coverage/`: artefatos de build/teste locais e não versionados.
+- `*.tsbuildinfo`;
+- `next-env.d.ts`;
+- `.next/`;
+- `dist/`;
+- `coverage/`;
+- backups/debug files como `*.bak`.
 
-Antes de abrir ou finalizar um PR, `git status` deve estar livre de artefatos locais não intencionais.
-
-## Definition of Done
-
-Uma atividade só está concluída quando:
-
-- critérios de aceite atendidos;
-- testes adequados existem e passam;
-- format, lint, typecheck, testes e build passam no quality gate do commit final;
-- CI é usado quando disponível; fallback local só é aceito nas condições externas documentadas acima;
-- SHA exato validado fica registrado quando houver fallback local;
-- erros e edge cases tratados;
-- sem segredo/PII em código/log;
-- mudanças de domínio documentadas;
-- mudanças financeiras têm testes de invariantes;
-- mudanças de fonte externa têm contract/validation tests;
-- supply chain e novas dependências revisadas;
-- auto code review sênior concluído;
-- findings do review corrigidos ou explicitamente justificados;
-- documentação afetada atualizada;
-- `NEXT.md`/`DONE.md` coerentes com o estado após merge;
-- diff final revisado;
-- PR mergeado somente após todos os itens anteriores.
+Antes de finalizar um PR, a changed-file list deve conter somente arquivos intencionais.
 
 ## Convenções de commit
 
@@ -147,77 +223,51 @@ test:
 chore:
 ```
 
-## Pull request
+## Definition of Done
 
-Descrição mínima:
+Uma atividade só está concluída quando:
 
-- problema;
-- solução;
-- fora de escopo;
-- como testar;
-- riscos;
-- documentação atualizada;
-- checklist.
+- critérios de aceite atendidos;
+- implementação está na camada correta;
+- testes/edge cases adequados existem e passam;
+- migrations validadas quando aplicável;
+- CI/quality gate do commit final está verde;
+- segurança/privacy foram revisadas;
+- mudanças financeiras tiveram review de invariantes;
+- UI teve review de acessibilidade/responsividade quando aplicável;
+- dependências/supply chain foram revisadas;
+- auto code review sênior foi concluído;
+- findings foram corrigidos ou explicitamente rastreados;
+- docs/ADRs/issues relevantes estão coerentes;
+- `NEXT.md`/`BACKLOG.md`/`DONE.md` estão coerentes quando afetados;
+- diff final está sem artefatos temporários;
+- PR body reflete a implementação final e o SHA validado;
+- merge ocorre somente depois de todos os itens acima.
 
-O template em `.github/pull_request_template.md` é o checklist operacional mínimo. Ele não substitui a análise do diff.
+## Handoff obrigatório após merge
 
-## Auto code review sênior
+A entrega deve informar, conforme aplicável:
 
-A revisão deve considerar, no mínimo:
+- PR/commit mergeado;
+- resumo do que entrou;
+- comandos para atualizar `main`;
+- instalação/migrations/configuração necessárias;
+- comando para executar o app;
+- quality gate local;
+- variáveis de ambiente novas/alteradas;
+- passos manuais ou compatibilidade relevante;
+- próxima atividade canônica quando houver.
 
-- correção funcional e critérios de aceite;
-- desenho de módulos, fronteiras e dependências;
-- simplicidade e ausência de abstração prematura;
-- clareza de nomes, APIs e contratos;
-- estados inválidos e invariantes;
-- tratamento de erro e comportamento em bordas;
-- qualidade, cobertura e valor dos testes;
-- segurança, secrets, autorização, inputs externos e logs;
-- dependências, lifecycle scripts, lockfile e supply chain;
-- compatibilidade/runtime e custo operacional;
-- desempenho quando material;
-- documentação e rastreabilidade das decisões;
-- escopo: confirmar que nada importante faltou e nada desnecessário entrou.
+Exemplo base:
 
-O resultado do review deve ser aplicado no próprio PR antes do merge. Não deixar dívida conhecida sem registro explícito no backlog/ADR quando o adiamento for deliberado.
-
-## Review financeiro
-
-Mudança de cálculo deve responder:
-
-- qual fórmula mudou?
-- qual unidade/moeda?
-- qual arredondamento?
-- quais invariantes?
-- há impacto em snapshots históricos?
-- há migration/version bump da metodologia?
-
-## Review de segurança
-
-Perguntas mínimas:
-
-- amplia acesso a dados?
-- adiciona input externo?
-- adiciona segredo?
-- altera auth/authz?
-- pode vazar dado em log/telemetria?
-- adiciona integração ou dependência?
-- adiciona lifecycle script de dependência?
-- exige exceção de política de supply chain?
-
-## CI alvo
-
-Na fundação:
-
-```text
-install --frozen-lockfile
-format:check
-lint
-typecheck
-test
-build
+```bash
+git checkout main
+git pull --ff-only origin main
+corepack enable
+corepack prepare pnpm@11.24.0 --activate
+pnpm install --frozen-lockfile
+pnpm db:up
+pnpm db:migrate
+pnpm check
+pnpm dev
 ```
-
-O fallback local executa o mesmo conjunto via `pnpm check`, precedido por `pnpm install --frozen-lockfile`.
-
-Security checks entram gradualmente, sem transformar warnings irrelevantes em ruído permanente. Proteções de supply chain do pnpm devem permanecer ativas; exceções precisam ser estreitas, versionadas e documentadas.
