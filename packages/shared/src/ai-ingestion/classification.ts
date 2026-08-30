@@ -34,11 +34,13 @@ function dedupeThesisReferences(
     );
   }
 
-  return Object.freeze([...unique.values()].sort((left, right) => {
-    const leftKey = `${left.assetId}:${left.thesisId}:${left.version ?? 0}`;
-    const rightKey = `${right.assetId}:${right.thesisId}:${right.version ?? 0}`;
-    return leftKey.localeCompare(rightKey);
-  }));
+  return Object.freeze(
+    [...unique.values()].sort((left, right) => {
+      const leftKey = `${left.assetId}:${left.thesisId}:${left.version ?? 0}`;
+      const rightKey = `${right.assetId}:${right.thesisId}:${right.version ?? 0}`;
+      return leftKey.localeCompare(rightKey);
+    }),
+  );
 }
 
 function dedupeEventReferences(
@@ -61,11 +63,13 @@ function dedupeEventReferences(
     );
   }
 
-  return Object.freeze([...unique.values()].sort((left, right) => {
-    const leftKey = `${left.assetId}:${left.thesisId}:${left.eventId}:${left.thesisVersion}`;
-    const rightKey = `${right.assetId}:${right.thesisId}:${right.eventId}:${right.thesisVersion}`;
-    return leftKey.localeCompare(rightKey);
-  }));
+  return Object.freeze(
+    [...unique.values()].sort((left, right) => {
+      const leftKey = `${left.assetId}:${left.thesisId}:${left.eventId}:${left.thesisVersion}`;
+      const rightKey = `${right.assetId}:${right.thesisId}:${right.eventId}:${right.thesisVersion}`;
+      return leftKey.localeCompare(rightKey);
+    }),
+  );
 }
 
 function normalizeClassificationOutput(
