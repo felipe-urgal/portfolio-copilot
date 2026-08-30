@@ -1,56 +1,57 @@
-# Próxima Atividade — Investment Engine: Portfolio Fit, radar e ranking explicável
+# Próxima Atividade — Teses e eventos: InvestmentThesis e critérios de invalidação
 
 **Status:** READY
 
 ## Issue canônica
 
-- #42 — `Investment Engine: Portfolio Fit, radar e ranking explicável`
+- #43 — `Teses e eventos: InvestmentThesis, drivers, riscos e critérios de invalidação`
 
 ## Objetivo
 
-Combinar contexto da carteira com as dimensões analíticas do Investment Engine sem esconder Quality, Opportunity e aderência à carteira dentro de um score opaco.
+Criar a camada versionada de tese de investimento para registrar o racional de cada ativo ao longo do tempo, separar fatos de opinião analítica e detectar quando uma tese precisa ser revisada ou invalidada.
 
 ## Dependências concluídas após este PR
 
 - #39 — Asset Master canônico e resolução de identidade;
 - #40 — Market Data com provenance, freshness e quality gates;
-- #41 — scoring/valuation determinístico com metodologias versionadas.
+- #41 — scoring/valuation determinístico com metodologias versionadas;
+- #42 — Portfolio Fit e ranking explicável por carteira.
 
 ## Escopo
 
-- definir `Portfolio Fit` como dimensão própria;
-- considerar gaps de alocação e concentração já modelados pelo Portfolio Engine;
-- respeitar restrições de aporte existentes;
-- combinar sinais preservando os componentes individuais;
-- construir radar/ranking de candidatos;
-- produzir reason codes e decomposição do ranking;
-- criar snapshots imutáveis para resultados materiais;
-- versionar metodologia de Portfolio Fit/ranking;
-- manter estados explícitos quando faltarem dados;
-- testar estabilidade, empate e dados incompletos.
+- modelar `InvestmentThesis` versionada;
+- registrar drivers principais;
+- registrar riscos principais;
+- definir indicadores monitorados;
+- definir critérios explícitos de invalidação;
+- associar eventos/resultados à tese;
+- manter timeline auditável;
+- suportar revisão periódica;
+- sinalizar tese desatualizada;
+- preservar provenance dos fatos usados;
+- testar lifecycle, revisão e versionamento.
 
 ## Fora de escopo
 
-- alterar fórmulas de Quality/Opportunity/Dividend da #41;
-- IA generativa como fonte da classificação;
+- alterar fórmulas de Quality/Opportunity/Portfolio Fit;
+- usar IA generativa como fonte de verdade dos fatos;
+- sobrescrever versões históricas de tese;
 - execução automática de ordens;
-- recomendação patrocinada;
-- novos providers de Market Data;
 - integração de corretora/Open Finance.
 
 ## Critérios de aceite
 
-- Quality, Opportunity e Portfolio Fit continuam separáveis e auditáveis;
-- ranking nunca depende de fórmula opaca não documentada;
-- cada posição no ranking possui decomposição/reason codes suficientes para explicação;
-- missing/stale/conflito permanece explícito e não vira nota neutra;
-- empates possuem ordenação determinística;
+- tese nunca sobrescreve histórico relevante;
+- mudança material gera nova versão ou revisão auditável;
+- fatos, opinião analítica e critérios de invalidação ficam separados;
+- eventos associados preservam provenance e temporalidade;
+- revisão periódica e estado de tese desatualizada são explícitos;
 - `pnpm check` passa integralmente no head final.
 
 ## Referências canônicas
 
-- issue #42;
+- issue #43;
 - ADR-0024 — Investment Engine scoring e valuation;
-- `docs/FINANCIAL-METHODOLOGY.md`;
+- ADR-0025 — Portfolio Fit e ranking explicável;
 - `docs/INVESTMENT-ENGINE-METHODOLOGY.md`;
-- `docs/ROADMAP.md` — Fase 5 / Investment Engine.
+- `docs/ROADMAP.md` — Fase 6.
