@@ -53,8 +53,10 @@ export function Button({
   );
 }
 
-export interface LinkButtonProps
-  extends Omit<ComponentProps<typeof Link>, "children" | "className"> {
+export interface LinkButtonProps extends Omit<
+  ComponentProps<typeof Link>,
+  "children" | "className"
+> {
   children: ReactNode;
   className?: string;
   variant?: ButtonVariant;
