@@ -1,135 +1,139 @@
 .section {
   display: grid;
-  gap: 1rem;
-  padding-top: 1.25rem;
-  border-top: 1px solid #e7e9ef;
+  gap: var(--space-5);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--color-border-subtle);
 }
 
 .heading {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 1rem;
+  gap: var(--space-5);
 }
 
 .heading h5 {
   margin: 0;
-  color: #1f2330;
-  font-size: 0.9rem;
-  letter-spacing: -0.015em;
+  color: var(--color-text-primary);
+  font-size: var(--font-size-lg);
+  line-height: var(--line-height-heading);
+  letter-spacing: var(--letter-spacing-tight);
 }
 
-.heading p {
+.heading p,
+.note,
+.reasonDetails p {
   max-width: 68ch;
-  margin: 0.35rem 0 0;
-  color: #7b8290;
-  font-size: 0.75rem;
-  line-height: 1.55;
+  margin: var(--space-2) 0 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-body);
 }
 
 .form {
   display: grid;
-  gap: 0.85rem;
+  gap: var(--space-4);
   max-width: 32rem;
 }
 
 .result {
   display: grid;
-  gap: 1rem;
+  gap: var(--space-5);
 }
 
 .summary,
 .remainders {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-3);
   margin: 0;
-  border: 1px solid #e4e7ee;
-  border-radius: 0.8rem;
-  overflow: hidden;
-  background: #fff;
+}
+
+.summary {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
 .remainders {
   grid-template-columns: repeat(5, minmax(0, 1fr));
+  margin-top: var(--space-3);
 }
 
 .summary div,
 .remainders div {
   display: grid;
-  gap: 0.25rem;
+  gap: var(--space-1);
   min-width: 0;
-  padding: 0.8rem;
-  border-right: 1px solid #e7e9ef;
-}
-
-.summary div:last-child,
-.remainders div:last-child {
-  border-right: 0;
+  padding: var(--space-4);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-subtle);
 }
 
 .summary dt,
 .remainders dt {
-  color: #818795;
-  font-size: 0.69rem;
-  font-weight: 700;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
 }
 
 .summary dd,
 .remainders dd {
   margin: 0;
-  color: #2f3542;
-  font-size: 0.8rem;
-  font-weight: 760;
   overflow-wrap: anywhere;
+  color: var(--color-text-primary);
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-sm);
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--font-weight-semibold);
+}
+
+.remainderDetails,
+.reasonDetails {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+}
+
+.remainderDetails summary,
+.reasonDetails summary {
+  min-height: var(--touch-target-min);
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-semibold);
 }
 
 .reasonList {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.35rem;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
 }
 
 .reasonList code {
-  padding: 0.2rem 0.4rem;
-  border: 1px solid #dde1e9;
-  border-radius: 999px;
-  background: #fafbfc;
-  color: #59616f;
-  font-size: 0.68rem;
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-full);
+  background: var(--color-surface-subtle);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
   white-space: nowrap;
-}
-
-.emptyReason {
-  color: #8a909c;
-}
-
-.state {
-  color: #59616f;
-  font-size: 0.71rem;
-  font-weight: 720;
-  white-space: nowrap;
-}
-
-.state[data-status="EXECUTABLE"] {
-  color: #24604b;
-}
-
-.state[data-status^="BLOCKED_"] {
-  color: #a3454f;
-}
-
-.state[data-status="NOT_SELECTED_BY_POLICY"] {
-  color: #777e8b;
 }
 
 .note {
   margin: 0;
-  color: #7b8290;
-  font-size: 0.75rem;
-  line-height: 1.5;
 }
 
-@media (max-width: 760px) {
+@media (max-width: 920px) {
+  .summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .remainders {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 680px) {
   .heading {
     display: grid;
   }
@@ -137,16 +141,5 @@
   .summary,
   .remainders {
     grid-template-columns: 1fr;
-  }
-
-  .summary div,
-  .remainders div {
-    border-right: 0;
-    border-bottom: 1px solid #e7e9ef;
-  }
-
-  .summary div:last-child,
-  .remainders div:last-child {
-    border-bottom: 0;
   }
 }
