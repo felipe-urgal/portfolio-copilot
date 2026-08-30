@@ -13,24 +13,26 @@ Quando dois documentos parecerem divergir, use esta ordem:
 1. decisões aceitas em `docs/DECISIONS.md` e ADRs aplicáveis;
 2. contratos normativos de segurança, dados, regulatório e metodologia;
 3. contratos atuais de arquitetura e design;
-4. `docs/ROADMAP.md` e `docs/tasks/NEXT.md` para prioridade/status corrente;
-5. issues/PRs do GitHub para execução e evidência da entrega;
-6. `docs/tasks/DONE.md` para histórico resumido;
-7. documentos de descoberta para contexto e intenção original.
+4. `AGENTS.md` e `docs/DEVELOPMENT.md` para processo de engenharia/PR;
+5. `docs/ROADMAP.md` e `docs/tasks/NEXT.md` para prioridade/status corrente;
+6. issues/PRs do GitHub para execução e evidência da entrega;
+7. `docs/tasks/DONE.md` para histórico resumido;
+8. documentos de descoberta para contexto e intenção original.
 
 Uma decisão posterior e explicitamente aceita substitui uma ideia anterior sem apagar o histórico.
 
 ## Tipos de documento
 
-### Entrada e estado geral
+### Entrada, engenharia e estado geral
 
 | Documento | Tipo | Responsabilidade |
 | --- | --- | --- |
 | `README.md` | vivo | entrada do projeto, capabilities atuais, setup e links canônicos |
+| `AGENTS.md` | normativo operacional | contrato para agentes de IA: padrão fullstack sênior, fluxo de PR, CI e auto code review obrigatório |
+| `docs/DEVELOPMENT.md` | normativo operacional | processo geral de desenvolvimento, quality gate e Definition of Done |
 | `docs/ARCHITECTURE.md` | vivo | arquitetura implementada e fronteiras atuais |
 | `docs/ROADMAP.md` | vivo | estado estratégico e sequência macro |
 | `docs/DECISIONS.md` | vivo/histórico | índice de decisões; não apagar decisões anteriores |
-| `docs/DEVELOPMENT.md` | vivo | processo de desenvolvimento, quality gate e Definition of Done |
 
 ### Produto e descoberta
 
@@ -119,8 +121,11 @@ Ao finalizar um PR relevante:
 4. remover do `BACKLOG.md` itens que deixaram de ser backlog;
 5. acrescentar o resumo aplicável em `DONE.md`;
 6. atualizar issues abertas afetadas por novas dependências/status;
-7. não reescrever histórico antigo apenas para marcar checkbox.
+7. não reescrever histórico antigo apenas para marcar checkbox;
+8. para trabalho conduzido por IA, cumprir integralmente `AGENTS.md`, inclusive auto code review sênior independente do CI.
 
 ## Audit realizado no PR #88
 
 A reconciliação de 2026-08-30 revisou o inventário completo de Markdown do repositório. Foram classificados e preservados os ADRs/documentos históricos e atualizados os documentos vivos que apresentavam drift de status, incluindo README, roadmaps, tasks, catálogo, decisões e processo de desenvolvimento. As issues abertas também foram reconciliadas com as entregas já mergeadas.
+
+O mesmo PR adiciona `AGENTS.md` como contrato operacional para agentes de IA, tornando explícitos o padrão fullstack sênior, o quality gate por head final, o auto code review completo e os gates específicos de segurança, finanças, UI/UX, banco e supply chain.
