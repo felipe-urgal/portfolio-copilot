@@ -68,4 +68,11 @@ describe("AppShell", () => {
     expect(SHELL_CSS).toContain("var(--color-focus-ring)");
     expect(SHELL_CSS).toContain("var(--z-modal)");
   });
+
+  it("keeps focus and button styling on the canonical R2 contracts", () => {
+    expect(SHELL_CSS).toContain(".main:focus-visible");
+    expect(SHELL_CSS).toContain("border-color: var(--color-border-strong)");
+    expect(SHELL_CSS).not.toContain(".menuButton {");
+    expect(SHELL_CSS).not.toContain(".drawerClose {");
+  });
 });
