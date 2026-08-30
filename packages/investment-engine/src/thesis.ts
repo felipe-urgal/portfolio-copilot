@@ -142,8 +142,14 @@ function normalizeUniqueIds(field: string, values: readonly string[]): readonly 
   return Object.freeze([...normalized].sort());
 }
 
-function normalizeReviewPolicy(input: InvestmentThesisReviewPolicyInput): InvestmentThesisReviewPolicy {
-  if (!Number.isSafeInteger(input.intervalDays) || input.intervalDays <= 0 || input.intervalDays > 3_650) {
+function normalizeReviewPolicy(
+  input: InvestmentThesisReviewPolicyInput,
+): InvestmentThesisReviewPolicy {
+  if (
+    !Number.isSafeInteger(input.intervalDays) ||
+    input.intervalDays <= 0 ||
+    input.intervalDays > 3_650
+  ) {
     throw new InvalidInvestmentThesisInputError(
       `Invalid review interval: ${String(input.intervalDays)}.`,
     );
@@ -196,7 +202,9 @@ function normalizeAnalyticalPoints(
   factIds: ReadonlySet<string>,
 ): readonly InvestmentThesisAnalyticalPointSnapshot[] {
   if (inputs.length === 0) {
-    throw new InvalidInvestmentThesisInputError(`Investment thesis requires at least one ${field}.`);
+    throw new InvalidInvestmentThesisInputError(
+      `Investment thesis requires at least one ${field}.`,
+    );
   }
 
   const points = inputs.map((input) => {
@@ -215,16 +223,24 @@ function normalizeAnalyticalPoints(
 
     return Object.freeze({
       pointId,
-      statement: normalizeText(`${field}.${pointId}.statement`, input.statement, MAX_STATEMENT_LENGTH),
+      statement: normalizeText(
+        `${field}.${pointId}.statement`,
+        input.statement,
+        MAX_STATEMENT_LENGTH,
+      ),
       supportingFactIds,
     });
   });
 
   if (new Set(points.map((point) => point.pointId)).size !== points.length) {
-    throw new InvalidInvestmentThesisInputError(`Investment thesis contains duplicate ${field} ids.`);
+    throw new InvalidInvestmentThesisInputError(
+      `Investment thesis contains duplicate ${field} ids.`,
+    );
   }
 
-  return Object.freeze([...points].sort((left, right) => left.pointId.localeCompare(right.pointId)));
+  return Object.freeze(
+    [...points].sort((left, right) => left.pointId.localeCompare(right.pointId)),
+  );
 }
 
 function normalizeIndicators(
@@ -245,7 +261,9 @@ function normalizeIndicators(
   );
 
   if (new Set(indicators.map((indicator) => indicator.indicatorId)).size !== indicators.length) {
-    throw new InvalidInvestmentThesisInputError("Investment thesis contains duplicate indicator ids.");
+    throw new InvalidInvestmentThesisInputError(
+      "Investment thesis contains duplicate indicator ids.",
+    );
   }
 
   return Object.freeze(
@@ -342,7 +360,9 @@ function normalizeVersionInstants(
   return Object.freeze({ createdAt, effectiveAt });
 }
 
-export function createInvestmentThesis(input: CreateInvestmentThesisInput): InvestmentThesisSnapshot {
+export function createInvestmentThesis(
+  input: CreateInvestmentThesisInput,
+): InvestmentThesisSnapshot {
   const thesisId = normalizeInvestmentIdentifier("thesisId", input.thesisId);
   const assetId = AssetId.from(input.assetId).toString();
   const { createdAt, effectiveAt } = normalizeVersionInstants(input.createdAt, input.effectiveAt);
