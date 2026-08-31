@@ -35,6 +35,21 @@ function normalizedPoolConfig(
   };
 }
 
+async function withTimeout<T>(promise: Promise<T>, timeoutMs: number): Promise<T> {
+  let timeout: ReturnType<typeof setTimeout> | undefined;
+
+  try {
+    return await Promise.race([
+      promise,
+      new Promise<never>((_, reject) => {
+        timeout = setTimeout(() => reject(new Error("PostgreSQL readiness timed out.")), timeoutMs);
+      }),
+    ]);
+  } finally {
+    if (timeout !== undefined) clearTimeout(timeout);
+  }
+}
+
 // Package-internal connection primitive. It is intentionally not re-exported
 // from the package root so application code cannot bypass ownership repositories.
 export function createPostgresConnection(
@@ -60,7 +75,7 @@ export function createPostgresPersistence(
   return {
     ownedBy: async (ownerSubject) => openOwnedPersistence(connection.db, ownerSubject),
     checkReadiness: async () => {
-      await connection.pool.query({ text: "select 1", query_timeout: 3_000 });
+      await withTimeout(connection.pool.query("select 1"), 3_000);
     },
     close: connection.close,
   };
