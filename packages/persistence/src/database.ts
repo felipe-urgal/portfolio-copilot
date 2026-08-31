@@ -14,6 +14,7 @@ export type PostgresConnection = Readonly<{
 
 export type PostgresPersistence = Readonly<{
   ownedBy: (ownerSubject: string) => Promise<OwnedPersistence>;
+  checkReadiness: () => Promise<void>;
   close: () => Promise<void>;
 }>;
 
@@ -58,6 +59,9 @@ export function createPostgresPersistence(
 
   return {
     ownedBy: async (ownerSubject) => openOwnedPersistence(connection.db, ownerSubject),
+    checkReadiness: async () => {
+      await connection.pool.query({ text: "select 1", query_timeout: 3_000 });
+    },
     close: connection.close,
   };
 }
