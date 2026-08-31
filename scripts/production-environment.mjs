@@ -42,8 +42,10 @@ export function requiredProductionReadyUrl(env = process.env) {
     throw new Error("PORTFOLIO_COPILOT_PRODUCTION_READY_URL precisa usar HTTPS.");
   }
 
-  if (url.username || url.password) {
-    throw new Error("PORTFOLIO_COPILOT_PRODUCTION_READY_URL não pode conter credenciais.");
+  if (url.username || url.password || url.search || url.hash) {
+    throw new Error(
+      "PORTFOLIO_COPILOT_PRODUCTION_READY_URL não pode conter credenciais, query string ou fragmento.",
+    );
   }
 
   return url.toString();
