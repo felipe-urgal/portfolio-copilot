@@ -46,14 +46,21 @@ export async function verifyProductionReadiness({
   let lastIssue = "readiness indisponível";
 
   while (true) {
+    const elapsedBeforeAttempt = Math.max(0, now() - startedAt);
+    const remainingMs = timeoutMs - elapsedBeforeAttempt;
+    if (remainingMs <= 0 && attempts > 0) {
+      return { ok: false, attempts, elapsedMs: elapsedBeforeAttempt, lastIssue };
+    }
+
     attempts += 1;
+    const attemptTimeoutMs = Math.max(1, Math.min(requestTimeoutMs, Math.max(1, remainingMs)));
 
     try {
       const response = await fetchImpl(url, {
         method: "GET",
         headers: { Accept: "application/json" },
         cache: "no-store",
-        signal: AbortSignal.timeout(requestTimeoutMs),
+        signal: AbortSignal.timeout(attemptTimeoutMs),
       });
 
       if (response.ok) {
