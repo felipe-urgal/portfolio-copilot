@@ -136,19 +136,8 @@
 }
 
 .disclosure {
-  border-top: 1px solid var(--color-border-subtle);
   padding-top: var(--space-4);
-  color: var(--color-text-secondary);
-}
-
-.disclosure summary {
-  min-height: var(--touch-target-min);
-  display: inline-flex;
-  align-items: center;
-  cursor: pointer;
-  color: var(--color-text-primary);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-semibold);
+  border-top: 1px solid var(--color-border-subtle);
 }
 
 .disclosureBody {

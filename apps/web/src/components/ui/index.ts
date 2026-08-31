@@ -7,6 +7,7 @@ export {
   type SegmentedControlOptionProps,
   type SegmentedControlProps,
 } from "./choice";
+export { Disclosure, type DisclosureProps } from "./disclosure";
 export {
   Alert,
   Badge,
