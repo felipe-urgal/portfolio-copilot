@@ -27,7 +27,7 @@ describe("production environment", () => {
     ).toThrow(/conexão direta/);
   });
 
-  it("requires HTTPS readiness without embedded credentials", () => {
+  it("requires a credential-free HTTPS readiness URL", () => {
     expect(
       requiredProductionReadyUrl({
         PORTFOLIO_COPILOT_PRODUCTION_READY_URL:
@@ -41,6 +41,13 @@ describe("production environment", () => {
           "https://user:secret@portfolio-copilot.example/api/health/ready",
       }),
     ).toThrow(/credenciais/);
+
+    expect(() =>
+      requiredProductionReadyUrl({
+        PORTFOLIO_COPILOT_PRODUCTION_READY_URL:
+          "https://portfolio-copilot.example/api/health/ready?token=secret",
+      }),
+    ).toThrow(/query string/);
   });
 
   it("rejects partially numeric millisecond overrides", () => {
