@@ -24,6 +24,10 @@ function postgresPersistence(): PostgresPersistence {
   return globalThis.portfolioCopilotPostgres;
 }
 
+export async function checkPostgresReadiness(): Promise<void> {
+  await postgresPersistence().checkReadiness();
+}
+
 export async function getOwnedPersistence() {
   const identity = await getAuthenticatedIdentity();
   if (identity === null) return null;
