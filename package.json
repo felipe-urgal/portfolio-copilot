@@ -21,9 +21,9 @@
     "check": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build",
     "prod:status": "node scripts/production-gate.mjs status",
     "prod:check": "pnpm check",
-    "prod:migrate": "node scripts/migrate-production.mjs",
+    "prod:migrate": "node --env-file-if-exists=.env.local scripts/migrate-production.mjs",
     "prod:deploy": "node scripts/production-gate.mjs deploy",
-    "prod:verify": "node scripts/verify-production.mjs"
+    "prod:verify": "node --env-file-if-exists=.env.local scripts/verify-production.mjs"
   },
   "devDependencies": {
     "@types/node": "24.3.0",
