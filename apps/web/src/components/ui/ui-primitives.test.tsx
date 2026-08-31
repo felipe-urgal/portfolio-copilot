@@ -7,6 +7,7 @@ import {
   Alert,
   Button,
   ChoiceCard,
+  Disclosure,
   Field,
   FieldError,
   HelpText,
@@ -101,6 +102,21 @@ describe("canonical UI primitives", () => {
     expect(html).toContain('name="risk"');
     expect(html).toContain("Horizonte");
     expect(html).toContain("Médio prazo");
+  });
+
+  it("keeps progressive disclosure native and preserves optional summary context", () => {
+    const html = renderToStaticMarkup(
+      <Disclosure summary="Detalhes auditáveis" summaryAside={<Status tone="warning">Stale</Status>} open>
+        <p>Provenance e reason codes.</p>
+      </Disclosure>,
+    );
+
+    expect(html).toContain("<details");
+    expect(html).toContain("<summary");
+    expect(html).toContain("Detalhes auditáveis");
+    expect(html).toContain("Stale");
+    expect(html).toContain("Provenance e reason codes.");
+    expect(html).toContain("open=\"\"");
   });
 
   it("keeps financial values and feedback explicit in markup", () => {

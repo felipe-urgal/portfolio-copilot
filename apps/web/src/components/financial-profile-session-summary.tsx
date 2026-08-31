@@ -9,7 +9,7 @@ import {
   type RiskToleranceCode,
 } from "@portfolio-copilot/domain";
 
-import { Button, EmptyState, LinkButton, Status, Surface } from "./ui";
+import { Button, Disclosure, EmptyState, LinkButton, Status, Surface } from "./ui";
 import { useFinancialSession } from "./financial-session";
 import styles from "./financial-profile-session-summary.module.css";
 
@@ -61,9 +61,9 @@ export function FinancialProfileSessionSummary() {
 
   return (
     <aside className={styles.context} aria-label="Perfil financeiro da sessão">
-      <details className={styles.disclosure}>
-        <summary>
-          <span>Contexto financeiro da sessão</span>
+      <Disclosure
+        summary="Contexto financeiro da sessão"
+        summaryAside={
           <Status tone={financialProfile === null ? "neutral" : "info"}>
             {financialProfile === null
               ? "Não configurado"
@@ -71,8 +71,8 @@ export function FinancialProfileSessionSummary() {
                 ? "Salvo neste dispositivo"
                 : "Somente nesta sessão"}
           </Status>
-        </summary>
-
+        }
+      >
         <Surface tone="subtle" padding="lg" className={styles.surface}>
           <div className={styles.intro}>
             <p>
@@ -156,7 +156,7 @@ export function FinancialProfileSessionSummary() {
                 : "Somente em memória: este perfil ainda não está salvo neste dispositivo."}
           </p>
         </Surface>
-      </details>
+      </Disclosure>
     </aside>
   );
 }

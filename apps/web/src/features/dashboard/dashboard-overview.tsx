@@ -9,7 +9,16 @@ import {
 
 import { FinancialProfileAccountMigration } from "@/components/financial-profile-account-migration";
 import { useFinancialSession } from "@/components/financial-session";
-import { EmptyState, Grid, LinkButton, Metric, PageHeader, Status, Surface } from "@/components/ui";
+import {
+  Disclosure,
+  EmptyState,
+  Grid,
+  LinkButton,
+  Metric,
+  PageHeader,
+  Status,
+  Surface,
+} from "@/components/ui";
 
 import styles from "./dashboard-overview.module.css";
 
@@ -199,8 +208,7 @@ export function DashboardOverview({ displayName }: DashboardOverviewProps) {
 
       <FinancialProfileAccountMigration />
 
-      <details className={styles.disclosure}>
-        <summary>O que ainda não aparece neste Dashboard</summary>
+      <Disclosure className={styles.disclosure} summary="O que ainda não aparece neste Dashboard">
         <div className={styles.disclosureBody}>
           <p>
             Patrimônio, retorno, composição, posições, target versus atual, gaps, Market Data e
@@ -212,7 +220,7 @@ export function DashboardOverview({ displayName }: DashboardOverviewProps) {
             codes continuam em segunda ordem e não são usados para preencher a hierarquia principal.
           </p>
         </div>
-      </details>
+      </Disclosure>
     </div>
   );
 }

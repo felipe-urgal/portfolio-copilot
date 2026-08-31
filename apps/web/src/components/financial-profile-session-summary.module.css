@@ -2,26 +2,9 @@
   min-width: 0;
 }
 
-.disclosure {
-  color: var(--color-text-secondary);
-}
-
-.disclosure > summary {
-  min-height: var(--touch-target-min);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-4);
-  cursor: pointer;
-  color: var(--color-text-primary);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-semibold);
-}
-
 .surface {
   display: grid;
   gap: var(--space-5);
-  margin-top: var(--space-3);
 }
 
 .intro {
@@ -169,7 +152,6 @@
 }
 
 @media (max-width: 680px) {
-  .disclosure > summary,
   .intro,
   .goalItem {
     display: grid;
