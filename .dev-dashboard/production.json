@@ -10,6 +10,7 @@
     "commands": {
       "status": "prod:status",
       "check": "prod:check",
+      "migrate": "prod:migrate",
       "deploy": "prod:deploy",
       "verify": "prod:verify"
     },

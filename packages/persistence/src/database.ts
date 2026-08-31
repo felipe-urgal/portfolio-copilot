@@ -14,6 +14,7 @@ export type PostgresConnection = Readonly<{
 
 export type PostgresPersistence = Readonly<{
   ownedBy: (ownerSubject: string) => Promise<OwnedPersistence>;
+  checkReadiness: () => Promise<void>;
   close: () => Promise<void>;
 }>;
 
@@ -32,6 +33,21 @@ function normalizedPoolConfig(
     max: 10,
     ...overrides,
   };
+}
+
+async function withTimeout<T>(promise: Promise<T>, timeoutMs: number): Promise<T> {
+  let timeout: ReturnType<typeof setTimeout> | undefined;
+
+  try {
+    return await Promise.race([
+      promise,
+      new Promise<never>((_, reject) => {
+        timeout = setTimeout(() => reject(new Error("PostgreSQL readiness timed out.")), timeoutMs);
+      }),
+    ]);
+  } finally {
+    if (timeout !== undefined) clearTimeout(timeout);
+  }
 }
 
 // Package-internal connection primitive. It is intentionally not re-exported
@@ -58,6 +74,9 @@ export function createPostgresPersistence(
 
   return {
     ownedBy: async (ownerSubject) => openOwnedPersistence(connection.db, ownerSubject),
+    checkReadiness: async () => {
+      await withTimeout(connection.pool.query("select 1"), 3_000);
+    },
     close: connection.close,
   };
 }

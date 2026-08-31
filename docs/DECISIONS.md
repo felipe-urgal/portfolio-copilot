@@ -45,6 +45,7 @@ Este arquivo resume decisões. Decisões arquiteturais importantes também ganha
 | D-039 | Superfícies protegidas usam um único `AppShell`: sidebar em desktop e drawer em viewports menores, navegação só para capabilities reais, e somente `displayName` atravessa para a ilha client da navegação | Aceita — `docs/design/APP-SHELL.md` |
 | D-040 | Sign-in/sign-out usam focused auth fora do AppShell; GitHub permanece provider, a CTA principal é única, privacidade/segurança ficam em progressive disclosure e o redesign não altera callback safety, identidade ou ownership | Aceita — `docs/design/AUTH-SESSION.md` |
 | D-041 | O onboarding R5 preserva reducer, validações e `FinancialProfileSnapshot`; progressão é orientação subordinada ao AppShell, controles vêm das primitives R2, persistência continua opt-in/second-order e objetivos usam seções abertas sem card-in-card | Aceita — `docs/design/ONBOARDING.md` |
+| D-042 | A primeira produção é pessoal/privada em Vercel + Neon: runtime usa conexão pooled, migrations usam conexão direta explícita, GitHub OAuth exige allowlist fail-closed em produção e o Production Contract permanece desabilitado até validação operacional real | Aceita — ADR-0028 |
 
 ## Como alterar uma decisão
 

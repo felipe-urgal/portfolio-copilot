@@ -14,7 +14,7 @@ Esta superfície aplica o contrato `focused auth` definido no R1 usando exclusiv
 - `apps/web/src/components/auth-submit-button.tsx` — única ilha client do auth, responsável apenas por `pending` do form;
 - `apps/web/src/components/auth-surface.module.css` — anatomy da superfície, sem primitives ou paleta paralela.
 
-`auth.ts`, `proxy.ts`, `identity.ts`, canonical identity e ownership não são alterados pelo R4.
+`auth.ts`, `proxy.ts`, `identity.ts`, canonical identity e ownership não foram alterados pelo R4. Evoluções operacionais posteriores permanecem documentadas abaixo sem reescrever o histórico do redesign.
 
 ## Sign-in
 
@@ -69,9 +69,9 @@ Sair encerra a sessão autenticada no navegador e não apaga o perfil financeiro
 - mobile preserva uma coluna e reduz somente a escala do título/espaçamento externo;
 - não existe navegação ou chrome alternativo de produto no auth.
 
-## Segurança preservada
+## Segurança preservada pelo R4
 
-O R4 não modifica:
+O R4 não modificou:
 
 - provider GitHub;
 - estratégia JWT;
@@ -81,6 +81,19 @@ O R4 não modifica:
 - ownership de dados persistidos;
 - proxy de rotas protegidas;
 - contratos de persistência financeira.
+
+## Evolução de produção pessoal — #97 / ADR-0028
+
+A production foundation adiciona uma restrição operacional sem alterar a UI focused auth, identidade canônica ou ownership:
+
+- GitHub continua sendo o único provider;
+- quando `NODE_ENV=production`, `AUTH_GITHUB_ALLOWED_ACCOUNT_ID` é obrigatório por comportamento;
+- o callback `signIn` aceita somente `provider=github` e `providerAccountId` exatamente igual ao ID numérico allowlisted;
+- allowlist ausente, malformada, provider inesperado ou conta diferente falham fechado;
+- desenvolvimento local continua sem exigir allowlist;
+- previews que executem com `NODE_ENV=production` também falham fechado se a variável não for configurada, evitando exposição acidental.
+
+A UI continua mostrando erro genérico. O account id esperado, provider payload e razão interna da recusa não são exibidos ao usuário nem registrados como diagnóstico de produto.
 
 ## Validação
 
@@ -94,5 +107,7 @@ Os testes do R4 verificam:
 - saída com contexto mínimo e cancelamento claro;
 - CSS sem paleta auth paralela;
 - consumo dos semantic tokens/focus/touch-target do R2.
+
+A production foundation acrescenta regressões para allowlist fail-closed em produção sem alterar os testes de composição visual.
 
 O CI canônico continua responsável por format, lint, typecheck, migrations, fallback de `.env.local`, tests e build.
