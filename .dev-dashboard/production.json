@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "production": {
+    "enabled": false,
+    "strategy": "disabled",
+    "provider": "none",
+    "branch": "main",
+    "documentation": "docs/PRODUCTION.md",
+    "reasonCode": "production-readiness-gate",
+    "commands": {
+      "status": "prod:status",
+      "check": "prod:check",
+      "deploy": "prod:deploy",
+      "verify": "prod:verify"
+    },
+    "blockedBy": [
+      "production-security",
+      "backup-dr",
+      "observability-slo",
+      "tenancy-lgpd",
+      "regulatory-gate-public"
+    ],
+    "policies": {
+      "backup": "not-configured",
+      "migrations": "not-configured",
+      "rollback": "not-configured"
+    }
+  }
+}
