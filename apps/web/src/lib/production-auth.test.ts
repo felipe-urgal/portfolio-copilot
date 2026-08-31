@@ -18,30 +18,30 @@ describe("isGitHubSignInAllowed", () => {
     expect(
       isGitHubSignInAllowed({
         nodeEnv: "production",
-        allowedAccountId: "38505458",
+        allowedAccountId: "123456",
         provider: "github",
-        providerAccountId: "38505458",
+        providerAccountId: "123456",
       }),
     ).toBe(true);
 
     expect(
       isGitHubSignInAllowed({
         nodeEnv: "production",
-        allowedAccountId: "38505458",
+        allowedAccountId: "123456",
         provider: "github",
-        providerAccountId: "123456",
+        providerAccountId: "999999",
       }),
     ).toBe(false);
   });
 
   it("fails closed when the production allowlist is missing or malformed", () => {
-    for (const allowedAccountId of [undefined, "", "github:38505458", "38_505_458"]) {
+    for (const allowedAccountId of [undefined, "", "github:123456", "123_456"]) {
       expect(
         isGitHubSignInAllowed({
           nodeEnv: "production",
           allowedAccountId,
           provider: "github",
-          providerAccountId: "38505458",
+          providerAccountId: "123456",
         }),
       ).toBe(false);
     }
@@ -51,16 +51,16 @@ describe("isGitHubSignInAllowed", () => {
     expect(
       isGitHubSignInAllowed({
         nodeEnv: "production",
-        allowedAccountId: "38505458",
+        allowedAccountId: "123456",
         provider: "google",
-        providerAccountId: "38505458",
+        providerAccountId: "123456",
       }),
     ).toBe(false);
 
     expect(
       isGitHubSignInAllowed({
         nodeEnv: "production",
-        allowedAccountId: "38505458",
+        allowedAccountId: "123456",
         provider: "github",
         providerAccountId: "not-a-number",
       }),
