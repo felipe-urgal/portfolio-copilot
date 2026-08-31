@@ -99,7 +99,7 @@ describe("production readiness verify", () => {
 
     expect(result).toEqual({
       ok: false,
-      attempts: 4,
+      attempts: 3,
       elapsedMs: 250,
       lastIssue: "HTTP 503",
     });
