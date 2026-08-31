@@ -3,8 +3,10 @@ import type { DetailsHTMLAttributes, ReactNode } from "react";
 import { classNames } from "./class-names";
 import styles from "./disclosure.module.css";
 
-export interface DisclosureProps
-  extends Omit<DetailsHTMLAttributes<HTMLDetailsElement>, "children"> {
+export interface DisclosureProps extends Omit<
+  DetailsHTMLAttributes<HTMLDetailsElement>,
+  "children"
+> {
   summary: ReactNode;
   summaryAside?: ReactNode;
   children: ReactNode;

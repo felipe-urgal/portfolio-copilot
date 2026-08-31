@@ -106,7 +106,11 @@ describe("canonical UI primitives", () => {
 
   it("keeps progressive disclosure native and preserves optional summary context", () => {
     const html = renderToStaticMarkup(
-      <Disclosure summary="Detalhes auditáveis" summaryAside={<Status tone="warning">Stale</Status>} open>
+      <Disclosure
+        summary="Detalhes auditáveis"
+        summaryAside={<Status tone="warning">Stale</Status>}
+        open
+      >
         <p>Provenance e reason codes.</p>
       </Disclosure>,
     );
@@ -116,7 +120,7 @@ describe("canonical UI primitives", () => {
     expect(html).toContain("Detalhes auditáveis");
     expect(html).toContain("Stale");
     expect(html).toContain("Provenance e reason codes.");
-    expect(html).toContain("open=\"\"");
+    expect(html).toContain('open=""');
   });
 
   it("keeps financial values and feedback explicit in markup", () => {
