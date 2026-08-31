@@ -15,9 +15,9 @@ describe("getApplicationReadiness", () => {
   });
 
   it("fails closed without exposing the database error", async () => {
-    const checkPostgres = vi.fn().mockRejectedValue(
-      new Error("postgresql://user:secret@example.invalid/private"),
-    );
+    const checkPostgres = vi
+      .fn()
+      .mockRejectedValue(new Error("postgresql://user:secret@example.invalid/private"));
 
     const result = await getApplicationReadiness(checkPostgres);
 
