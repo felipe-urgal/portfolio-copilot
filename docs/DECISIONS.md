@@ -25,7 +25,7 @@ Este arquivo resume decisões. Decisões arquiteturais importantes também ganha
 | D-019 | `AllocationGap` usa valores atuais reconciliados e maiores restos para converter pesos em centavos sem perder a soma monetária | Aceita — ADR-0011 |
 | D-020 | `ContributionAllocator` calcula necessidades sobre `portfolioValue + contribution` e distribui o aporte proporcionalmente por maiores restos, preservando sobra explícita | Aceita — ADR-0012 |
 | D-021 | Política de aporte limita destinos por maior necessidade pós-aporte e elimina alocações abaixo de um mínimo monetário, redistribuindo por maiores restos | Aceita — ADR-0013 |
-| D-022 | Restrições de execução do aporte usam `AssetId`, elegibilidade explícita e `AssetQuantity` mínima; bloqueios retornam valor para caixa sem redistribuir a decisão econômica | Aceita — ADR-0014 |
+| D-022 | Restrições de execução do aporte usam `AssetId`, elegibilidade explícita e `AssetQuantity` mínima; bloqueios retornam valor para caixa sem redistribuição da decisão econômica | Aceita — ADR-0014 |
 | D-023 | Limites de concentração por `AssetClass` usam `softMaxWeight` como alerta e `hardMaxWeight` como teto obrigatório; valor bloqueado retorna para a sobra sem redistribuição | Aceita — ADR-0015 |
 | D-024 | Custos conhecidos e impacto tributário reservado consomem o orçamento bruto do destino; se igualarem ou superarem a alocação, o destino é bloqueado e o valor retorna para caixa | Aceita — ADR-0016 |
 | D-025 | O pipeline canônico de aporte é orquestrado sem reimplementar regras e produz snapshot serializável com `methodologyVersion`, reason codes e provenance das etapas | Aceita — ADR-0017 |
@@ -45,6 +45,7 @@ Este arquivo resume decisões. Decisões arquiteturais importantes também ganha
 | D-039 | Superfícies protegidas usam um único `AppShell`: sidebar em desktop e drawer em viewports menores, navegação só para capabilities reais, e somente `displayName` atravessa para a ilha client da navegação | Aceita — `docs/design/APP-SHELL.md` |
 | D-040 | Sign-in/sign-out usam focused auth fora do AppShell; GitHub permanece provider, a CTA principal é única, privacidade/segurança ficam em progressive disclosure e o redesign não altera callback safety, identidade ou ownership | Aceita — `docs/design/AUTH-SESSION.md` |
 | D-041 | O onboarding R5 preserva reducer, validações e `FinancialProfileSnapshot`; progressão é orientação subordinada ao AppShell, controles vêm das primitives R2, persistência continua opt-in/second-order e objetivos usam seções abertas sem card-in-card | Aceita — `docs/design/ONBOARDING.md` |
+| D-042 | A primeira produção é pessoal/privada em Vercel + Neon: runtime usa conexão pooled, migrations usam conexão direta explícita, GitHub OAuth exige allowlist fail-closed em produção e o Production Contract permanece desabilitado até validação operacional real | Aceita — ADR-0028 |
 
 ## Como alterar uma decisão
 
