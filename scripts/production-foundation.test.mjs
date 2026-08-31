@@ -1,3 +1,6 @@
+import { spawnSync } from "node:child_process";
+import { readFile } from "node:fs/promises";
+
 import { describe, expect, it } from "vitest";
 
 import {
@@ -10,6 +13,56 @@ import {
   safeReadinessIssue,
   verifyProductionReadiness,
 } from "./verify-production.mjs";
+
+const manifest = JSON.parse(
+  await readFile(new URL("../.dev-dashboard/production.json", import.meta.url), "utf8"),
+);
+const packageJson = JSON.parse(await readFile(new URL("../package.json", import.meta.url), "utf8"));
+const productionGatePath = new URL("./production-gate.mjs", import.meta.url).pathname;
+
+describe("production contract", () => {
+  it("declares the validated Vercel production without a local deploy command", () => {
+    expect(manifest.production).toMatchObject({
+      enabled: true,
+      strategy: "git-managed",
+      provider: "vercel",
+      branch: "main",
+      commands: {
+        check: "prod:check",
+        migrate: "prod:migrate",
+        verify: "prod:verify",
+      },
+      health: {
+        type: "http",
+        url: "https://portfolio-copilot-plum.vercel.app/api/health/ready",
+      },
+      external: { project: "portfolio-copilot" },
+      policies: {
+        backup: "external",
+        migrations: "before-deploy",
+        rollback: "manual-restore",
+      },
+    });
+    expect(manifest.production.commands.deploy).toBeUndefined();
+    expect(manifest.production.blockedBy).toBeUndefined();
+  });
+
+  it("loads local operator env for migrate and verify without exposing it to Vercel runtime", () => {
+    expect(packageJson.scripts["prod:migrate"]).toContain("--env-file-if-exists=.env.local");
+    expect(packageJson.scripts["prod:verify"]).toContain("--env-file-if-exists=.env.local");
+  });
+
+  it("reports enabled git-managed status and refuses local deploy", () => {
+    const status = spawnSync(process.execPath, [productionGatePath, "status"], { encoding: "utf8" });
+    expect(status.status).toBe(0);
+    expect(status.stdout).toContain("production.enabled=true");
+    expect(status.stdout).toContain("provider=vercel");
+
+    const deploy = spawnSync(process.execPath, [productionGatePath, "deploy"], { encoding: "utf8" });
+    expect(deploy.status).toBe(2);
+    expect(deploy.stderr).toContain("git-managed pela Vercel");
+  });
+});
 
 describe("production environment", () => {
   it("requires a direct PostgreSQL URL for migrations", () => {
