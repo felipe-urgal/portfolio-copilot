@@ -2,48 +2,54 @@
 
 ## Estado atual
 
-A produção está **deliberadamente desabilitada** no contrato consumível por automação:
+A produção pessoal/privada do Portfolio Copilot foi validada em 31/08/2026 e está habilitada no contrato consumido pelo Dev Dashboard:
 
 ```text
 .dev-dashboard/production.json
-production.enabled=false
-reasonCode=production-readiness-gate
+production.enabled=true
+strategy=git-managed
+provider=vercel
+branch=main
 ```
 
-Isso não significa que o projeto não possua build, PostgreSQL, migrations, autenticação ou health. Significa que essas fundações ainda não formam, por si só, um contrato de produção habilitado para deploy automático.
+Topologia operacional:
 
-A primeira topologia alvo é de **uso pessoal/privado**:
-
-- aplicação: Vercel, branch `main`;
+- aplicação: Vercel, projeto `portfolio-copilot`, branch `main`;
+- domínio canônico: `https://portfolio-copilot-plum.vercel.app`;
 - banco: Neon PostgreSQL 18, branch `production`;
-- runtime: `DATABASE_URL` com conexão pooled;
-- migrations: `DATABASE_DIRECT_URL` com conexão direct/unpooled;
+- runtime: `DATABASE_URL` pooled no ambiente Production da Vercel;
+- migrations: `DATABASE_DIRECT_URL` direct/unpooled somente no ambiente administrativo local;
 - autenticação: Auth.js + GitHub OAuth com uma única conta explicitamente allowlisted em produção;
+- health canônico: `https://portfolio-copilot-plum.vercel.app/api/health/ready`;
 - exposição pública/monetização: continua fora de escopo até o Regulatory Gate aplicável ser concluído.
 
 Nenhum segredo, URL de banco ou OAuth secret é versionado.
 
-## Comandos padronizados
+## Production Contract
+
+O contrato ativo usa `strategy=git-managed`. A Vercel é responsável por criar o deployment a partir da branch `main`; não existe deploy local equivalente.
+
+Comandos declarados para o Dev Dashboard:
 
 ```bash
-pnpm prod:status
 pnpm prod:check
 pnpm prod:migrate
-pnpm prod:deploy
 pnpm prod:verify
 ```
 
-- `prod:status` informa de forma não mutável que o gate de deploy permanece fechado;
-- `prod:check` reutiliza o quality gate atual do repositório;
-- `prod:migrate` exige `DATABASE_DIRECT_URL` e executa as migrations Drizzle explicitamente fora do build;
-- `prod:deploy` continua falhando com exit code não-zero enquanto `production.enabled=false`;
-- `prod:verify` consulta somente o readiness canônico, com retry bounded e sem repetir migration/deploy.
+`prod:status` permanece disponível para diagnóstico manual. `prod:deploy` permanece intencionalmente recusado e explica que o deploy é gerenciado pelo provider/Git; ele não é declarado em `.dev-dashboard/production.json`.
 
-Não existe bypass por variável de ambiente ou feature flag para `prod:deploy`. Habilitar produção exige mudança explícita do contrato após um primeiro deploy real ter sido validado.
+Políticas:
 
-## Variáveis de ambiente
+- backup: `external`, fornecido pelo Neon;
+- migrations: `before-deploy`, explícitas e fora de `next build`;
+- rollback: `manual-restore`, porque uma revisão anterior de código pode não ser compatível com schema já migrado.
 
-Produção exige, no mínimo:
+## Variáveis e separação de privilégios
+
+### Runtime Vercel
+
+Somente o ambiente **Production** da Vercel deve receber:
 
 ```text
 AUTH_SECRET
@@ -51,41 +57,24 @@ AUTH_GITHUB_ID
 AUTH_GITHUB_SECRET
 AUTH_GITHUB_ALLOWED_ACCOUNT_ID
 DATABASE_URL
-DATABASE_DIRECT_URL
-PORTFOLIO_COPILOT_PRODUCTION_READY_URL
 ```
 
-### Auth
+`DATABASE_URL` deve usar o endpoint pooled do Neon. Previews de PR não devem receber esses segredos nem acesso ao banco de produção.
 
-`AUTH_GITHUB_ALLOWED_ACCOUNT_ID` é o ID numérico da única conta GitHub permitida na primeira produção pessoal. Em `NODE_ENV=production`, ausência, formato inválido, provider inesperado ou account id diferente falham fechado. Desenvolvimento local não exige essa allowlist.
+### Operação local / Dev Dashboard
 
-### PostgreSQL
+As operações que precisam de credenciais administrativas leem `.env.local` automaticamente por meio de `node --env-file-if-exists=.env.local`. O arquivo é ignorado pelo Git.
 
-`DATABASE_URL` é usada pelo runtime da aplicação e deve apontar para a conexão pooled do Neon.
-
-`DATABASE_DIRECT_URL` é usada apenas por `prod:migrate` e deve apontar para a conexão direct/unpooled. O script recusa hostnames identificados como pooler para evitar executar migrations pelo endpoint errado.
-
-### Readiness
-
-`PORTFOLIO_COPILOT_PRODUCTION_READY_URL` deve ser HTTPS, sem credenciais embutidas, e apontar para:
+Para operar migration/verify, `.env.local` deve conter:
 
 ```text
-https://<dominio-canônico>/api/health/ready
+DATABASE_DIRECT_URL=<Neon direct/unpooled URL>
+PORTFOLIO_COPILOT_PRODUCTION_READY_URL=https://portfolio-copilot-plum.vercel.app/api/health/ready
 ```
 
-Parâmetros opcionais de operação:
+`DATABASE_DIRECT_URL` não deve ser configurada na Vercel. O script `prod:migrate` recusa hostnames identificados como pooler para não executar migration no endpoint errado.
 
-```text
-PORTFOLIO_COPILOT_VERIFY_TIMEOUT_MS
-PORTFOLIO_COPILOT_VERIFY_INTERVAL_MS
-PORTFOLIO_COPILOT_VERIFY_REQUEST_TIMEOUT_MS
-```
-
-Overrides malformados não são parcialmente aceitos; o verify volta aos defaults seguros.
-
-## Health operacional
-
-Dois endpoints têm semânticas diferentes:
+## Health e verify
 
 ```text
 GET /api/health/live
@@ -94,50 +83,57 @@ GET /api/health/ready
 
 `/api/health/live` confirma apenas que a aplicação está respondendo e não acessa dependências externas.
 
-`/api/health/ready` executa um probe bounded no PostgreSQL. Retorna `200` quando aplicação + banco estão disponíveis e `503` quando a dependência não está pronta. A resposta não expõe connection string, usuário, senha, host interno nem mensagem bruta do driver.
+`/api/health/ready` executa probe bounded no PostgreSQL. Retorna `200` quando aplicação + banco estão disponíveis e `503` quando a dependência não está pronta. A resposta não expõe connection string, usuário, senha, host interno nem mensagem bruta do driver.
 
-`prod:verify` pode repetir o readiness por uma janela curta porque Vercel/compute/banco podem precisar de alguns segundos para aquecer. O retry é somente leitura e nunca chama `prod:migrate` ou `prod:deploy`.
+`prod:verify` consulta o readiness canônico com retry bounded. É somente leitura e nunca repete migration ou deploy.
 
-## Ordem do primeiro deploy
+## Evidência do primeiro ambiente
 
-O primeiro deploy real deve seguir esta ordem:
+Em 31/08/2026 foram validados manualmente no ambiente real:
 
-1. criar o projeto Neon e guardar pooled/direct URLs fora do repositório;
-2. gerar `AUTH_SECRET` e obter o GitHub account id permitido;
-3. mergear a foundation de produção com auth allowlist, health, migration e verify;
-4. criar/importar o projeto Vercel a partir de `felipe-urgal/portfolio-copilot`;
-5. configurar os segredos/variáveis somente no ambiente apropriado;
-6. criar/configurar o GitHub OAuth App com callback canônico da Vercel;
-7. executar `pnpm prod:migrate` explicitamente usando `DATABASE_DIRECT_URL`;
-8. validar `/api/health/live` e `/api/health/ready`;
-9. validar login da conta permitida e recusa de uma conta não autorizada;
-10. somente depois abrir PR separado para mudar o Production Contract para `git-managed`/Vercel e `production.enabled=true`.
+1. migration Drizzle de produção aplicada com sucesso por `pnpm prod:migrate` usando conexão direct/unpooled;
+2. `GET /api/health/live` retornou HTTP 200;
+3. `GET /api/health/ready` retornou HTTP 200 com `dependencies.postgres=ok`;
+4. `pnpm prod:verify` confirmou readiness em uma tentativa;
+5. login GitHub da conta allowlisted funcionou em produção;
+6. snapshot Neon `prod-baseline-2026-08-31` criado na branch `production`;
+7. restore **Multi-step** do snapshot executado em nova branch, preservando `production` sem alteração;
+8. restore-check no SQL Editor da branch restaurada confirmou as seis tabelas esperadas: `account_owners`, `financial_profiles`, `portfolio_asset_refs`, `portfolios`, `target_allocations` e `transactions`.
 
-Não executar migrations automaticamente em `next build`.
+O snapshot `prod-baseline-2026-08-31` deve ser mantido como baseline inicial enquanto for compatível com a política/capacidade do plano Neon em uso. A branch temporária criada apenas para restore-check deve ser removida depois da validação.
 
-## Gates antes de habilitar produção
+## Migrations e recuperação
 
-O manifesto continua registrando como bloqueadores, no mínimo:
+Migrations são versionadas e explícitas. O build da aplicação não altera schema.
 
-- segurança operacional de produção;
-- backup/restore e disaster recovery testados;
-- observabilidade e SLOs aplicáveis;
-- tenancy/LGPD para o modelo de uso pretendido;
-- Regulatory Gate antes de recomendação individualizada pública, monetização ou prestação equivalente a terceiros.
+Antes de uma migration futura com impacto de schema/dados, confirme a capacidade de recuperação disponível no Neon e crie/atualize um ponto de recuperação apropriado. A política operacional não presume que rollback de código seja suficiente depois de uma migration.
 
-Para produção **privada/pessoal**, o enquadramento regulatório público pode ter escopo diferente, mas segurança, backup/DR e operação continuam obrigatórios e precisam ser definidos explicitamente antes de mudar `production.enabled`.
+**Não fazer rollback cego.** Se uma execução já aplicou migration ou outra alteração de dados/schema, a recuperação deve considerar conjuntamente:
 
-## Backup, migrations e recuperação
+- revisão implantada;
+- schema atual;
+- dados atuais;
+- snapshot/history disponível no Neon;
+- compatibilidade da migration;
+- readiness da revisão escolhida.
 
-As migrations são versionadas e explícitas. O build da aplicação não altera schema.
+Restore destrutivo da branch `production` é operação manual deliberada. Para inspeção/restore-check, prefira Multi-step restore em branch isolada.
 
-A política de backup/restore permanece `not-configured` no Production Contract até a capacidade real do ambiente Neon ser documentada e testada. O contrato não será marcado como pronto apenas porque o provider oferece recuperação: precisamos registrar janela, operação e evidência de restore-check compatíveis com o plano usado.
+## Limites da produção pessoal
 
-Não fazer rollback cego de código quando uma migration já tiver sido aplicada. Recuperação deve considerar revisão implantada, schema, dados, backup/checkpoint e compatibilidade da migration.
+A ativação deste Production Contract cobre o ambiente **pessoal/privado** com allowlist de uma conta GitHub. Ela não libera automaticamente:
+
+- uso multi-tenant;
+- oferta pública a terceiros;
+- monetização;
+- recomendação individualizada pública;
+- qualquer cenário que dependa do Regulatory Gate documentado.
+
+Tenancy/LGPD e Regulatory Gate continuam sendo requisitos antes de ampliar o modelo de uso, mas não impedem a operação privada single-user validada aqui.
 
 ## Relação com documentos normativos
 
-Este documento não redefine regras já existentes. Consulte:
+Consulte também:
 
 - [`SECURITY.md`](SECURITY.md) para baseline de segurança e operação;
 - [`REGULATORY.md`](REGULATORY.md) para a fronteira entre uso pessoal/controlado e produto público;
@@ -148,6 +144,6 @@ Este documento não redefine regras já existentes. Consulte:
 
 ## Integração com o Dev Dashboard
 
-Enquanto `production.enabled=false`, o Dev Dashboard deve interpretar este projeto como **produção bloqueada**, não como serviço parado nem como falha de health. `prod:deploy` não deve ser executado automaticamente.
+O Dev Dashboard deve interpretar este projeto como produção `git-managed` na Vercel. O fluxo não deve executar `prod:deploy` localmente.
 
-Após validação real do primeiro ambiente, um PR separado deverá definir provider/strategy/external project/health e políticas operacionais concretas, removendo somente os blockers realmente resolvidos.
+Antes da promoção/deploy gerenciado, o plano pode executar `prod:check` e, quando a política exigir, `prod:migrate`. Após a promoção, `prod:verify` confirma o readiness canônico. Uma falha somente de verify deve ser tratada como verificável novamente, sem repetir migration/deploy automaticamente.
