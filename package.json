@@ -18,7 +18,11 @@
     "typecheck": "pnpm -r --if-present run typecheck",
     "test": "vitest run",
     "build": "pnpm -r --if-present run build",
-    "check": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build"
+    "check": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build",
+    "prod:status": "node scripts/production-gate.mjs status",
+    "prod:check": "pnpm check",
+    "prod:deploy": "node scripts/production-gate.mjs deploy",
+    "prod:verify": "node scripts/production-gate.mjs verify"
   },
   "devDependencies": {
     "@types/node": "24.3.0",
