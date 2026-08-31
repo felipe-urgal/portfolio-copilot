@@ -33,17 +33,13 @@ jobs:
         with:
           node-version: 24
 
-      - name: Enable Corepack
-        run: corepack enable
-
-      - name: Activate pnpm
-        run: corepack prepare pnpm@11.24.0 --activate
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
       - name: Format
-        run: pnpm format
+        run: >-
+          npx --yes prettier@3.9.6 --write
+          "apps/**/*.{ts,tsx,css,json}"
+          "packages/**/*.{ts,json}"
+          "*.{json,yaml,yml,mjs}"
+          ".github/**/*.yml"
 
       - name: Commit formatting when needed
         id: formatting
