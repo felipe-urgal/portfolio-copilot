@@ -79,7 +79,7 @@ jobs:
     permissions:
       contents: read
     env:
-      DATABASE_URL: postgresql://portfolio:portfolio@127.0.0.1:5432/portfolio_copilot_test
+      CHECK_DATABASE_URL: postgresql://portfolio:portfolio@127.0.0.1:5432/portfolio_copilot_test
 
     services:
       postgres:
@@ -119,26 +119,11 @@ jobs:
       - name: Validate local Docker Compose
         run: docker compose config --quiet
 
-      - name: Format check
-        run: pnpm format:check
-
-      - name: Lint
-        run: pnpm lint
-
-      - name: Typecheck
-        run: pnpm typecheck
-
-      - name: Apply database migrations
-        run: pnpm db:migrate
+      - name: Production check
+        run: pnpm prod:check
 
       - name: Verify root .env.local database fallback
         run: |
           trap 'rm -f .env.local' EXIT
-          printf 'DATABASE_URL="%s"\n' "$DATABASE_URL" > .env.local
+          printf 'DATABASE_URL="%s"\n' "$CHECK_DATABASE_URL" > .env.local
           DATABASE_URL= pnpm db:migrate
-
-      - name: Test
-        run: pnpm test
-
-      - name: Build
-        run: pnpm build
