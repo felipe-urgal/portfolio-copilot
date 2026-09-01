@@ -2,22 +2,23 @@
 
 ## Status
 
-**Documento vivo.** Última reconciliação da iniciativa UX/UI: **2026-08-30**, no PR #92.
+**Documento vivo.** Última reconciliação geral: **2026-09-01**, após o PR #100. A última reconciliação específica da iniciativa UX/UI permanece em **2026-08-30**, no PR #92.
 
 Este mapa define qual documento responde por cada tipo de informação e como tratar divergências. O objetivo é impedir que roadmap, backlog, README, ADRs e documentos de descoberta virem fontes concorrentes de verdade.
 
 ## Ordem de precedência
 
-Quando dois documentos parecerem divergir, use esta ordem:
+Para execução de uma atividade, use a mesma ordem definida em `AGENTS.md`:
 
-1. decisões aceitas em `docs/DECISIONS.md` e ADRs aplicáveis;
-2. contratos normativos de segurança, dados, regulatório e metodologia;
-3. contratos atuais de arquitetura e design;
-4. `AGENTS.md` e `docs/DEVELOPMENT.md` para processo de engenharia/PR;
-5. `docs/ROADMAP.md` e `docs/tasks/NEXT.md` para prioridade/status corrente;
-6. issues/PRs do GitHub para execução e evidência da entrega;
-7. `docs/tasks/DONE.md` para histórico resumido;
-8. documentos de descoberta para contexto e intenção original.
+1. issue atual e critérios de aceite;
+2. `docs/tasks/NEXT.md`;
+3. decisões aceitas em `docs/DECISIONS.md` e ADRs aplicáveis;
+4. contratos normativos da área afetada;
+5. contratos atuais de arquitetura e design;
+6. código e testes existentes;
+7. backlog/documentos de descoberta apenas para contexto.
+
+`docs/tasks/DONE.md` registra histórico resumido e PRs/GitHub preservam a evidência detalhada. Uma issue não autoriza violar decisão ou contrato normativo silenciosamente: conflito material deve ser resolvido explicitamente antes da mudança.
 
 Uma decisão posterior e explicitamente aceita substitui uma ideia anterior sem apagar o histórico.
 
@@ -31,6 +32,7 @@ Uma decisão posterior e explicitamente aceita substitui uma ideia anterior sem 
 | `AGENTS.md` | normativo operacional | contrato para agentes de IA: padrão fullstack sênior, fluxo de PR, CI e auto code review obrigatório |
 | `docs/DEVELOPMENT.md` | normativo operacional | processo geral de desenvolvimento, quality gate e Definition of Done |
 | `docs/ARCHITECTURE.md` | vivo | arquitetura implementada e fronteiras atuais |
+| `docs/PRODUCTION.md` | vivo/operacional | Production Contract, topologia, readiness, migrations e recuperação da produção pessoal/privada |
 | `docs/ROADMAP.md` | vivo | estado estratégico e sequência macro |
 | `docs/DECISIONS.md` | vivo/histórico | índice de decisões; não apagar decisões anteriores |
 
@@ -68,7 +70,7 @@ Mudanças materiais nesses contratos exigem decisão registrada e, quando arquit
 | `docs/design/R1-ASSISTANT-FIRST-APP-SPEC.md` | canônico | arquitetura de informação/composição |
 | `docs/design/DESIGN-SYSTEM.md` | canônico | tokens e primitives R2 |
 | `docs/design/APP-SHELL.md` | canônico | AppShell/navegação R3 |
-| `docs/design/AUTH-SESSION.md` | canônico | focused auth R4 |
+| `docs/design/AUTH-SESSION.md` | canônico | focused auth R4 e contrato atual de sessão/autenticação |
 | `docs/design/ONBOARDING.md` | canônico | guided onboarding R5 |
 | `docs/design/DASHBOARD.md` | canônico | Dashboard orientado a contexto/panorama/próxima ação R6 |
 | `docs/design/PORTFOLIO.md` | canônico | Carteira R7 organizada por tarefas, ledger/positions/aporte e progressive disclosure |
@@ -99,7 +101,7 @@ Regras:
 
 Issues do GitHub são o backlog executável detalhado. `BACKLOG.md` é uma visão macro e não deve duplicar centenas de checklists de issues.
 
-## Estado da iniciativa UX/UI em 2026-08-30
+## Estado da iniciativa UX/UI em 2026-09-01
 
 - R0 #72 — concluído;
 - R1 #73 — concluído;
@@ -108,10 +110,22 @@ Issues do GitHub são o backlog executável detalhado. `BACKLOG.md` é uma visã
 - R4 #76 — concluído;
 - R5 #77 — concluído via PR #88;
 - R6 #78 — concluído via PR #91;
-- R7 #79 — entregue no PR #92 e considerado concluído após o merge desse PR;
-- R8 #80 — próxima atividade após o merge do #92;
+- R7 #79 — concluído via PR #92;
+- R8 #80 — **próxima atividade canônica**;
 - R9 #81 — pendente;
 - R10 — gate final e fechamento da #69.
+
+O trabalho de produção pessoal realizado em 31/08/2026 não altera a sequência R8 → R9 → R10.
+
+## Estado operacional em 2026-09-01
+
+- #97 / PR #98 — foundation de produção pessoal/privada em Vercel + Neon concluída;
+- #99 / PR #100 — Production Contract ativado após validação real de migration, health/readiness, autenticação e recuperação;
+- `.dev-dashboard/production.json` está habilitado com `strategy=git-managed`, provider `vercel` e branch `main`;
+- a produção validada é single-user/controlada por allowlist e **não** libera produto público, multi-tenant ou monetização;
+- #50 continua sendo o gate canônico para exposição pública, LGPD/tenancy, observabilidade e revisões independentes aplicáveis.
+
+Contrato operacional detalhado: `docs/PRODUCTION.md`. Decisão arquitetural: ADR-0028.
 
 ## Política de atualização
 
@@ -138,4 +152,12 @@ A reconciliação do R6 adicionou `docs/design/DASHBOARD.md`, promoveu #79/R7 co
 
 ### PR #92
 
-A reconciliação do R7 adiciona `docs/design/PORTFOLIO.md`, registra a Carteira por tarefas como contrato canônico, promove #80/R8 como próxima atividade após o merge e atualiza roadmap, catálogo, backlog, histórico e issues relacionadas sem alterar decisões normativas de domínio/persistência.
+A reconciliação do R7 adicionou `docs/design/PORTFOLIO.md`, registrou a Carteira por tarefas como contrato canônico, promoveu #80/R8 como próxima atividade e atualizou roadmap, catálogo, backlog, histórico e issues relacionadas sem alterar decisões normativas de domínio/persistência.
+
+### PR #98
+
+A foundation de produção pessoal adicionou a topologia Vercel + Neon, allowlist fail-closed de autenticação em produção, health/readiness, migrations explícitas e `prod:verify`, além do ADR-0028. O Regulatory Gate público permaneceu fechado.
+
+### PR #100
+
+A ativação do Production Contract registrou evidência do ambiente real, `production.enabled=true`, estratégia `git-managed`, readiness canônico e recuperação testada em branch isolada do Neon. A prioridade operacional voltou a permanecer em #80/R8; #50 continua sendo a fronteira para produto público.
