@@ -39,6 +39,8 @@ Requer dados históricos apropriados e metodologia versionada; não deve inventa
 
 - #50 — Regulatory Gate, LGPD, tenancy, observabilidade/SLO, suporte, backup/DR, segurança independente, termos e eventual billing.
 
+A produção **pessoal/privada** em Vercel + Neon foi preparada em #97 / PR #98 e ativada em #99 / PR #100. Esse marco operacional já está concluído e não pertence ao backlog, mas **não satisfaz nem reduz automaticamente o gate público da #50**: exposição pública, multi-tenancy, operação para terceiros, monetização e as revisões regulatórias/independentes continuam bloqueadas até critérios próprios serem atendidos.
+
 ## Extensões futuras ainda sem vertical priorizado
 
 - ampliar cobertura produtiva de providers de preço/fundamentals/FX quando houver fonte/licença definida;
