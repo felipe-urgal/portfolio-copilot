@@ -4,7 +4,10 @@
 
 ## Data de referência
 
-26/08/2026.
+- referência regulatória/material jurídico: **26/08/2026**;
+- estado operacional do produto reconciliado em **01/09/2026**.
+
+Esta atualização operacional não revalida nem substitui a análise jurídica/regulatória de 26/08/2026.
 
 ## Fronteira principal
 
@@ -32,7 +35,9 @@ Fontes:
 
 ### Uso pessoal/controlado
 
-A primeira fase será tratada como ferramenta interna de organização, pesquisa e apoio à própria decisão. Ainda assim, a arquitetura registra perfil, risco, método e explicações corretamente para evitar dívida regulatória.
+A fase atual é tratada como ferramenta pessoal/controlada de organização, pesquisa e apoio à própria decisão. Em 31/08/2026, o ambiente pessoal/privado Vercel + Neon foi efetivamente ativado após #97/#99 e PRs #98/#100, com acesso single-user controlado por allowlist.
+
+Essa ativação operacional **não muda a classificação desta fase para produto público**, não autoriza uso por terceiros e não elimina a necessidade de revisão regulatória futura. A arquitetura continua registrando perfil, risco, método e explicações corretamente para evitar dívida regulatória.
 
 ### Produto público
 
@@ -50,7 +55,7 @@ Antes de permitir recomendação individualizada a terceiros, monetização, pre
 - publicidade e linguagem de recomendação;
 - atendimento e tratamento de reclamações.
 
-Nenhuma feature flag transforma o produto em consultoria pública sem esse gate concluído.
+Nenhuma feature flag, deploy privado ou Production Contract técnico transforma o produto em consultoria pública sem esse gate concluído.
 
 ## Relatórios gerenciais
 
@@ -77,3 +82,5 @@ Toda mudança que altere uma destas capacidades requer revisão deste documento:
 - compartilhamento de dados financeiros;
 - Open Finance;
 - publicidade de performance.
+
+A issue #50 permanece o gate canônico para produto público e deve separar explicitamente o que já foi validado para produção pessoal do que ainda precisa existir para operação pública/multiusuário.
