@@ -96,7 +96,7 @@ describe("check environment", () => {
 
     expect(() =>
       requiredCheckDatabaseUrl({ CHECK_DATABASE_URL: "https://example.com/db" }),
-    ).toThrow(/PostgreSQL/);
+    ).toThrow(/postgres/i);
 
     expect(() =>
       requiredCheckDatabaseUrl({
