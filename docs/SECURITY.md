@@ -2,7 +2,7 @@
 
 ## Objetivo
 
-Tratar dados financeiros como informação sensível desde o primeiro commit, mesmo quando a primeira versão for de uso pessoal.
+Tratar dados financeiros como informação sensível desde o primeiro commit, inclusive na produção pessoal/privada atualmente ativa.
 
 ## Princípios
 
@@ -41,14 +41,21 @@ Classificação inicial:
 
 ## Autenticação
 
-A escolha de provedor será feita quando autenticação entrar no roadmap. Requisitos:
+O contrato atual usa **Auth.js v5 com GitHub OAuth**. Em produção pessoal/privada, o acesso é fail-closed por allowlist explícita da conta autorizada; ausência ou divergência da identidade permitida deve negar acesso.
+
+Requisitos atuais e futuros:
 
 - sessão segura;
 - cookies `HttpOnly`, `Secure` e política `SameSite` adequada quando aplicável;
-- MFA disponível antes de exposição pública relevante;
-- rate limiting em endpoints de autenticação;
+- callbacks/redirects limitados a destinos aceitos;
+- credenciais OAuth distintas por ambiente quando aplicável;
+- `AUTH_SECRET` e credenciais do GitHub somente em secret stores/ambiente, nunca no repositório;
+- MFA/reautenticação disponível antes de exposição pública relevante, quando compatível com o modelo de identidade adotado;
+- rate limiting/abuse protection em endpoints de autenticação antes de exposição pública relevante;
 - proteção contra enumeração de usuários;
-- recuperação de conta segura.
+- recuperação de conta segura quando houver fluxo próprio de conta.
+
+A allowlist single-user é um controle do ambiente pessoal atual, não uma solução de tenancy para produto público.
 
 ## Autorização
 
@@ -64,18 +71,45 @@ Quando houver papéis administrativos:
 
 - TLS em trânsito;
 - criptografia em repouso conforme infraestrutura;
-- backups testados;
-- migrações versionadas;
+- backups/snapshots e recuperação testados de acordo com o ambiente;
+- migrações versionadas e explícitas;
 - acesso de produção restrito;
 - nenhuma query dinâmica construída por concatenação de entrada.
 
+Na produção pessoal atual:
+
+- Neon PostgreSQL 18 é o banco canônico;
+- `DATABASE_URL` pooled é usado no runtime;
+- `DATABASE_DIRECT_URL` direct/unpooled é reservado a migration/admin explícito;
+- migrations não rodam implicitamente no startup/deploy;
+- o baseline de recuperação foi validado por snapshot e restore-check em branch isolada, conforme `docs/PRODUCTION.md`.
+
 ## Segredos
 
-- `.env` local ignorado pelo Git;
-- CI usa secret store do provedor;
+- `.env`/`.env.local` locais são ignorados pelo Git;
+- CI e produção usam secret store do provedor;
+- variáveis de produção ficam restritas ao ambiente de Production quando aplicável;
+- `DATABASE_DIRECT_URL` não deve ser exposta ao runtime se não for necessária;
 - rotacionar segredo após qualquer suspeita de vazamento;
 - tokens diferentes por ambiente;
-- nunca registrar token em log.
+- nunca registrar token em log;
+- `.dev-dashboard/production.json` registra somente metadados não secretos do Production Contract.
+
+## Produção pessoal/privada
+
+O ambiente Vercel + Neon ativado em 31/08/2026 é **single-user/controlado** e não equivale a produto público.
+
+Controles operacionais atuais incluem:
+
+- promoção pela branch `main` via integração Git/provider;
+- deploy local bloqueado pelo contrato `git-managed`;
+- autenticação GitHub com allowlist fail-closed;
+- health liveness sem dependência externa em `/api/health/live`;
+- readiness com PostgreSQL em `/api/health/ready`;
+- migrations e verificação de produção explícitas;
+- snapshot/restore-check documentado.
+
+Exposição pública, multi-tenancy, monetização, observabilidade/SLO, pentest independente, incident response completo e demais requisitos de operação para terceiros continuam atrás da #50/Regulatory Gate.
 
 ## Integrações financeiras
 
@@ -163,7 +197,7 @@ Nunca logar carteira completa por conveniência. Preferir IDs, métricas e event
 
 ## Incidentes
 
-Antes de produção pública, criar runbook para:
+Antes de produção **pública**, criar e validar runbook compatível com a operação para terceiros:
 
 1. contenção;
 2. rotação de segredos;
@@ -172,3 +206,5 @@ Antes de produção pública, criar runbook para:
 5. correção;
 6. comunicação conforme obrigações aplicáveis;
 7. post-mortem.
+
+Para a produção pessoal atual, os procedimentos mínimos de health, migration, verificação e recuperação estão em `docs/PRODUCTION.md`.
