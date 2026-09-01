@@ -18,7 +18,8 @@ Topologia operacional:
 - domínio canônico: `https://portfolio-copilot-plum.vercel.app`;
 - banco: Neon PostgreSQL 18, branch `production`;
 - runtime: `DATABASE_URL` pooled no ambiente Production da Vercel;
-- migrations: `DATABASE_DIRECT_URL` direct/unpooled somente no ambiente administrativo local;
+- migrations: `DATABASE_DIRECT_URL` direct/unpooled somente no ambiente administrativo de produção;
+- check/testes: `CHECK_DATABASE_URL` em banco PostgreSQL isolado, sem dados reais;
 - autenticação: Auth.js + GitHub OAuth com uma única conta explicitamente allowlisted em produção;
 - health canônico: `https://portfolio-copilot-plum.vercel.app/api/health/ready`;
 - exposição pública/monetização: continua fora de escopo até o Regulatory Gate aplicável ser concluído.
@@ -61,18 +62,62 @@ DATABASE_URL
 
 `DATABASE_URL` deve usar o endpoint pooled do Neon. Previews de PR não devem receber esses segredos nem acesso ao banco de produção.
 
-### Operação local / Dev Dashboard
+### Check/testes locais e Dev Dashboard
 
-As operações que precisam de credenciais administrativas leem `.env.local` automaticamente por meio de `node --env-file-if-exists=.env.local`. O arquivo é ignorado pelo Git.
+O check automatizado usa somente:
 
-Para operar migration/verify, `.env.local` deve conter:
+```text
+<projeto>/.dev-dashboard/.env.check.local
+```
+
+com:
+
+```text
+CHECK_DATABASE_URL=<PostgreSQL dedicado a check/testes>
+```
+
+`prod:check` exige `CHECK_DATABASE_URL`, promove esse valor para `DATABASE_URL` apenas nos processos filhos do gate e executa, em ordem:
+
+```text
+format:check
+lint
+typecheck
+db:migrate
+test
+build
+```
+
+A migration desse fluxo ocorre somente no banco de check, antes da suíte. `prod:check` não usa `DATABASE_URL` ou `DATABASE_DIRECT_URL` herdadas como fallback e remove do ambiente filho credenciais de produção/provider que não pertencem ao check.
+
+O banco de check deve ser dedicado, descartável quando possível e não pode conter dados reais. O CI usa PostgreSQL efêmero com o mesmo contrato `CHECK_DATABASE_URL`.
+
+### Operação de produção local / Dev Dashboard
+
+Migration e verify usam somente:
+
+```text
+<projeto>/.dev-dashboard/.env.production.local
+```
+
+com:
 
 ```text
 DATABASE_DIRECT_URL=<Neon direct/unpooled URL>
 PORTFOLIO_COPILOT_PRODUCTION_READY_URL=https://portfolio-copilot-plum.vercel.app/api/health/ready
 ```
 
+Os scripts `prod:migrate` e `prod:verify` não carregam `.env.local` automaticamente. No Dev Dashboard, `.env.production.local` é injetado somente nas etapas locais de produção aplicáveis; `provider-deploy` não recebe esse ambiente.
+
+Para operação manual fora do Dev Dashboard, carregue explicitamente o mesmo arquivo sem alterar os scripts canônicos:
+
+```bash
+node --env-file=.dev-dashboard/.env.production.local scripts/migrate-production.mjs
+node --env-file=.dev-dashboard/.env.production.local scripts/verify-production.mjs
+```
+
 `DATABASE_DIRECT_URL` não deve ser configurada na Vercel. O script `prod:migrate` recusa hostnames identificados como pooler para não executar migration no endpoint errado.
+
+Os arquivos `.env.check.local` e `.env.production.local` são locais, ignorados pelo Git e devem permanecer com permissões restritas.
 
 ## Health e verify
 
@@ -146,4 +191,6 @@ Consulte também:
 
 O Dev Dashboard deve interpretar este projeto como produção `git-managed` na Vercel. O fluxo não deve executar `prod:deploy` localmente.
 
-Antes da promoção/deploy gerenciado, o plano pode executar `prod:check` e, quando a política exigir, `prod:migrate`. Após a promoção, `prod:verify` confirma o readiness canônico. Uma falha somente de verify deve ser tratada como verificável novamente, sem repetir migration/deploy automaticamente.
+Antes da promoção/deploy gerenciado, `prod:check` usa exclusivamente `.dev-dashboard/.env.check.local`; quando a política exigir, `prod:migrate` usa `.dev-dashboard/.env.production.local`. Após a promoção, `prod:verify` usa o mesmo ambiente local de produção para confirmar o readiness canônico. `provider-deploy` não recebe nenhum desses arquivos.
+
+Uma falha somente de verify deve ser tratada como verificável novamente, sem repetir migration/deploy automaticamente.

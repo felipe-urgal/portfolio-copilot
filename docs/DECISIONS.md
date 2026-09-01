@@ -46,10 +46,13 @@ Este arquivo resume decisões. Decisões arquiteturais importantes também ganha
 | D-040 | Sign-in/sign-out usam focused auth fora do AppShell; GitHub permanece provider, a CTA principal é única, privacidade/segurança ficam em progressive disclosure e o redesign não altera callback safety, identidade ou ownership | Aceita — `docs/design/AUTH-SESSION.md` |
 | D-041 | O onboarding R5 preserva reducer, validações e `FinancialProfileSnapshot`; progressão é orientação subordinada ao AppShell, controles vêm das primitives R2, persistência continua opt-in/second-order e objetivos usam seções abertas sem card-in-card | Aceita — `docs/design/ONBOARDING.md` |
 | D-042 | A primeira produção é pessoal/privada em Vercel + Neon: runtime usa conexão pooled, migrations usam conexão direta explícita, GitHub OAuth exige allowlist fail-closed em produção e o Production Contract permanece desabilitado até validação operacional real | Aceita — ADR-0028 |
+| D-043 | Checks automatizados de produção usam `CHECK_DATABASE_URL` em banco PostgreSQL isolado e nunca fazem fallback para credenciais/banco de produção; migration/verify de produção recebem ambiente administrativo separado e explícito | Aceita — refinamento operacional de ADR-0028 |
 
 ## Estado operacional da D-042
 
 A condição de ativação prevista pela D-042 foi satisfeita em 31/08/2026 por #99 / PR #100, após validação de migration, liveness/readiness, autenticação allowlisted, `prod:verify` e restore-check isolado. O Production Contract está ativo para uso pessoal/controlado.
+
+A D-043 adiciona uma fronteira operacional sem mudar a topologia da D-042: `.dev-dashboard/.env.check.local` pertence somente a check/testes, enquanto `.dev-dashboard/.env.production.local` pertence somente a migration/verify locais de produção. O provider não recebe nenhum desses arquivos.
 
 Isso **não substitui** a D-011: produto público, multi-tenancy, uso por terceiros e monetização continuam bloqueados pelo Regulatory Gate da #50.
 
