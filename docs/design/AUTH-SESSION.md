@@ -95,6 +95,8 @@ A production foundation adiciona uma restrição operacional sem alterar a UI fo
 
 A UI continua mostrando erro genérico. O account id esperado, provider payload e razão interna da recusa não são exibidos ao usuário nem registrados como diagnóstico de produto.
 
+Em 31/08/2026, #99 / PR #100 validou esse contrato no ambiente Vercel real e ativou o Production Contract pessoal. Essa ativação não mudou a composição visual, o provider, a canonical identity nem o ownership; somente confirmou operacionalmente a fronteira fail-closed já definida em #97/ADR-0028.
+
 ## Validação
 
 Os testes do R4 verificam:

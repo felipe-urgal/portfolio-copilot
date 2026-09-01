@@ -270,7 +270,7 @@ Este marco é considerado concluído com o merge do PR #88.
 - `docs/design/DASHBOARD.md` registra o contrato canônico do R6;
 - README, roadmap, catálogo de funcionalidades e fila operacional reconciliados.
 
-Este marco é considerado concluído quando o próprio PR #91 é mergeado.
+Este marco é considerado concluído com o merge do PR #91.
 
 ## 2026-08-30 — UX/UI R7 Carteira por tarefas — #79 / PR #92
 
@@ -291,9 +291,34 @@ Este marco é considerado concluído quando o próprio PR #91 é mergeado.
 - `docs/design/PORTFOLIO.md` registra o contrato canônico do R7;
 - roadmap, mapa documental, catálogo, backlog, NEXT e issues relacionadas reconciliados.
 
-Este marco é considerado concluído quando o próprio PR #92 é mergeado.
+Este marco é considerado concluído com o merge do PR #92.
 
-## Estado após #92
+## 2026-08-31 — Foundation de produção pessoal — #97 / PR #98
+
+- decisão Vercel + Neon registrada no ADR-0028;
+- contrato de autenticação de produção endurecido com allowlist GitHub fail-closed;
+- separação entre `DATABASE_URL` pooled de runtime e `DATABASE_DIRECT_URL` direct/unpooled de migration/admin;
+- migrations de produção tornadas explícitas, sem execução implícita no startup;
+- endpoints canônicos `/api/health/live` e `/api/health/ready`;
+- comandos `prod:migrate` e `prod:verify`;
+- documentação operacional e testes da foundation adicionados;
+- Regulatory Gate público permaneceu fechado.
+
+## 2026-08-31 — Production Contract pessoal ativado — #99 / PR #100
+
+- `.dev-dashboard/production.json` habilitado com estratégia `git-managed`, provider Vercel e branch `main`;
+- projeto Vercel `portfolio-copilot` e domínio canônico `https://portfolio-copilot-plum.vercel.app` validados;
+- Neon PostgreSQL 18, branch `production`, validado como banco canônico do ambiente;
+- migration explícita via conexão direct/unpooled concluída;
+- `/api/health/live` e `/api/health/ready` responderam `200`, com PostgreSQL pronto no readiness;
+- login GitHub da conta allowlisted validado no ambiente real;
+- `prod:verify` concluído com sucesso;
+- snapshot `prod-baseline-2026-08-31` e restore-check em branch isolada concluídos;
+- baseline de seis tabelas verificado após recuperação;
+- deploy local permanece bloqueado; promoção ocorre pela integração Git/provider;
+- produção continua pessoal/single-user e não abre produto público, multi-tenancy ou monetização.
+
+## Estado em 2026-09-01
 
 Próxima atividade canônica: **#80 — R8 estados e componentes transversais**.
 

@@ -4,7 +4,7 @@
 
 **INICIATIVA ATIVA — #69**
 
-Estado após o PR #92:
+Estado reconciliado em 2026-09-01. A sequência UX/UI permanece a definida após o PR #92:
 
 - R0 #72 — concluído;
 - R1 #73 — concluído;
@@ -13,10 +13,12 @@ Estado após o PR #92:
 - R4 #76 — concluído;
 - R5 #77 — concluído;
 - R6 #78 — concluído;
-- R7 #79 — concluído neste PR;
+- R7 #79 — concluído / PR #92;
 - **próxima fase: R8 #80 — estados/componentes transversais**;
 - R9 #81 — accessibility/responsive/fidelity QA;
 - R10 — gate final e fechamento da #69.
+
+Em 31/08/2026, #97/#99 e PRs #98/#100 prepararam e ativaram a produção pessoal/privada Vercel + Neon. Esse trabalho operacional está concluído e não altera a sequência R8 → R9 → R10.
 
 O objetivo não é aplicar um tema sobre o frontend antigo. É migrar o produto para uma arquitetura visual única, preservando domínio, autenticação, segurança, persistência e honestidade dos dados.
 

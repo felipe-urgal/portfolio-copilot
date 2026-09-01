@@ -62,6 +62,26 @@ Entregas existentes:
 
 A evolução dessa fundação ocorre por necessidade concreta, não como fase pendente genérica.
 
+## Produção pessoal/privada — ATIVA
+
+Em 31/08/2026, a fundação de produção foi preparada em #97 / PR #98 e o Production Contract foi ativado em #99 / PR #100 após validação real do ambiente.
+
+Estado operacional atual:
+
+- aplicação na Vercel, projeto `portfolio-copilot`, promoção `git-managed` pela branch `main`;
+- domínio canônico `https://portfolio-copilot-plum.vercel.app`;
+- PostgreSQL 18 no Neon, branch `production`;
+- `DATABASE_URL` pooled para runtime e `DATABASE_DIRECT_URL` direct/unpooled para migrations explícitas;
+- autenticação GitHub em produção fail-closed por allowlist da conta autorizada;
+- `/api/health/live` e `/api/health/ready` implementados e validados;
+- `prod:migrate` e `prod:verify` como operações explícitas;
+- snapshot/restore-check do baseline de produção validado em branch isolada do Neon;
+- deploy local continua bloqueado porque a promoção é gerenciada por Git/provider.
+
+Esse marco é **single-user/controlado** e não muda a prioridade #80/R8. Ele também não conclui a #50: produto público, multi-tenancy, monetização, LGPD operacional, observabilidade/SLO e revisões regulatórias/independentes continuam atrás do Regulatory Gate.
+
+Contrato operacional: `docs/PRODUCTION.md`. Decisão: ADR-0028.
+
 ## Portfolio Engine / domínio financeiro — NÚCLEO IMPLEMENTADO
 
 Já existem:
@@ -196,7 +216,7 @@ Somente após segurança/consentimento/regulatório:
 
 ## Produto público — BACKLOG #50
 
-**Regulatory Gate obrigatório.**
+**Regulatory Gate obrigatório.** A produção pessoal/privada já ativa não equivale a exposição pública nem reduz automaticamente este gate.
 
 Inclui:
 
@@ -207,7 +227,7 @@ Inclui:
 - observabilidade/SLO;
 - suporte;
 - billing se aplicável;
-- backup/DR;
+- backup/DR adequado à operação pública;
 - pentest/avaliação de segurança;
 - termos/disclosures.
 

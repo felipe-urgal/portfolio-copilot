@@ -1,6 +1,6 @@
 # Próxima Atividade — UX/UI R8: estados e componentes transversais do produto
 
-**Status:** READY após merge da #79 / PR #92
+**Status:** READY — prioridade canônica atual em 2026-09-01
 
 ## Issue canônica
 
@@ -26,6 +26,12 @@ O R8 parte das superfícies principais já migradas:
 - `docs/design/ONBOARDING.md`;
 - `docs/design/DASHBOARD.md`;
 - `docs/design/PORTFOLIO.md`.
+
+## Reconciliação operacional
+
+Em 31/08/2026, #97 / PR #98 preparou a foundation de produção pessoal/privada em Vercel + Neon e #99 / PR #100 ativou o Production Contract após validação real do ambiente.
+
+Esse trabalho operacional está concluído e **não altera a sequência UX/UI**: #80 continua sendo a única próxima atividade canônica. A produção ativa é single-user/controlada e não satisfaz o Regulatory Gate público da #50.
 
 ## Objetivo do R8
 
@@ -97,6 +103,7 @@ R9 (#81) só começa quando:
 - `docs/design/DASHBOARD.md`;
 - `docs/design/PORTFOLIO.md`;
 - `docs/UX-UI-REDESIGN-ROADMAP.md`;
-- `docs/ROADMAP.md`.
+- `docs/ROADMAP.md`;
+- `docs/PRODUCTION.md`.
 
 A #45 continua sem UI funcional temporária durante a #69. A futura superfície do Copiloto deve nascer sobre os contratos finais e consumir dados estruturados reais.

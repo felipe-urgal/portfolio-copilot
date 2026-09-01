@@ -2,7 +2,7 @@
 
 ## Status
 
-Este documento descreve a **arquitetura implementada atualmente** no repositório e as fronteiras que novas features devem preservar.
+Este documento descreve a **arquitetura implementada atualmente** no repositório e as fronteiras que novas features devem preservar. Estado reconciliado em **2026-09-01**, após a ativação da produção pessoal/privada no PR #100.
 
 A decisão principal continua sendo um **monólito modular TypeScript** com fronteiras explícitas. Microserviços só devem ser considerados mediante necessidade comprovada de escala, isolamento operacional ou ownership independente.
 
@@ -320,12 +320,50 @@ Dados privados usam ownership server-side e constraints de banco para reduzir o 
 
 ## Autenticação e autorização
 
-- GitHub OAuth estabelece identidade, não perfil financeiro;
+- GitHub OAuth/Auth.js v5 estabelece identidade, não perfil financeiro;
 - `/dashboard`, `/portfolio` e `/onboarding` são rotas protegidas pelo boundary de autenticação;
 - `/sign-out` também exige identidade no próprio server component e redireciona quando não autenticado;
 - APIs privadas resolvem owner no servidor;
 - login/logout não migram nem apagam automaticamente perfil local;
-- migração de perfil local para conta é explícita e revalidada.
+- migração de perfil local para conta é explícita e revalidada;
+- em produção pessoal/privada, acesso é fail-closed por allowlist explícita da conta GitHub autorizada.
+
+A allowlist atual é uma fronteira single-user do ambiente pessoal, não uma implementação de tenancy para produto público.
+
+## Topologia operacional atual
+
+A produção pessoal/privada foi preparada em #97 / PR #98 e ativada em #99 / PR #100. A decisão arquitetural está no ADR-0028 e o contrato operacional detalhado em `docs/PRODUCTION.md`.
+
+```text
+GitHub main
+   ↓ integração Git/provider
+Vercel — project portfolio-copilot
+   ↓ runtime server-side
+DATABASE_URL (pooled)
+   ↓
+Neon PostgreSQL 18 — branch production
+
+Operação explícita de migration/admin
+   ↓
+DATABASE_DIRECT_URL (direct/unpooled)
+   ↓
+Neon PostgreSQL 18 — branch production
+```
+
+Regras:
+
+- promoção de produção é `git-managed`; deploy local direto permanece bloqueado;
+- migrations não rodam implicitamente no startup/deploy;
+- `DATABASE_URL` é a conexão de runtime e `DATABASE_DIRECT_URL` é usada somente quando a operação explícita exige conexão direta;
+- `/api/health/live` comprova liveness sem depender do banco;
+- `/api/health/ready` comprova readiness incluindo PostgreSQL;
+- `prod:migrate` e `prod:verify` são operações explícitas;
+- o baseline de recuperação foi validado por snapshot e restore-check em branch isolada do Neon;
+- segredos ficam fora do Git e `.dev-dashboard/production.json` contém somente metadados não secretos;
+- previews não recebem automaticamente o mesmo contrato/secrets de Production;
+- a topologia atual é para uso pessoal/controlado e não libera exposição pública/multi-tenant.
+
+O domínio canônico validado em 31/08/2026 é `https://portfolio-copilot-plum.vercel.app`.
 
 ## Integrações
 
@@ -354,7 +392,8 @@ A estratégia usa combinações adequadas ao risco:
 - testes adversariais para ingestão externa/IA;
 - testes de componentes e rotas web;
 - E2E/browser QA somente onde a jornada exigir;
-- visual fidelity/accessibility QA nas fases R3–R9 do redesign.
+- visual fidelity/accessibility QA nas fases R3–R9 do redesign;
+- production verification explícita para migration, health/readiness e contrato operacional quando a topologia de produção mudar.
 
 ## Quality gate
 
@@ -380,6 +419,8 @@ A arquitetura prevê observabilidade proporcional ao risco, incluindo:
 - versão da metodologia;
 - falhas de ingestão/classificação/quarentena;
 - eventos relevantes de auditoria sem incluir informação financeira pessoal desnecessária em logs.
+
+A produção pessoal atual possui liveness/readiness e verificação operacional mínima. Observabilidade/SLO completos para operação pública continuam parte da #50.
 
 ## Evolução da arquitetura
 
