@@ -2,7 +2,7 @@
 
 Copiloto inteligente de investimentos para organizar patrimônio, estruturar aportes e tornar decisões financeiras **explicáveis, auditáveis e disciplinadas**.
 
-> **Estado atual:** o repositório já possui domínio financeiro determinístico, Transaction Ledger, pipeline de aporte, PostgreSQL com ownership, autenticação, Asset Master, Market Data foundation, Investment Engine, teses versionadas e ingestão segura de conteúdo externo. No frontend, o redesign baseado no **Protótipo 3 — Assistant-First Workspace** concluiu R0–R7 com o PR #92; o próximo vertical é **R8 estados/componentes transversais (#80)** após o merge do R7.
+> **Estado atual:** o repositório já possui domínio financeiro determinístico, Transaction Ledger, pipeline de aporte, PostgreSQL com ownership, autenticação, Asset Master, Market Data foundation, Investment Engine, teses versionadas e ingestão segura de conteúdo externo. No frontend, o redesign baseado no **Protótipo 3 — Assistant-First Workspace** concluiu R0–R7 com o PR #92 e **R8 estados/componentes transversais (#80)** é a próxima atividade canônica. A produção pessoal/privada em **Vercel + Neon** foi ativada em 31/08/2026 via #97/#99 e PRs #98/#100, sem liberar o produto público nem o Regulatory Gate da #50.
 
 ![Direção visual canônica — Protótipo 3](docs/design/prototypes/prototype-3-assistant-first-dashboard.jpg)
 
@@ -48,7 +48,8 @@ A resposta precisa ser reconstruível: quais fatos foram usados, quais regras bl
 - migração opt-in/conflict-safe do perfil local para a conta;
 - Dashboard Assistant-First R6 com contexto real, panorama e próxima ação;
 - Carteira Assistant-First R7 por tarefas com Portfolio, Assets, ledger, posições e aporte determinístico;
-- rota pública `/health`.
+- health humano em `/health`;
+- health operacional canônico em `/api/health/live` e `/api/health/ready`.
 
 Shell, auth, onboarding, Dashboard e Carteira já usam a fundação visual nova. Estados/componentes transversais ainda passam pelo R8; R9 fecha accessibility/responsive/visual QA.
 
@@ -128,6 +129,26 @@ A cobertura produtiva/licenciada de preço/fundamentals ainda é evolutiva.
 - testes adversariais iniciais.
 
 Essa fundação **não significa que o Copiloto conversacional já esteja pronto**.
+
+## Produção pessoal/privada
+
+O Production Contract está ativo para uso pessoal/controlado desde 31/08/2026:
+
+- provider: Vercel;
+- projeto: `portfolio-copilot`;
+- promoção: `git-managed` pela branch `main`;
+- domínio canônico: `https://portfolio-copilot-plum.vercel.app`;
+- banco: Neon PostgreSQL 18, branch `production`;
+- runtime: `DATABASE_URL` pooled;
+- migration/admin explícito: `DATABASE_DIRECT_URL` direct/unpooled;
+- autenticação GitHub fail-closed por allowlist da conta autorizada;
+- liveness/readiness: `/api/health/live` e `/api/health/ready`;
+- operações: `prod:migrate` e `prod:verify`;
+- baseline de recuperação validado por snapshot e restore-check isolado.
+
+A produção atual **não é produto público/multi-tenant**. Exposição a terceiros, monetização, LGPD operacional, observabilidade/SLO e demais gates continuam na #50.
+
+Leia [`docs/PRODUCTION.md`](docs/PRODUCTION.md).
 
 ## O que ainda não está concluído
 
@@ -230,6 +251,7 @@ Evidence + methodology version
 
 - identidade e autorização são validadas server-side;
 - owner de dado privado é derivado da sessão, nunca escolhido livremente pelo cliente;
+- produção pessoal usa allowlist GitHub fail-closed;
 - `.env.local` e segredos não são versionados;
 - logs não devem carregar dados financeiros pessoais desnecessários;
 - redirects/callbacks são limitados a destinos aceitos;
@@ -263,7 +285,7 @@ Leia [`docs/AI-CONTENT-INGESTION.md`](docs/AI-CONTENT-INGESTION.md).
 
 A iniciativa #69 usa o **Protótipo 3 — Assistant-First Workspace** como direção canônica.
 
-Estado após o PR #92:
+Estado reconciliado em 2026-09-01; a sequência UX/UI permanece a definida após o PR #92:
 
 ```text
 R0 audit ✓           #72
@@ -274,7 +296,7 @@ R4 focused auth ✓    #76
 R5 onboarding ✓      #77 / PR #88
 R6 dashboard ✓       #78 / PR #91
 R7 carteira ✓        #79 / PR #92
-R8 estados           #80  <- próximo após merge do #92
+R8 estados           #80  <- próximo
 R9 a11y/responsive/fidelity #81
 R10 gate final       #69
 ```
@@ -302,7 +324,9 @@ Leia [`docs/UX-UI-REDESIGN-ROADMAP.md`](docs/UX-UI-REDESIGN-ROADMAP.md).
 | `/dashboard` | autenticado | contexto financeiro, panorama e próxima ação |
 | `/onboarding` | autenticado | perfil financeiro e objetivos |
 | `/portfolio` | autenticado | workspace por tarefas para Portfolio, Assets, ledger, posições, transações e aporte |
-| `/health` | público | health operacional |
+| `/health` | público | surface humana de health operacional |
+| `/api/health/live` | público | liveness canônico sem dependência do banco |
+| `/api/health/ready` | público | readiness canônico com verificação PostgreSQL |
 | `/api/auth/[...nextauth]` | API | Auth.js |
 | `/api/financial-profile` | autenticado | perfil financeiro server-side/migração |
 
@@ -314,13 +338,15 @@ Leia [`docs/UX-UI-REDESIGN-ROADMAP.md`](docs/UX-UI-REDESIGN-ROADMAP.md).
 - React `19.2.7`;
 - TypeScript `6.0.3` strict;
 - Auth.js v5 / `next-auth@5.0.0-beta.32`;
-- PostgreSQL `18.6-alpine`;
+- PostgreSQL `18.6-alpine` no baseline local/CI;
+- Neon PostgreSQL 18 na produção pessoal;
 - Drizzle ORM + `node-postgres`;
 - ESLint `9.39.5`;
 - Prettier `3.9.6`;
 - Vitest `4.1.11`;
 - Docker Compose;
-- GitHub Actions.
+- GitHub Actions;
+- Vercel para a aplicação em produção pessoal.
 
 ## Desenvolvimento local
 
@@ -383,6 +409,8 @@ pnpm check
 ```
 
 Para equivalência mais próxima do CI, valide também o banco/migrations antes de `pnpm check`.
+
+Operação do ambiente pessoal/privado, incluindo `prod:migrate`, `prod:verify` e regras de deploy, fica em `docs/PRODUCTION.md` e não deve ser confundida com o fluxo local de desenvolvimento.
 
 ## Quality gate e CI
 
@@ -451,6 +479,7 @@ Principais entradas:
 - [Contrato para agentes de IA](AGENTS.md)
 - [Arquitetura](docs/ARCHITECTURE.md)
 - [Desenvolvimento](docs/DEVELOPMENT.md)
+- [Produção](docs/PRODUCTION.md)
 - [Segurança](docs/SECURITY.md)
 - [Decisões](docs/DECISIONS.md)
 - [ADRs](docs/adr)
