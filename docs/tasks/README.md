@@ -42,6 +42,8 @@ Regras:
 
 A reconciliação do PR #88 preservou o `DONE.md` detalhado anterior em `archive/DONE-through-2026-08-27.md` e atualizou a visão resumida até R5.
 
+A reconciliação de 2026-09-01 registra também #97/#99 e PRs #98/#100 como marcos concluídos de produção pessoal/privada, mantendo #80 como única prioridade em `NEXT.md` e #50 como gate separado de produto público.
+
 ## Estados conceituais
 
 ```text
