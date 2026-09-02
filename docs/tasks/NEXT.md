@@ -37,7 +37,7 @@ Validar o produto redesenhado como um único sistema em acessibilidade, responsi
 
 O R9 segue sendo executado em verticais pequenas e verificáveis enquanto o browser QA remoto permanece indisponível:
 
-- o audit estático do AppShell identificou que a brand navegável podia herdar somente a altura visual do glyph (38,4px no desktop e 33,6px no header mobile estreito), abaixo do contrato ergonômico canônico de 44px;
+- PR #130 — audit estático do AppShell identificou que a brand navegável podia herdar somente a altura visual do glyph (38,4px no desktop e 33,6px no header mobile estreito), abaixo do contrato ergonômico canônico de 44px;
 - a brand passou a preservar `--touch-target-min` sem aumentar o glyph nem alterar a hierarquia visual do header/sidebar;
 - o teste do AppShell cobre explicitamente a área mínima da brand junto dos botões Menu/Fechar já endurecidos pelo R9;
 - o contrato foi reconciliado em `docs/design/APP-SHELL.md`;
