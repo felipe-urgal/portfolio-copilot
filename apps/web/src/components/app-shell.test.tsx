@@ -17,6 +17,9 @@ const NAVIGATION_SOURCE = readFileSync(
   new URL("./app-shell-navigation.tsx", import.meta.url),
   "utf8",
 );
+const MOBILE_MENU_BUTTON = /variant="secondary"\s+size="md"\s+aria-haspopup="dialog"/;
+const DRAWER_CLOSE_BUTTON =
+  /variant="ghost"\s+size="md"\s+onClick=\{\(\) => closeDrawer\(true\)\}/;
 
 function renderShell(activeRoute: "/dashboard" | "/portfolio" | "/onboarding" = "/dashboard") {
   return renderToStaticMarkup(
@@ -81,9 +84,7 @@ describe("AppShell", () => {
   });
 
   it("keeps mobile navigation controls on the canonical 44px touch-target size", () => {
-    expect(NAVIGATION_SOURCE).toMatch(/variant="secondary"\s+size="md"\s+aria-haspopup="dialog"/);
-    expect(NAVIGATION_SOURCE).toMatch(
-      /variant="ghost"\s+size="md"\s+onClick=\{\(\) => closeDrawer\(true\)\}/,
-    );
+    expect(NAVIGATION_SOURCE).toMatch(MOBILE_MENU_BUTTON);
+    expect(NAVIGATION_SOURCE).toMatch(DRAWER_CLOSE_BUTTON);
   });
 });
