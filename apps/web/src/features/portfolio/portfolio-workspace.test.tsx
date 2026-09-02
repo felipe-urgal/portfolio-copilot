@@ -102,7 +102,7 @@ describe("PortfolioWorkspace", () => {
     expect(creationHtml).toContain('id="portfolio-form-title" tabindex="-1"');
     expect(PORTFOLIO_SOURCE).toContain("pendingFocusRef.current = task;");
     expect(PORTFOLIO_SOURCE).toContain("taskButtonRefs.current[target]?.focus()");
-    expect(PORTFOLIO_SOURCE).toContain('onClick={() => activateTask(nextAction.task)}');
+    expect(PORTFOLIO_SOURCE).toContain("onClick={() => activateTask(nextAction.task)}");
     expect(PORTFOLIO_SOURCE).toContain('onClick={() => activateTask("transactions")}');
     expect(PORTFOLIO_SOURCE).toContain('pendingFocusRef.current = "overview";');
     expect(PORTFOLIO_SOURCE).toContain('pendingFocusRef.current = "creation";');
