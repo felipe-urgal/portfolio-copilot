@@ -4,7 +4,7 @@
 
 **INICIATIVA ATIVA — #69**
 
-Estado reconciliado em 2026-09-02. A sequência UX/UI permanece a definida após o PR #92:
+Estado reconciliado em 2026-09-02:
 
 - R0 #72 — concluído;
 - R1 #73 — concluído;
@@ -14,11 +14,11 @@ Estado reconciliado em 2026-09-02. A sequência UX/UI permanece a definida após
 - R5 #77 — concluído;
 - R6 #78 — concluído;
 - R7 #79 — concluído / PR #92;
-- **R8 #80 — estados/componentes transversais — em andamento**;
-- R9 #81 — accessibility/responsive/fidelity QA;
+- R8 #80 — concluído / PRs #95, #105–#110;
+- **R9 #81 — accessibility/responsive/fidelity QA — próxima fase**;
 - R10 — gate final e fechamento da #69.
 
-Em 31/08/2026, #97/#99 e PRs #98/#100 prepararam e ativaram a produção pessoal/privada Vercel + Neon. Esse trabalho operacional está concluído e não altera a sequência R8 → R9 → R10.
+Em 31/08/2026, #97/#99 e PRs #98/#100 prepararam e ativaram a produção pessoal/privada Vercel + Neon. Esse trabalho operacional está concluído e não altera a sequência R9 → R10.
 
 O objetivo não é aplicar um tema sobre o frontend antigo. É migrar o produto para uma arquitetura visual única, preservando domínio, autenticação, segurança, persistência e honestidade dos dados.
 
@@ -105,7 +105,7 @@ Implementado:
 - active/focus states;
 - focus trap/escape/return focus;
 - reduced motion;
-- apenas `displayName` atravessa a ilha client da navegação;
+- apenas `displayName` atravessa a ilha client;
 - `ProductShell` legado removido.
 
 ## R4 — Auth e sessão — CONCLUÍDO — #76
@@ -181,37 +181,32 @@ Implementado:
 
 Gate: tarefas financeiras estão separadas e escaneáveis, fontes de verdade permanecem determinísticas e detalhes técnicos não dominam a primeira hierarquia.
 
-## R8 — Componentes e estados transversais — EM ANDAMENTO — #80
+## R8 — Componentes e estados transversais — CONCLUÍDO — #80
 
-Consolidar o que ainda restar fora das surfaces principais sem reabrir a arquitetura fechada de Dashboard/Carteira salvo finding transversal concreto.
+O R8 consolidou as ilhas transversais reais sem criar surfaces para capabilities ainda não integradas ao produto.
 
-Concluído em 02/09/2026:
+Entregas em 02/09/2026:
 
 - PR #95 — primeira vertical transversal e primitive canônica `Disclosure`;
 - PR #105 — account migration states normalizados sobre feedback/disclosure canônicos;
 - PR #106 — `/health` humana migrada para R2 e styling global legado correspondente removido; CI pós-merge #554 verde;
 - PR #107 — recommendation/reason codes consolidados com presentation reutilizável + `Disclosure`; merge `e366bb5d43d4c293d6c6de47ca42a676adb1721a`, CI pós-merge #560 verde;
 - PR #108 — auth migrada para `Disclosure` canônico sem `AuthDisclosure` paralelo; merge `6c22aa323063a6c8dbbef80a4f8eaae1f65527a8`, CI pós-merge #563 verde;
-- PR #109 — disclosure de persistência do onboarding migrado para `Disclosure` canônico; merge `c26bd08c94cc25302e36b0b21488ae156d69e6c4`, CI pós-merge #567 verde.
+- PR #109 — disclosure de persistência do onboarding migrado para `Disclosure` canônico; merge `c26bd08c94cc25302e36b0b21488ae156d69e6c4`, CI pós-merge #567 verde;
+- PR #110 — AssetId, TransactionId e identidade do Portfolio migrados para `Disclosure` canônico; merge `81c20a309849aba2964deb2aa9e6ef8ae3bc640e`, CI pós-merge #574 verde.
 
-Vertical atual — PR #110:
+Audit final:
 
-- migrar disclosures de AssetId, TransactionId e identidade do Portfolio para `Disclosure` canônico;
-- preservar UUIDs auditáveis em segunda ordem e fechados por padrão;
-- remover CSS local que duplicava comportamento/touch target de `summary`;
-- manter apenas anatomy e apresentação técnica específica da Carteira;
-- regressão de source/CSS impede recriar `<details>` locais;
-- Portfolio, Assets, Transaction Ledger, posições e aporte permanecem semanticamente inalterados.
+- `FinancialProfileSessionSummary`, usado em `/portfolio`, já consome primitives canônicas para disclosure/status/empty/actions;
+- account migration mantém conflict explícito com feedback canônico;
+- recommendation reason codes continuam auditáveis e subordinados à explicação humana;
+- auth, onboarding e Carteira não mantêm implementations locais conhecidas de `<details>/<summary>` para progressive disclosure;
+- loading/empty/error/success presentes nas surfaces atuais usam os contratos canônicos aplicáveis;
+- provenance/stale/missing/conflict avançados permanecem explícitos nos packages de Domain/Market Data/Investment Engine, mas não têm surface consumidora atual no `apps/web`; o R8 não inventou UI ou dados para representar capabilities ausentes.
 
-Depois do PR #110, o audit do R8 deve:
+Gate: nenhuma ilha transversal concreta conhecida permanece aberta nas surfaces atuais; CI pós-merge #574 verde e R9 pode executar o QA visual/a11y/responsive real.
 
-- verificar provenance/stale/missing/conflict somente em surfaces com consumidor real;
-- verificar financial profile/session summary, forms/transaction patterns, alerts/feedback, empty/error/recovery/loading/skeleton e permission/auth transitions apenas quando houver duplicidade transversal concreta;
-- não iniciar R9 antes do quality gate, auto-review e reconciliação final do R8.
-
-Nenhuma ilha visual relevante do sistema anterior deve permanecer. Dashboard/Carteira só devem ser reabertos por finding transversal concreto.
-
-## R9 — Accessibility, responsive e visual fidelity QA — #81
+## R9 — Accessibility, responsive e visual fidelity QA — PRÓXIMA FASE — #81
 
 Validar por browser e teclado:
 
@@ -276,8 +271,8 @@ Após R9:
   -> #77 R5 onboarding ✓
   -> #78 R6 dashboard ✓
   -> #79 R7 portfolio ✓
-  -> #80 R8 estados/componentes (em andamento)
-  -> #81 R9 a11y/responsive/fidelity
+  -> #80 R8 estados/componentes ✓
+  -> #81 R9 a11y/responsive/fidelity (próxima)
   -> R10 / fechamento #69
   -> UI da #45 sobre a fundação final
 ```
