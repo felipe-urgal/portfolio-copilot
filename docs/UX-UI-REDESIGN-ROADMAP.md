@@ -191,21 +191,23 @@ Concluído em 02/09/2026:
 - PR #105 — account migration states normalizados sobre feedback/disclosure canônicos;
 - PR #106 — `/health` humana migrada para R2 e styling global legado correspondente removido; CI pós-merge #554 verde;
 - PR #107 — recommendation/reason codes consolidados com presentation reutilizável + `Disclosure`; merge `e366bb5d43d4c293d6c6de47ca42a676adb1721a`, CI pós-merge #560 verde;
-- PR #108 — auth migrada para `Disclosure` canônico sem `AuthDisclosure` paralelo; merge `6c22aa323063a6c8dbbef80a4f8eaae1f65527a8`, CI pós-merge #563 verde.
+- PR #108 — auth migrada para `Disclosure` canônico sem `AuthDisclosure` paralelo; merge `6c22aa323063a6c8dbbef80a4f8eaae1f65527a8`, CI pós-merge #563 verde;
+- PR #109 — disclosure de persistência do onboarding migrado para `Disclosure` canônico; merge `c26bd08c94cc25302e36b0b21488ae156d69e6c4`, CI pós-merge #567 verde.
 
-Vertical atual — PR #109:
+Vertical atual — PR #110:
 
-- migrar “Como este perfil é salvo?” para `Disclosure` canônico;
-- remover CSS local que duplicava summary, hover, foco e touch target;
-- preservar opt-in, copy, estado fechado por padrão e ausência de sincronização automática;
-- regressão de source/CSS impede recriar o disclosure local no onboarding.
+- migrar disclosures de AssetId, TransactionId e identidade do Portfolio para `Disclosure` canônico;
+- preservar UUIDs auditáveis em segunda ordem e fechados por padrão;
+- remover CSS local que duplicava comportamento/touch target de `summary`;
+- manter apenas anatomy e apresentação técnica específica da Carteira;
+- regressão de source/CSS impede recriar `<details>` locais;
+- Portfolio, Assets, Transaction Ledger, posições e aporte permanecem semanticamente inalterados.
 
-Ainda pendente no audit do R8:
+Depois do PR #110, o audit do R8 deve:
 
-- disclosures locais de AssetId, TransactionId e identidade técnica da Carteira;
-- provenance/stale/missing/conflict com consumidor real;
-- financial profile/session summary remanescente em outras surfaces, se houver finding concreto;
-- forms/transaction patterns, alerts/feedback, empty/error/recovery/loading/skeleton e permission/auth transitions restantes apenas quando houver duplicidade transversal real.
+- verificar provenance/stale/missing/conflict somente em surfaces com consumidor real;
+- verificar financial profile/session summary, forms/transaction patterns, alerts/feedback, empty/error/recovery/loading/skeleton e permission/auth transitions apenas quando houver duplicidade transversal concreta;
+- não iniciar R9 antes do quality gate, auto-review e reconciliação final do R8.
 
 Nenhuma ilha visual relevante do sistema anterior deve permanecer. Dashboard/Carteira só devem ser reabertos por finding transversal concreto.
 
