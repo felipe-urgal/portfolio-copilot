@@ -210,7 +210,7 @@ export function FinancialProfileAccountMigration({
               <div className={styles.alertContent}>
                 <p>O perfil local continua intacto e nenhum dado financeiro foi enviado.</p>
                 <div className={styles.actions}>
-                  <Button variant="secondary" size="sm" onClick={() => void loadAccountProfile()}>
+                  <Button variant="secondary" onClick={() => void loadAccountProfile()}>
                     Tentar novamente
                   </Button>
                 </div>
@@ -224,14 +224,10 @@ export function FinancialProfileAccountMigration({
                   somente com a cópia local.
                 </p>
                 <div className={styles.actions}>
-                  <Button
-                    size="sm"
-                    loading={isSaving}
-                    onClick={() => void migrateLocalProfile(false)}
-                  >
+                  <Button loading={isSaving} onClick={() => void migrateLocalProfile(false)}>
                     Salvar perfil local na conta
                   </Button>
-                  <Button variant="secondary" size="sm" disabled={isSaving} onClick={keepLocalOnly}>
+                  <Button variant="secondary" disabled={isSaving} onClick={keepLocalOnly}>
                     Manter somente local
                   </Button>
                 </div>
@@ -268,10 +264,10 @@ export function FinancialProfileAccountMigration({
                 </ul>
               </Disclosure>
               <div className={styles.actions}>
-                <Button size="sm" loading={isSaving} onClick={() => void migrateLocalProfile(true)}>
+                <Button loading={isSaving} onClick={() => void migrateLocalProfile(true)}>
                   Substituir perfil da conta pelo local
                 </Button>
-                <Button variant="secondary" size="sm" disabled={isSaving} onClick={keepLocalOnly}>
+                <Button variant="secondary" disabled={isSaving} onClick={keepLocalOnly}>
                   Manter somente local
                 </Button>
               </div>
@@ -293,7 +289,7 @@ export function FinancialProfileAccountMigration({
               encerra sua sessão.
             </p>
           </div>
-          <Button variant="danger" size="sm" disabled={isSaving} onClick={discardLocalProfile}>
+          <Button variant="danger" disabled={isSaving} onClick={discardLocalProfile}>
             Remover cópia local
           </Button>
         </div>
