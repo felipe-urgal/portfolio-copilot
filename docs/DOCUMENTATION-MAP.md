@@ -2,7 +2,7 @@
 
 ## Status
 
-**Documento vivo.** Última reconciliação geral: **2026-09-01**, após o PR #100. A última reconciliação específica da iniciativa UX/UI permanece em **2026-08-30**, no PR #92.
+**Documento vivo.** Última reconciliação geral: **2026-09-02**, após o fechamento formal do R8 no PR #111 e o hardening operacional do PR #112. A última reconciliação específica da direção visual inicial permanece em **2026-08-30**, no PR #92; a iniciativa agora está no R9/#81.
 
 Este mapa define qual documento responde por cada tipo de informação e como tratar divergências. O objetivo é impedir que roadmap, backlog, README, ADRs e documentos de descoberta virem fontes concorrentes de verdade.
 
@@ -101,7 +101,7 @@ Regras:
 
 Issues do GitHub são o backlog executável detalhado. `BACKLOG.md` é uma visão macro e não deve duplicar centenas de checklists de issues.
 
-## Estado da iniciativa UX/UI em 2026-09-01
+## Estado da iniciativa UX/UI em 2026-09-02
 
 - R0 #72 — concluído;
 - R1 #73 — concluído;
@@ -111,16 +111,17 @@ Issues do GitHub são o backlog executável detalhado. `BACKLOG.md` é uma visã
 - R5 #77 — concluído via PR #88;
 - R6 #78 — concluído via PR #91;
 - R7 #79 — concluído via PR #92;
-- R8 #80 — **próxima atividade canônica**;
-- R9 #81 — pendente;
-- R10 — gate final e fechamento da #69.
+- R8 #80 — concluído via PRs #95, #105–#110 e gate documental final PR #111; CI pós-merge #577 verde;
+- R9 #81 — **prioridade canônica atual**;
+- R10 — pendente após o gate do R9 e antes do fechamento da #69.
 
-O trabalho de produção pessoal realizado em 31/08/2026 não altera a sequência R8 → R9 → R10.
+O trabalho de produção pessoal realizado em 31/08/2026 não altera a sequência R9 → R10.
 
-## Estado operacional em 2026-09-01
+## Estado operacional em 2026-09-02
 
 - #97 / PR #98 — foundation de produção pessoal/privada em Vercel + Neon concluída;
 - #99 / PR #100 — Production Contract ativado após validação real de migration, health/readiness, autenticação e recuperação;
+- #112 — readiness bounded do banco isolado de check concluído sem alterar o contrato de produção;
 - `.dev-dashboard/production.json` está habilitado com `strategy=git-managed`, provider `vercel` e branch `main`;
 - a produção validada é single-user/controlada por allowlist e **não** libera produto público, multi-tenant ou monetização;
 - #50 continua sendo o gate canônico para exposição pública, LGPD/tenancy, observabilidade e revisões independentes aplicáveis.
@@ -160,4 +161,12 @@ A foundation de produção pessoal adicionou a topologia Vercel + Neon, allowlis
 
 ### PR #100
 
-A ativação do Production Contract registrou evidência do ambiente real, `production.enabled=true`, estratégia `git-managed`, readiness canônico e recuperação testada em branch isolada do Neon. A prioridade operacional voltou a permanecer em #80/R8; #50 continua sendo a fronteira para produto público.
+A ativação do Production Contract registrou evidência do ambiente real, `production.enabled=true`, estratégia `git-managed`, readiness canônico e recuperação testada em branch isolada do Neon. A prioridade operacional continuou independente do marco de produção; #50 permaneceu como fronteira para produto público.
+
+### PR #111
+
+O gate final do R8 reconciliou os PRs transversais #95 e #105–#110, confirmou que nenhuma surface real exigia nova UI fictícia para provenance/stale/missing/conflict e promoveu #81/R9 como prioridade canônica. O merge `8f842a537a44913cba55720d4c10c328ed9ee27b` teve CI pós-merge #577 verde.
+
+### PR #112
+
+O hardening de `prod:check` passou a aguardar de forma bounded o PostgreSQL isolado de check antes das migrations, mantendo erros sanitizados e a separação entre check e produção descrita em `docs/PRODUCTION.md`.
