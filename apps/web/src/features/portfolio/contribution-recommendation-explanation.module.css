@@ -1,23 +1,11 @@
 .section {
   padding-top: var(--space-4);
   border-top: 1px solid var(--color-border-subtle);
-  color: var(--color-text-secondary);
-}
-
-.section > summary {
-  min-height: var(--touch-target-min);
-  display: inline-flex;
-  align-items: center;
-  cursor: pointer;
-  color: var(--color-text-primary);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-semibold);
 }
 
 .body {
   display: grid;
   gap: var(--space-5);
-  padding-top: var(--space-4);
 }
 
 .heading {
@@ -38,8 +26,6 @@
 .heading p,
 .reconciliation,
 .statusDescription,
-.reason p,
-.noReason,
 .note {
   margin: var(--space-2) 0 0;
   color: var(--color-text-secondary);
@@ -55,8 +41,6 @@
 
 .reconciliation,
 .statusDescription,
-.reason p,
-.noReason,
 .note {
   margin-top: 0;
 }
@@ -132,41 +116,9 @@
   font-weight: var(--font-weight-semibold);
 }
 
-.reasons {
-  display: grid;
-  gap: var(--space-3);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.reason {
-  display: grid;
-  grid-template-columns: minmax(9rem, 0.35fr) minmax(0, 1fr);
-  gap: var(--space-4);
-  align-items: start;
-}
-
-.reasonMeta {
-  display: grid;
-  gap: var(--space-1);
-}
-
-.reasonMeta strong {
-  color: var(--color-text-primary);
-  font-size: var(--font-size-xs);
-}
-
-.reasonMeta code {
-  overflow-wrap: anywhere;
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-xs);
-}
-
 @media (max-width: 760px) {
   .heading,
-  .decisionHeader,
-  .reason {
+  .decisionHeader {
     display: grid;
   }
 
