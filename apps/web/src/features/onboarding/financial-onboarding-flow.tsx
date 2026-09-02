@@ -24,6 +24,7 @@ import {
   Button,
   ChoiceCard,
   Cluster,
+  Disclosure,
   EmptyState,
   Field,
   FieldError,
@@ -738,14 +739,13 @@ export function FinancialOnboardingFlow() {
         </Stack>
       </Surface>
 
-      <details className={styles.persistenceDisclosure}>
-        <summary>Como este perfil é salvo?</summary>
+      <Disclosure className={styles.persistenceDisclosure} summary="Como este perfil é salvo?">
         <p>
           Por padrão, o perfil fica somente nesta sessão. Na revisão, você decide se quer salvá-lo
           neste dispositivo para restaurá-lo após recarregar. Nada é sincronizado automaticamente
           com sua conta ou outro dispositivo.
         </p>
-      </details>
+      </Disclosure>
     </div>
   );
 }
