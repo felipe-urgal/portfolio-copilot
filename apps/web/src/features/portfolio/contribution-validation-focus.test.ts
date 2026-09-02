@@ -24,12 +24,10 @@ describe("contribution validation focus", () => {
   it("keeps invalid focus scoped to the submitted contribution form", () => {
     expect(HELPER_SOURCE).toContain("form.querySelector<HTMLElement>");
     expect(HELPER_SOURCE).toContain('[aria-invalid="true"], [data-invalid="true"]');
-    expect(HELPER_SOURCE).toContain(
-      "invalid.querySelector<HTMLElement>(FOCUSABLE_SELECTOR)",
+    expect(HELPER_SOURCE).toContain("invalid.querySelector<HTMLElement>(FOCUSABLE_SELECTOR)");
+    expect(BASELINE_SOURCE.match(/focusFirstInvalidField\(event\.currentTarget\)/gu)).toHaveLength(
+      2,
     );
-    expect(
-      BASELINE_SOURCE.match(/focusFirstInvalidField\(event\.currentTarget\)/gu),
-    ).toHaveLength(2);
     expect(CONCENTRATION_SOURCE).toContain("focusFirstInvalidField(event.currentTarget)");
     expect(EXECUTION_SOURCE).toContain("focusFirstInvalidField(event.currentTarget)");
     expect(COST_SOURCE).toContain("focusFirstInvalidField(event.currentTarget)");
