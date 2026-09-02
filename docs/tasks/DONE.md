@@ -318,13 +318,27 @@ Este marco é considerado concluído com o merge do PR #92.
 - deploy local permanece bloqueado; promoção ocorre pela integração Git/provider;
 - produção continua pessoal/single-user e não abre produto público, multi-tenancy ou monetização.
 
-## Estado em 2026-09-01
+## 2026-09-02 — UX/UI R8 componentes e estados transversais — #80 / PRs #95, #105–#110
 
-Próxima atividade canônica: **#80 — R8 estados e componentes transversais**.
+- `Disclosure` consolidado como primitive canônica de progressive disclosure;
+- account migration passou a feedback semântico canônico mantendo opt-in/conflict safety;
+- `/health` humana migrou para primitives/tokens R2 e removeu styling global legado correspondente;
+- reason codes da recomendação ganharam presentation reutilizável sem mover semântica financeira para o design system;
+- auth e onboarding removeram implementations locais de `<details>/<summary>`;
+- AssetId, TransactionId e identidade do Portfolio permanecem auditáveis em segunda ordem via `Disclosure` canônico;
+- `FinancialProfileSessionSummary` foi auditado como consumidor real já canônico;
+- loading/empty/error/success/conflict das surfaces atuais usam contratos consistentes;
+- provenance/stale/missing/conflict avançados permanecem nos packages de domínio/dados e não ganharam UI fictícia sem consumidor real;
+- PR #110 mergeado em `81c20a309849aba2964deb2aa9e6ef8ae3bc640e`, com CI pós-merge #574 verde;
+- nenhum finding transversal concreto permaneceu aberto no audit final do R8.
+
+## Estado em 2026-09-02
+
+Próxima atividade canônica: **#81 — R9 acessibilidade, responsividade e visual fidelity QA**.
 
 Backlog aberto principal:
 
-- #80–#81 e R10 para concluir #69;
+- #81 e R10 para concluir #69;
 - #45/#46 para Copiloto e avaliação de IA;
 - #47 para convergência ponta a ponta do MVP;
 - #48 simulação/backtesting;
