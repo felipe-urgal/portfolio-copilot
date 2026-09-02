@@ -83,6 +83,12 @@ function ErrorMessage({ id, message }: Readonly<{ id: string; message: string | 
   return <FieldError id={id}>{message}</FieldError>;
 }
 
+function focusFirstInvalidField(form: HTMLFormElement): void {
+  requestAnimationFrame(() => {
+    form.querySelector<HTMLElement>('[aria-invalid="true"], [data-invalid="true"]')?.focus();
+  });
+}
+
 function transactionLabel(type: string): string {
   if (type === "CASH_IN") return "Entrada de caixa";
   if (type === "CASH_OUT") return "Saída de caixa";
@@ -169,6 +175,7 @@ export function PortfolioWorkspace({
     const result = createPortfolioSnapshot(draft, () => globalThis.crypto.randomUUID());
     if (!result.ok) {
       setErrors(result.errors);
+      focusFirstInvalidField(event.currentTarget);
       return;
     }
     setSnapshot(result.snapshot);
@@ -183,6 +190,7 @@ export function PortfolioWorkspace({
     const result = createLocalAssetSnapshot(assetDraft, () => globalThis.crypto.randomUUID());
     if (!result.ok) {
       setAssetErrors(result.errors);
+      focusFirstInvalidField(event.currentTarget);
       return;
     }
     setAssets((current) => [...current, result.snapshot]);
@@ -204,6 +212,7 @@ export function PortfolioWorkspace({
     );
     if (!result.ok) {
       setCashErrors(result.errors);
+      focusFirstInvalidField(event.currentTarget);
       return;
     }
     setTransactions((current) => [...current, result.snapshot]);
@@ -223,6 +232,7 @@ export function PortfolioWorkspace({
     );
     if (!result.ok) {
       setTradeErrors(result.errors);
+      focusFirstInvalidField(event.currentTarget);
       return;
     }
     setTransactions((current) => [...current, result.snapshot]);
