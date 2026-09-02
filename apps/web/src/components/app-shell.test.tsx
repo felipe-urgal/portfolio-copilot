@@ -19,8 +19,7 @@ const NAVIGATION_SOURCE = readFileSync(
 );
 const MOBILE_MENU_BUTTON = /variant="secondary"\s+size="md"\s+aria-haspopup="dialog"/;
 const DRAWER_CLOSE_BUTTON = /variant="ghost"\s+size="md"\s+onClick=\{\(\) => closeDrawer\(true\)\}/;
-const BRAND_TOUCH_TARGET =
-  /\.brand\s*\{[\s\S]*?min-height:\s*var\(--touch-target-min\);/;
+const BRAND_TOUCH_TARGET = /\.brand\s*\{[\s\S]*?min-height:\s*var\(--touch-target-min\);/;
 
 function renderShell(activeRoute: "/dashboard" | "/portfolio" | "/onboarding" = "/dashboard") {
   return renderToStaticMarkup(
