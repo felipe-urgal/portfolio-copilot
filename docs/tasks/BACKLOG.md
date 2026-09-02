@@ -6,9 +6,8 @@ A prioridade corrente está sempre em `NEXT.md`. Este arquivo não substitui `do
 
 ## UX/UI — iniciativa #69
 
-A fundação visual R0–R7 está concluída após o merge do PR #92. Permanecem:
+A fundação visual R0–R8 está concluída após o merge do PR #110 e o gate pós-merge #574. Permanecem:
 
-- #80 — R8: componentes/estados transversais restantes;
 - #81 — R9: acessibilidade, responsividade e visual fidelity QA;
 - R10 — gate final e fechamento da #69.
 

@@ -1,103 +1,97 @@
-# Próxima Atividade — UX/UI R8: estados e componentes transversais do produto
+# Próxima Atividade — UX/UI R9: acessibilidade, responsividade e visual fidelity QA
 
-**Status:** IN PROGRESS — prioridade canônica atual em 2026-09-02
+**Status:** READY — próxima prioridade canônica em 2026-09-02
 
 ## Issue canônica
 
-- #80 — `UX/UI R8: estados e componentes transversais do produto`
+- #81 — `UX/UI R9: acessibilidade, responsividade e visual fidelity QA`
 - iniciativa guarda-chuva: #69
 
-## Fundação concluída
+## Dependência concluída — R8 / #80
 
-O R8 parte das superfícies principais já migradas:
+O R8 consolidou os componentes/estados transversais reais do frontend atual sem inventar consumidores para capabilities ainda ausentes das surfaces:
 
-- #72 — R0 audit do frontend anterior;
-- #73 — R1 arquitetura da informação + direção do Protótipo 3;
-- #74 — R2 design tokens e primitives canônicas;
-- #75 — R3 AppShell/sidebar/navegação responsiva;
-- #76 — R4 focused auth/session;
-- #77 / PR #88 — R5 onboarding guiado;
-- #78 / PR #91 — R6 Dashboard orientado a contexto, panorama e próxima ação;
-- #79 / PR #92 — R7 Carteira organizada por tarefas;
-- `docs/design/R1-ASSISTANT-FIRST-APP-SPEC.md`;
-- `docs/design/DESIGN-SYSTEM.md`;
-- `docs/design/APP-SHELL.md`;
-- `docs/design/AUTH-SESSION.md`;
-- `docs/design/ONBOARDING.md`;
-- `docs/design/DASHBOARD.md`;
-- `docs/design/PORTFOLIO.md`.
+- PR #95 — primitive canônica `Disclosure` e início da consolidação transversal;
+- PR #105 — account migration states sobre `Alert`/`Disclosure` canônicos;
+- PR #106 — `/health` sobre primitives/tokens R2;
+- PR #107 — `ReasonCodeList` reutilizável e disclosures da recomendação consolidados;
+- PR #108 — auth sem `AuthDisclosure` paralelo;
+- PR #109 — persistência do onboarding sobre `Disclosure` canônico;
+- PR #110 — AssetId, TransactionId e identidade do Portfolio sobre `Disclosure` canônico; merge `81c20a309849aba2964deb2aa9e6ef8ae3bc640e`;
+- CI pós-merge #574 — verde no `main` após o PR #110.
 
-## Reconciliação operacional
+Audit final do R8:
 
-Em 31/08/2026, #97 / PR #98 preparou a foundation de produção pessoal/privada em Vercel + Neon e #99 / PR #100 ativou o Production Contract após validação real do ambiente.
+- `FinancialProfileSessionSummary` possui consumidor real em `/portfolio` e já usa `Disclosure`, `Status`, `EmptyState`, `Surface` e actions canônicas;
+- loading/empty/error/success/conflict presentes nas surfaces atuais consomem os contratos R2/R8 aplicáveis;
+- provenance/stale/missing/conflict avançados existem em Domain/Market Data/Investment Engine, mas não possuem surface consumidora atual no `apps/web`; nenhuma UI fictícia foi criada apenas para satisfazer o checklist;
+- detalhes técnicos/reason codes permanecem auditáveis em segunda ordem;
+- não restou finding transversal concreto que justifique reabrir as surfaces antes do R9.
 
-Esse trabalho operacional está concluído e **não altera a sequência UX/UI**: #80 continua sendo a única atividade canônica. A produção ativa é single-user/controlada e não satisfaz o Regulatory Gate público da #50.
+## Objetivo do R9
 
-## Progresso do R8
-
-Entregas concluídas em 02/09/2026:
-
-- PR #95 — primeira vertical transversal, incluindo a primitive canônica `Disclosure` e início da consolidação de progressive disclosure;
-- PR #105 — `FinancialProfileAccountMigration` normalizada com `Alert`/`Disclosure`, feedback semântico tipado e regressões de markup; merge `329282739284effaf179913fbe4316e8bc466fe2`;
-- PR #106 — `/health` migrada para primitives/tokens R2, styling global legado correspondente removido e regressões adicionadas; merge `2a3af838d5b61d6891c1da9ffdf736745066b8d1`;
-- PR #107 — recommendation/reason codes consolidados com `ReasonCodeList` reutilizável e `Disclosure` canônico; merge `e366bb5d43d4c293d6c6de47ca42a676adb1721a`;
-- PR #108 — `AuthDisclosure` removido e auth migrada para `Disclosure` canônico; merge `6c22aa323063a6c8dbbef80a4f8eaae1f65527a8`;
-- PR #109 — disclosure de persistência do onboarding migrado para `Disclosure` canônico; merge `c26bd08c94cc25302e36b0b21488ae156d69e6c4`;
-- CI pós-merge #567 — verde no `main` após o PR #109.
-
-Vertical atual:
-
-- PR #110 — `refactor: consolidar disclosures técnicos da Carteira no R8`;
-- branch `feat/r8-portfolio-disclosures`;
-- migrar os disclosures locais de AssetId, TransactionId e identidade do Portfolio para a primitive canônica `Disclosure`;
-- preservar os IDs auditáveis em segunda ordem, sem expô-los como input ou hierarquia principal;
-- remover do CSS da Carteira apenas o comportamento duplicado do `summary`, mantendo anatomy e apresentação monoespaçada dos IDs;
-- adicionar regressão que impede o retorno de `<details>` locais;
-- não alterar Portfolio, Assets, Transaction Ledger, projeção de posições, aporte ou persistência.
-
-Depois desta vertical:
-
-- auditar provenance/stale/missing/conflict e estados transversais equivalentes somente onde houver consumidor real;
-- verificar se ainda resta alguma ilha concreta em profile/session summary, forms/transaction patterns, alerts/feedback, empty/error/recovery/loading/skeleton ou permission/auth transitions;
-- R9 só começa após o gate integral do R8.
-
-## Objetivo do R8
-
-Eliminar as últimas ilhas visuais antigas e consolidar estados equivalentes em contratos reutilizáveis, sem reabrir a arquitetura das superfícies já concluídas.
+Validar o produto redesenhado como um único sistema em acessibilidade, responsividade, browsers e fidelidade ao Protótipo 3/R1 antes do gate final R10.
 
 ## Escopo
 
-- profile/session summary remanescente fora da Carteira;
-- account migration surfaces remanescentes;
-- recommendation/reason-code presentation reutilizável;
-- provenance, stale, missing-data e conflict;
-- alerts/feedback;
-- empty states;
-- loading/skeleton;
-- error/recovery;
-- success/confirmation;
-- permission/auth transitions;
-- health/operational UI quando exposta ao usuário;
-- apresentação semântica de variações financeiras sem depender somente de cor;
-- progressive disclosure para detalhe técnico/auditável.
+### Accessibility
+
+- WCAG 2.2 AA nos fluxos e componentes atuais;
+- keyboard-only flows;
+- focus order e focus visibility;
+- landmarks, headings e semantics;
+- accessible names/descriptions;
+- contraste;
+- estados que não dependem somente de cor;
+- reduced motion;
+- screen-reader smoke test dos fluxos críticos.
+
+### Responsive
+
+- 320px;
+- mobile largo;
+- tablet;
+- laptop;
+- desktop largo;
+- overflow em forms/listas/conteúdo técnico;
+- sidebar/drawer/context rail;
+- touch targets e ergonomia.
+
+### Visual fidelity
+
+- screenshots dos fluxos críticos;
+- comparação com Protótipo 3 e contratos derivados do R1;
+- fidelity ledger para desvios materiais;
+- browser QA de auth, onboarding, dashboard e portfolio;
+- correção de regressões encontradas antes do fechamento.
+
+## Fluxos mínimos
+
+- sign-in / re-entry / sign-out;
+- onboarding completo;
+- dashboard com perfil configurado e estados ausentes honestos;
+- migração local → conta e conflict quando reproduzível com fixture/teste seguro;
+- carteira: criação, ativos, transações, posições, aporte e configuração;
+- loading/empty/error/success relevantes nas surfaces existentes.
 
 ## Regras
 
-- não criar nova família visual quando uma primitive canônica puder ser evoluída;
-- reason codes/provenance continuam auditáveis, mas não dominam a primeira hierarquia;
-- estados financeiros não podem ser inferidos por copy/cores fora dos contratos de domínio;
-- loading não pode parecer dado real;
-- não reabrir Dashboard/Carteira sem finding transversal concreto;
-- cumprir integralmente `AGENTS.md`, inclusive auto code review fullstack sênior.
+- não usar o R0 como substituto deste QA real do produto redesenhado;
+- nenhuma diferença material deve ser aceita silenciosamente: corrigir ou registrar justificativa no fidelity ledger;
+- não afrouxar acessibilidade para igualar pixels do protótipo;
+- não inventar dados/capabilities para preencher screenshots;
+- preservar domínio, auth, ownership, persistência e metodologia financeira;
+- cumprir integralmente `AGENTS.md` e `docs/DEVELOPMENT.md`.
 
 ## Gate
 
-R9 (#81) só começa quando:
+R10 só começa quando:
 
-- nenhuma família transversal relevante permanecer como ilha visual antiga;
-- loading/empty/error/success tiverem contratos consistentes;
-- stale/missing/conflict permanecerem distinguíveis e acessíveis;
-- desktop/mobile e teclado estiverem preservados;
+- nenhum blocker P0/P1 conhecido de accessibility/responsive/fidelity permanecer aberto;
+- desktop e mobile tiverem qualidade equivalente;
+- Protótipo 3 continuar reconhecível como direção do produto;
+- fluxos críticos tiverem browser QA e evidência suficiente;
+- fidelity ledger estiver reconciliado;
 - CI do head final estiver integralmente verde;
 - auto code review fullstack sênior estiver concluído sem finding aberto;
 - docs/issues estiverem reconciliados.
@@ -113,14 +107,15 @@ R9 (#81) só começa quando:
   -> #77 R5 onboarding ✓
   -> #78 R6 dashboard ✓
   -> #79 R7 portfolio ✓
-  -> #80 R8 estados/componentes (em andamento)
-  -> #81 R9 a11y/responsive/fidelity
+  -> #80 R8 estados/componentes ✓
+  -> #81 R9 a11y/responsive/fidelity (próxima)
   -> R10 / fechamento #69
 ```
 
 ## Referências canônicas
 
 - `AGENTS.md`;
+- `docs/DEVELOPMENT.md`;
 - `docs/DOCUMENTATION-MAP.md`;
 - `docs/design/PROTOTYPE-3-DIRECTION.md`;
 - `docs/design/R1-ASSISTANT-FIRST-APP-SPEC.md`;
@@ -131,7 +126,6 @@ R9 (#81) só começa quando:
 - `docs/design/DASHBOARD.md`;
 - `docs/design/PORTFOLIO.md`;
 - `docs/UX-UI-REDESIGN-ROADMAP.md`;
-- `docs/ROADMAP.md`;
-- `docs/PRODUCTION.md`.
+- `docs/ROADMAP.md`.
 
-A #45 continua sem UI funcional temporária durante a #69. A futura superfície do Copiloto deve nascer sobre os contratos finais e consumir dados estruturados reais.
+A #45 continua sem UI funcional durante a #69. O R9 valida somente capabilities reais já presentes no produto.
