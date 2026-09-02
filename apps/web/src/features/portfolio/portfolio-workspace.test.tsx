@@ -14,7 +14,7 @@ const PORTFOLIO_CSS = readFileSync(
   "utf8",
 );
 const TASK_NAV_BUTTON =
-  /PORTFOLIO_TASKS\.map\(\(task\) => \(\s*<Button\s+key=\{task\.id\}\s+size="md"/;
+  /PORTFOLIO_TASKS\.map\(\(task\) => \(\s*<Button\s+key=\{task\.id\}[\s\S]*?size="md"/;
 const SCOPED_VALIDATION_FOCUS = /focusFirstInvalidField\(event\.currentTarget\);/g;
 
 const SNAPSHOT = {
@@ -94,6 +94,19 @@ describe("PortfolioWorkspace", () => {
     expect(html).toContain("Detalhes técnicos e identidade");
     expect(html).toContain("Nada é persistido nesta versão");
     expect(PORTFOLIO_SOURCE).toMatch(TASK_NAV_BUTTON);
+  });
+
+  it("preserves focus when contextual actions replace the active portfolio region", () => {
+    const creationHtml = renderToStaticMarkup(<PortfolioWorkspace />);
+
+    expect(creationHtml).toContain('id="portfolio-form-title" tabindex="-1"');
+    expect(PORTFOLIO_SOURCE).toContain("pendingFocusRef.current = task;");
+    expect(PORTFOLIO_SOURCE).toContain("taskButtonRefs.current[target]?.focus()");
+    expect(PORTFOLIO_SOURCE).toContain('onClick={() => activateTask(nextAction.task)}');
+    expect(PORTFOLIO_SOURCE).toContain('onClick={() => activateTask("transactions")}');
+    expect(PORTFOLIO_SOURCE).toContain('pendingFocusRef.current = "overview";');
+    expect(PORTFOLIO_SOURCE).toContain('pendingFocusRef.current = "creation";');
+    expect(PORTFOLIO_SOURCE).toContain("portfolioFormTitleRef.current?.focus()");
   });
 
   it("scopes validation focus to the submitted portfolio form", () => {
