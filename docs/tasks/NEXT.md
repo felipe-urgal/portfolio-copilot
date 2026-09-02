@@ -33,6 +33,18 @@ Audit final do R8:
 
 Validar o produto redesenhado como um único sistema em acessibilidade, responsividade, browsers e fidelidade ao Protótipo 3/R1 antes do gate final R10.
 
+## Progresso incremental em 2026-09-02
+
+O R9 segue sendo executado em verticais pequenas e verificáveis enquanto o browser QA remoto permanece indisponível:
+
+- o audit estático do AppShell identificou que a brand navegável podia herdar somente a altura visual do glyph (38,4px no desktop e 33,6px no header mobile estreito), abaixo do contrato ergonômico canônico de 44px;
+- a brand passou a preservar `--touch-target-min` sem aumentar o glyph nem alterar a hierarquia visual do header/sidebar;
+- o teste do AppShell cobre explicitamente a área mínima da brand junto dos botões Menu/Fechar já endurecidos pelo R9;
+- o contrato foi reconciliado em `docs/design/APP-SHELL.md`;
+- nesta execução, a integração Vercel continuou retornando `403 Forbidden` ao listar deployments do projeto e também não conseguiu gerar acesso direto ao endpoint de produção; portanto screenshots, fidelity ledger, keyboard-only e screen-reader smoke continuam **não executados** e não devem ser tratados como evidência existente.
+
+A #81 permanece aberta até o gate completo de browser/fidelity/accessibility ser reproduzível e concluído.
+
 ## Escopo
 
 ### Accessibility
