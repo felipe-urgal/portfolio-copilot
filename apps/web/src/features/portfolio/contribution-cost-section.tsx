@@ -26,6 +26,7 @@ import {
 } from "./contribution-cost-form";
 import costStyles from "./contribution-cost-section.module.css";
 import { type ContributionExecutionSnapshot } from "./contribution-execution-form";
+import { focusFirstInvalidField } from "./focus-invalid-field";
 import { type LocalAssetSnapshot } from "./local-asset-form";
 import { type ContributionPolicySnapshot } from "./contribution-policy-form";
 import { ContributionRecommendationSection } from "./contribution-recommendation-section";
@@ -97,6 +98,7 @@ export function ContributionCostSection({
     if (!result.ok) {
       setErrors(result.errors);
       setCost(null);
+      focusFirstInvalidField(event.currentTarget);
       return;
     }
 
