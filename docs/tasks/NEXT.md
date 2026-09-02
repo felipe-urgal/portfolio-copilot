@@ -41,21 +41,21 @@ Entregas concluídas em 02/09/2026:
 - PR #105 — `FinancialProfileAccountMigration` normalizada com `Alert`/`Disclosure`, feedback semântico tipado e regressões de markup; merge `329282739284effaf179913fbe4316e8bc466fe2`;
 - PR #106 — `/health` migrada para primitives/tokens R2, styling global legado correspondente removido e regressões adicionadas; merge `2a3af838d5b61d6891c1da9ffdf736745066b8d1`;
 - PR #107 — recommendation/reason codes consolidados com `ReasonCodeList` reutilizável e `Disclosure` canônico; merge `e366bb5d43d4c293d6c6de47ca42a676adb1721a`;
-- CI pós-merge #560 — verde no `main` após o PR #107.
+- PR #108 — `AuthDisclosure` removido e auth migrada para `Disclosure` canônico; merge `6c22aa323063a6c8dbbef80a4f8eaae1f65527a8`;
+- CI pós-merge #563 — verde no `main` após o PR #108.
 
 Vertical atual:
 
-- branch `feat/r8-canonical-disclosures`;
-- remover a implementação local `AuthDisclosure` e usar diretamente a primitive canônica `Disclosure` em sign-in/sign-out;
-- remover do CSS de auth o comportamento duplicado de `summary`, foco e touch target, mantendo apenas anatomy/copy da feature;
-- preservar OAuth, re-entry, sign-out, sessão e contratos de privacidade sem alteração;
-- adicionar regressão que impede o retorno de `<details>` próprio na surface de auth.
+- branch `feat/r8-onboarding-disclosure`;
+- migrar o disclosure de persistência do onboarding de `<details>/<summary>` local para a primitive canônica `Disclosure`;
+- remover do CSS de onboarding apenas o comportamento duplicado de `summary`, hover, foco e touch target;
+- preservar integralmente o opt-in de persistência, a copy, o estado fechado por padrão e a ausência de sincronização automática;
+- adicionar regressão que impede o retorno do disclosure local.
 
-Findings já mapeados para as próximas fatias do mesmo audit:
+Finding seguinte já mapeado:
 
-- onboarding ainda possui disclosure de persistência local;
 - Carteira ainda possui disclosures locais para AssetId, TransactionId e identidade técnica;
-- depois dessas duplicidades concretas, auditar provenance/stale/missing/conflict e estados transversais equivalentes com consumidor real.
+- depois dessa duplicidade concreta, auditar provenance/stale/missing/conflict e estados transversais equivalentes com consumidor real.
 
 ## Objetivo do R8
 
