@@ -65,7 +65,7 @@ describe("FinancialOnboardingFlow", () => {
     );
   });
 
-  it("moves persistence detail to progressive disclosure without changing its opt-in contract", () => {
+  it("keeps persistence detail in the canonical progressive disclosure without changing opt-in", () => {
     const html = renderFlow();
 
     expect(html).toContain("<details");
@@ -74,6 +74,9 @@ describe("FinancialOnboardingFlow", () => {
     expect(html).toContain("você decide se quer salvá-lo");
     expect(html).toContain("Nada é sincronizado automaticamente");
     expect(html).not.toContain("<details open");
+    expect(FLOW_SOURCE).toContain("<Disclosure");
+    expect(FLOW_SOURCE).not.toContain("<details className={styles.persistenceDisclosure}");
+    expect(FLOW_CSS).not.toContain(".persistenceDisclosure summary");
   });
 
   it("uses R2 primitives instead of local form, choice, feedback and button implementations", () => {
@@ -86,6 +89,7 @@ describe("FinancialOnboardingFlow", () => {
     expect(FLOW_SOURCE).toContain("PageHeader");
     expect(FLOW_SOURCE).toContain("Surface");
     expect(FLOW_SOURCE).toContain("LinkButton");
+    expect(FLOW_SOURCE).toContain("Disclosure");
     expect(FLOW_CSS).not.toContain(".primaryButton");
     expect(FLOW_CSS).not.toContain(".secondaryButton");
     expect(FLOW_CSS).not.toContain(".textInput");
@@ -97,7 +101,6 @@ describe("FinancialOnboardingFlow", () => {
   it("keeps feature styling on semantic tokens without a parallel palette", () => {
     expect(FLOW_CSS).toContain("var(--color-text-primary)");
     expect(FLOW_CSS).toContain("var(--color-border-subtle)");
-    expect(FLOW_CSS).toContain("var(--focus-ring-width)");
     expect(FLOW_CSS).toContain("var(--touch-target-min)");
     expect(FLOW_CSS).not.toMatch(/#[0-9a-f]{3,8}/i);
     expect(FLOW_CSS).not.toMatch(/rgba?\(/i);
