@@ -17,22 +17,15 @@ O **Protótipo 3 — Assistant-First Workspace** é a direção visual canônica
 - [x] R4 — focused auth e sessão — #76;
 - [x] R5 — onboarding guiado — #77 / PR #88;
 - [x] R6 — dashboard orientado a contexto/panorama/próxima ação — #78 / PR #91;
-- [x] R7 — carteira organizada por tarefas — #79 / PR #92.
+- [x] R7 — carteira organizada por tarefas — #79 / PR #92;
+- [x] R8 — componentes/estados transversais — #80 / PRs #95, #105–#110; CI pós-merge #574 verde.
 
 ### Em andamento
 
-- [ ] **R8 — componentes/estados transversais — #80**;
-  - PR #95: primeira vertical transversal / primitive `Disclosure`;
-  - PR #105: account migration states canônicos, mergeado em 02/09/2026;
-  - PR #106: health operacional sobre primitives/tokens R2 e remoção do styling global legado correspondente;
-  - PR #107: recommendation/reason codes consolidados; mergeado em 02/09/2026, CI pós-merge #560 verde;
-  - PR #108: auth migrada para `Disclosure` canônico; mergeado em 02/09/2026, CI pós-merge #563 verde;
-  - PR #109: onboarding/persistência migrado para `Disclosure` canônico; mergeado em 02/09/2026, CI pós-merge #567 verde;
-  - PR #110: vertical atual consolidando disclosures técnicos de Portfolio/Asset/Transaction IDs na Carteira.
+- [ ] **R9 — accessibility, responsive e visual fidelity QA — #81**.
 
 ### Depois
 
-- [ ] R9 — accessibility, responsive e visual fidelity QA — #81;
 - [ ] R10 — gate final e fechamento da #69.
 
 Referências canônicas:
@@ -85,7 +78,7 @@ Estado operacional atual:
 - snapshot/restore-check do baseline de produção validado em branch isolada do Neon;
 - deploy local continua bloqueado porque a promoção é gerenciada por Git/provider.
 
-Esse marco é **single-user/controlado** e não muda a prioridade #80/R8. Ele também não conclui a #50: produto público, multi-tenancy, monetização, LGPD operacional, observabilidade/SLO e revisões regulatórias/independentes continuam atrás do Regulatory Gate.
+Esse marco é **single-user/controlado** e não muda a prioridade #81/R9. Ele também não conclui a #50: produto público, multi-tenancy, monetização, LGPD operacional, observabilidade/SLO e revisões regulatórias/independentes continuam atrás do Regulatory Gate.
 
 Contrato operacional: `docs/PRODUCTION.md`. Decisão: ADR-0028.
 
@@ -123,12 +116,13 @@ Existem hoje:
 - Dashboard R6 sobre AppShell/tokens/primitives, sem métricas fictícias;
 - Carteira R7 por tarefas, preservando Portfolio/Assets/Ledger/positions;
 - fluxo local do aporte do mês e explicação determinística com progressive disclosure;
-- consolidação transversal R8 em andamento, com `Disclosure`, account migration, health operacional, recommendation/reason codes, auth e onboarding já migrados para contratos canônicos;
-- vertical atual consolidando detalhes técnicos de Portfolio/Asset/Transaction IDs na Carteira sem mudar contratos financeiros.
+- consolidação transversal R8 concluída: `Disclosure`, account migration, health operacional, recommendation/reason codes, auth, onboarding e detalhes técnicos da Carteira usam contratos canônicos;
+- audit final do R8 não criou UI para provenance/stale/missing/conflict dos packages porque essas capabilities ainda não possuem surface consumidora no `apps/web`;
+- R9 agora valida accessibility/responsive/fidelity sobre as capabilities reais existentes.
 
 Pendências:
 
-- #80 — concluir o audit de provenance/stale/missing/conflict e quaisquer duplicidades transversais reais restantes após o PR #110;
+- #81 — executar QA de acessibilidade, responsividade e fidelidade visual antes do R10;
 - #47 — fechar a jornada ponta a ponta do MVP sobre as surfaces migradas.
 
 ## Asset Master e Market Data — FOUNDATION IMPLEMENTADA, COBERTURA EVOLUTIVA
