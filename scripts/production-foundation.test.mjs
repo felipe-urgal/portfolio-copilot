@@ -1,11 +1,12 @@
 import { spawnSync } from "node:child_process";
 import { readFile } from "node:fs/promises";
 
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import {
   createCheckEnvironment,
   requiredCheckDatabaseUrl,
+  waitForCheckDatabase,
 } from "./check-environment.mjs";
 import {
   positiveIntegerEnv,
@@ -134,6 +135,63 @@ describe("check environment", () => {
     expect(environment.VERCEL_TOKEN).toBeUndefined();
     expect(environment.VERCEL_TEAM_ID).toBeUndefined();
     expect(environment.CHECK_ONLY_FLAG).toBe("preserved");
+  });
+});
+
+describe("check database readiness", () => {
+  const databaseUrl =
+    "postgresql://check-user:super-secret@127.0.0.1:55432/portfolio_copilot_check";
+
+  it("continues immediately when the check database is already available", async () => {
+    const probe = vi.fn().mockResolvedValue(true);
+    const sleep = vi.fn();
+
+    await expect(
+      waitForCheckDatabase(databaseUrl, { probe, sleep }),
+    ).resolves.toBeUndefined();
+
+    expect(probe).toHaveBeenCalledTimes(1);
+    expect(sleep).not.toHaveBeenCalled();
+  });
+
+  it("retries while the check database is starting", async () => {
+    const probe = vi
+      .fn()
+      .mockResolvedValueOnce(false)
+      .mockResolvedValueOnce(false)
+      .mockResolvedValueOnce(true);
+    const sleep = vi.fn().mockResolvedValue(undefined);
+
+    await expect(
+      waitForCheckDatabase(databaseUrl, {
+        timeoutMs: 1_000,
+        retryIntervalMs: 10,
+        probe,
+        sleep,
+      }),
+    ).resolves.toBeUndefined();
+
+    expect(probe).toHaveBeenCalledTimes(3);
+    expect(sleep).toHaveBeenCalledTimes(2);
+  });
+
+  it("fails with a sanitized endpoint when the timeout expires", async () => {
+    const probe = vi.fn().mockResolvedValue(false);
+    const error = await waitForCheckDatabase(databaseUrl, {
+      timeoutMs: 0,
+      probe,
+    }).then(
+      () => undefined,
+      (reason) => reason,
+    );
+
+    expect(error).toBeInstanceOf(Error);
+    expect(error.message).toContain(
+      "Banco isolado de check indisponível em 127.0.0.1:55432 após 0s.",
+    );
+    expect(error.message).not.toContain("super-secret");
+    expect(error.message).not.toContain("check-user");
+    expect(error.message).not.toContain("portfolio_copilot_check");
   });
 });
 

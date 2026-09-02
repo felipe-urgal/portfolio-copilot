@@ -2,17 +2,14 @@
 
 import { spawnSync } from "node:child_process";
 
-import { createCheckEnvironment } from "./check-environment.mjs";
+import {
+  createCheckEnvironment,
+  waitForCheckDatabase,
+} from "./check-environment.mjs";
 
 const command = process.platform === "win32" ? "pnpm.cmd" : "pnpm";
-const steps = [
-  ["format:check"],
-  ["lint"],
-  ["typecheck"],
-  ["db:migrate"],
-  ["test"],
-  ["build"],
-];
+const preDatabaseSteps = [["format:check"], ["lint"], ["typecheck"]];
+const databaseSteps = [["db:migrate"], ["test"], ["build"]];
 
 let environment;
 try {
@@ -26,7 +23,7 @@ try {
   process.exit(1);
 }
 
-for (const [script] of steps) {
+function runStep(script) {
   const result = spawnSync(command, [script], {
     stdio: "inherit",
     env: environment,
@@ -40,4 +37,23 @@ for (const [script] of steps) {
   if (result.status !== 0) {
     process.exit(result.status ?? 1);
   }
+}
+
+for (const [script] of preDatabaseSteps) {
+  runStep(script);
+}
+
+try {
+  await waitForCheckDatabase(environment.DATABASE_URL);
+} catch (error) {
+  console.error(
+    error instanceof Error
+      ? error.message
+      : "Banco isolado de check indisponível.",
+  );
+  process.exit(1);
+}
+
+for (const [script] of databaseSteps) {
+  runStep(script);
 }
