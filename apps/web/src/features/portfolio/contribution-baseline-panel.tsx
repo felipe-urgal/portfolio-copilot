@@ -35,6 +35,7 @@ import {
   type ContributionPolicyFieldErrors,
   type ContributionPolicySnapshot,
 } from "./contribution-policy-form";
+import { focusFirstInvalidField } from "./focus-invalid-field";
 import { assetClassLabel, type LocalAssetSnapshot } from "./local-asset-form";
 import styles from "./contribution-baseline-panel.module.css";
 
@@ -156,6 +157,7 @@ export function ContributionBaselinePanel({
       setErrors(result.errors);
       setBaseline(null);
       setPolicy(null);
+      focusFirstInvalidField(event.currentTarget);
       return;
     }
 
@@ -175,6 +177,7 @@ export function ContributionBaselinePanel({
     if (!result.ok) {
       setPolicyErrors(result.errors);
       setPolicy(null);
+      focusFirstInvalidField(event.currentTarget);
       return;
     }
 

@@ -29,6 +29,7 @@ import {
   type ContributionExecutionSnapshot,
 } from "./contribution-execution-form";
 import executionStyles from "./contribution-execution-section.module.css";
+import { focusFirstInvalidField } from "./focus-invalid-field";
 import { assetClassLabel, instrumentTypeLabel, type LocalAssetSnapshot } from "./local-asset-form";
 import { type ContributionPolicySnapshot } from "./contribution-policy-form";
 import styles from "./contribution-baseline-panel.module.css";
@@ -102,6 +103,7 @@ export function ContributionExecutionSection({
     if (!result.ok) {
       setErrors(result.errors);
       setExecution(null);
+      focusFirstInvalidField(event.currentTarget);
       return;
     }
 
