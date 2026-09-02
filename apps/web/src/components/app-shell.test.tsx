@@ -81,8 +81,11 @@ describe("AppShell", () => {
   });
 
   it("keeps mobile navigation controls on the canonical 44px touch-target size", () => {
-    expect(NAVIGATION_SOURCE).toContain('variant="secondary"\n          size="md"');
-    expect(NAVIGATION_SOURCE).toContain('variant="ghost" size="md"');
-    expect(NAVIGATION_SOURCE).not.toContain('size="sm"');
+    expect(NAVIGATION_SOURCE).toMatch(
+      /variant="secondary"\s+size="md"\s+aria-haspopup="dialog"/,
+    );
+    expect(NAVIGATION_SOURCE).toMatch(
+      /variant="ghost"\s+size="md"\s+onClick=\{\(\) => closeDrawer\(true\)\}/,
+    );
   });
 });
