@@ -3,7 +3,8 @@ import {
   type ContributionRecommendationSnapshot,
 } from "@portfolio-copilot/domain";
 
-import { Status } from "@/components/ui";
+import { ReasonCodeList } from "@/components/reason-code-list";
+import { Disclosure, Status } from "@/components/ui";
 
 import { assetClassLabel, type LocalAssetSnapshot } from "./local-asset-form";
 import { createContributionRecommendationExplanation } from "./contribution-recommendation-explanation";
@@ -34,8 +35,7 @@ export function ContributionRecommendationExplanationSection({
   const assetsById = new Map(assets.map((asset) => [asset.id, asset] as const));
 
   return (
-    <details className={styles.section}>
-      <summary>Como ler este aporte</summary>
+    <Disclosure summary="Como ler este aporte" className={styles.section}>
       <div className={styles.body}>
         <div className={styles.heading}>
           <div>
@@ -60,12 +60,13 @@ export function ContributionRecommendationExplanationSection({
         <ol className={styles.decisions}>
           {explanation.decisions.map((decision) => {
             const asset = decision.assetId === null ? null : assetsById.get(decision.assetId);
+            const classLabel = assetClassLabel(decision.assetClass as AssetClassCode);
 
             return (
               <li className={styles.decision} key={decision.assetClass}>
                 <div className={styles.decisionHeader}>
                   <div className={styles.identity}>
-                    <strong>{assetClassLabel(decision.assetClass as AssetClassCode)}</strong>
+                    <strong>{classLabel}</strong>
                     <span>
                       {decision.assetId === null
                         ? "Sem destino local"
@@ -106,23 +107,11 @@ export function ContributionRecommendationExplanationSection({
                   </div>
                 </dl>
 
-                {decision.reasons.length === 0 ? (
-                  <p className={styles.noReason}>
-                    Sem reason code adicional para esta decisão; nenhuma causa extra é inferida.
-                  </p>
-                ) : (
-                  <ul className={styles.reasons} aria-label="Motivos estruturados">
-                    {decision.reasons.map((reason) => (
-                      <li className={styles.reason} key={reason.code}>
-                        <div className={styles.reasonMeta}>
-                          <strong>{reason.title}</strong>
-                          <code>{reason.code}</code>
-                        </div>
-                        <p>{reason.description}</p>
-                      </li>
-                    ))}
-                  </ul>
-                )}
+                <ReasonCodeList
+                  reasons={decision.reasons}
+                  ariaLabel={`Motivos estruturados de ${classLabel}`}
+                  emptyMessage="Sem reason code adicional para esta decisão; nenhuma causa extra é inferida."
+                />
               </li>
             );
           })}
@@ -133,6 +122,6 @@ export function ContributionRecommendationExplanationSection({
           compra ou venda, garantia, previsão ou seleção automática de ativo.
         </p>
       </div>
-    </details>
+    </Disclosure>
   );
 }
