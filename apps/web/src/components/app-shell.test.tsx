@@ -13,6 +13,10 @@ const IDENTITY = {
 } as const;
 
 const SHELL_CSS = readFileSync(new URL("./app-shell.module.css", import.meta.url), "utf8");
+const NAVIGATION_SOURCE = readFileSync(
+  new URL("./app-shell-navigation.tsx", import.meta.url),
+  "utf8",
+);
 
 function renderShell(activeRoute: "/dashboard" | "/portfolio" | "/onboarding" = "/dashboard") {
   return renderToStaticMarkup(
@@ -74,5 +78,11 @@ describe("AppShell", () => {
     expect(SHELL_CSS).toContain("border-color: var(--color-border-strong)");
     expect(SHELL_CSS).not.toContain(".menuButton {");
     expect(SHELL_CSS).not.toContain(".drawerClose {");
+  });
+
+  it("keeps mobile navigation controls on the canonical 44px touch-target size", () => {
+    expect(NAVIGATION_SOURCE).toContain('variant="secondary"\n          size="md"');
+    expect(NAVIGATION_SOURCE).toContain('variant="ghost" size="md"');
+    expect(NAVIGATION_SOURCE).not.toContain('size="sm"');
   });
 });
