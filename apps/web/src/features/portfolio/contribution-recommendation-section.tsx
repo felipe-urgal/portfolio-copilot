@@ -23,6 +23,7 @@ import { type ContributionBaselineSnapshot } from "./contribution-baseline-form"
 import { type ContributionConcentrationSnapshot } from "./contribution-concentration-form";
 import { type ContributionCostSnapshot } from "./contribution-cost-form";
 import { type ContributionExecutionSnapshot } from "./contribution-execution-form";
+import { focusFirstInvalidField } from "./focus-invalid-field";
 import { assetClassLabel, type LocalAssetSnapshot } from "./local-asset-form";
 import { type ContributionPolicySnapshot } from "./contribution-policy-form";
 import { ContributionRecommendationExplanationSection } from "./contribution-recommendation-explanation-section";
@@ -115,6 +116,7 @@ export function ContributionRecommendationSection({
     if (!result.ok) {
       setErrors(result.errors);
       setRecommendation(null);
+      focusFirstInvalidField(event.currentTarget);
       return;
     }
 
