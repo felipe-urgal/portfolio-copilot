@@ -46,6 +46,7 @@ Entregas concluídas em 02/09/2026:
 
 Vertical atual:
 
+- PR #109 — `refactor: consolidar disclosure do onboarding no R8`;
 - branch `feat/r8-onboarding-disclosure`;
 - migrar o disclosure de persistência do onboarding de `<details>/<summary>` local para a primitive canônica `Disclosure`;
 - remover do CSS de onboarding apenas o comportamento duplicado de `summary`, hover, foco e touch target;
