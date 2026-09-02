@@ -1,4 +1,11 @@
+import { createConnection } from "node:net";
+import { setTimeout as delay } from "node:timers/promises";
+
 const POSTGRES_PROTOCOLS = new Set(["postgres:", "postgresql:"]);
+const DEFAULT_POSTGRES_PORT = 5432;
+const DEFAULT_WAIT_TIMEOUT_MS = 60_000;
+const DEFAULT_RETRY_INTERVAL_MS = 500;
+const DEFAULT_CONNECT_TIMEOUT_MS = 1_000;
 
 const PRODUCTION_ONLY_VARIABLES = [
   "DATABASE_DIRECT_URL",
@@ -11,15 +18,7 @@ const PRODUCTION_ONLY_VARIABLES = [
   "VERCEL_TEAM_ID",
 ];
 
-export function requiredCheckDatabaseUrl(env = process.env) {
-  const value = env.CHECK_DATABASE_URL?.trim();
-
-  if (!value) {
-    throw new Error(
-      "prod:check exige CHECK_DATABASE_URL apontando para um banco de teste isolado.",
-    );
-  }
-
+function parseCheckDatabaseUrl(value) {
   let url;
   try {
     url = new URL(value);
@@ -35,6 +34,25 @@ export function requiredCheckDatabaseUrl(env = process.env) {
     throw new Error("CHECK_DATABASE_URL precisa identificar host e database de teste.");
   }
 
+  return url;
+}
+
+function checkDatabaseEndpoint(databaseUrl) {
+  const url = parseCheckDatabaseUrl(databaseUrl);
+  const port = url.port ? Number.parseInt(url.port, 10) : DEFAULT_POSTGRES_PORT;
+  return `${url.hostname}:${port}`;
+}
+
+export function requiredCheckDatabaseUrl(env = process.env) {
+  const value = env.CHECK_DATABASE_URL?.trim();
+
+  if (!value) {
+    throw new Error(
+      "prod:check exige CHECK_DATABASE_URL apontando para um banco de teste isolado.",
+    );
+  }
+
+  parseCheckDatabaseUrl(value);
   return value;
 }
 
@@ -52,4 +70,54 @@ export function createCheckEnvironment(env = process.env) {
   }
 
   return checkEnvironment;
+}
+
+export function probeCheckDatabase(
+  databaseUrl,
+  connectTimeoutMs = DEFAULT_CONNECT_TIMEOUT_MS,
+) {
+  const url = parseCheckDatabaseUrl(databaseUrl);
+  const port = url.port ? Number.parseInt(url.port, 10) : DEFAULT_POSTGRES_PORT;
+
+  return new Promise((resolve) => {
+    const socket = createConnection({ host: url.hostname, port });
+    let settled = false;
+
+    const finish = (ready) => {
+      if (settled) return;
+      settled = true;
+      socket.destroy();
+      resolve(ready);
+    };
+
+    socket.once("connect", () => finish(true));
+    socket.once("error", () => finish(false));
+    socket.setTimeout(connectTimeoutMs, () => finish(false));
+  });
+}
+
+export async function waitForCheckDatabase(
+  databaseUrl,
+  {
+    timeoutMs = DEFAULT_WAIT_TIMEOUT_MS,
+    retryIntervalMs = DEFAULT_RETRY_INTERVAL_MS,
+    probe = probeCheckDatabase,
+    sleep = delay,
+  } = {},
+) {
+  const deadline = Date.now() + timeoutMs;
+
+  while (true) {
+    if (await probe(databaseUrl)) return;
+
+    const remainingMs = deadline - Date.now();
+    if (remainingMs <= 0) {
+      const timeoutSeconds = Math.ceil(timeoutMs / 1000);
+      throw new Error(
+        `Banco isolado de check indisponível em ${checkDatabaseEndpoint(databaseUrl)} após ${timeoutSeconds}s. Inicie ou recupere o banco configurado em CHECK_DATABASE_URL e tente novamente.`,
+      );
+    }
+
+    await sleep(Math.min(retryIntervalMs, remainingMs));
+  }
 }
