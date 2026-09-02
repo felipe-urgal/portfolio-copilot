@@ -48,6 +48,8 @@ O R9 segue sendo executado em verticais pequenas e verificáveis enquanto o brow
 - PR #132 — `Button`/`LinkButton` com `size="sm"` mantêm padding e tipografia compactos, mas passam a compor também o min-height canônico de 44px já definido pelo R2;
 - a correção é central na primitive, cobrindo consumidores reais sem remendos por feature, e a suíte de primitives protege a composição compacta + touch target;
 - `docs/design/DESIGN-SYSTEM.md` já estabelecia 44px como baseline ergonômico; esta vertical corrige a implementação para cumprir o contrato existente, sem criar mudança normativa paralela;
+- PR #133 — a brand navegável do focused auth passou a preservar `--touch-target-min` (44px) sem aumentar o glyph visual de `--control-height-sm` (36px);
+- a regressão de auth protege separadamente a área interativa mínima e o tamanho visual do glyph, e `docs/design/AUTH-SESSION.md` registra o hardening sem alterar OAuth/sessão;
 - nesta execução, o acesso remoto ao deploy continuou sem uma superfície navegável disponível para o agente; portanto screenshots, fidelity ledger, keyboard-only e screen-reader smoke continuam **não executados** e não devem ser tratados como evidência existente.
 
 A #81 permanece aberta até o gate completo de browser/fidelity/accessibility ser reproduzível e concluído.
