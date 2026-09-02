@@ -13,6 +13,7 @@ import {
   Alert,
   Badge,
   Button,
+  Disclosure,
   EmptyState,
   Field,
   FieldError,
@@ -642,10 +643,9 @@ export function PortfolioWorkspace({
                             {instrumentTypeLabel(asset.instrumentType)} · {asset.referenceCurrency}
                           </span>
                         </div>
-                        <details className={styles.inlineDetails}>
-                          <summary>Identidade técnica</summary>
+                        <Disclosure className={styles.inlineDetails} summary="Identidade técnica">
                           <code>{asset.id}</code>
-                        </details>
+                        </Disclosure>
                       </li>
                     ))}
                   </ul>
@@ -923,10 +923,9 @@ export function PortfolioWorkspace({
                               {transactionAmount(transaction)}
                             </span>
                           </div>
-                          <details className={styles.inlineDetails}>
-                            <summary>Detalhes técnicos</summary>
+                          <Disclosure className={styles.inlineDetails} summary="Detalhes técnicos">
                             <code>{transaction.id}</code>
-                          </details>
+                          </Disclosure>
                         </li>
                       );
                     })}
@@ -977,8 +976,10 @@ export function PortfolioWorkspace({
                   </div>
                 </dl>
 
-                <details className={styles.technicalDetails}>
-                  <summary>Detalhes técnicos e identidade</summary>
+                <Disclosure
+                  className={styles.technicalDetails}
+                  summary="Detalhes técnicos e identidade"
+                >
                   <div className={styles.detailsBody}>
                     <p>
                       A identidade canônica é mantida para os snapshots e regras do domínio, mas não
@@ -986,7 +987,7 @@ export function PortfolioWorkspace({
                     </p>
                     <code>{snapshot.id}</code>
                   </div>
-                </details>
+                </Disclosure>
               </Surface>
 
               <Surface tone="subtle" padding="lg">
