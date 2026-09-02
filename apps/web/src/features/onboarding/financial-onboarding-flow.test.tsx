@@ -75,6 +75,16 @@ describe("FinancialOnboardingFlow", () => {
     expect(FLOW_SOURCE).toContain("tabIndex={-1}");
   });
 
+  it("preserves focus when goals are added or removed", () => {
+    expect(FLOW_SOURCE).toContain("pendingGoalFocusRef.current = clientId;");
+    expect(FLOW_SOURCE).toContain("goalHeadingRefs.current[target]?.focus()");
+    expect(FLOW_SOURCE).toContain("addGoalButtonRef.current?.focus()");
+    expect(FLOW_SOURCE).toContain('draft.goals[index - 1]?.clientId ?? "add-button"');
+    expect(FLOW_SOURCE).toContain("ref={headingRef} tabIndex={-1}");
+    expect(FLOW_SOURCE).toContain("onRemove={() => removeGoal(goal.clientId, index)}");
+    expect(FLOW_SOURCE).toContain("ref={addGoalButtonRef}");
+  });
+
   it("keeps persistence detail in the canonical progressive disclosure without changing opt-in", () => {
     const html = renderFlow();
 
