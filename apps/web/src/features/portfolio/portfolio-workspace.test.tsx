@@ -13,6 +13,8 @@ const PORTFOLIO_CSS = readFileSync(
   new URL("./portfolio-workspace.module.css", import.meta.url),
   "utf8",
 );
+const TASK_NAV_BUTTON =
+  /PORTFOLIO_TASKS\.map\(\(task\) => \(\s*<Button\s+key=\{task\.id\}\s+size="md"/;
 
 const SNAPSHOT = {
   id: "8d5a7a27-2db8-4a51-a6c8-d84f78fd1298",
@@ -90,6 +92,7 @@ describe("PortfolioWorkspace", () => {
     expect(html).toContain('hidden=""');
     expect(html).toContain("Detalhes técnicos e identidade");
     expect(html).toContain("Nada é persistido nesta versão");
+    expect(PORTFOLIO_SOURCE).toMatch(TASK_NAV_BUTTON);
   });
 
   it("keeps technical identities auditable through canonical disclosures", () => {
