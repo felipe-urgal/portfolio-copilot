@@ -26,6 +26,7 @@ import {
 } from "./contribution-concentration-form";
 import concentrationStyles from "./contribution-concentration-section.module.css";
 import { ContributionExecutionSection } from "./contribution-execution-section";
+import { focusFirstInvalidField } from "./focus-invalid-field";
 import { type ContributionPolicySnapshot } from "./contribution-policy-form";
 import { assetClassLabel, type LocalAssetSnapshot } from "./local-asset-form";
 import styles from "./contribution-baseline-panel.module.css";
@@ -99,6 +100,7 @@ export function ContributionConcentrationSection({
     if (!result.ok) {
       setErrors(result.errors);
       setConcentration(null);
+      focusFirstInvalidField(event.currentTarget);
       return;
     }
 
