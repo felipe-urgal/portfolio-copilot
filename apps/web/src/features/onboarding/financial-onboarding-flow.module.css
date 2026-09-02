@@ -316,31 +316,10 @@
 
 .persistenceDisclosure {
   border-top: 1px solid var(--color-border-subtle);
-  color: var(--color-text-secondary);
-}
-
-.persistenceDisclosure summary {
-  min-height: var(--touch-target-min);
-  padding-block: var(--space-3);
-  border-radius: var(--radius-sm);
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-semibold);
-  cursor: pointer;
-}
-
-.persistenceDisclosure summary:hover {
-  color: var(--color-text-primary);
-}
-
-.persistenceDisclosure summary:focus-visible {
-  outline: var(--focus-ring-width) solid var(--color-focus-ring);
-  outline-offset: var(--focus-ring-offset);
 }
 
 .persistenceDisclosure p {
   max-width: var(--layout-content-narrow);
-  padding-bottom: var(--space-3);
   color: var(--color-text-muted);
   font-size: var(--font-size-sm);
   line-height: var(--line-height-body);
