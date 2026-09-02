@@ -70,6 +70,7 @@ export function FinancialProfileAccountMigration({
   const [isSaving, setIsSaving] = useState(false);
   const [feedback, setFeedback] = useState<MigrationFeedback | null>(null);
   const [localRemovalCompleted, setLocalRemovalCompleted] = useState(false);
+  const migrationHeadingRef = useRef<HTMLHeadingElement>(null);
   const removalHeadingRef = useRef<HTMLHeadingElement>(null);
 
   const loadAccountProfile = useCallback(async () => {
@@ -138,7 +139,12 @@ export function FinancialProfileAccountMigration({
       ? compareFinancialProfiles(financialProfile, accountProfile)
       : null;
 
+  function focusMigrationHeading(): void {
+    migrationHeadingRef.current?.focus();
+  }
+
   async function migrateLocalProfile(replace: boolean) {
+    focusMigrationHeading();
     setIsSaving(true);
     setFeedback(null);
 
@@ -222,7 +228,9 @@ export function FinancialProfileAccountMigration({
         <div className={styles.header}>
           <div>
             <span className={styles.eyebrow}>Perfil da conta</span>
-            <h2 id="account-migration-title">Associar perfil local à conta</h2>
+            <h2 id="account-migration-title" ref={migrationHeadingRef} tabIndex={-1}>
+              Associar perfil local à conta
+            </h2>
             <p>
               O perfil salvo neste dispositivo não é enviado automaticamente. A conta só recebe
               dados depois de uma ação explícita abaixo.
@@ -242,7 +250,13 @@ export function FinancialProfileAccountMigration({
               <div className={styles.alertContent}>
                 <p>O perfil local continua intacto e nenhum dado financeiro foi enviado.</p>
                 <div className={styles.actions}>
-                  <Button variant="secondary" onClick={() => void loadAccountProfile()}>
+                  <Button
+                    variant="secondary"
+                    onClick={() => {
+                      focusMigrationHeading();
+                      void loadAccountProfile();
+                    }}
+                  >
                     Tentar novamente
                   </Button>
                 </div>
