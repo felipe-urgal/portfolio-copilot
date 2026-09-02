@@ -47,6 +47,7 @@ O R9 segue sendo executado em verticais pequenas e verificáveis enquanto o brow
 - regressões do onboarding verificam a semântica obrigatória e `docs/design/ONBOARDING.md` registra o contrato endurecido;
 - PR #132 — `Button`/`LinkButton` com `size="sm"` mantêm padding e tipografia compactos, mas passam a compor também o min-height canônico de 44px já definido pelo R2;
 - a correção é central na primitive, cobrindo consumidores reais sem remendos por feature, e a suíte de primitives protege a composição compacta + touch target;
+- `docs/design/DESIGN-SYSTEM.md` já estabelecia 44px como baseline ergonômico; esta vertical corrige a implementação para cumprir o contrato existente, sem criar mudança normativa paralela;
 - nesta execução, o acesso remoto ao deploy continuou sem uma superfície navegável disponível para o agente; portanto screenshots, fidelity ledger, keyboard-only e screen-reader smoke continuam **não executados** e não devem ser tratados como evidência existente.
 
 A #81 permanece aberta até o gate completo de browser/fidelity/accessibility ser reproduzível e concluído.
