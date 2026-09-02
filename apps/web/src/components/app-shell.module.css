@@ -49,6 +49,7 @@
 
 .brand {
   min-width: 0;
+  min-height: var(--touch-target-min);
   display: flex;
   align-items: center;
   gap: var(--space-3);
