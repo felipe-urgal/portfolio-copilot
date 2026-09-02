@@ -1,7 +1,15 @@
+import { readFileSync } from "node:fs";
+
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 
 import { PortfolioWorkspace } from "./portfolio-workspace";
+
+const PORTFOLIO_SOURCE = readFileSync(new URL("./portfolio-workspace.tsx", import.meta.url), "utf8");
+const PORTFOLIO_CSS = readFileSync(
+  new URL("./portfolio-workspace.module.css", import.meta.url),
+  "utf8",
+);
 
 const SNAPSHOT = {
   id: "8d5a7a27-2db8-4a51-a6c8-d84f78fd1298",
@@ -79,6 +87,29 @@ describe("PortfolioWorkspace", () => {
     expect(html).toContain('hidden=""');
     expect(html).toContain("Detalhes técnicos e identidade");
     expect(html).toContain("Nada é persistido nesta versão");
+  });
+
+  it("keeps technical identities auditable through canonical disclosures", () => {
+    const html = renderToStaticMarkup(
+      <PortfolioWorkspace
+        initialSnapshot={SNAPSHOT}
+        initialAssets={[ASSET]}
+        initialTransactions={[BUY]}
+        initialTask="assets"
+      />,
+    );
+
+    expect(html).toContain("Identidade técnica");
+    expect(html).toContain("Detalhes técnicos");
+    expect(html).toContain("Detalhes técnicos e identidade");
+    expect(html).toContain(ASSET.id);
+    expect(html).toContain(BUY.id);
+    expect(html).toContain(SNAPSHOT.id);
+    expect(PORTFOLIO_SOURCE).toContain("<Disclosure");
+    expect(PORTFOLIO_SOURCE).not.toContain("<details className={styles.inlineDetails}");
+    expect(PORTFOLIO_SOURCE).not.toContain("<details className={styles.technicalDetails}");
+    expect(PORTFOLIO_CSS).not.toContain(".inlineDetails summary");
+    expect(PORTFOLIO_CSS).not.toContain(".technicalDetails summary");
   });
 
   it("keeps asset registration, human selection and positions projected from BUY/SELL", () => {
