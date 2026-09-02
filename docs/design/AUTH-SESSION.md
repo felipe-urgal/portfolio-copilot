@@ -2,7 +2,7 @@
 
 ## Status
 
-Implementação do R4 da iniciativa #69, issue #76.
+Implementação do R4 da iniciativa #69, issue #76, com hardening incremental de acessibilidade no R9 / #81.
 
 Esta superfície aplica o contrato `focused auth` definido no R1 usando exclusivamente os tokens e primitives do R2. Auth permanece deliberadamente fora do `AppShell`: entrar, sair e recuperar acesso são tarefas focadas e não precisam de sidebar.
 
@@ -65,6 +65,7 @@ Sair encerra a sessão autenticada no navegador e não apaga o perfil financeiro
 - cores e focus usam semantic tokens do R2;
 - translucência decorativa é derivada dos tokens com `color-mix`;
 - touch target do disclosure usa `--touch-target-min`;
+- a brand navegável também preserva `--touch-target-min` (44px), enquanto o glyph continua visualmente compacto em `--control-height-sm`;
 - desktop usa composição centralizada;
 - mobile preserva uma coluna e reduz somente a escala do título/espaçamento externo;
 - não existe navegação ou chrome alternativo de produto no auth.
@@ -99,7 +100,7 @@ Em 31/08/2026, #99 / PR #100 validou esse contrato no ambiente Vercel real e ati
 
 ## Validação
 
-Os testes do R4 verificam:
+Os testes do R4/R9 verificam:
 
 - uma única ação de login;
 - ausência de `/health` e badges/eyebrows antigos;
@@ -108,7 +109,8 @@ Os testes do R4 verificam:
 - copy de reentrada;
 - saída com contexto mínimo e cancelamento claro;
 - CSS sem paleta auth paralela;
-- consumo dos semantic tokens/focus/touch-target do R2.
+- consumo dos semantic tokens/focus/touch-target do R2;
+- brand navegável com área mínima de 44px sem aumentar o glyph visual de 36px.
 
 A production foundation acrescenta regressões para allowlist fail-closed em produção sem alterar os testes de composição visual.
 
