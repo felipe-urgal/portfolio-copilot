@@ -87,7 +87,7 @@ test
 build
 ```
 
-A migration desse fluxo ocorre somente no banco de check, antes da suíte. Depois de `format:check`, `lint` e `typecheck`, o runner aguarda de forma limitada por até 60 segundos o host/porta do PostgreSQL de check aceitar conexão TCP antes de executar `db:migrate`. Essa espera tolera a inicialização normal da dependência, mas não provisiona nem inicia infraestrutura ausente; em timeout, o erro informa somente host/porta e não inclui usuário, senha, database ou connection string completa. `prod:check` não usa `DATABASE_URL` ou `DATABASE_DIRECT_URL` herdadas como fallback e remove do ambiente filho credenciais de produção/provider que não pertencem ao check.
+A migration desse fluxo ocorre somente no banco de check, antes da suíte. Depois de `format:check`, `lint` e `typecheck`, o runner verifica se o host/porta do PostgreSQL de check aceita conexão TCP. Quando `CHECK_DATABASE_URL` aponta para o endpoint local do Compose (`localhost`, `127.0.0.1` ou `::1` na porta `5433`) e ele está indisponível, o runner executa `db:up` e aguarda por até 60 segundos antes de seguir para `db:migrate`. Bancos remotos ou endpoints locais em outra porta nunca disparam Docker automaticamente: o runner apenas aguarda a disponibilidade. Em timeout, o erro informa somente host/porta e não inclui usuário, senha, database ou connection string completa. `prod:check` não usa `DATABASE_URL` ou `DATABASE_DIRECT_URL` herdadas como fallback e remove do ambiente filho credenciais de produção/provider que não pertencem ao check.
 
 O banco de check deve ser dedicado, descartável quando possível e não pode conter dados reais. O CI usa PostgreSQL efêmero com o mesmo contrato `CHECK_DATABASE_URL`.
 

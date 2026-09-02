@@ -52,7 +52,7 @@ Este arquivo resume decisões. Decisões arquiteturais importantes também ganha
 
 A condição de ativação prevista pela D-042 foi satisfeita em 31/08/2026 por #99 / PR #100, após validação de migration, liveness/readiness, autenticação allowlisted, `prod:verify` e restore-check isolado. O Production Contract está ativo para uso pessoal/controlado.
 
-A D-043 adiciona uma fronteira operacional sem mudar a topologia da D-042: `.dev-dashboard/.env.check.local` pertence somente a check/testes, enquanto `.dev-dashboard/.env.production.local` pertence somente a migration/verify locais de produção. O provider não recebe nenhum desses arquivos.
+A D-043 adiciona uma fronteira operacional sem mudar a topologia da D-042: `.dev-dashboard/.env.check.local` pertence somente a check/testes, enquanto `.dev-dashboard/.env.production.local` pertence somente a migration/verify locais de produção. O provider não recebe nenhum desses arquivos. O `prod:check` pode iniciar o PostgreSQL declarado no Compose apenas quando o endpoint configurado é o bind local canônico na porta `5433`; indisponibilidade remota ou em outro endpoint não autoriza efeitos locais automáticos.
 
 Isso **não substitui** a D-011: produto público, multi-tenancy, uso por terceiros e monetização continuam bloqueados pelo Regulatory Gate da #50.
 

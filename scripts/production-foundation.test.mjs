@@ -5,7 +5,9 @@ import { describe, expect, it, vi } from "vitest";
 
 import {
   createCheckEnvironment,
+  ensureCheckDatabase,
   requiredCheckDatabaseUrl,
+  usesLocalComposeCheckDatabase,
   waitForCheckDatabase,
 } from "./check-environment.mjs";
 import {
@@ -152,6 +154,88 @@ describe("check database readiness", () => {
 
     expect(probe).toHaveBeenCalledTimes(1);
     expect(sleep).not.toHaveBeenCalled();
+  });
+
+  it("does not start or wait when the check database is already ready", async () => {
+    const startLocalDatabase = vi.fn();
+    const wait = vi.fn();
+
+    await expect(
+      ensureCheckDatabase(databaseUrl, {
+        probe: vi.fn().mockResolvedValue(true),
+        startLocalDatabase,
+        wait,
+      }),
+    ).resolves.toBe(false);
+
+    expect(startLocalDatabase).not.toHaveBeenCalled();
+    expect(wait).not.toHaveBeenCalled();
+  });
+
+  it("starts the local Compose database when its bound endpoint is unavailable", async () => {
+    const localDatabaseUrl =
+      "postgresql://check-user:super-secret@localhost:5433/portfolio_copilot_check";
+    const probe = vi.fn().mockResolvedValue(false);
+    const startLocalDatabase = vi.fn().mockResolvedValue(undefined);
+    const wait = vi.fn().mockResolvedValue(undefined);
+
+    await expect(
+      ensureCheckDatabase(localDatabaseUrl, {
+        probe,
+        startLocalDatabase,
+        wait,
+      }),
+    ).resolves.toBe(true);
+
+    expect(startLocalDatabase).toHaveBeenCalledTimes(1);
+    expect(wait).toHaveBeenCalledWith(localDatabaseUrl);
+    expect(startLocalDatabase.mock.invocationCallOrder[0]).toBeLessThan(
+      wait.mock.invocationCallOrder[0],
+    );
+  });
+
+  it("does not start Compose for non-local or differently bound databases", async () => {
+    const startLocalDatabase = vi.fn();
+    const wait = vi.fn().mockResolvedValue(undefined);
+    const remoteDatabaseUrl =
+      "postgresql://check:secret@check.example.com:5432/portfolio_copilot_check";
+
+    expect(
+      usesLocalComposeCheckDatabase(
+        "postgresql://check:secret@127.0.0.1:5433/portfolio_copilot_check",
+      ),
+    ).toBe(true);
+    expect(
+      usesLocalComposeCheckDatabase(
+        "postgresql://check:secret@LOCALHOST:5433/portfolio_copilot_check",
+      ),
+    ).toBe(true);
+    expect(
+      usesLocalComposeCheckDatabase(
+        "postgresql://check:secret@[::1]:5433/portfolio_copilot_check",
+      ),
+    ).toBe(true);
+    expect(
+      usesLocalComposeCheckDatabase(
+        "postgresql://check:secret@127.0.0.1:5432/portfolio_copilot_check",
+      ),
+    ).toBe(false);
+    expect(
+      usesLocalComposeCheckDatabase(
+        "postgresql://check:secret@check.example.com:5433/portfolio_copilot_check",
+      ),
+    ).toBe(false);
+
+    await expect(
+      ensureCheckDatabase(remoteDatabaseUrl, {
+        probe: vi.fn().mockResolvedValue(false),
+        startLocalDatabase,
+        wait,
+      }),
+    ).resolves.toBe(false);
+
+    expect(startLocalDatabase).not.toHaveBeenCalled();
+    expect(wait).toHaveBeenCalledWith(remoteDatabaseUrl);
   });
 
   it("retries while the check database is starting", async () => {

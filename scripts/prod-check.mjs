@@ -4,7 +4,7 @@ import { spawnSync } from "node:child_process";
 
 import {
   createCheckEnvironment,
-  waitForCheckDatabase,
+  ensureCheckDatabase,
 } from "./check-environment.mjs";
 
 const command = process.platform === "win32" ? "pnpm.cmd" : "pnpm";
@@ -44,7 +44,21 @@ for (const [script] of preDatabaseSteps) {
 }
 
 try {
-  await waitForCheckDatabase(environment.DATABASE_URL);
+  const startedLocalDatabase = await ensureCheckDatabase(
+    environment.DATABASE_URL,
+    {
+      startLocalDatabase: () => {
+        console.log(
+          "Banco local de check indisponível. Iniciando o PostgreSQL via Docker Compose...",
+        );
+        runStep("db:up");
+      },
+    },
+  );
+
+  if (startedLocalDatabase) {
+    console.log("Banco local de check disponível.");
+  }
 } catch (error) {
   console.error(
     error instanceof Error

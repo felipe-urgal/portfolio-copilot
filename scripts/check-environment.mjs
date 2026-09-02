@@ -2,7 +2,9 @@ import { createConnection } from "node:net";
 import { setTimeout as delay } from "node:timers/promises";
 
 const POSTGRES_PROTOCOLS = new Set(["postgres:", "postgresql:"]);
+const LOCAL_COMPOSE_HOSTS = new Set(["127.0.0.1", "localhost", "[::1]"]);
 const DEFAULT_POSTGRES_PORT = 5432;
+const LOCAL_COMPOSE_POSTGRES_PORT = 5433;
 const DEFAULT_WAIT_TIMEOUT_MS = 60_000;
 const DEFAULT_RETRY_INTERVAL_MS = 500;
 const DEFAULT_CONNECT_TIMEOUT_MS = 1_000;
@@ -94,6 +96,40 @@ export function probeCheckDatabase(
     socket.once("error", () => finish(false));
     socket.setTimeout(connectTimeoutMs, () => finish(false));
   });
+}
+
+export function usesLocalComposeCheckDatabase(databaseUrl) {
+  const url = parseCheckDatabaseUrl(databaseUrl);
+  const port = url.port ? Number.parseInt(url.port, 10) : DEFAULT_POSTGRES_PORT;
+
+  return (
+    LOCAL_COMPOSE_HOSTS.has(url.hostname.toLowerCase()) &&
+    port === LOCAL_COMPOSE_POSTGRES_PORT
+  );
+}
+
+export async function ensureCheckDatabase(
+  databaseUrl,
+  {
+    probe = probeCheckDatabase,
+    startLocalDatabase,
+    wait = waitForCheckDatabase,
+  } = {},
+) {
+  if (await probe(databaseUrl)) return false;
+
+  if (usesLocalComposeCheckDatabase(databaseUrl)) {
+    if (typeof startLocalDatabase !== "function") {
+      throw new Error("Inicialização do banco local de check não configurada.");
+    }
+
+    await startLocalDatabase();
+    await wait(databaseUrl);
+    return true;
+  }
+
+  await wait(databaseUrl);
+  return false;
 }
 
 export async function waitForCheckDatabase(
