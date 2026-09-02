@@ -1,6 +1,6 @@
 # Próxima Atividade — UX/UI R9: acessibilidade, responsividade e visual fidelity QA
 
-**Status:** READY — próxima prioridade canônica em 2026-09-02
+**Status:** IN PROGRESS — prioridade canônica atual em 2026-09-02
 
 ## Issue canônica
 
@@ -18,7 +18,8 @@ O R8 consolidou os componentes/estados transversais reais do frontend atual sem 
 - PR #108 — auth sem `AuthDisclosure` paralelo;
 - PR #109 — persistência do onboarding sobre `Disclosure` canônico;
 - PR #110 — AssetId, TransactionId e identidade do Portfolio sobre `Disclosure` canônico; merge `81c20a309849aba2964deb2aa9e6ef8ae3bc640e`;
-- CI pós-merge #574 — verde no `main` após o PR #110.
+- PR #111 — gate documental final do R8, reconciliação da iniciativa e promoção do R9;
+- CI pós-merge #577 — verde no `main` após o PR #111.
 
 Audit final do R8:
 
@@ -108,7 +109,7 @@ R10 só começa quando:
   -> #78 R6 dashboard ✓
   -> #79 R7 portfolio ✓
   -> #80 R8 estados/componentes ✓
-  -> #81 R9 a11y/responsive/fidelity (próxima)
+  -> #81 R9 a11y/responsive/fidelity (atual)
   -> R10 / fechamento #69
 ```
 

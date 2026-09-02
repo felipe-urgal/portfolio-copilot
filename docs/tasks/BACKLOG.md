@@ -6,9 +6,9 @@ A prioridade corrente está sempre em `NEXT.md`. Este arquivo não substitui `do
 
 ## UX/UI — iniciativa #69
 
-A fundação visual R0–R8 está concluída após o merge do PR #110 e o gate pós-merge #574. Permanecem:
+A fundação visual R0–R8 está concluída; o gate final do R8 foi reconciliado no PR #111 e o CI pós-merge #577 ficou verde. Permanecem:
 
-- #81 — R9: acessibilidade, responsividade e visual fidelity QA;
+- #81 — R9: acessibilidade, responsividade e visual fidelity QA — prioridade atual;
 - R10 — gate final e fechamento da #69.
 
 ## IA assistiva
@@ -20,9 +20,9 @@ A fundação de ingestão segura de conteúdo externo (#44) já foi concluída. 
 
 ## Convergência do MVP
 
-- #47 — fechar jornada ponta a ponta de carteira, transações e aporte do mês depois da consolidação visual principal e dos estados transversais aplicáveis.
+- #47 — fechar jornada ponta a ponta de carteira, transações e aporte do mês; #80/R8 já não é bloqueio. A ordem relativa a R9/R10 deve ser definida por priorização explícita, sem criar dependência implícita nova.
 
-Os contratos de domínio, ledger, contribuição, persistência e autenticação já existem. O trabalho restante é integração de jornada e acabamento, não reconstrução dessas fundações.
+Os contratos de domínio, ledger, contribuição, persistência, autenticação e estados transversais R8 já existem. O trabalho restante é integração de jornada e acabamento, não reconstrução dessas fundações.
 
 ## Simulação e backtesting
 

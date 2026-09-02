@@ -18,7 +18,7 @@ O **Protótipo 3 — Assistant-First Workspace** é a direção visual canônica
 - [x] R5 — onboarding guiado — #77 / PR #88;
 - [x] R6 — dashboard orientado a contexto/panorama/próxima ação — #78 / PR #91;
 - [x] R7 — carteira organizada por tarefas — #79 / PR #92;
-- [x] R8 — componentes/estados transversais — #80 / PRs #95, #105–#110; CI pós-merge #574 verde.
+- [x] R8 — componentes/estados transversais — #80 / PRs #95, #105–#110; gate final PR #111 e CI pós-merge #577 verde.
 
 ### Em andamento
 
