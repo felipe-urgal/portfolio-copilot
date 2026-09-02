@@ -1,6 +1,6 @@
 "use client";
 
-import { useReducer, useRef, type Dispatch, type FormEvent } from "react";
+import { useEffect, useReducer, useRef, type Dispatch, type FormEvent } from "react";
 
 import {
   FINANCIAL_GOAL_TYPES,
@@ -591,9 +591,18 @@ export function FinancialOnboardingFlow() {
   } = useFinancialSession();
   const [state, dispatch] = useReducer(onboardingReducer, undefined, createInitialOnboardingState);
   const nextGoalSequence = useRef(1);
+  const stepHeadingRef = useRef<HTMLHeadingElement>(null);
+  const previousStepRef = useRef(state.step);
   const activeIndex = ONBOARDING_STEPS.indexOf(state.step);
   const activeCopy = STEP_COPY[state.step];
   const errorMessage = firstErrorMessage(state.errors);
+
+  useEffect(() => {
+    if (previousStepRef.current === state.step) return;
+
+    previousStepRef.current = state.step;
+    stepHeadingRef.current?.focus();
+  }, [state.step]);
 
   function nextGoalId(): string {
     const id = `goal-${nextGoalSequence.current}`;
@@ -678,7 +687,9 @@ export function FinancialOnboardingFlow() {
       <Surface tone="default" padding="md" className={styles.stepSurface}>
         <Stack space="xl">
           <div className={styles.stepHeading}>
-            <h2 id="onboarding-step-title">{activeCopy.title}</h2>
+            <h2 id="onboarding-step-title" ref={stepHeadingRef} tabIndex={-1}>
+              {activeCopy.title}
+            </h2>
             <p>{activeCopy.description}</p>
           </div>
 
