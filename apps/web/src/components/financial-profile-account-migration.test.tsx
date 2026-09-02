@@ -62,7 +62,9 @@ describe("FinancialProfileAccountMigration", () => {
   it("preserves focus when retrying or saving replaces migration actions", () => {
     expect(MIGRATION_SOURCE).toContain("migrationHeadingRef.current?.focus()");
     expect(MIGRATION_SOURCE).toContain("focusMigrationHeading();\n    setIsSaving(true)");
-    expect(MIGRATION_SOURCE).toContain("focusMigrationHeading();\n                      void loadAccountProfile()");
+    expect(MIGRATION_SOURCE).toContain(
+      "focusMigrationHeading();\n                      void loadAccountProfile()",
+    );
     expect(MIGRATION_SOURCE).toContain("ref={migrationHeadingRef} tabIndex={-1}");
   });
 
