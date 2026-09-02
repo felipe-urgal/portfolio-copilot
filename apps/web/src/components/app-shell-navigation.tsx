@@ -217,7 +217,7 @@ export function AppShellNavigation({
         <Button
           ref={triggerRef}
           variant="secondary"
-          size="sm"
+          size="md"
           aria-haspopup="dialog"
           aria-expanded={drawerOpen}
           aria-controls="app-navigation-drawer"
@@ -249,7 +249,7 @@ export function AppShellNavigation({
           >
             <div className={styles.drawerHeader}>
               <span id="app-navigation-title">Navegação</span>
-              <Button ref={closeRef} variant="ghost" size="sm" onClick={() => closeDrawer(true)}>
+              <Button ref={closeRef} variant="ghost" size="md" onClick={() => closeDrawer(true)}>
                 Fechar
               </Button>
             </div>
