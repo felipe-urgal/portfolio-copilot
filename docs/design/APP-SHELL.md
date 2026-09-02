@@ -51,7 +51,7 @@ Até 520px o label visual do botão Menu é ocultado mantendo o texto acessível
 
 As translucências específicas do shell são compostas a partir dos semantic color tokens do R2 com `color-mix`; o componente não introduz uma paleta paralela de cores literais.
 
-## Keyboard e foco
+## Keyboard, foco e touch targets
 
 O drawer mantém o seguinte lifecycle:
 
@@ -63,6 +63,8 @@ O drawer mantém o seguinte lifecycle:
 6. enquanto aberto, o scroll do `body` é bloqueado e restaurado no cleanup.
 
 Os botões Menu/Fechar usam a primitive `Button`; ela aceita `ref` para suportar focus management sem styling paralelo.
+
+A brand navegável também respeita `--touch-target-min` (44px) em desktop e mobile. O R9 consolidou esse contrato para que a redução visual do glyph no header estreito não reduza a área interativa do link para o Dashboard.
 
 ## Landmarks e skip navigation
 
@@ -100,7 +102,7 @@ Essa redução de payload mantém o drawer interativo sem serializar dados de se
 
 ## Validação
 
-O R3 possui testes para:
+O R3/R9 possui testes para:
 
 - rotas reais e active route;
 - ausência de rotas fictícias;
@@ -108,6 +110,7 @@ O R3 possui testes para:
 - trigger mobile fechado por padrão;
 - contexto de conta sem exposição do subject interno;
 - contratos CSS de sidebar/drawer/reduced motion;
+- touch target canônico da brand e dos controles de navegação mobile;
 - onboarding sem shell paralelo.
 
 O CI canônico continua responsável por format, lint, typecheck, migrations, fallback de `.env.local`, tests e build.
