@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import type { FinancialProfileSnapshot } from "@portfolio-copilot/domain";
 
@@ -69,6 +69,8 @@ export function FinancialProfileAccountMigration({
   );
   const [isSaving, setIsSaving] = useState(false);
   const [feedback, setFeedback] = useState<MigrationFeedback | null>(null);
+  const [localRemovalCompleted, setLocalRemovalCompleted] = useState(false);
+  const removalHeadingRef = useRef<HTMLHeadingElement>(null);
 
   const loadAccountProfile = useCallback(async () => {
     setAccountState({ status: "loading" });
@@ -102,7 +104,33 @@ export function FinancialProfileAccountMigration({
     };
   }, [hasPersistedLocalProfile, initialAccountProfile, loadAccountProfile]);
 
-  if (!hasPersistedLocalProfile || financialProfile === null) return null;
+  if (financialProfile === null) return null;
+
+  if (localRemovalCompleted) {
+    return (
+      <section className={styles.section} aria-labelledby="account-migration-title">
+        <Surface padding="lg" className={styles.surface}>
+          <div className={styles.header}>
+            <div>
+              <span className={styles.eyebrow}>Perfil local</span>
+              <h2 id="account-migration-title" ref={removalHeadingRef} tabIndex={-1}>
+                Cópia local removida
+              </h2>
+              <p>
+                O perfil continua disponível nesta sessão, mas não será restaurado deste dispositivo
+                após recarregar.
+              </p>
+            </div>
+          </div>
+          <Alert tone="success" title="Cópia local removida deste dispositivo.">
+            <p>O perfil salvo na conta não foi alterado.</p>
+          </Alert>
+        </Surface>
+      </section>
+    );
+  }
+
+  if (!hasPersistedLocalProfile) return null;
 
   const accountProfile = accountState.status === "ready" ? accountState.profile : null;
   const comparison =
@@ -181,7 +209,11 @@ export function FinancialProfileAccountMigration({
         title: "Não foi possível remover a cópia local deste dispositivo.",
         description: "O perfil salvo na conta não foi alterado.",
       });
+      return;
     }
+
+    setLocalRemovalCompleted(true);
+    requestAnimationFrame(() => removalHeadingRef.current?.focus());
   }
 
   return (
