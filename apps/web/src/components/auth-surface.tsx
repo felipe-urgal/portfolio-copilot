@@ -3,7 +3,7 @@ import type { ComponentProps, ReactNode } from "react";
 
 import { APP_NAME } from "@portfolio-copilot/shared";
 
-import { Alert, Container, LinkButton, Stack, Surface } from "./ui";
+import { Alert, Container, Disclosure, LinkButton, Stack, Surface } from "./ui";
 import { AuthSubmitButton } from "./auth-submit-button";
 import styles from "./auth-surface.module.css";
 
@@ -46,18 +46,6 @@ export function AuthSurface({ brandHref, title, description, children }: AuthSur
   );
 }
 
-export function AuthDisclosure({
-  summary,
-  children,
-}: Readonly<{ summary: string; children: ReactNode }>) {
-  return (
-    <details className={styles.disclosure}>
-      <summary>{summary}</summary>
-      <div className={styles.disclosureBody}>{children}</div>
-    </details>
-  );
-}
-
 export function SignInAuthView({
   action,
   hasError,
@@ -80,13 +68,15 @@ export function SignInAuthView({
           <AuthSubmitButton>Entrar com GitHub</AuthSubmitButton>
         </form>
 
-        <AuthDisclosure summary="Privacidade e segurança">
-          <ul className={styles.disclosureList}>
-            <li>O Portfolio Copilot não recebe sua senha do GitHub.</li>
-            <li>Seu perfil financeiro local permanece separado da autenticação.</li>
-            <li>Sua sessão pode exigir uma nova autenticação após expirar.</li>
-          </ul>
-        </AuthDisclosure>
+        <Disclosure className={styles.disclosure} summary="Privacidade e segurança">
+          <div className={styles.disclosureBody}>
+            <ul className={styles.disclosureList}>
+              <li>O Portfolio Copilot não recebe sua senha do GitHub.</li>
+              <li>Seu perfil financeiro local permanece separado da autenticação.</li>
+              <li>Sua sessão pode exigir uma nova autenticação após expirar.</li>
+            </ul>
+          </div>
+        </Disclosure>
       </Stack>
     </AuthSurface>
   );
@@ -116,12 +106,14 @@ export function SignOutAuthView({
           </LinkButton>
         </div>
 
-        <AuthDisclosure summary="O que acontece ao sair?">
-          <ul className={styles.disclosureList}>
-            <li>A sessão autenticada neste navegador é encerrada.</li>
-            <li>Seu perfil financeiro salvo neste dispositivo não é apagado.</li>
-          </ul>
-        </AuthDisclosure>
+        <Disclosure className={styles.disclosure} summary="O que acontece ao sair?">
+          <div className={styles.disclosureBody}>
+            <ul className={styles.disclosureList}>
+              <li>A sessão autenticada neste navegador é encerrada.</li>
+              <li>Seu perfil financeiro salvo neste dispositivo não é apagado.</li>
+            </ul>
+          </div>
+        </Disclosure>
       </Stack>
     </AuthSurface>
   );
