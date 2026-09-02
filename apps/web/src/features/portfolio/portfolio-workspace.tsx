@@ -394,7 +394,7 @@ export function PortfolioWorkspace({
             {PORTFOLIO_TASKS.map((task) => (
               <Button
                 key={task.id}
-                size="sm"
+                size="md"
                 variant={activeTask === task.id ? "secondary" : "ghost"}
                 aria-current={activeTask === task.id ? "page" : undefined}
                 aria-controls={`portfolio-panel-${task.id}`}
