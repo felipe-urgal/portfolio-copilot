@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 
 import {
   AssetQuantity,
@@ -62,6 +62,7 @@ import {
 import styles from "./portfolio-workspace.module.css";
 
 type PortfolioTask = "overview" | "assets" | "transactions" | "contribution" | "settings";
+type PortfolioFocusTarget = PortfolioTask | "creation";
 
 type PortfolioWorkspaceProps = Readonly<{
   initialSnapshot?: PortfolioSnapshot | null;
@@ -154,6 +155,21 @@ export function PortfolioWorkspace({
   const [transactions, setTransactions] = useState<readonly TransactionSnapshot[]>(() => [
     ...initialTransactions,
   ]);
+  const taskButtonRefs = useRef<Partial<Record<PortfolioTask, HTMLButtonElement | null>>>({});
+  const portfolioFormTitleRef = useRef<HTMLHeadingElement>(null);
+  const pendingFocusRef = useRef<PortfolioFocusTarget | null>(null);
+
+  useEffect(() => {
+    const target = pendingFocusRef.current;
+    if (target === null) return;
+
+    if (target === "creation") {
+      portfolioFormTitleRef.current?.focus();
+    } else {
+      taskButtonRefs.current[target]?.focus();
+    }
+    pendingFocusRef.current = null;
+  }, [activeTask, snapshot]);
 
   function updateDraft(field: keyof PortfolioDraft, value: string): void {
     setDraft((current) => ({ ...current, [field]: value }));
@@ -170,6 +186,11 @@ export function PortfolioWorkspace({
     setTradeErrors({});
   }
 
+  function activateTask(task: PortfolioTask): void {
+    pendingFocusRef.current = task;
+    setActiveTask(task);
+  }
+
   function handlePortfolioSubmit(event: FormEvent<HTMLFormElement>): void {
     event.preventDefault();
     const result = createPortfolioSnapshot(draft, () => globalThis.crypto.randomUUID());
@@ -178,6 +199,7 @@ export function PortfolioWorkspace({
       focusFirstInvalidField(event.currentTarget);
       return;
     }
+    pendingFocusRef.current = "overview";
     setSnapshot(result.snapshot);
     setAssetDraft(createInitialLocalAssetDraft(result.snapshot.referenceCurrency));
     setErrors({});
@@ -241,6 +263,7 @@ export function PortfolioWorkspace({
   }
 
   function resetPortfolio(): void {
+    pendingFocusRef.current = "creation";
     setDraft(createInitialPortfolioDraft());
     setErrors({});
     setSnapshot(null);
@@ -297,7 +320,6 @@ export function PortfolioWorkspace({
               "Use baseline manual, política, concentração e restrições antes da recomendação determinística.",
             label: "Ir para Aporte",
           };
-
   return (
     <div className={styles.workspace}>
       <PageHeader
@@ -316,7 +338,9 @@ export function PortfolioWorkspace({
             <div className={styles.sectionHeading}>
               <div>
                 <span className={styles.eyebrow}>Configuração inicial</span>
-                <h2 id="portfolio-form-title">Criar carteira</h2>
+                <h2 id="portfolio-form-title" ref={portfolioFormTitleRef} tabIndex={-1}>
+                  Criar carteira
+                </h2>
                 <p>O domínio valida nome e moeda antes de liberar ativos e Transaction Ledger.</p>
               </div>
               <Status tone="neutral">Ainda não configurada</Status>
@@ -404,6 +428,9 @@ export function PortfolioWorkspace({
             {PORTFOLIO_TASKS.map((task) => (
               <Button
                 key={task.id}
+                ref={(node) => {
+                  taskButtonRefs.current[task.id] = node;
+                }}
                 size="md"
                 variant={activeTask === task.id ? "secondary" : "ghost"}
                 aria-current={activeTask === task.id ? "page" : undefined}
@@ -462,7 +489,7 @@ export function PortfolioWorkspace({
                     <p>{nextAction.description}</p>
                   </div>
                 </div>
-                <Button size="sm" onClick={() => setActiveTask(nextAction.task)}>
+                <Button size="sm" onClick={() => activateTask(nextAction.task)}>
                   {nextAction.label}
                 </Button>
               </Surface>
@@ -492,7 +519,7 @@ export function PortfolioWorkspace({
                     <Button
                       variant="secondary"
                       size="sm"
-                      onClick={() => setActiveTask("transactions")}
+                      onClick={() => activateTask("transactions")}
                     >
                       Abrir Transações
                     </Button>
@@ -685,7 +712,7 @@ export function PortfolioWorkspace({
                     <Button
                       variant="secondary"
                       size="sm"
-                      onClick={() => setActiveTask("transactions")}
+                      onClick={() => activateTask("transactions")}
                     >
                       Registrar transação
                     </Button>
