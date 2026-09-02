@@ -44,12 +44,13 @@ Entregas concluídas em 02/09/2026:
 
 Vertical atual:
 
+- PR #107 — `feat: consolidar reason codes no R8`;
 - branch `feat/r8-recommendation-reason-codes`;
 - consolidar presentation reutilizável de reason codes sem mover mapping/copy financeira para `components/ui`;
 - substituir disclosures locais da recomendação pelo `Disclosure` canônico;
 - manter explicação humana antes do código auditável, preservando a ordem e as causas fornecidas pelo domínio;
 - não alterar `ContributionRecommendationSnapshot`, fórmulas, status, reason codes ou reconciliação financeira;
-- reconciliar `docs/UX-UI-REDESIGN-ROADMAP.md`, que ainda marcava R8 como “PRÓXIMO”.
+- `docs/UX-UI-REDESIGN-ROADMAP.md` reconciliado para R8 `EM ANDAMENTO`.
 
 Depois dessa vertical, o R8 ainda precisa auditar/consolidar principalmente provenance/stale/missing/conflict e quaisquer estados transversais equivalentes que continuem como ilha visual.
 
