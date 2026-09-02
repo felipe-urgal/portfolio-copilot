@@ -247,7 +247,9 @@ export function ContributionRecommendationSection({
                 {recommendation.decisions.map((decision) => {
                   const asset = decision.assetId === null ? null : assetsById.get(decision.assetId);
                   const classLabel = assetClassLabel(decision.assetClass as AssetClassCode);
-                  const reasons = explainContributionRecommendationReasonCodes(decision.reasonCodes);
+                  const reasons = explainContributionRecommendationReasonCodes(
+                    decision.reasonCodes,
+                  );
 
                   return (
                     <tr key={decision.assetClass}>
@@ -273,7 +275,10 @@ export function ContributionRecommendationSection({
                         </Status>
                       </td>
                       <td>
-                        <Disclosure summary="Motivos" summaryAside={reasonCountLabel(reasons.length)}>
+                        <Disclosure
+                          summary="Motivos"
+                          summaryAside={reasonCountLabel(reasons.length)}
+                        >
                           <ReasonCodeList
                             reasons={reasons}
                             ariaLabel={`Motivos estruturados de ${classLabel}`}
