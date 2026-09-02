@@ -14,8 +14,8 @@ Estado reconciliado em 2026-09-02:
 - R5 #77 — concluído;
 - R6 #78 — concluído;
 - R7 #79 — concluído / PR #92;
-- R8 #80 — concluído / PRs #95, #105–#110;
-- **R9 #81 — accessibility/responsive/fidelity QA — próxima fase**;
+- R8 #80 — concluído / PRs #95, #105–#110; gate final PR #111, CI pós-merge #577 verde;
+- **R9 #81 — accessibility/responsive/fidelity QA — prioridade atual**;
 - R10 — gate final e fechamento da #69.
 
 Em 31/08/2026, #97/#99 e PRs #98/#100 prepararam e ativaram a produção pessoal/privada Vercel + Neon. Esse trabalho operacional está concluído e não altera a sequência R9 → R10.
@@ -193,7 +193,8 @@ Entregas em 02/09/2026:
 - PR #107 — recommendation/reason codes consolidados com presentation reutilizável + `Disclosure`; merge `e366bb5d43d4c293d6c6de47ca42a676adb1721a`, CI pós-merge #560 verde;
 - PR #108 — auth migrada para `Disclosure` canônico sem `AuthDisclosure` paralelo; merge `6c22aa323063a6c8dbbef80a4f8eaae1f65527a8`, CI pós-merge #563 verde;
 - PR #109 — disclosure de persistência do onboarding migrado para `Disclosure` canônico; merge `c26bd08c94cc25302e36b0b21488ae156d69e6c4`, CI pós-merge #567 verde;
-- PR #110 — AssetId, TransactionId e identidade do Portfolio migrados para `Disclosure` canônico; merge `81c20a309849aba2964deb2aa9e6ef8ae3bc640e`, CI pós-merge #574 verde.
+- PR #110 — AssetId, TransactionId e identidade do Portfolio migrados para `Disclosure` canônico; merge `81c20a309849aba2964deb2aa9e6ef8ae3bc640e`, CI pós-merge #574 verde;
+- PR #111 — audit/gate documental final do R8, reconciliação do estado e promoção do R9; merge `8f842a537a44913cba55720d4c10c328ed9ee27b`, CI pós-merge #577 verde.
 
 Audit final:
 
@@ -204,9 +205,9 @@ Audit final:
 - loading/empty/error/success presentes nas surfaces atuais usam os contratos canônicos aplicáveis;
 - provenance/stale/missing/conflict avançados permanecem explícitos nos packages de Domain/Market Data/Investment Engine, mas não têm surface consumidora atual no `apps/web`; o R8 não inventou UI ou dados para representar capabilities ausentes.
 
-Gate: nenhuma ilha transversal concreta conhecida permanece aberta nas surfaces atuais; CI pós-merge #574 verde e R9 pode executar o QA visual/a11y/responsive real.
+Gate: nenhuma ilha transversal concreta conhecida permanece aberta nas surfaces atuais; CI pós-merge #577 verde e R9 está liberado para executar o QA visual/a11y/responsive real.
 
-## R9 — Accessibility, responsive e visual fidelity QA — PRÓXIMA FASE — #81
+## R9 — Accessibility, responsive e visual fidelity QA — PRIORIDADE ATUAL — #81
 
 Validar por browser e teclado:
 
@@ -272,7 +273,7 @@ Após R9:
   -> #78 R6 dashboard ✓
   -> #79 R7 portfolio ✓
   -> #80 R8 estados/componentes ✓
-  -> #81 R9 a11y/responsive/fidelity (próxima)
+  -> #81 R9 a11y/responsive/fidelity (atual)
   -> R10 / fechamento #69
   -> UI da #45 sobre a fundação final
 ```
