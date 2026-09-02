@@ -41,7 +41,11 @@ O R9 segue sendo executado em verticais pequenas e verificáveis enquanto o brow
 - a brand passou a preservar `--touch-target-min` sem aumentar o glyph nem alterar a hierarquia visual do header/sidebar;
 - o teste do AppShell cobre explicitamente a área mínima da brand junto dos botões Menu/Fechar já endurecidos pelo R9;
 - o contrato foi reconciliado em `docs/design/APP-SHELL.md`;
-- nesta execução, a integração Vercel continuou retornando `403 Forbidden` ao listar deployments do projeto e também não conseguiu gerar acesso direto ao endpoint de produção; portanto screenshots, fidelity ledger, keyboard-only e screen-reader smoke continuam **não executados** e não devem ser tratados como evidência existente.
+- PR #131 — o onboarding passou a expor `required` nativo para decisões que o domínio já exige antes de avançar: moeda, risco, horizonte, meta de reserva quando ativada, tipo/valor de objetivos existentes e data somente quando `DATED_PURPOSE` exige;
+- a obrigatoriedade dos grupos de risco/horizonte também ficou explícita nas respectivas legendas, sem criar primitive visual paralela;
+- `noValidate` e `validateOnboardingStep(...)` continuam preservados, então os atributos nativos comunicam semântica a agentes de usuário/tecnologias assistivas sem substituir a validação de domínio;
+- regressões do onboarding verificam a semântica obrigatória e `docs/design/ONBOARDING.md` registra o contrato endurecido;
+- nesta execução, o acesso remoto ao deploy continuou sem uma superfície navegável disponível para o agente; portanto screenshots, fidelity ledger, keyboard-only e screen-reader smoke continuam **não executados** e não devem ser tratados como evidência existente.
 
 A #81 permanece aberta até o gate completo de browser/fidelity/accessibility ser reproduzível e concluído.
 

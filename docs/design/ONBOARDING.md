@@ -2,7 +2,7 @@
 
 ## Status
 
-**CANÔNICO após conclusão da #77 / R5.**
+**CANÔNICO após conclusão da #77 / R5, com hardening incremental de acessibilidade no R9 / #81.**
 
 Este documento registra o contrato visual e de interação de `/onboarding` depois da migração para o AppShell do R3 e para as primitives do R2. Ele complementa `R1-ASSISTANT-FIRST-APP-SPEC.md`, `DESIGN-SYSTEM.md` e `APP-SHELL.md`.
 
@@ -46,19 +46,21 @@ O stepper é orientação, não uma segunda navegação. Por isso usa composiç�
 - moeda de referência com `Field`, `Label`, `TextInput`, `HelpText` e `FieldError`;
 - tolerância a risco com `ChoiceCard` e descrição explícita para cada alternativa;
 - horizonte com `SegmentedControl` porque é uma escolha compacta entre três categorias;
-- `aria-describedby`, `aria-invalid`, fieldset/legend e foco no primeiro erro continuam preservados.
+- `aria-describedby`, `aria-invalid`, fieldset/legend e foco no primeiro erro continuam preservados;
+- moeda, tolerância a risco e horizonte expõem a obrigatoriedade antes da validação: campos textuais usam `Label required` + `required` nativo e os grupos de radios mantêm `required` nos inputs nativos, com a legenda deixando a decisão obrigatória explícita.
 
 ### Reserva
 
-A reserva é opcional. O opt-in usa `ChoiceCard` checkbox em vez de um switch visual próprio. Quando ativada, a meta aparece como campo monetário. A UI mantém o valor como texto e a conversão para `Money` continua acontecendo somente na validação existente.
+A reserva é opcional. O opt-in usa `ChoiceCard` checkbox em vez de um switch visual próprio. Quando ativada, a meta aparece como campo monetário e passa a expor `required` nativo/visual porque o domínio exige um valor válido nesse estado. A UI mantém o valor como texto e a conversão para `Money` continua acontecendo somente na validação existente.
 
 ### Objetivos
 
 - zero objetivos é um estado válido e usa `EmptyState`;
 - adicionar objetivo é uma ação explícita;
 - cada objetivo é uma seção aberta, separada por ritmo e borda sutil, sem card dentro da `Surface` principal;
-- tipo usa `Select`;
-- valor e data usam `TextInput`;
+- tipo usa `Select` e é obrigatório quando o objetivo existe;
+- valor usa `TextInput` e é obrigatório quando o objetivo existe;
+- data usa `TextInput`; permanece opcional para os tipos que aceitam ausência e recebe `required` somente quando `DATED_PURPOSE` torna a data obrigatória pelo domínio;
 - remover usa `Button` ghost;
 - nenhum controle redefine as regras de data/valor do domínio.
 
@@ -100,7 +102,9 @@ O onboarding não mantém equivalentes locais para:
 
 O CSS da feature existe somente para anatomy, ritmo, progressão, review e responsive composition. Cor, foco, touch target, controles e feedback vêm dos semantic tokens/primitives do R2.
 
-## 6. Validação e foco
+## 6. Validação, obrigatoriedade e foco
+
+A semântica HTML não substitui o domínio. O formulário continua com `noValidate` e `validateOnboardingStep(...)` permanece a única autoridade para decidir se uma etapa pode avançar ou produzir snapshot. Os atributos `required` existem para comunicar antecipadamente a obrigatoriedade real aos agentes de usuário e tecnologias assistivas, espelhando exatamente as regras que o domínio já aplica.
 
 Ao tentar avançar com dados inválidos:
 

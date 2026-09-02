@@ -171,10 +171,13 @@ function ProfileStep({
   return (
     <Stack className={styles.stepBody} space="xl">
       <Field>
-        <Label htmlFor="reference-currency">Moeda de referência</Label>
+        <Label htmlFor="reference-currency" required>
+          Moeda de referência
+        </Label>
         <TextInput
           id="reference-currency"
           name="referenceCurrency"
+          required
           value={draft.referenceCurrency}
           maxLength={3}
           autoCapitalize="characters"
@@ -203,7 +206,7 @@ function ProfileStep({
         className={styles.choiceFieldset}
         aria-describedby={describedBy("risk-help", "risk-error", riskError !== undefined)}
       >
-        <legend className={styles.groupLegend}>Tolerância a risco</legend>
+        <legend className={styles.groupLegend}>Tolerância a risco (obrigatório)</legend>
         <HelpText id="risk-help">
           Esta é uma preferência declarada e não substitui uma avaliação regulatória de perfil.
         </HelpText>
@@ -215,6 +218,7 @@ function ProfileStep({
               <ChoiceCard
                 key={risk}
                 name="riskTolerance"
+                required
                 value={risk}
                 checked={draft.riskTolerance === risk}
                 title={content.title}
@@ -232,7 +236,7 @@ function ProfileStep({
 
       <div className={styles.choiceGroup}>
         <SegmentedControl
-          legend="Horizonte financeiro"
+          legend="Horizonte financeiro (obrigatório)"
           aria-describedby={describedBy(
             "horizon-help",
             "horizon-error",
@@ -243,6 +247,7 @@ function ProfileStep({
             <SegmentedControlOption
               key={horizon}
               name="horizon"
+              required
               value={horizon}
               checked={draft.horizon === horizon}
               data-invalid={index === 0 && horizonError !== undefined ? "true" : undefined}
@@ -283,10 +288,13 @@ function ReserveStep({
 
       {draft.reserveEnabled ? (
         <Field>
-          <Label htmlFor="reserve-target">Meta da reserva em {draft.referenceCurrency}</Label>
+          <Label htmlFor="reserve-target" required>
+            Meta da reserva em {draft.referenceCurrency}
+          </Label>
           <TextInput
             id="reserve-target"
             name="reserveTarget"
+            required
             inputMode="decimal"
             autoComplete="off"
             placeholder="10000,00"
@@ -347,9 +355,12 @@ function GoalEditor({
 
         <Grid minimum="md" space="md">
           <Field>
-            <Label htmlFor={`${goal.clientId}-type`}>Tipo</Label>
+            <Label htmlFor={`${goal.clientId}-type`} required>
+              Tipo
+            </Label>
             <Select
               id={`${goal.clientId}-type`}
+              required
               value={goal.type}
               invalid={typeError !== undefined}
               aria-describedby={typeError === undefined ? undefined : `${goal.clientId}-type-error`}
@@ -372,11 +383,12 @@ function GoalEditor({
           </Field>
 
           <Field>
-            <Label htmlFor={`${goal.clientId}-amount`}>
+            <Label htmlFor={`${goal.clientId}-amount`} required>
               {goal.type === "PASSIVE_INCOME_MONTHLY" ? "Valor mensal-alvo" : "Valor-alvo"}
             </Label>
             <TextInput
               id={`${goal.clientId}-amount`}
+              required
               inputMode="decimal"
               autoComplete="off"
               placeholder="50000,00"
@@ -404,7 +416,7 @@ function GoalEditor({
               id={`${goal.clientId}-date`}
               type="date"
               value={goal.targetDate}
-              aria-required={dateRequiredByDomain}
+              required={dateRequiredByDomain}
               invalid={dateError !== undefined}
               aria-describedby={dateError === undefined ? undefined : `${goal.clientId}-date-error`}
               onChange={(event) =>

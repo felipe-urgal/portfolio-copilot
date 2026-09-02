@@ -65,6 +65,30 @@ describe("FinancialOnboardingFlow", () => {
     );
   });
 
+  it("announces domain-required decisions before validation errors without replacing domain validation", () => {
+    const html = renderFlow();
+
+    expect(html).toMatch(/id="reference-currency"[^>]*required=""/);
+    expect(html).toMatch(/type="radio"[^>]*required=""[^>]*name="riskTolerance"/);
+    expect(html).toMatch(/type="radio"[^>]*required=""[^>]*name="horizon"/);
+    expect(html).toContain("Tolerância a risco (obrigatório)");
+    expect(html).toContain("Horizonte financeiro (obrigatório)");
+    expect(FLOW_SOURCE).toContain('<Label htmlFor="reserve-target" required>');
+    expect(FLOW_SOURCE).toMatch(/name="reserveTarget"\s+required/);
+    expect(FLOW_SOURCE).toContain("<Label htmlFor={`${goal.clientId}-type`} required>");
+    expect(FLOW_SOURCE).toMatch(/id=\{`\$\{goal\.clientId\}-type`\}\s+required/);
+    expect(FLOW_SOURCE).toContain("<Label htmlFor={`${goal.clientId}-amount`} required>");
+    expect(FLOW_SOURCE).toMatch(/id=\{`\$\{goal\.clientId\}-amount`\}\s+required/);
+    expect(FLOW_SOURCE).toContain("required={dateRequiredByDomain}");
+    expect(FLOW_SOURCE).not.toContain("aria-required={dateRequiredByDomain}");
+    expect(FLOW_SOURCE).toContain(
+      "<form className={styles.form} noValidate onSubmit={handleSubmit}>",
+    );
+    expect(FLOW_SOURCE).toContain(
+      "validateOnboardingStep(state.step, state.draft, createBrowserId)",
+    );
+  });
+
   it("moves focus to the step heading only when the active step changes", () => {
     const html = renderFlow();
 
