@@ -24,7 +24,8 @@ O **Protótipo 3 — Assistant-First Workspace** é a direção visual canônica
 - [ ] **R8 — componentes/estados transversais — #80**;
   - PR #95: primeira vertical transversal / primitive `Disclosure`;
   - PR #105: account migration states canônicos, mergeado em 02/09/2026;
-  - vertical atual: `/health` operacional sobre primitives/tokens R2 e remoção do styling global legado correspondente.
+  - PR #106: health operacional sobre primitives/tokens R2 e remoção do styling global legado correspondente;
+  - vertical atual: presentation reutilizável de recommendation/reason codes e migração dos disclosures locais restantes dessa família.
 
 ### Depois
 
@@ -119,11 +120,12 @@ Existem hoje:
 - Dashboard R6 sobre AppShell/tokens/primitives, sem métricas fictícias;
 - Carteira R7 por tarefas, preservando Portfolio/Assets/Ledger/positions;
 - fluxo local do aporte do mês e explicação determinística com progressive disclosure;
-- consolidação transversal R8 em andamento, com `Disclosure` e account migration já migrados para contratos canônicos.
+- consolidação transversal R8 em andamento, com `Disclosure`, account migration e health operacional já migrados para contratos canônicos;
+- vertical atual consolidando a apresentação de reason codes sem alterar o snapshot ou a metodologia financeira.
 
 Pendências:
 
-- #80 — concluir estados/componentes transversais restantes, incluindo health operacional, recommendation/reason codes e provenance/stale/missing/conflict;
+- #80 — concluir estados/componentes transversais restantes, principalmente provenance/stale/missing/conflict e quaisquer duplicidades reais encontradas no audit final;
 - #47 — fechar a jornada ponta a ponta do MVP sobre as surfaces migradas.
 
 ## Asset Master e Market Data — FOUNDATION IMPLEMENTADA, COBERTURA EVOLUTIVA
