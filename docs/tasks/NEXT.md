@@ -1,6 +1,6 @@
 # Próxima Atividade — UX/UI R8: estados e componentes transversais do produto
 
-**Status:** READY — prioridade canônica atual em 2026-09-01
+**Status:** IN PROGRESS — prioridade canônica atual em 2026-09-02
 
 ## Issue canônica
 
@@ -31,7 +31,25 @@ O R8 parte das superfícies principais já migradas:
 
 Em 31/08/2026, #97 / PR #98 preparou a foundation de produção pessoal/privada em Vercel + Neon e #99 / PR #100 ativou o Production Contract após validação real do ambiente.
 
-Esse trabalho operacional está concluído e **não altera a sequência UX/UI**: #80 continua sendo a única próxima atividade canônica. A produção ativa é single-user/controlada e não satisfaz o Regulatory Gate público da #50.
+Esse trabalho operacional está concluído e **não altera a sequência UX/UI**: #80 continua sendo a única atividade canônica. A produção ativa é single-user/controlada e não satisfaz o Regulatory Gate público da #50.
+
+## Progresso do R8
+
+Entregas concluídas em 02/09/2026:
+
+- PR #95 — primeira vertical transversal, incluindo a primitive canônica `Disclosure` e início da consolidação de progressive disclosure;
+- PR #105 — `FinancialProfileAccountMigration` normalizada com `Alert`/`Disclosure`, feedback semântico tipado e regressões de markup; merge `329282739284effaf179913fbe4316e8bc466fe2`;
+- CI pós-merge #552 — verde no `main` após o PR #105.
+
+Vertical atual:
+
+- branch `feat/r8-health-operational-ui`;
+- migrar `/health` das classes globais legadas `shell`/`card`/`eyebrow` para primitives/tokens R2;
+- manter `/health` pública e standalone, fora do AppShell protegido;
+- preservar `/api/health/live` e `/api/health/ready` como contratos operacionais de máquina, sem alterar readiness, banco ou segurança;
+- remover do `globals.css` apenas o styling legado que pertencia à antiga página genérica.
+
+Depois dessa vertical, o R8 ainda precisa auditar/consolidar principalmente recommendation/reason-code presentation, provenance/stale/missing/conflict e quaisquer estados transversais equivalentes que continuem como ilha visual.
 
 ## Objetivo do R8
 
@@ -85,7 +103,7 @@ R9 (#81) só começa quando:
   -> #77 R5 onboarding ✓
   -> #78 R6 dashboard ✓
   -> #79 R7 portfolio ✓
-  -> #80 R8 estados/componentes
+  -> #80 R8 estados/componentes (em andamento)
   -> #81 R9 a11y/responsive/fidelity
   -> R10 / fechamento #69
 ```
