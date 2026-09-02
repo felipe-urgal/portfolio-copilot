@@ -20,7 +20,7 @@ A fundação de ingestão segura de conteúdo externo (#44) já foi concluída. 
 
 ## Convergência do MVP
 
-- #47 — fechar jornada ponta a ponta de carteira, transações e aporte do mês depois do gate visual final da #69, salvo priorização explícita diferente.
+- #47 — fechar jornada ponta a ponta de carteira, transações e aporte do mês; #80/R8 já não é bloqueio. A ordem relativa a R9/R10 deve ser definida por priorização explícita, sem criar dependência implícita nova.
 
 Os contratos de domínio, ledger, contribuição, persistência, autenticação e estados transversais R8 já existem. O trabalho restante é integração de jornada e acabamento, não reconstrução dessas fundações.
 
