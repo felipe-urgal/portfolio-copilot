@@ -26,8 +26,8 @@ Este catálogo separa **capability implementada**, **superfície web atual**, **
 | ingestão segura para IA | IMPLEMENTADO — foundation | conteúdo permanece untrusted; não equivale a Copiloto pronto |
 | Dashboard Assistant-First | IMPLEMENTADO — web | R6 / #78 / PR #91; somente fatos reais e estados honestos |
 | Carteira Assistant-First | IMPLEMENTADO — web | R7 / #79 / PR #92; overview, ativos/posições, transações, aporte e configuração por tarefa |
-| estados transversais finais | REDESIGN | #80 / R8 |
-| visual/a11y/responsive QA completo | REDESIGN | #81 / R9 |
+| estados/componentes transversais | IMPLEMENTADO — web | R8 / #80 concluído; gate final PR #111 com CI pós-merge #577 verde |
+| visual/a11y/responsive QA completo | REDESIGN | #81 / R9 — prioridade canônica atual |
 | Copiloto conversacional | BACKLOG | #45, UI somente sobre a fundação final da #69 |
 | factuality/hallucination eval suite | BACKLOG | #46 |
 | simulação/backtesting | BACKLOG | #48 |
@@ -72,6 +72,19 @@ Implementado no R7 (#79 / PR #92):
 Valor atual, P&L e métricas dependentes de Market Data continuam ausentes quando a superfície não possui fonte real. O R7 também não conecta persistência server-side implicitamente e não executa ordens financeiras.
 
 Contrato canônico: `docs/design/PORTFOLIO.md`.
+
+## Estados e componentes transversais
+
+Concluído no R8 (#80), com fechamento formal no PR #111:
+
+- `Disclosure` é a primitive canônica para progressive disclosure;
+- account migration, auth, onboarding, health e detalhes técnicos da Carteira usam feedback/primitives canônicas;
+- reason codes da recomendação usam presentation reutilizável sem mover semântica financeira para UI;
+- `FinancialProfileSessionSummary` permanece consumidor real já consolidado;
+- loading/empty/error/success/conflict existentes nas surfaces atuais usam os contratos aplicáveis;
+- provenance/stale/missing/conflict avançados continuam nos packages quando não há surface consumidora real; nenhuma UI fictícia foi criada apenas para completar checklist.
+
+O R9/#81 valida agora acessibilidade, responsividade, browsers e fidelidade do produto já consolidado.
 
 ## Perfil, objetivos e reserva
 
