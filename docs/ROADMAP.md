@@ -27,7 +27,8 @@ O **Protótipo 3 — Assistant-First Workspace** é a direção visual canônica
   - PR #106: health operacional sobre primitives/tokens R2 e remoção do styling global legado correspondente;
   - PR #107: recommendation/reason codes consolidados; mergeado em 02/09/2026, CI pós-merge #560 verde;
   - PR #108: auth migrada para `Disclosure` canônico; mergeado em 02/09/2026, CI pós-merge #563 verde;
-  - vertical atual: migrar o disclosure de persistência do onboarding para `Disclosure`; identidades técnicas da Carteira seguem como próxima duplicidade concreta.
+  - PR #109: onboarding/persistência migrado para `Disclosure` canônico; mergeado em 02/09/2026, CI pós-merge #567 verde;
+  - PR #110: vertical atual consolidando disclosures técnicos de Portfolio/Asset/Transaction IDs na Carteira.
 
 ### Depois
 
@@ -122,12 +123,12 @@ Existem hoje:
 - Dashboard R6 sobre AppShell/tokens/primitives, sem métricas fictícias;
 - Carteira R7 por tarefas, preservando Portfolio/Assets/Ledger/positions;
 - fluxo local do aporte do mês e explicação determinística com progressive disclosure;
-- consolidação transversal R8 em andamento, com `Disclosure`, account migration, health operacional, recommendation/reason codes e auth já migrados para contratos canônicos;
-- vertical atual removendo a implementação paralela do disclosure de persistência do onboarding, sem alterar opt-in ou persistência.
+- consolidação transversal R8 em andamento, com `Disclosure`, account migration, health operacional, recommendation/reason codes, auth e onboarding já migrados para contratos canônicos;
+- vertical atual consolidando detalhes técnicos de Portfolio/Asset/Transaction IDs na Carteira sem mudar contratos financeiros.
 
 Pendências:
 
-- #80 — concluir disclosure técnico remanescente da Carteira e então auditar provenance/stale/missing/conflict com consumidor real;
+- #80 — concluir o audit de provenance/stale/missing/conflict e quaisquer duplicidades transversais reais restantes após o PR #110;
 - #47 — fechar a jornada ponta a ponta do MVP sobre as surfaces migradas.
 
 ## Asset Master e Market Data — FOUNDATION IMPLEMENTADA, COBERTURA EVOLUTIVA

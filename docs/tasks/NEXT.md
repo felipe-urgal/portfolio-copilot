@@ -42,21 +42,24 @@ Entregas concluídas em 02/09/2026:
 - PR #106 — `/health` migrada para primitives/tokens R2, styling global legado correspondente removido e regressões adicionadas; merge `2a3af838d5b61d6891c1da9ffdf736745066b8d1`;
 - PR #107 — recommendation/reason codes consolidados com `ReasonCodeList` reutilizável e `Disclosure` canônico; merge `e366bb5d43d4c293d6c6de47ca42a676adb1721a`;
 - PR #108 — `AuthDisclosure` removido e auth migrada para `Disclosure` canônico; merge `6c22aa323063a6c8dbbef80a4f8eaae1f65527a8`;
-- CI pós-merge #563 — verde no `main` após o PR #108.
+- PR #109 — disclosure de persistência do onboarding migrado para `Disclosure` canônico; merge `c26bd08c94cc25302e36b0b21488ae156d69e6c4`;
+- CI pós-merge #567 — verde no `main` após o PR #109.
 
 Vertical atual:
 
-- PR #109 — `refactor: consolidar disclosure do onboarding no R8`;
-- branch `feat/r8-onboarding-disclosure`;
-- migrar o disclosure de persistência do onboarding de `<details>/<summary>` local para a primitive canônica `Disclosure`;
-- remover do CSS de onboarding apenas o comportamento duplicado de `summary`, hover, foco e touch target;
-- preservar integralmente o opt-in de persistência, a copy, o estado fechado por padrão e a ausência de sincronização automática;
-- adicionar regressão que impede o retorno do disclosure local.
+- PR #110 — `refactor: consolidar disclosures técnicos da Carteira no R8`;
+- branch `feat/r8-portfolio-disclosures`;
+- migrar os disclosures locais de AssetId, TransactionId e identidade do Portfolio para a primitive canônica `Disclosure`;
+- preservar os IDs auditáveis em segunda ordem, sem expô-los como input ou hierarquia principal;
+- remover do CSS da Carteira apenas o comportamento duplicado do `summary`, mantendo anatomy e apresentação monoespaçada dos IDs;
+- adicionar regressão que impede o retorno de `<details>` locais;
+- não alterar Portfolio, Assets, Transaction Ledger, projeção de posições, aporte ou persistência.
 
-Finding seguinte já mapeado:
+Depois desta vertical:
 
-- Carteira ainda possui disclosures locais para AssetId, TransactionId e identidade técnica;
-- depois dessa duplicidade concreta, auditar provenance/stale/missing/conflict e estados transversais equivalentes com consumidor real.
+- auditar provenance/stale/missing/conflict e estados transversais equivalentes somente onde houver consumidor real;
+- verificar se ainda resta alguma ilha concreta em profile/session summary, forms/transaction patterns, alerts/feedback, empty/error/recovery/loading/skeleton ou permission/auth transitions;
+- R9 só começa após o gate integral do R8.
 
 ## Objetivo do R8
 
