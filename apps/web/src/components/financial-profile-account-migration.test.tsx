@@ -32,20 +32,24 @@ describe("FinancialProfileAccountMigration", () => {
 
     expect(html).toContain("Migração opt-in");
     expect(html).toContain("não é enviado automaticamente");
+    expect(html).toContain("A conta ainda não possui um perfil financeiro.");
+    expect(html).toContain('role="status"');
     expect(html).toContain("Salvar perfil local na conta");
     expect(html).toContain("Manter somente local");
     expect(html).toContain("Remover cópia local");
   });
 
-  it("shows an idempotent aligned state without asking for another write", () => {
+  it("shows an idempotent aligned state as canonical success feedback", () => {
     const html = renderMigration(LOCAL_PROFILE);
 
+    expect(html).toContain("Perfis alinhados");
     expect(html).toContain("estão alinhados");
+    expect(html).toContain('role="status"');
     expect(html).not.toContain("Salvar perfil local na conta");
     expect(html).toContain("Remover cópia local");
   });
 
-  it("makes conflicting fields visible and requires explicit replacement", () => {
+  it("keeps conflict details auditable behind progressive disclosure", () => {
     const accountProfile: FinancialProfileSnapshot = {
       ...LOCAL_PROFILE,
       id: "a49503f0-27d2-4f4d-8248-2c48d95765e0",
@@ -55,6 +59,11 @@ describe("FinancialProfileAccountMigration", () => {
     const html = renderMigration(accountProfile);
 
     expect(html).toContain("Existe um conflito");
+    expect(html).toContain("<details");
+    expect(html).toContain("<summary");
+    expect(html).toContain("Revisar diferenças");
+    expect(html).toContain("3 diferenças");
+    expect(html).toContain('aria-label="Diferenças entre perfil local e da conta"');
     expect(html).toContain("Identidade interna do perfil");
     expect(html).toContain("Tolerância a risco");
     expect(html).toContain("Horizonte financeiro");

@@ -6,7 +6,7 @@ import type { FinancialProfileSnapshot } from "@portfolio-copilot/domain";
 
 import { useFinancialSession } from "./financial-session";
 import styles from "./financial-profile-account-migration.module.css";
-import { Alert, Badge, Button, LoadingState, Status, Surface } from "./ui";
+import { Alert, Badge, Button, Disclosure, LoadingState, Surface } from "./ui";
 import {
   canonicalFinancialProfileSnapshot,
   compareFinancialProfiles,
@@ -26,6 +26,12 @@ type AccountLoadState =
   | Readonly<{ status: "idle" | "loading" }>
   | Readonly<{ status: "ready"; profile: FinancialProfileSnapshot | null }>
   | Readonly<{ status: "error" }>;
+
+type MigrationFeedback = Readonly<{
+  tone: "info" | "success" | "warning" | "danger";
+  title: string;
+  description: string;
+}>;
 
 type FinancialProfileAccountMigrationProps = Readonly<{
   initialAccountProfile?: FinancialProfileSnapshot | null;
@@ -62,11 +68,11 @@ export function FinancialProfileAccountMigration({
         },
   );
   const [isSaving, setIsSaving] = useState(false);
-  const [statusMessage, setStatusMessage] = useState<string | null>(null);
+  const [feedback, setFeedback] = useState<MigrationFeedback | null>(null);
 
   const loadAccountProfile = useCallback(async () => {
     setAccountState({ status: "loading" });
-    setStatusMessage(null);
+    setFeedback(null);
 
     try {
       const response = await fetch("/api/financial-profile", {
@@ -106,7 +112,7 @@ export function FinancialProfileAccountMigration({
 
   async function migrateLocalProfile(replace: boolean) {
     setIsSaving(true);
-    setStatusMessage(null);
+    setFeedback(null);
 
     try {
       const response = await fetch("/api/financial-profile", {
@@ -129,9 +135,11 @@ export function FinancialProfileAccountMigration({
             ? null
             : canonicalFinancialProfileSnapshot(payload.accountProfile as FinancialProfileSnapshot);
         setAccountState({ status: "ready", profile: latestAccountProfile });
-        setStatusMessage(
-          "O perfil da conta mudou. Revise o conflito atualizado antes de substituir qualquer dado.",
-        );
+        setFeedback({
+          tone: "warning",
+          title: "O perfil da conta mudou.",
+          description: "Revise o conflito atualizado antes de substituir qualquer dado.",
+        });
         return;
       }
 
@@ -141,28 +149,38 @@ export function FinancialProfileAccountMigration({
       if (migratedProfile === null) throw new Error("Missing migrated account profile.");
 
       setAccountState({ status: "ready", profile: migratedProfile });
-      setStatusMessage(
-        "Perfil associado à conta. A cópia local foi preservada e só será removida por uma ação separada.",
-      );
+      setFeedback({
+        tone: "success",
+        title: "Perfil associado à conta.",
+        description: "A cópia local foi preservada e só será removida por uma ação separada.",
+      });
     } catch {
-      setStatusMessage(
-        "Não foi possível salvar o perfil na conta. Nenhuma cópia local foi removida.",
-      );
+      setFeedback({
+        tone: "danger",
+        title: "Não foi possível salvar o perfil na conta.",
+        description: "Nenhuma cópia local foi removida.",
+      });
     } finally {
       setIsSaving(false);
     }
   }
 
   function keepLocalOnly() {
-    setStatusMessage(
-      "Perfil mantido somente neste dispositivo. Nenhuma alteração foi enviada para a conta.",
-    );
+    setFeedback({
+      tone: "info",
+      title: "Perfil mantido somente neste dispositivo.",
+      description: "Nenhuma alteração foi enviada para a conta.",
+    });
   }
 
   function discardLocalProfile() {
     const removed = removePersistedFinancialProfile();
     if (!removed) {
-      setStatusMessage("Não foi possível remover a cópia local deste dispositivo.");
+      setFeedback({
+        tone: "danger",
+        title: "Não foi possível remover a cópia local deste dispositivo.",
+        description: "O perfil salvo na conta não foi alterado.",
+      });
     }
   }
 
@@ -189,43 +207,43 @@ export function FinancialProfileAccountMigration({
             </div>
           ) : accountState.status === "error" ? (
             <Alert tone="danger" title="Não foi possível consultar o perfil da conta.">
-              <p>O perfil local continua intacto e nenhum dado financeiro foi enviado.</p>
-              <Button variant="secondary" size="sm" onClick={() => void loadAccountProfile()}>
-                Tentar novamente
-              </Button>
+              <div className={styles.alertContent}>
+                <p>O perfil local continua intacto e nenhum dado financeiro foi enviado.</p>
+                <div className={styles.actions}>
+                  <Button variant="secondary" size="sm" onClick={() => void loadAccountProfile()}>
+                    Tentar novamente
+                  </Button>
+                </div>
+              </div>
             </Alert>
           ) : comparison?.relation === "local-only" ? (
-            <div className={styles.stateBlock}>
-              <div>
-                <strong>A conta ainda não possui um perfil financeiro.</strong>
+            <Alert tone="info" title="A conta ainda não possui um perfil financeiro.">
+              <div className={styles.alertContent}>
                 <p>
                   Você pode copiar o snapshot validado deste dispositivo para a conta ou continuar
                   somente com a cópia local.
                 </p>
+                <div className={styles.actions}>
+                  <Button
+                    size="sm"
+                    loading={isSaving}
+                    onClick={() => void migrateLocalProfile(false)}
+                  >
+                    Salvar perfil local na conta
+                  </Button>
+                  <Button variant="secondary" size="sm" disabled={isSaving} onClick={keepLocalOnly}>
+                    Manter somente local
+                  </Button>
+                </div>
               </div>
-              <div className={styles.actions}>
-                <Button
-                  size="sm"
-                  loading={isSaving}
-                  onClick={() => void migrateLocalProfile(false)}
-                >
-                  Salvar perfil local na conta
-                </Button>
-                <Button variant="secondary" size="sm" disabled={isSaving} onClick={keepLocalOnly}>
-                  Manter somente local
-                </Button>
-              </div>
-            </div>
+            </Alert>
           ) : comparison?.relation === "aligned" ? (
-            <div className={styles.stateBlock}>
-              <Status tone="success">Perfis alinhados</Status>
-              <div>
-                <strong>Perfil local e perfil da conta estão alinhados.</strong>
-                <p>
-                  Nenhuma gravação adicional é necessária. As duas cópias permanecem independentes.
-                </p>
-              </div>
-            </div>
+            <Alert tone="success" title="Perfis alinhados">
+              <p>
+                Perfil local e perfil da conta estão alinhados. Nenhuma gravação adicional é
+                necessária. As duas cópias permanecem independentes.
+              </p>
+            </Alert>
           ) : comparison?.relation === "conflict" ? (
             <div className={styles.stateBlock}>
               <Alert tone="warning" title="Existe um conflito entre o dispositivo e a conta.">
@@ -234,14 +252,21 @@ export function FinancialProfileAccountMigration({
                   explicitamente qual ação deseja executar.
                 </p>
               </Alert>
-              <ul
-                className={styles.differences}
-                aria-label="Diferenças entre perfil local e da conta"
+              <Disclosure
+                summary="Revisar diferenças"
+                summaryAside={`${comparison.differences.length} ${
+                  comparison.differences.length === 1 ? "diferença" : "diferenças"
+                }`}
               >
-                {comparison.differences.map((difference) => (
-                  <li key={difference}>{DIFFERENCE_LABELS[difference]}</li>
-                ))}
-              </ul>
+                <ul
+                  className={styles.differences}
+                  aria-label="Diferenças entre perfil local e da conta"
+                >
+                  {comparison.differences.map((difference) => (
+                    <li key={difference}>{DIFFERENCE_LABELS[difference]}</li>
+                  ))}
+                </ul>
+              </Disclosure>
               <div className={styles.actions}>
                 <Button size="sm" loading={isSaving} onClick={() => void migrateLocalProfile(true)}>
                   Substituir perfil da conta pelo local
@@ -254,10 +279,10 @@ export function FinancialProfileAccountMigration({
           ) : null}
         </div>
 
-        {statusMessage === null ? null : (
-          <p className={styles.statusMessage} role="status">
-            {statusMessage}
-          </p>
+        {feedback === null ? null : (
+          <Alert tone={feedback.tone} title={feedback.title}>
+            <p>{feedback.description}</p>
+          </Alert>
         )}
 
         <div className={styles.localFooter}>
