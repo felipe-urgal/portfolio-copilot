@@ -15,6 +15,7 @@ const PORTFOLIO_CSS = readFileSync(
 );
 const TASK_NAV_BUTTON =
   /PORTFOLIO_TASKS\.map\(\(task\) => \(\s*<Button\s+key=\{task\.id\}\s+size="md"/;
+const SCOPED_VALIDATION_FOCUS = /focusFirstInvalidField\(event\.currentTarget\);/g;
 
 const SNAPSHOT = {
   id: "8d5a7a27-2db8-4a51-a6c8-d84f78fd1298",
@@ -93,6 +94,12 @@ describe("PortfolioWorkspace", () => {
     expect(html).toContain("Detalhes técnicos e identidade");
     expect(html).toContain("Nada é persistido nesta versão");
     expect(PORTFOLIO_SOURCE).toMatch(TASK_NAV_BUTTON);
+  });
+
+  it("scopes validation focus to the submitted portfolio form", () => {
+    expect(PORTFOLIO_SOURCE).toContain("form.querySelector<HTMLElement>");
+    expect(PORTFOLIO_SOURCE.match(SCOPED_VALIDATION_FOCUS)).toHaveLength(4);
+    expect(PORTFOLIO_SOURCE).not.toContain("document.querySelector<HTMLElement>");
   });
 
   it("keeps technical identities auditable through canonical disclosures", () => {
