@@ -97,6 +97,21 @@ const STATUS_EXPLANATIONS: Readonly<Record<ContributionRecommendationStatus, Exp
     }),
   });
 
+export function explainContributionRecommendationReasonCodes(
+  reasonCodes: readonly ContributionRecommendationReasonCode[],
+): readonly ContributionRecommendationReasonExplanation[] {
+  return Object.freeze(
+    reasonCodes.map((code) => {
+      const reasonCopy = REASON_EXPLANATIONS[code];
+      return Object.freeze({
+        code,
+        title: reasonCopy.title,
+        description: reasonCopy.description,
+      });
+    }),
+  );
+}
+
 export function createContributionRecommendationExplanation(
   snapshot: ContributionRecommendationSnapshot,
 ): ContributionRecommendationExplanation {
@@ -117,16 +132,7 @@ export function createContributionRecommendationExplanation(
           status: decision.status,
           statusLabel: statusCopy.title,
           statusDescription: statusCopy.description,
-          reasons: Object.freeze(
-            decision.reasonCodes.map((code) => {
-              const reasonCopy = REASON_EXPLANATIONS[code];
-              return Object.freeze({
-                code,
-                title: reasonCopy.title,
-                description: reasonCopy.description,
-              });
-            }),
-          ),
+          reasons: explainContributionRecommendationReasonCodes(decision.reasonCodes),
           baselineAllocatedAmount: decision.baselineAllocatedAmount,
           policyAllocatedAmount: decision.policyAllocatedAmount,
           concentrationAllocatedAmount: decision.concentrationAllocatedAmount,

@@ -4,7 +4,7 @@
 
 **INICIATIVA ATIVA — #69**
 
-Estado reconciliado em 2026-09-01. A sequência UX/UI permanece a definida após o PR #92:
+Estado reconciliado em 2026-09-02. A sequência UX/UI permanece a definida após o PR #92:
 
 - R0 #72 — concluído;
 - R1 #73 — concluído;
@@ -14,7 +14,7 @@ Estado reconciliado em 2026-09-01. A sequência UX/UI permanece a definida após
 - R5 #77 — concluído;
 - R6 #78 — concluído;
 - R7 #79 — concluído / PR #92;
-- **próxima fase: R8 #80 — estados/componentes transversais**;
+- **R8 #80 — estados/componentes transversais — em andamento**;
 - R9 #81 — accessibility/responsive/fidelity QA;
 - R10 — gate final e fechamento da #69.
 
@@ -181,20 +181,30 @@ Implementado:
 
 Gate: tarefas financeiras estão separadas e escaneáveis, fontes de verdade permanecem determinísticas e detalhes técnicos não dominam a primeira hierarquia.
 
-## R8 — Componentes e estados transversais — PRÓXIMO — #80
+## R8 — Componentes e estados transversais — EM ANDAMENTO — #80
 
-Consolidar o que ainda restar fora das surfaces principais:
+Consolidar o que ainda restar fora das surfaces principais sem reabrir a arquitetura fechada de Dashboard/Carteira salvo finding transversal concreto.
 
-- recommendation/reason codes reutilizáveis;
-- financial profile/session summary remanescente em outras surfaces;
-- account migration remanescente;
+Concluído em 02/09/2026:
+
+- PR #95 — primeira vertical transversal e primitive canônica `Disclosure`;
+- PR #105 — account migration states normalizados sobre feedback/disclosure canônicos;
+- PR #106 — `/health` humana migrada para R2 e styling global legado correspondente removido; CI pós-merge #554 verde.
+
+Vertical atual:
+
+- recommendation/reason-code presentation reutilizável;
+- disclosures locais da recomendação migrados para `Disclosure`;
+- explicação humana permanece à frente do código auditável;
+- mapping de status/reason codes continua na feature financeira, não no design system;
+- nenhuma fórmula, reason code, metodologia ou reconciliação é alterada.
+
+Ainda pendente no audit do R8:
+
 - provenance/stale/missing/conflict;
-- forms remanescentes;
-- transaction patterns reutilizáveis;
-- alerts/feedback;
-- empty/error/recovery/loading/skeleton;
-- confirmations e permission/auth transitions;
-- health operacional quando exposto a humano.
+- financial profile/session summary remanescente em outras surfaces, se houver finding concreto;
+- forms/transaction patterns remanescentes, se houver duplicidade transversal real;
+- alerts/feedback, empty/error/recovery/loading/skeleton e permission/auth transitions que ainda não consumam contratos canônicos.
 
 Nenhuma ilha visual relevante do sistema anterior deve permanecer. Dashboard/Carteira só devem ser reabertos por finding transversal concreto.
 
@@ -263,7 +273,7 @@ Após R9:
   -> #77 R5 onboarding ✓
   -> #78 R6 dashboard ✓
   -> #79 R7 portfolio ✓
-  -> #80 R8 estados/componentes
+  -> #80 R8 estados/componentes (em andamento)
   -> #81 R9 a11y/responsive/fidelity
   -> R10 / fechamento #69
   -> UI da #45 sobre a fundação final

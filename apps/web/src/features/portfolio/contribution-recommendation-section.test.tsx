@@ -196,6 +196,8 @@ describe("ContributionRecommendationSection", () => {
     expect(html).toContain("BRL 90.00");
     expect(html).toContain("Custo conhecido consumido");
     expect(html).toContain("BRL 10.00");
+    expect(html).toContain("Reconciliação das sobras por etapa");
+    expect(html).toContain("5 etapas");
     expect(html).toContain("Após allocator");
     expect(html).toContain("Após política");
     expect(html).toContain("Após concentração");
@@ -203,6 +205,8 @@ describe("ContributionRecommendationSection", () => {
     expect(html).toContain("Após custos");
     expect(html).toContain("ETF global");
     expect(html).toContain("Executável");
+    expect(html).toContain("Motivos");
+    expect(html).toContain("1 motivo");
     expect(html).toContain("CONTRIBUTION_POLICY_ADJUSTED");
     expect(html).toContain("Como ler este aporte");
     expect(html).toContain("Política ajustou o baseline");
@@ -210,6 +214,7 @@ describe("ContributionRecommendationSection", () => {
     expect(html).toContain("não uma ordem de compra");
     expect(html).toContain("Nenhum valor é recalculado nesta leitura");
     expect(html).toContain("cumulativas, não incrementais");
+    expect(html).not.toContain(">Reason codes</");
     expect(html).not.toContain(EQUITY_ASSET_ID);
   });
 });

@@ -39,17 +39,20 @@ Entregas concluídas em 02/09/2026:
 
 - PR #95 — primeira vertical transversal, incluindo a primitive canônica `Disclosure` e início da consolidação de progressive disclosure;
 - PR #105 — `FinancialProfileAccountMigration` normalizada com `Alert`/`Disclosure`, feedback semântico tipado e regressões de markup; merge `329282739284effaf179913fbe4316e8bc466fe2`;
-- CI pós-merge #552 — verde no `main` após o PR #105.
+- PR #106 — `/health` migrada para primitives/tokens R2, styling global legado correspondente removido e regressões adicionadas; merge `2a3af838d5b61d6891c1da9ffdf736745066b8d1`;
+- CI pós-merge #554 — verde no `main` após o PR #106.
 
 Vertical atual:
 
-- branch `feat/r8-health-operational-ui`;
-- migrar `/health` das classes globais legadas `shell`/`card`/`eyebrow` para primitives/tokens R2;
-- manter `/health` pública e standalone, fora do AppShell protegido;
-- preservar `/api/health/live` e `/api/health/ready` como contratos operacionais de máquina, sem alterar readiness, banco ou segurança;
-- remover do `globals.css` apenas o styling legado que pertencia à antiga página genérica.
+- PR #107 — `feat: consolidar reason codes no R8`;
+- branch `feat/r8-recommendation-reason-codes`;
+- consolidar presentation reutilizável de reason codes sem mover mapping/copy financeira para `components/ui`;
+- substituir disclosures locais da recomendação pelo `Disclosure` canônico;
+- manter explicação humana antes do código auditável, preservando a ordem e as causas fornecidas pelo domínio;
+- não alterar `ContributionRecommendationSnapshot`, fórmulas, status, reason codes ou reconciliação financeira;
+- `docs/UX-UI-REDESIGN-ROADMAP.md` reconciliado para R8 `EM ANDAMENTO`.
 
-Depois dessa vertical, o R8 ainda precisa auditar/consolidar principalmente recommendation/reason-code presentation, provenance/stale/missing/conflict e quaisquer estados transversais equivalentes que continuem como ilha visual.
+Depois dessa vertical, o R8 ainda precisa auditar/consolidar principalmente provenance/stale/missing/conflict e quaisquer estados transversais equivalentes que continuem como ilha visual.
 
 ## Objetivo do R8
 
