@@ -52,9 +52,7 @@ describe("canonical UI primitives", () => {
     expect(link).toContain("Link compacto");
     expect(BUTTON_SOURCE).toContain("sm: classNames(styles.buttonSm, styles.buttonMd)");
     expect(UI_CSS).toMatch(/\.buttonSm\s*\{[\s\S]*?font-size: var\(--font-size-xs\);/);
-    expect(UI_CSS).toMatch(
-      /\.buttonMd\s*\{\s*min-height: var\(--control-height-md\);\s*\}/,
-    );
+    expect(UI_CSS).toMatch(/\.buttonMd\s*\{\s*min-height: var\(--control-height-md\);\s*\}/);
     expect(TOKENS).toContain("--control-height-md: 2.75rem;");
   });
 
