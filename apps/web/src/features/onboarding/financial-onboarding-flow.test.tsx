@@ -65,6 +65,16 @@ describe("FinancialOnboardingFlow", () => {
     );
   });
 
+  it("moves focus to the step heading only when the active step changes", () => {
+    const html = renderFlow();
+
+    expect(html).toContain('tabindex="-1"');
+    expect(FLOW_SOURCE).toContain("previousStepRef.current === state.step");
+    expect(FLOW_SOURCE).toContain("stepHeadingRef.current?.focus()");
+    expect(FLOW_SOURCE).toContain("ref={stepHeadingRef}");
+    expect(FLOW_SOURCE).toContain("tabIndex={-1}");
+  });
+
   it("keeps persistence detail in the canonical progressive disclosure without changing opt-in", () => {
     const html = renderFlow();
 
