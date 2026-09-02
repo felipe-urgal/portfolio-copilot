@@ -105,7 +105,7 @@ Implementado:
 - active/focus states;
 - focus trap/escape/return focus;
 - reduced motion;
-- apenas `displayName` atravessa a ilha client;
+- apenas `displayName` atravessa a ilha client da navegação;
 - `ProductShell` legado removido.
 
 ## R4 — Auth e sessão — CONCLUÍDO — #76
