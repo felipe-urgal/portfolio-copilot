@@ -2,7 +2,7 @@
 
 Copiloto inteligente de investimentos para organizar patrimônio, estruturar aportes e tornar decisões financeiras **explicáveis, auditáveis e disciplinadas**.
 
-> **Estado atual:** o repositório já possui domínio financeiro determinístico, Transaction Ledger, pipeline de aporte, PostgreSQL com ownership, autenticação, Asset Master, Market Data foundation, Investment Engine, teses versionadas e ingestão segura de conteúdo externo. No frontend, o redesign baseado no **Protótipo 3 — Assistant-First Workspace** concluiu R0–R7 com o PR #92 e **R8 estados/componentes transversais (#80)** é a próxima atividade canônica. A produção pessoal/privada em **Vercel + Neon** foi ativada em 31/08/2026 via #97/#99 e PRs #98/#100, sem liberar o produto público nem o Regulatory Gate da #50.
+> **Estado atual:** o repositório já possui domínio financeiro determinístico, Transaction Ledger, pipeline de aporte, PostgreSQL com ownership, autenticação, Asset Master, Market Data foundation, Investment Engine, teses versionadas e ingestão segura de conteúdo externo. No frontend, o redesign baseado no **Protótipo 3 — Assistant-First Workspace** concluiu R0–R8; o R8 foi fechado no PR #111 com CI pós-merge #577 verde, e **R9 accessibility/responsive/visual fidelity QA (#81)** é a prioridade canônica atual. A produção pessoal/privada em **Vercel + Neon** foi ativada em 31/08/2026 via #97/#99 e PRs #98/#100, sem liberar o produto público nem o Regulatory Gate da #50.
 
 ![Direção visual canônica — Protótipo 3](docs/design/prototypes/prototype-3-assistant-first-dashboard.jpg)
 
@@ -48,10 +48,11 @@ A resposta precisa ser reconstruível: quais fatos foram usados, quais regras bl
 - migração opt-in/conflict-safe do perfil local para a conta;
 - Dashboard Assistant-First R6 com contexto real, panorama e próxima ação;
 - Carteira Assistant-First R7 por tarefas com Portfolio, Assets, ledger, posições e aporte determinístico;
+- estados/componentes transversais R8 consolidados sobre primitives canônicas, sem criar UI para capabilities ainda sem surface consumidora;
 - health humano em `/health`;
 - health operacional canônico em `/api/health/live` e `/api/health/ready`.
 
-Shell, auth, onboarding, Dashboard e Carteira já usam a fundação visual nova. Estados/componentes transversais ainda passam pelo R8; R9 fecha accessibility/responsive/visual QA.
+Shell, auth, onboarding, Dashboard, Carteira e estados transversais reais já usam a fundação visual nova. O R9 agora valida accessibility, responsividade, browsers e fidelidade visual do sistema completo antes do R10.
 
 ### Domínio financeiro — `packages/domain`
 
@@ -152,7 +153,6 @@ Leia [`docs/PRODUCTION.md`](docs/PRODUCTION.md).
 
 ## O que ainda não está concluído
 
-- componentes/estados transversais restantes — #80/R8;
 - accessibility/responsive/visual fidelity QA final — #81/R9;
 - fechamento R10 da iniciativa #69;
 - Copiloto explicável de IA — #45;
@@ -285,7 +285,7 @@ Leia [`docs/AI-CONTENT-INGESTION.md`](docs/AI-CONTENT-INGESTION.md).
 
 A iniciativa #69 usa o **Protótipo 3 — Assistant-First Workspace** como direção canônica.
 
-Estado reconciliado em 2026-09-01; a sequência UX/UI permanece a definida após o PR #92:
+Estado reconciliado em 2026-09-02 após o fechamento formal do R8 no PR #111:
 
 ```text
 R0 audit ✓           #72
@@ -296,8 +296,8 @@ R4 focused auth ✓    #76
 R5 onboarding ✓      #77 / PR #88
 R6 dashboard ✓       #78 / PR #91
 R7 carteira ✓        #79 / PR #92
-R8 estados           #80  <- próximo
-R9 a11y/responsive/fidelity #81
+R8 estados ✓         #80 / PRs #95, #105–#111
+R9 a11y/responsive/fidelity #81  <- prioridade atual
 R10 gate final       #69
 ```
 
@@ -310,6 +310,7 @@ Contratos atuais:
 - onboarding guiado no shell;
 - Dashboard R6 em `docs/design/DASHBOARD.md`;
 - Carteira R7 em `docs/design/PORTFOLIO.md`;
+- estados transversais R8 consolidados em primitives/presentations canônicas;
 - nenhuma rota, métrica ou UI de Copiloto fictícia para copiar mockup.
 
 Leia [`docs/UX-UI-REDESIGN-ROADMAP.md`](docs/UX-UI-REDESIGN-ROADMAP.md).
@@ -376,6 +377,8 @@ AUTH_GITHUB_ID="replace-with-github-oauth-client-id"
 AUTH_GITHUB_SECRET="replace-with-github-oauth-client-secret"
 DATABASE_URL="postgresql://portfolio:portfolio@localhost:5433/portfolio_copilot"
 ```
+
+Variáveis de check e produção são deliberadamente separadas do `.env.local`; consulte [`docs/PRODUCTION.md`](docs/PRODUCTION.md) para `CHECK_DATABASE_URL`, `AUTH_GITHUB_ALLOWED_ACCOUNT_ID`, `DATABASE_DIRECT_URL` e `PORTFOLIO_COPILOT_PRODUCTION_READY_URL`.
 
 ### Banco
 
