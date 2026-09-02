@@ -59,6 +59,13 @@ describe("FinancialProfileAccountMigration", () => {
     expect(MIGRATION_SOURCE).toContain("O perfil salvo na conta não foi alterado.");
   });
 
+  it("preserves focus when retrying or saving replaces migration actions", () => {
+    expect(MIGRATION_SOURCE).toContain("migrationHeadingRef.current?.focus()");
+    expect(MIGRATION_SOURCE).toContain("focusMigrationHeading();\n    setIsSaving(true)");
+    expect(MIGRATION_SOURCE).toContain("focusMigrationHeading();\n                      void loadAccountProfile()");
+    expect(MIGRATION_SOURCE).toContain("ref={migrationHeadingRef} tabIndex={-1}");
+  });
+
   it("shows an idempotent aligned state as canonical success feedback", () => {
     const html = renderMigration(LOCAL_PROFILE);
 
