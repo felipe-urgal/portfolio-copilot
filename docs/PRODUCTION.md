@@ -87,7 +87,7 @@ test
 build
 ```
 
-A migration desse fluxo ocorre somente no banco de check, antes da suíte. `prod:check` não usa `DATABASE_URL` ou `DATABASE_DIRECT_URL` herdadas como fallback e remove do ambiente filho credenciais de produção/provider que não pertencem ao check.
+A migration desse fluxo ocorre somente no banco de check, antes da suíte. Depois de `format:check`, `lint` e `typecheck`, o runner aguarda de forma limitada por até 60 segundos o host/porta do PostgreSQL de check aceitar conexão TCP antes de executar `db:migrate`. Essa espera tolera a inicialização normal da dependência, mas não provisiona nem inicia infraestrutura ausente; em timeout, o erro informa somente host/porta e não inclui usuário, senha, database ou connection string completa. `prod:check` não usa `DATABASE_URL` ou `DATABASE_DIRECT_URL` herdadas como fallback e remove do ambiente filho credenciais de produção/provider que não pertencem ao check.
 
 O banco de check deve ser dedicado, descartável quando possível e não pode conter dados reais. O CI usa PostgreSQL efêmero com o mesmo contrato `CHECK_DATABASE_URL`.
 
