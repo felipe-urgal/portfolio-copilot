@@ -26,6 +26,13 @@ describe("focused auth surface", () => {
     expect(html).not.toContain(">Identidade<");
   });
 
+  it("keeps the focused-auth brand on the canonical touch target without enlarging its glyph", () => {
+    expect(AUTH_CSS).toMatch(/\.brand\s*\{[\s\S]*?min-height: var\(--touch-target-min\);/);
+    expect(AUTH_CSS).toMatch(
+      /\.brandMark\s*\{[\s\S]*?width: var\(--control-height-sm\);[\s\S]*?height: var\(--control-height-sm\);/,
+    );
+  });
+
   it("keeps trust information in the canonical progressive disclosure", () => {
     const html = renderSignIn();
 
