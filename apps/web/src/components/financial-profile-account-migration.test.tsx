@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 
@@ -5,6 +7,11 @@ import type { FinancialProfileSnapshot } from "@portfolio-copilot/domain";
 
 import { FinancialProfileAccountMigration } from "./financial-profile-account-migration";
 import { FinancialSessionProvider } from "./financial-session";
+
+const MIGRATION_SOURCE = readFileSync(
+  new URL("./financial-profile-account-migration.tsx", import.meta.url),
+  "utf8",
+);
 
 const LOCAL_PROFILE: FinancialProfileSnapshot = {
   id: "8d5a7a27-2db8-4a51-a6c8-d84f78fd1298",
@@ -37,6 +44,10 @@ describe("FinancialProfileAccountMigration", () => {
     expect(html).toContain("Salvar perfil local na conta");
     expect(html).toContain("Manter somente local");
     expect(html).toContain("Remover cópia local");
+  });
+
+  it("keeps account migration actions on the canonical touch-target size", () => {
+    expect(MIGRATION_SOURCE).not.toContain('size="sm"');
   });
 
   it("shows an idempotent aligned state as canonical success feedback", () => {
