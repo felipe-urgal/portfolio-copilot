@@ -5,6 +5,7 @@ import { describe, expect, it } from "vitest";
 
 import { SignInAuthView, SignOutAuthView } from "./auth-surface";
 
+const AUTH_SOURCE = readFileSync(new URL("./auth-surface.tsx", import.meta.url), "utf8");
 const AUTH_CSS = readFileSync(new URL("./auth-surface.module.css", import.meta.url), "utf8");
 
 function renderSignIn(hasError = false, isReentry = false): string {
@@ -25,7 +26,7 @@ describe("focused auth surface", () => {
     expect(html).not.toContain(">Identidade<");
   });
 
-  it("keeps trust information available through progressive disclosure", () => {
+  it("keeps trust information in the canonical progressive disclosure", () => {
     const html = renderSignIn();
 
     expect(html).toContain("<details");
@@ -34,6 +35,10 @@ describe("focused auth surface", () => {
     expect(html).toContain("perfil financeiro local permanece separado");
     expect(html).toContain("nova autenticação após expirar");
     expect(html).not.toContain("<details open");
+    expect(AUTH_SOURCE).toContain("<Disclosure");
+    expect(AUTH_SOURCE).not.toContain("<details");
+    expect(AUTH_SOURCE).not.toContain("AuthDisclosure");
+    expect(AUTH_CSS).not.toContain(".disclosure summary");
   });
 
   it("renders safe error and re-entry states without internal details", () => {
@@ -65,7 +70,6 @@ describe("focused auth surface", () => {
     expect(AUTH_CSS).toContain("var(--color-canvas)");
     expect(AUTH_CSS).toContain("var(--color-text-primary)");
     expect(AUTH_CSS).toContain("var(--focus-ring-width)");
-    expect(AUTH_CSS).toContain("var(--touch-target-min)");
     expect(AUTH_CSS).toContain("color-mix(");
     expect(AUTH_CSS).not.toMatch(/#[0-9a-f]{3,8}/i);
     expect(AUTH_CSS).not.toMatch(/rgba?\(/i);

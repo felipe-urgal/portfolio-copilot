@@ -40,19 +40,22 @@ Entregas concluídas em 02/09/2026:
 - PR #95 — primeira vertical transversal, incluindo a primitive canônica `Disclosure` e início da consolidação de progressive disclosure;
 - PR #105 — `FinancialProfileAccountMigration` normalizada com `Alert`/`Disclosure`, feedback semântico tipado e regressões de markup; merge `329282739284effaf179913fbe4316e8bc466fe2`;
 - PR #106 — `/health` migrada para primitives/tokens R2, styling global legado correspondente removido e regressões adicionadas; merge `2a3af838d5b61d6891c1da9ffdf736745066b8d1`;
-- CI pós-merge #554 — verde no `main` após o PR #106.
+- PR #107 — recommendation/reason codes consolidados com `ReasonCodeList` reutilizável e `Disclosure` canônico; merge `e366bb5d43d4c293d6c6de47ca42a676adb1721a`;
+- CI pós-merge #560 — verde no `main` após o PR #107.
 
 Vertical atual:
 
-- PR #107 — `feat: consolidar reason codes no R8`;
-- branch `feat/r8-recommendation-reason-codes`;
-- consolidar presentation reutilizável de reason codes sem mover mapping/copy financeira para `components/ui`;
-- substituir disclosures locais da recomendação pelo `Disclosure` canônico;
-- manter explicação humana antes do código auditável, preservando a ordem e as causas fornecidas pelo domínio;
-- não alterar `ContributionRecommendationSnapshot`, fórmulas, status, reason codes ou reconciliação financeira;
-- `docs/UX-UI-REDESIGN-ROADMAP.md` reconciliado para R8 `EM ANDAMENTO`.
+- branch `feat/r8-canonical-disclosures`;
+- remover a implementação local `AuthDisclosure` e usar diretamente a primitive canônica `Disclosure` em sign-in/sign-out;
+- remover do CSS de auth o comportamento duplicado de `summary`, foco e touch target, mantendo apenas anatomy/copy da feature;
+- preservar OAuth, re-entry, sign-out, sessão e contratos de privacidade sem alteração;
+- adicionar regressão que impede o retorno de `<details>` próprio na surface de auth.
 
-Depois dessa vertical, o R8 ainda precisa auditar/consolidar principalmente provenance/stale/missing/conflict e quaisquer estados transversais equivalentes que continuem como ilha visual.
+Findings já mapeados para as próximas fatias do mesmo audit:
+
+- onboarding ainda possui disclosure de persistência local;
+- Carteira ainda possui disclosures locais para AssetId, TransactionId e identidade técnica;
+- depois dessas duplicidades concretas, auditar provenance/stale/missing/conflict e estados transversais equivalentes com consumidor real.
 
 ## Objetivo do R8
 

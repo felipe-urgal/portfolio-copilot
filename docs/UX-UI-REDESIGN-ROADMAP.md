@@ -189,22 +189,23 @@ Concluído em 02/09/2026:
 
 - PR #95 — primeira vertical transversal e primitive canônica `Disclosure`;
 - PR #105 — account migration states normalizados sobre feedback/disclosure canônicos;
-- PR #106 — `/health` humana migrada para R2 e styling global legado correspondente removido; CI pós-merge #554 verde.
+- PR #106 — `/health` humana migrada para R2 e styling global legado correspondente removido; CI pós-merge #554 verde;
+- PR #107 — recommendation/reason codes consolidados com presentation reutilizável + `Disclosure`; merge `e366bb5d43d4c293d6c6de47ca42a676adb1721a`, CI pós-merge #560 verde.
 
-Vertical atual:
+Vertical atual — PR #108:
 
-- recommendation/reason-code presentation reutilizável;
-- disclosures locais da recomendação migrados para `Disclosure`;
-- explicação humana permanece à frente do código auditável;
-- mapping de status/reason codes continua na feature financeira, não no design system;
-- nenhuma fórmula, reason code, metodologia ou reconciliação é alterada.
+- remover `AuthDisclosure` e consumir diretamente `Disclosure` em sign-in/sign-out;
+- remover CSS local que duplicava summary, foco e touch target;
+- preservar OAuth, sessão, re-entry, sign-out e copy de privacidade;
+- regressão de source/markup impede recriar `<details>` próprio na auth.
 
 Ainda pendente no audit do R8:
 
-- provenance/stale/missing/conflict;
+- disclosure local de persistência no onboarding;
+- disclosures locais de AssetId, TransactionId e identidade técnica da Carteira;
+- provenance/stale/missing/conflict com consumidor real;
 - financial profile/session summary remanescente em outras surfaces, se houver finding concreto;
-- forms/transaction patterns remanescentes, se houver duplicidade transversal real;
-- alerts/feedback, empty/error/recovery/loading/skeleton e permission/auth transitions que ainda não consumam contratos canônicos.
+- forms/transaction patterns, alerts/feedback, empty/error/recovery/loading/skeleton e permission/auth transitions restantes apenas quando houver duplicidade transversal real.
 
 Nenhuma ilha visual relevante do sistema anterior deve permanecer. Dashboard/Carteira só devem ser reabertos por finding transversal concreto.
 
