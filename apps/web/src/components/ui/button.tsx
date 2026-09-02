@@ -15,7 +15,7 @@ const variantClass: Record<ButtonVariant, string | undefined> = {
 };
 
 const sizeClass: Record<ButtonSize, string | undefined> = {
-  sm: styles.buttonSm,
+  sm: classNames(styles.buttonSm, styles.buttonMd),
   md: styles.buttonMd,
   lg: styles.buttonLg,
 };
