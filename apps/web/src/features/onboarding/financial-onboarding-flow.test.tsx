@@ -69,8 +69,8 @@ describe("FinancialOnboardingFlow", () => {
     const html = renderFlow();
 
     expect(html).toMatch(/id="reference-currency"[^>]*required=""/);
-    expect(html).toMatch(/name="riskTolerance"[^>]*required=""/);
-    expect(html).toMatch(/name="horizon"[^>]*required=""/);
+    expect(html).toMatch(/type="radio"[^>]*required=""[^>]*name="riskTolerance"/);
+    expect(html).toMatch(/type="radio"[^>]*required=""[^>]*name="horizon"/);
     expect(html).toContain("Tolerância a risco (obrigatório)");
     expect(html).toContain("Horizonte financeiro (obrigatório)");
     expect(FLOW_SOURCE).toContain('<Label htmlFor="reserve-target" required>');
