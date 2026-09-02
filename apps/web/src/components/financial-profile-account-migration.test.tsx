@@ -50,6 +50,15 @@ describe("FinancialProfileAccountMigration", () => {
     expect(MIGRATION_SOURCE).not.toContain('size="sm"');
   });
 
+  it("preserves an accessible focus target after removing the persisted local copy", () => {
+    expect(MIGRATION_SOURCE).toContain("localRemovalCompleted");
+    expect(MIGRATION_SOURCE).toContain("setLocalRemovalCompleted(true)");
+    expect(MIGRATION_SOURCE).toContain("removalHeadingRef.current?.focus()");
+    expect(MIGRATION_SOURCE).toContain("ref={removalHeadingRef} tabIndex={-1}");
+    expect(MIGRATION_SOURCE).toContain("Cópia local removida deste dispositivo.");
+    expect(MIGRATION_SOURCE).toContain("O perfil salvo na conta não foi alterado.");
+  });
+
   it("shows an idempotent aligned state as canonical success feedback", () => {
     const html = renderMigration(LOCAL_PROFILE);
 
