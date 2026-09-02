@@ -7,7 +7,17 @@ import {
   type ContributionRecommendationSnapshot,
 } from "@portfolio-copilot/domain";
 
-import { Button, Field, FieldError, HelpText, Label, Status, TextInput } from "@/components/ui";
+import { ReasonCodeList } from "@/components/reason-code-list";
+import {
+  Button,
+  Disclosure,
+  Field,
+  FieldError,
+  HelpText,
+  Label,
+  Status,
+  TextInput,
+} from "@/components/ui";
 
 import { type ContributionBaselineSnapshot } from "./contribution-baseline-form";
 import { type ContributionConcentrationSnapshot } from "./contribution-concentration-form";
@@ -16,6 +26,7 @@ import { type ContributionExecutionSnapshot } from "./contribution-execution-for
 import { assetClassLabel, type LocalAssetSnapshot } from "./local-asset-form";
 import { type ContributionPolicySnapshot } from "./contribution-policy-form";
 import { ContributionRecommendationExplanationSection } from "./contribution-recommendation-explanation-section";
+import { explainContributionRecommendationReasonCodes } from "./contribution-recommendation-explanation";
 import {
   createContributionRecommendationSnapshot,
   createInitialContributionRecommendationDraft,
@@ -56,6 +67,12 @@ function statusTone(
   if (status === "EXECUTABLE") return "success";
   if (status === "NOT_SELECTED_BY_POLICY") return "neutral";
   return "danger";
+}
+
+function reasonCountLabel(count: number): string {
+  if (count === 0) return "Sem motivo adicional";
+  if (count === 1) return "1 motivo";
+  return `${count} motivos`;
 }
 
 export function ContributionRecommendationSection({
@@ -174,8 +191,7 @@ export function ContributionRecommendationSection({
             </div>
           </dl>
 
-          <details className={recommendationStyles.remainderDetails}>
-            <summary>Ver reconciliação das sobras por etapa</summary>
+          <Disclosure summary="Reconciliação das sobras por etapa" summaryAside="5 etapas">
             <dl className={recommendationStyles.remainders}>
               <div>
                 <dt>Após allocator</dt>
@@ -211,7 +227,7 @@ export function ContributionRecommendationSection({
                 </dd>
               </div>
             </dl>
-          </details>
+          </Disclosure>
 
           <div className={styles.tableScroller}>
             <table className={styles.resultTable}>
@@ -230,10 +246,12 @@ export function ContributionRecommendationSection({
               <tbody>
                 {recommendation.decisions.map((decision) => {
                   const asset = decision.assetId === null ? null : assetsById.get(decision.assetId);
+                  const classLabel = assetClassLabel(decision.assetClass as AssetClassCode);
+                  const reasons = explainContributionRecommendationReasonCodes(decision.reasonCodes);
 
                   return (
                     <tr key={decision.assetClass}>
-                      <th scope="row">{assetClassLabel(decision.assetClass as AssetClassCode)}</th>
+                      <th scope="row">{classLabel}</th>
                       <td>
                         {decision.assetId === null
                           ? "Sem destino"
@@ -255,18 +273,13 @@ export function ContributionRecommendationSection({
                         </Status>
                       </td>
                       <td>
-                        <details className={recommendationStyles.reasonDetails}>
-                          <summary>Reason codes</summary>
-                          {decision.reasonCodes.length === 0 ? (
-                            <p>Nenhum reason code adicional.</p>
-                          ) : (
-                            <div className={recommendationStyles.reasonList}>
-                              {decision.reasonCodes.map((reasonCode) => (
-                                <code key={reasonCode}>{reasonCode}</code>
-                              ))}
-                            </div>
-                          )}
-                        </details>
+                        <Disclosure summary="Motivos" summaryAside={reasonCountLabel(reasons.length)}>
+                          <ReasonCodeList
+                            reasons={reasons}
+                            ariaLabel={`Motivos estruturados de ${classLabel}`}
+                            emptyMessage="Nenhum reason code adicional para esta decisão; nenhuma causa extra é inferida."
+                          />
+                        </Disclosure>
                       </td>
                     </tr>
                   );
