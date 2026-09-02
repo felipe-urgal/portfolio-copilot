@@ -314,11 +314,15 @@ function GoalEditor({
   index,
   errors,
   dispatch,
+  headingRef,
+  onRemove,
 }: Readonly<{
   goal: GoalDraft;
   index: number;
   errors: FieldErrors;
   dispatch: OnboardingDispatch;
+  headingRef: (node: HTMLHeadingElement | null) => void;
+  onRemove: () => void;
 }>) {
   const prefix = `goals.${goal.clientId}`;
   const typeError = errors[`${prefix}.type`];
@@ -332,16 +336,11 @@ function GoalEditor({
         <div className={styles.goalHeader}>
           <div>
             <span className={styles.goalNumber}>Objetivo {index + 1}</span>
-            <h3 id={`${goal.clientId}-title`}>
+            <h3 id={`${goal.clientId}-title`} ref={headingRef} tabIndex={-1}>
               {goal.type === "" ? "Novo objetivo" : GOAL_LABELS[goal.type]}
             </h3>
           </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            type="button"
-            onClick={() => dispatch({ type: "remove-goal", clientId: goal.clientId })}
-          >
+          <Button variant="ghost" size="sm" type="button" onClick={onRemove}>
             Remover
           </Button>
         </div>
@@ -435,7 +434,33 @@ function GoalsStep({
   nextGoalId: () => string;
   dispatch: OnboardingDispatch;
 }>) {
-  const addGoal = () => dispatch({ type: "add-goal", clientId: nextGoalId() });
+  const goalHeadingRefs = useRef<Record<string, HTMLHeadingElement | null>>({});
+  const addGoalButtonRef = useRef<HTMLButtonElement>(null);
+  const pendingGoalFocusRef = useRef<string | "add-button" | null>(null);
+
+  useEffect(() => {
+    const target = pendingGoalFocusRef.current;
+    if (target === null) return;
+
+    if (target === "add-button") {
+      addGoalButtonRef.current?.focus();
+    } else {
+      goalHeadingRefs.current[target]?.focus();
+    }
+    pendingGoalFocusRef.current = null;
+  }, [draft.goals]);
+
+  function addGoal(): void {
+    const clientId = nextGoalId();
+    pendingGoalFocusRef.current = clientId;
+    dispatch({ type: "add-goal", clientId });
+  }
+
+  function removeGoal(clientId: string, index: number): void {
+    pendingGoalFocusRef.current =
+      draft.goals[index + 1]?.clientId ?? draft.goals[index - 1]?.clientId ?? "add-button";
+    dispatch({ type: "remove-goal", clientId });
+  }
 
   return (
     <Stack className={styles.stepBody} space="lg">
@@ -444,7 +469,7 @@ function GoalsStep({
           title="Nenhum objetivo adicionado"
           description="Objetivos são opcionais nesta versão. Adicione um agora ou siga direto para a revisão."
           action={
-            <Button type="button" variant="secondary" onClick={addGoal}>
+            <Button ref={addGoalButtonRef} type="button" variant="secondary" onClick={addGoal}>
               Adicionar objetivo
             </Button>
           }
@@ -459,11 +484,15 @@ function GoalsStep({
                 index={index}
                 errors={errors}
                 dispatch={dispatch}
+                headingRef={(node) => {
+                  goalHeadingRefs.current[goal.clientId] = node;
+                }}
+                onRemove={() => removeGoal(goal.clientId, index)}
               />
             ))}
           </Stack>
           <div>
-            <Button type="button" variant="secondary" onClick={addGoal}>
+            <Button ref={addGoalButtonRef} type="button" variant="secondary" onClick={addGoal}>
               Adicionar outro objetivo
             </Button>
           </div>
