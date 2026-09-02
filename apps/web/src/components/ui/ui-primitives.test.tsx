@@ -24,6 +24,8 @@ import {
 } from "./index";
 
 const TOKENS = readFileSync(new URL("../../styles/tokens.css", import.meta.url), "utf8");
+const BUTTON_SOURCE = readFileSync(new URL("./button.tsx", import.meta.url), "utf8");
+const UI_CSS = readFileSync(new URL("./ui.module.css", import.meta.url), "utf8");
 
 describe("canonical UI primitives", () => {
   it("keeps loading actions disabled without replacing their accessible label", () => {
@@ -36,6 +38,24 @@ describe("canonical UI primitives", () => {
     expect(html).toContain('aria-busy="true"');
     expect(html).toContain("disabled");
     expect(html).toContain("Salvar perfil");
+  });
+
+  it("keeps small buttons visually compact without shrinking the canonical touch target", () => {
+    const button = renderToStaticMarkup(<Button size="sm">Ação compacta</Button>);
+    const link = renderToStaticMarkup(
+      <LinkButton href="/dashboard" size="sm">
+        Link compacto
+      </LinkButton>,
+    );
+
+    expect(button).toContain("Ação compacta");
+    expect(link).toContain("Link compacto");
+    expect(BUTTON_SOURCE).toContain("sm: classNames(styles.buttonSm, styles.buttonMd)");
+    expect(UI_CSS).toMatch(/\.buttonSm\s*\{[\s\S]*?font-size: var\(--font-size-xs\);/);
+    expect(UI_CSS).toMatch(
+      /\.buttonMd\s*\{\s*min-height: var\(--control-height-md\);\s*\}/,
+    );
+    expect(TOKENS).toContain("--control-height-md: 2.75rem;");
   });
 
   it("renders a disabled LinkButton as non-navigable content without losing its accessible label", () => {
