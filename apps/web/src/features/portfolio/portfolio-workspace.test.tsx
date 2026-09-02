@@ -5,7 +5,10 @@ import { describe, expect, it } from "vitest";
 
 import { PortfolioWorkspace } from "./portfolio-workspace";
 
-const PORTFOLIO_SOURCE = readFileSync(new URL("./portfolio-workspace.tsx", import.meta.url), "utf8");
+const PORTFOLIO_SOURCE = readFileSync(
+  new URL("./portfolio-workspace.tsx", import.meta.url),
+  "utf8",
+);
 const PORTFOLIO_CSS = readFileSync(
   new URL("./portfolio-workspace.module.css", import.meta.url),
   "utf8",
