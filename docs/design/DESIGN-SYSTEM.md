@@ -392,9 +392,9 @@ Contrato:
 3. ação opcional: ação real disponível;
 4. ícone opcional.
 
-Como empty states normalmente vivem dentro de uma região já titulada, o título usa `h3` por padrão. Quando o próprio empty state inicia a primeira subseção diretamente abaixo do `h1` da página, o consumidor deve declarar `headingLevel={2}`. O nível altera somente a semântica do heading; classe, hierarchy visual e spacing permanecem iguais.
+Como o nível estrutural depende da região consumidora, o título não cria heading por padrão: ele mantém a mesma apresentação visual como texto semântico comum. Quando o empty state realmente inicia uma subseção navegável, o consumidor deve declarar `headingLevel={2}`, `headingLevel={3}` ou `headingLevel={4}` conforme a hierarchy já existente ao redor.
 
-Não usar `headingLevel` para obter tamanho visual diferente e não usar empty state para feature futura inexistente.
+Não usar `headingLevel` para obter tamanho visual diferente, não assumir nível apenas pela aparência e não usar empty state para feature futura inexistente.
 
 ### `LoadingState`
 
@@ -481,7 +481,7 @@ R2 estabelece:
 - status de loading acessível;
 - ícone decorativo fora da árvore acessível;
 - icon label sem duplicidade;
-- hierarquia de heading preservada em `EmptyState`, com `h3` subordinado por padrão e `h2` explícito quando a região exigir;
+- `EmptyState` sem heading implícito e nível estrutural explícito apenas quando a região realmente exigir uma subseção navegável;
 - touch target base de 44px;
 - reduced motion;
 - feedback que não depende somente de cor.
