@@ -1,6 +1,6 @@
 # Próxima Atividade — UX/UI R9: acessibilidade, responsividade e visual fidelity QA
 
-**Status:** IN PROGRESS — prioridade canônica atual em 2026-09-02
+**Status:** IN PROGRESS — prioridade canônica atual em 2026-09-03
 
 ## Issue canônica
 
@@ -33,7 +33,7 @@ Audit final do R8:
 
 Validar o produto redesenhado como um único sistema em acessibilidade, responsividade, browsers e fidelidade ao Protótipo 3/R1 antes do gate final R10.
 
-## Progresso incremental em 2026-09-02
+## Progresso incremental em 2026-09-03
 
 O R9 segue sendo executado em verticais pequenas e verificáveis enquanto o browser QA remoto permanece indisponível:
 
@@ -50,7 +50,11 @@ O R9 segue sendo executado em verticais pequenas e verificáveis enquanto o brow
 - `docs/design/DESIGN-SYSTEM.md` já estabelecia 44px como baseline ergonômico; esta vertical corrige a implementação para cumprir o contrato existente, sem criar mudança normativa paralela;
 - PR #133 — a brand navegável do focused auth passou a preservar `--touch-target-min` (44px) sem aumentar o glyph visual de `--control-height-sm` (36px);
 - a regressão de auth protege separadamente a área interativa mínima e o tamanho visual do glyph, e `docs/design/AUTH-SESSION.md` registra o hardening sem alterar OAuth/sessão;
-- nesta execução, o acesso remoto ao deploy continuou sem uma superfície navegável disponível para o agente; portanto screenshots, fidelity ledger, keyboard-only e screen-reader smoke continuam **não executados** e não devem ser tratados como evidência existente.
+- vertical atual — `FinancialProfileSessionSummary`: remover a cópia local de um perfil persistido desmontava o botão focado; a branch `fix/r9-session-summary-focus` entrega o foco, após a transição, à nota persistente de sessão com o estado resultante;
+- a regressão segue o padrão de source-level focus tests já usado pelo R9 e não altera storage, snapshot financeiro, auth, ownership ou metodologia;
+- o audit também encontrou que os campos iniciais `Nome da carteira` e `Moeda de referência` são obrigatórios no domínio, mas ainda não expõem `required` nativo em `/portfolio`; este finding permanece registrado para uma próxima vertical pequena em vez de ampliar silenciosamente a mudança atual;
+- nesta execução, mesmo com a URL pública fornecida (`portfolio-copilot-plum.vercel.app`) e a URL do projeto na Vercel, o ambiente continuou sem acesso navegável: fetch não abriu a página, o conector Vercel não possui permissão para listar o projeto e o shell não resolve `*.vercel.app`;
+- portanto screenshots, fidelity ledger, keyboard-only end-to-end e screen-reader smoke continuam **não executados** e não devem ser tratados como evidência existente.
 
 A #81 permanece aberta até o gate completo de browser/fidelity/accessibility ser reproduzível e concluído.
 
