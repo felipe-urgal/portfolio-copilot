@@ -8,6 +8,7 @@ import {
   Button,
   ChoiceCard,
   Disclosure,
+  EmptyState,
   Field,
   FieldError,
   HelpText,
@@ -120,6 +121,33 @@ describe("canonical UI primitives", () => {
     expect(html).toContain('name="risk"');
     expect(html).toContain("Horizonte");
     expect(html).toContain("Médio prazo");
+  });
+
+  it("avoids implicit empty-state headings and supports explicit section levels", () => {
+    const nested = renderToStaticMarkup(
+      <EmptyState title="Sem itens" description="Cadastre o primeiro item." />,
+    );
+    const topLevel = renderToStaticMarkup(
+      <EmptyState
+        headingLevel={2}
+        title="Perfil não configurado"
+        description="Configure o perfil para continuar."
+      />,
+    );
+    const deepSection = renderToStaticMarkup(
+      <EmptyState
+        headingLevel={4}
+        title="Baseline pendente"
+        description="Calcule o baseline para continuar."
+      />,
+    );
+
+    expect(nested).toContain("<p");
+    expect(nested).toContain(">Sem itens</p>");
+    expect(nested).not.toContain("<h2");
+    expect(nested).not.toContain("<h3");
+    expect(topLevel).toContain(">Perfil não configurado</h2>");
+    expect(deepSection).toContain(">Baseline pendente</h4>");
   });
 
   it("keeps progressive disclosure native and preserves optional summary context", () => {

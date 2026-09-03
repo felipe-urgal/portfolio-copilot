@@ -107,6 +107,7 @@ export function FinancialProfileSessionSummary() {
 
           {financialProfile === null ? (
             <EmptyState
+              headingLevel={2}
               title="Perfil financeiro não configurado"
               description="A Carteira não inventa moeda, risco, horizonte, reserva ou objetivos na ausência de um snapshot validado."
               action={

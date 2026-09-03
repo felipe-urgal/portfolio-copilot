@@ -46,6 +46,17 @@ describe("DashboardOverview R6", () => {
     expect(html).not.toMatch(/>\s*0%\s*</);
   });
 
+  it("keeps nested empty states within the dashboard section headings", () => {
+    const html = renderDashboard();
+
+    expect(html).toContain('id="portfolio-panorama-title">Carteira</h2>');
+    expect(html).toContain(">Construa a base factual da sua carteira</p>");
+    expect(html).toContain(">Perfil financeiro</h2>");
+    expect(html).toContain(">Contexto ainda não configurado</p>");
+    expect(html).not.toContain(">Construa a base factual da sua carteira</h2>");
+    expect(html).not.toContain(">Contexto ainda não configurado</h2>");
+  });
+
   it("uses only validated profile facts as compact dashboard metrics and context", () => {
     const html = renderDashboard(PROFILE);
 

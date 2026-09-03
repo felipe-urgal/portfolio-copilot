@@ -15,6 +15,10 @@ const FLOW_CSS = readFileSync(
   new URL("./financial-onboarding-flow.module.css", import.meta.url),
   "utf8",
 );
+const FEEDBACK_SOURCE = readFileSync(
+  new URL("../../components/ui/feedback.tsx", import.meta.url),
+  "utf8",
+);
 
 function renderFlow(): string {
   return renderToStaticMarkup(
@@ -87,6 +91,17 @@ describe("FinancialOnboardingFlow", () => {
     expect(FLOW_SOURCE).toContain(
       "validateOnboardingStep(state.step, state.draft, createBrowserId)",
     );
+  });
+
+  it("keeps the goals empty state within the active onboarding step heading", () => {
+    expect(FLOW_SOURCE).toContain(
+      '<h2 id="onboarding-step-title" ref={stepHeadingRef} tabIndex={-1}>',
+    );
+    expect(FLOW_SOURCE).toMatch(/<EmptyState\s+title="Nenhum objetivo adicionado"/);
+    expect(FLOW_SOURCE).not.toMatch(
+      /<EmptyState\s+headingLevel=\{2\}\s+title="Nenhum objetivo adicionado"/,
+    );
+    expect(FEEDBACK_SOURCE).toContain('headingLevel === 4 ? "h4" : "p"');
   });
 
   it("moves focus to the step heading only when the active step changes", () => {
