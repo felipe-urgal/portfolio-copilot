@@ -76,6 +76,34 @@ describe("PortfolioWorkspace", () => {
     expect(html).not.toContain('href="/dashboard"');
   });
 
+  it("exposes native required semantics for portfolio creation fields", () => {
+    expect(PORTFOLIO_SOURCE).toContain('<Label htmlFor="portfolio-name" required>');
+    expect(PORTFOLIO_SOURCE).toContain('id="portfolio-name"\n                  required');
+    expect(PORTFOLIO_SOURCE).toContain('<Label htmlFor="portfolio-currency" required>');
+    expect(PORTFOLIO_SOURCE).toContain('id="portfolio-currency"\n                  required');
+  });
+
+  it("exposes native required semantics for local asset registration", () => {
+    for (const id of ["asset-name", "asset-class", "asset-instrument", "asset-currency"]) {
+      expect(PORTFOLIO_SOURCE).toContain(`htmlFor="${id}" required`);
+      expect(PORTFOLIO_SOURCE).toContain(`id="${id}"\n                        required`);
+    }
+  });
+
+  it("exposes native required semantics for cash flows and asset trades", () => {
+    expect(PORTFOLIO_SOURCE).toContain('legend="Tipo do fluxo de caixa (obrigatório)"');
+    expect(PORTFOLIO_SOURCE).toContain('name="cashTransactionType"\n                          required');
+    expect(PORTFOLIO_SOURCE).toContain('htmlFor="cash-transaction-amount" required');
+    expect(PORTFOLIO_SOURCE).toContain('id="cash-transaction-amount"\n                        required');
+    expect(PORTFOLIO_SOURCE).toContain('legend="Operação com ativo (obrigatório)"');
+    expect(PORTFOLIO_SOURCE).toContain('name="assetTradeType"\n                          required');
+
+    for (const id of ["trade-asset", "trade-quantity", "trade-settlement"]) {
+      expect(PORTFOLIO_SOURCE).toContain(`htmlFor="${id}" required`);
+      expect(PORTFOLIO_SOURCE).toContain(`id="${id}"\n                        required`);
+    }
+  });
+
   it("exposes the R7 task model after portfolio creation without an incomplete ARIA tabs pattern", () => {
     const html = renderToStaticMarkup(<PortfolioWorkspace initialSnapshot={SNAPSHOT} />);
 
