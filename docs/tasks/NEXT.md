@@ -56,9 +56,10 @@ O R9 segue sendo executado em verticais pequenas e verificáveis enquanto o brow
 - nome/moeda da Carteira; nome/classe/instrumento/moeda do ativo; e tipos/valores/ativo/quantidade/settlement das movimentações passam a expor `required` nativo e indicação de obrigatoriedade compatível com os primitives existentes;
 - `noValidate` e `createPortfolioSnapshot(...)` / `createLocalAssetSnapshot(...)` / `createCashTransactionSnapshot(...)` / `createAssetTradeSnapshot(...)` continuam como autoridades de validação, sem mudança de domínio financeiro ou persistência;
 - regressões de `PortfolioWorkspace` protegem separadamente as três atividades e `docs/design/PORTFOLIO.md` registra o contrato endurecido;
-- PR #136 — o audit de hierarchy encontrou `EmptyState` impondo `h2` mesmo dentro de regiões já tituladas por `h2` em onboarding, Dashboard e Carteira;
-- a primitive passa a usar `h3` por padrão e expõe `headingLevel={2 | 3}` para exceções semânticas reais, sem alterar styling; `FinancialProfileSessionSummary` preserva explicitamente `h2` porque seu estado ausente inicia a subseção dentro do contexto de sessão;
-- regressões cobrem o contrato da primitive, a hierarquia `h2 → h3` do Dashboard e da Carteira e o uso subordinado no passo de Objetivos do onboarding;
+- PR #136 — o audit de hierarchy encontrou `EmptyState` criando `h2` implícito dentro de regiões já tituladas em onboarding, Dashboard e Carteira;
+- o review ampliado encontrou também um consumidor no pipeline de Aporte subordinado a `h3`, então a solução final evita assumir qualquer nível: o título de `EmptyState` é texto semanticamente neutro por padrão e `headingLevel={2 | 3 | 4}` só é usado quando o estado realmente inicia uma subseção;
+- `FinancialProfileSessionSummary` preserva explicitamente `headingLevel={2}` porque seu estado ausente é o caso auditado que precisa de heading próprio; styling, spacing e copy permanecem inalterados;
+- regressões cobrem a primitive, os estados aninhados do Dashboard e da Carteira e o uso subordinado no passo de Objetivos do onboarding;
 - nesta execução, mesmo com a URL pública fornecida (`portfolio-copilot-plum.vercel.app`) e a URL do projeto na Vercel, o ambiente continuou sem acesso navegável: fetch não abriu a página, o conector Vercel não possui permissão para listar o projeto e o shell não resolve `*.vercel.app`;
 - portanto screenshots, fidelity ledger, keyboard-only end-to-end e screen-reader smoke continuam **não executados** e não devem ser tratados como evidência existente.
 
