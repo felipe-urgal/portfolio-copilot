@@ -93,7 +93,7 @@ describe("FinancialOnboardingFlow", () => {
     );
   });
 
-  it("keeps the goals empty state below the active onboarding step heading", () => {
+  it("keeps the goals empty state within the active onboarding step heading", () => {
     expect(FLOW_SOURCE).toContain(
       '<h2 id="onboarding-step-title" ref={stepHeadingRef} tabIndex={-1}>',
     );
@@ -101,7 +101,7 @@ describe("FinancialOnboardingFlow", () => {
     expect(FLOW_SOURCE).not.toMatch(
       /<EmptyState\s+headingLevel=\{2\}\s+title="Nenhum objetivo adicionado"/,
     );
-    expect(FEEDBACK_SOURCE).toContain("headingLevel = 3");
+    expect(FEEDBACK_SOURCE).toContain('headingLevel === 4 ? "h4" : "p"');
   });
 
   it("moves focus to the step heading only when the active step changes", () => {
