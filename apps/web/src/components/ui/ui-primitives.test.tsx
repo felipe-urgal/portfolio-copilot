@@ -123,7 +123,7 @@ describe("canonical UI primitives", () => {
     expect(html).toContain("Médio prazo");
   });
 
-  it("keeps empty state headings subordinate by default and supports top-level sections", () => {
+  it("avoids implicit empty-state headings and supports explicit section levels", () => {
     const nested = renderToStaticMarkup(
       <EmptyState title="Sem itens" description="Cadastre o primeiro item." />,
     );
@@ -134,11 +134,20 @@ describe("canonical UI primitives", () => {
         description="Configure o perfil para continuar."
       />,
     );
+    const deepSection = renderToStaticMarkup(
+      <EmptyState
+        headingLevel={4}
+        title="Baseline pendente"
+        description="Calcule o baseline para continuar."
+      />,
+    );
 
-    expect(nested).toContain("<h3");
-    expect(nested).toContain(">Sem itens</h3>");
-    expect(topLevel).toContain("<h2");
+    expect(nested).toContain("<p");
+    expect(nested).toContain(">Sem itens</p>");
+    expect(nested).not.toContain("<h2");
+    expect(nested).not.toContain("<h3");
     expect(topLevel).toContain(">Perfil não configurado</h2>");
+    expect(deepSection).toContain(">Baseline pendente</h4>");
   });
 
   it("keeps progressive disclosure native and preserves optional summary context", () => {
