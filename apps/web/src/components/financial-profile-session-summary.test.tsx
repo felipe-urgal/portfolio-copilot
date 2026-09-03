@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 
@@ -8,6 +10,11 @@ import {
   FinancialSessionProvider,
   type FinancialProfilePersistenceStatus,
 } from "./financial-session";
+
+const SUMMARY_SOURCE = readFileSync(
+  new URL("./financial-profile-session-summary.tsx", import.meta.url),
+  "utf8",
+);
 
 const PROFILE: FinancialProfileSnapshot = {
   id: "8d5a7a27-2db8-4a51-a6c8-d84f78fd1298",
@@ -83,6 +90,19 @@ describe("FinancialProfileSessionSummary", () => {
     expect(html).toContain("salvo localmente neste navegador");
     expect(html).toContain("Não existe sincronização automática com conta ou outro dispositivo");
     expect(html).toContain("A migração para a conta é uma ação separada no Dashboard");
+  });
+
+  it("preserves focus after removing the persisted profile copy", () => {
+    const html = renderSummary(PROFILE, "persisted");
+
+    expect(html).toContain('tabindex="-1"');
+    expect(SUMMARY_SOURCE).toContain("focusSessionNoteAfterRemovalRef.current = true");
+    expect(SUMMARY_SOURCE).toContain(
+      "if (!focusSessionNoteAfterRemovalRef.current || isPersisted) return;",
+    );
+    expect(SUMMARY_SOURCE).toContain("sessionNoteRef.current?.focus()");
+    expect(SUMMARY_SOURCE).toContain("onClick={handleRemovePersistedFinancialProfile}");
+    expect(SUMMARY_SOURCE).toContain("ref={sessionNoteRef}");
   });
 
   it("distinguishes missing reserve and goals from zero or progress", () => {

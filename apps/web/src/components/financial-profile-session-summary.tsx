@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useRef } from "react";
+
 import {
   Money,
   type FinancialGoalSnapshot,
@@ -58,6 +60,20 @@ export function FinancialProfileSessionSummary() {
   const { financialProfile, persistenceStatus, removePersistedFinancialProfile } =
     useFinancialSession();
   const isPersisted = financialProfile !== null && persistenceStatus === "persisted";
+  const sessionNoteRef = useRef<HTMLParagraphElement>(null);
+  const focusSessionNoteAfterRemovalRef = useRef(false);
+
+  useEffect(() => {
+    if (!focusSessionNoteAfterRemovalRef.current || isPersisted) return;
+
+    focusSessionNoteAfterRemovalRef.current = false;
+    sessionNoteRef.current?.focus();
+  }, [isPersisted]);
+
+  function handleRemovePersistedFinancialProfile(): void {
+    focusSessionNoteAfterRemovalRef.current = true;
+    removePersistedFinancialProfile();
+  }
 
   return (
     <aside className={styles.context} aria-label="Perfil financeiro da sessão">
@@ -83,7 +99,7 @@ export function FinancialProfileSessionSummary() {
                   : "Contexto declarado no onboarding e compartilhado somente nesta sessão."}
             </p>
             {isPersisted ? (
-              <Button variant="ghost" size="sm" onClick={removePersistedFinancialProfile}>
+              <Button variant="ghost" size="sm" onClick={handleRemovePersistedFinancialProfile}>
                 Remover cópia local do perfil
               </Button>
             ) : null}
@@ -148,7 +164,7 @@ export function FinancialProfileSessionSummary() {
             </div>
           )}
 
-          <p className={styles.sessionNote}>
+          <p ref={sessionNoteRef} className={styles.sessionNote} tabIndex={-1}>
             {isPersisted
               ? "Salvo localmente neste navegador: recarregar pode restaurar este perfil. Não existe sincronização automática com conta ou outro dispositivo. A migração para a conta é uma ação separada no Dashboard."
               : persistenceStatus === "unavailable"
