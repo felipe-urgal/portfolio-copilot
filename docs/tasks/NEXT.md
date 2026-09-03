@@ -52,7 +52,10 @@ O R9 segue sendo executado em verticais pequenas e verificáveis enquanto o brow
 - a regressão de auth protege separadamente a área interativa mínima e o tamanho visual do glyph, e `docs/design/AUTH-SESSION.md` registra o hardening sem alterar OAuth/sessão;
 - PR #134 — `FinancialProfileSessionSummary`: remover a cópia local de um perfil persistido desmontava o botão focado; a correção entrega o foco, após a transição, à nota persistente de sessão com o estado resultante;
 - a regressão segue o padrão de source-level focus tests já usado pelo R9 e não altera storage, snapshot financeiro, auth, ownership ou metodologia;
-- o audit também encontrou que os campos iniciais `Nome da carteira` e `Moeda de referência` são obrigatórios no domínio, mas ainda não expõem `required` nativo em `/portfolio`; este finding permanece registrado para uma próxima vertical pequena em vez de ampliar silenciosamente a mudança atual;
+- PR #135 — o hardening de semântica obrigatória de `/portfolio` foi agrupado em três atividades coesas: criação da Carteira, cadastro de ativo local e registro de movimentações no Transaction Ledger;
+- nome/moeda da Carteira; nome/classe/instrumento/moeda do ativo; e tipos/valores/ativo/quantidade/settlement das movimentações passam a expor `required` nativo e indicação de obrigatoriedade compatível com os primitives existentes;
+- `noValidate` e `createPortfolioSnapshot(...)` / `createLocalAssetSnapshot(...)` / `createCashTransactionSnapshot(...)` / `createAssetTradeSnapshot(...)` continuam como autoridades de validação, sem mudança de domínio financeiro ou persistência;
+- regressões de `PortfolioWorkspace` protegem separadamente as três atividades e `docs/design/PORTFOLIO.md` registra o contrato endurecido;
 - nesta execução, mesmo com a URL pública fornecida (`portfolio-copilot-plum.vercel.app`) e a URL do projeto na Vercel, o ambiente continuou sem acesso navegável: fetch não abriu a página, o conector Vercel não possui permissão para listar o projeto e o shell não resolve `*.vercel.app`;
 - portanto screenshots, fidelity ledger, keyboard-only end-to-end e screen-reader smoke continuam **não executados** e não devem ser tratados como evidência existente.
 

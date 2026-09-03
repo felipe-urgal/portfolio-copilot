@@ -348,9 +348,12 @@ export function PortfolioWorkspace({
 
             <form className={styles.form} noValidate onSubmit={handlePortfolioSubmit}>
               <Field>
-                <Label htmlFor="portfolio-name">Nome da carteira</Label>
+                <Label htmlFor="portfolio-name" required>
+                  Nome da carteira
+                </Label>
                 <TextInput
                   id="portfolio-name"
+                  required
                   type="text"
                   maxLength={120}
                   autoComplete="off"
@@ -363,9 +366,12 @@ export function PortfolioWorkspace({
               </Field>
 
               <Field>
-                <Label htmlFor="portfolio-currency">Moeda de referência</Label>
+                <Label htmlFor="portfolio-currency" required>
+                  Moeda de referência
+                </Label>
                 <TextInput
                   id="portfolio-currency"
+                  required
                   type="text"
                   maxLength={3}
                   autoCapitalize="characters"
@@ -568,9 +574,12 @@ export function PortfolioWorkspace({
 
                 <form className={styles.form} noValidate onSubmit={handleAssetSubmit}>
                   <Field>
-                    <Label htmlFor="asset-name">Nome do ativo</Label>
+                    <Label htmlFor="asset-name" required>
+                      Nome do ativo
+                    </Label>
                     <TextInput
                       id="asset-name"
+                      required
                       type="text"
                       maxLength={160}
                       autoComplete="off"
@@ -587,9 +596,12 @@ export function PortfolioWorkspace({
 
                   <div className={styles.fieldRow}>
                     <Field>
-                      <Label htmlFor="asset-class">Classe econômica</Label>
+                      <Label htmlFor="asset-class" required>
+                        Classe econômica
+                      </Label>
                       <Select
                         id="asset-class"
+                        required
                         value={assetDraft.assetClass}
                         onChange={(event) => updateAssetDraft("assetClass", event.target.value)}
                       >
@@ -601,9 +613,12 @@ export function PortfolioWorkspace({
                       </Select>
                     </Field>
                     <Field>
-                      <Label htmlFor="asset-instrument">Instrumento</Label>
+                      <Label htmlFor="asset-instrument" required>
+                        Instrumento
+                      </Label>
                       <Select
                         id="asset-instrument"
+                        required
                         value={assetDraft.instrumentType}
                         onChange={(event) => updateAssetDraft("instrumentType", event.target.value)}
                       >
@@ -617,9 +632,12 @@ export function PortfolioWorkspace({
                   </div>
 
                   <Field>
-                    <Label htmlFor="asset-currency">Moeda de referência do ativo</Label>
+                    <Label htmlFor="asset-currency" required>
+                      Moeda de referência do ativo
+                    </Label>
                     <TextInput
                       id="asset-currency"
+                      required
                       type="text"
                       maxLength={3}
                       autoCapitalize="characters"
@@ -766,11 +784,12 @@ export function PortfolioWorkspace({
                       <p>Entrada ou saída sem ativo ou quantidade.</p>
                     </div>
 
-                    <SegmentedControl legend="Tipo do fluxo de caixa">
+                    <SegmentedControl legend="Tipo do fluxo de caixa (obrigatório)">
                       {(["CASH_IN", "CASH_OUT"] as const).map((type) => (
                         <SegmentedControlOption
                           key={type}
                           name="cashTransactionType"
+                          required
                           value={type}
                           checked={cashDraft.type === type}
                           onChange={() => {
@@ -784,9 +803,12 @@ export function PortfolioWorkspace({
                     </SegmentedControl>
 
                     <Field>
-                      <Label htmlFor="cash-transaction-amount">Valor</Label>
+                      <Label htmlFor="cash-transaction-amount" required>
+                        Valor
+                      </Label>
                       <TextInput
                         id="cash-transaction-amount"
+                        required
                         type="text"
                         inputMode="decimal"
                         autoComplete="off"
@@ -816,11 +838,12 @@ export function PortfolioWorkspace({
                       <p>Ativo selecionado por nome; AssetId permanece interno à interface.</p>
                     </div>
 
-                    <SegmentedControl legend="Operação com ativo">
+                    <SegmentedControl legend="Operação com ativo (obrigatório)">
                       {(["BUY", "SELL"] as const).map((type) => (
                         <SegmentedControlOption
                           key={type}
                           name="assetTradeType"
+                          required
                           value={type}
                           checked={tradeDraft.type === type}
                           onChange={() => updateTradeDraft("type", type)}
@@ -831,9 +854,12 @@ export function PortfolioWorkspace({
                     </SegmentedControl>
 
                     <Field>
-                      <Label htmlFor="trade-asset">Ativo</Label>
+                      <Label htmlFor="trade-asset" required>
+                        Ativo
+                      </Label>
                       <Select
                         id="trade-asset"
+                        required
                         disabled={assets.length === 0}
                         value={tradeDraft.assetId}
                         invalid={tradeErrors.assetId !== undefined}
@@ -859,9 +885,12 @@ export function PortfolioWorkspace({
 
                     <div className={styles.fieldRow}>
                       <Field>
-                        <Label htmlFor="trade-quantity">Quantidade</Label>
+                        <Label htmlFor="trade-quantity" required>
+                          Quantidade
+                        </Label>
                         <TextInput
                           id="trade-quantity"
+                          required
                           type="text"
                           inputMode="decimal"
                           autoComplete="off"
@@ -877,9 +906,12 @@ export function PortfolioWorkspace({
                       </Field>
 
                       <Field>
-                        <Label htmlFor="trade-settlement">Valor de liquidação</Label>
+                        <Label htmlFor="trade-settlement" required>
+                          Valor de liquidação
+                        </Label>
                         <TextInput
                           id="trade-settlement"
+                          required
                           type="text"
                           inputMode="decimal"
                           autoComplete="off"
