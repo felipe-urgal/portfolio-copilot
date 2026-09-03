@@ -97,6 +97,9 @@ describe("FinancialProfileSessionSummary", () => {
 
     expect(html).toContain('tabindex="-1"');
     expect(SUMMARY_SOURCE).toContain("focusSessionNoteAfterRemovalRef.current = true");
+    expect(SUMMARY_SOURCE).toContain(
+      "if (!focusSessionNoteAfterRemovalRef.current || isPersisted) return;",
+    );
     expect(SUMMARY_SOURCE).toContain("sessionNoteRef.current?.focus()");
     expect(SUMMARY_SOURCE).toContain("onClick={handleRemovePersistedFinancialProfile}");
     expect(SUMMARY_SOURCE).toContain("ref={sessionNoteRef}");
