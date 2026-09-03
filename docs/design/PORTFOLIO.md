@@ -62,7 +62,7 @@ A UI não recalcula regras financeiras, não inventa preço e não transforma or
 
 ### Estado sem Portfolio
 
-A primeira visita apresenta uma única tarefa: criar a carteira local. Nome e moeda usam primitives canônicas e o contrato de dados fica em segunda coluna/contexto.
+A primeira visita apresenta uma única tarefa: criar a carteira local. Nome e moeda usam primitives canônicas, expõem a obrigatoriedade já existente no domínio por `required` nativo e indicação visual, e o contrato de dados fica em segunda coluna/contexto.
 
 Nenhum ativo, saldo, posição ou transação inicial é presumido.
 
@@ -95,6 +95,8 @@ Preço, patrimônio, custo médio, P&L, retorno e alocação por market value co
 
 Cadastro e catálogo ficam próximos, mas posição continua uma projeção separada. O usuário escolhe ativos por nome/contexto humano; AssetId aparece apenas em disclosure técnico.
 
+No hardening R9, nome, classe econômica, instrumento e moeda de referência do ativo comunicam com `required` nativo a mesma obrigatoriedade já aplicada por `createLocalAssetSnapshot(...)`; a validação de domínio continua sendo a autoridade do submit.
+
 Estados distintos permanecem explícitos:
 
 - nenhum ativo cadastrado;
@@ -112,6 +114,8 @@ A área separa:
 - histórico do Transaction Ledger.
 
 Tipo, data, ativo quando aplicável, quantidade e settlement ficam escaneáveis. TransactionId permanece em detalhe técnico.
+
+No hardening R9, as legendas de tipo/operação deixam explícito que a decisão é obrigatória, os radios correspondentes usam `required`, e valor de caixa, ativo, quantidade e settlement comunicam a obrigatoriedade nativamente sem substituir `createCashTransactionSnapshot(...)` ou `createAssetTradeSnapshot(...)`.
 
 ### Aporte
 
@@ -157,6 +161,7 @@ Nenhuma dependência visual nova foi adicionada.
 - laptop/tablet: colunas viram fluxo único antes de comprimir formulários;
 - mobile: campos, resumos e listas empilham; navegação local pode rolar horizontalmente;
 - controles herdam touch target/focus do design system;
+- campos e escolhas obrigatórios nas etapas de criação, ativos e transações expõem `required` nativo sem delegar a validação ao browser, porque os forms preservam `noValidate` e as funções de domínio continuam sendo a autoridade;
 - detalhes técnicos usam `details/summary` com target acessível;
 - navegação local não declara semântica de tabs sem implementar o respectivo modelo de teclado;
 - informação essencial não depende de hover ou apenas de cor;
