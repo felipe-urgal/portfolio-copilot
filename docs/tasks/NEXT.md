@@ -56,6 +56,9 @@ O R9 segue sendo executado em verticais pequenas e verificáveis enquanto o brow
 - nome/moeda da Carteira; nome/classe/instrumento/moeda do ativo; e tipos/valores/ativo/quantidade/settlement das movimentações passam a expor `required` nativo e indicação de obrigatoriedade compatível com os primitives existentes;
 - `noValidate` e `createPortfolioSnapshot(...)` / `createLocalAssetSnapshot(...)` / `createCashTransactionSnapshot(...)` / `createAssetTradeSnapshot(...)` continuam como autoridades de validação, sem mudança de domínio financeiro ou persistência;
 - regressões de `PortfolioWorkspace` protegem separadamente as três atividades e `docs/design/PORTFOLIO.md` registra o contrato endurecido;
+- PR #136 — o audit de hierarchy encontrou `EmptyState` impondo `h2` mesmo dentro de regiões já tituladas por `h2` em onboarding, Dashboard e Carteira;
+- a primitive passa a usar `h3` por padrão e expõe `headingLevel={2 | 3}` para exceções semânticas reais, sem alterar styling; `FinancialProfileSessionSummary` preserva explicitamente `h2` porque seu estado ausente inicia a subseção dentro do contexto de sessão;
+- regressões cobrem o contrato da primitive, a hierarquia `h2 → h3` do Dashboard e da Carteira e o uso subordinado no passo de Objetivos do onboarding;
 - nesta execução, mesmo com a URL pública fornecida (`portfolio-copilot-plum.vercel.app`) e a URL do projeto na Vercel, o ambiente continuou sem acesso navegável: fetch não abriu a página, o conector Vercel não possui permissão para listar o projeto e o shell não resolve `*.vercel.app`;
 - portanto screenshots, fidelity ledger, keyboard-only end-to-end e screen-reader smoke continuam **não executados** e não devem ser tratados como evidência existente.
 
