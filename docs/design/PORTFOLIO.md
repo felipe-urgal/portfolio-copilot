@@ -159,7 +159,8 @@ Nenhuma dependência visual nova foi adicionada.
 - controles herdam touch target/focus do design system;
 - detalhes técnicos usam `details/summary` com target acessível;
 - navegação local não declara semântica de tabs sem implementar o respectivo modelo de teclado;
-- informação essencial não depende de hover ou apenas de cor.
+- informação essencial não depende de hover ou apenas de cor;
+- no hardening R9, uma ação que desaparece após mutação deve entregar foco a um destino persistente; a remoção da cópia local do perfil transfere foco para a nota de sessão depois que o estado de persistência muda.
 
 R9 continua responsável pelo audit integrado WCAG 2.2 AA e visual fidelity final.
 
