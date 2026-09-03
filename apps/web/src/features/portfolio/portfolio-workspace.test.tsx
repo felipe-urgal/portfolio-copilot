@@ -124,6 +124,17 @@ describe("PortfolioWorkspace", () => {
     expect(PORTFOLIO_SOURCE).toMatch(TASK_NAV_BUTTON);
   });
 
+  it("keeps nested empty states below their portfolio surface headings", () => {
+    const html = renderToStaticMarkup(<PortfolioWorkspace initialSnapshot={SNAPSHOT} />);
+
+    expect(html).toContain(">Posições projetadas</h2>");
+    expect(html).toContain(">Nenhuma posição de ativo aberta</h3>");
+    expect(html).toContain(">Ativos disponíveis</h2>");
+    expect(html).toContain(">Nenhum ativo cadastrado</h3>");
+    expect(html).toContain(">Transaction Ledger</h2>");
+    expect(html).toContain(">Ledger sem movimentações</h3>");
+  });
+
   it("preserves focus when contextual actions replace the active portfolio region", () => {
     const creationHtml = renderToStaticMarkup(<PortfolioWorkspace />);
 
