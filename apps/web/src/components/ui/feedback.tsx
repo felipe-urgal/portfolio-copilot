@@ -62,6 +62,7 @@ export interface EmptyStateProps extends Omit<HTMLAttributes<HTMLDivElement>, "t
   icon?: ReactNode;
   action?: ReactNode;
   align?: "start" | "center";
+  headingLevel?: 2 | 3;
 }
 
 export function EmptyState({
@@ -70,9 +71,12 @@ export function EmptyState({
   icon,
   action,
   align = "start",
+  headingLevel = 3,
   className,
   ...props
 }: EmptyStateProps) {
+  const Title = headingLevel === 2 ? "h2" : "h3";
+
   return (
     <div
       className={classNames(
@@ -83,7 +87,7 @@ export function EmptyState({
       {...props}
     >
       {icon === undefined ? null : <div className={styles.emptyStateIcon}>{icon}</div>}
-      <h2 className={styles.emptyStateTitle}>{title}</h2>
+      <Title className={styles.emptyStateTitle}>{title}</Title>
       <p className={styles.emptyStateDescription}>{description}</p>
       {action === undefined ? null : <div className={styles.emptyStateAction}>{action}</div>}
     </div>
