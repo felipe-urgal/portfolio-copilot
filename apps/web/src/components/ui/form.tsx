@@ -33,12 +33,15 @@ function mergeDescribedBy(helpIds: readonly string[], describedBy: string | unde
 export type FieldProps = HTMLAttributes<HTMLDivElement>;
 
 export function Field({ className, children, ...props }: FieldProps) {
-  const helpIds = Children.toArray(children).flatMap((child) =>
+  const childArray = Children.toArray(children);
+  const helpIds = childArray.flatMap((child) =>
     isHelpTextElement(child) && typeof child.props.id === "string" ? [child.props.id] : [],
   );
+  const describedControlCount = childArray.filter((child) => isDescribedControlElement(child)).length;
+  const canAssociateHelp = helpIds.length > 0 && describedControlCount === 1;
 
   const describedChildren = Children.map(children, (child) => {
-    if (helpIds.length === 0 || !isDescribedControlElement(child)) return child;
+    if (!canAssociateHelp || !isDescribedControlElement(child)) return child;
 
     return cloneElement(child, {
       "aria-describedby": mergeDescribedBy(helpIds, child.props["aria-describedby"]),
