@@ -157,9 +157,12 @@ export function ContributionConcentrationSection({
 
                   <div className={concentrationStyles.limitFields}>
                     <Field>
-                      <Label htmlFor={softId}>Limite de alerta (%)</Label>
+                      <Label htmlFor={softId} required={row.enabled}>
+                        Limite de alerta (%)
+                      </Label>
                       <TextInput
                         id={softId}
+                        required={row.enabled}
                         type="text"
                         inputMode="decimal"
                         autoComplete="off"
@@ -186,9 +189,12 @@ export function ContributionConcentrationSection({
                     </Field>
 
                     <Field>
-                      <Label htmlFor={hardId}>Limite rígido (%)</Label>
+                      <Label htmlFor={hardId} required={row.enabled}>
+                        Limite rígido (%)
+                      </Label>
                       <TextInput
                         id={hardId}
+                        required={row.enabled}
                         type="text"
                         inputMode="decimal"
                         autoComplete="off"
