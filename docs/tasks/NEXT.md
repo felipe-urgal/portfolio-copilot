@@ -65,6 +65,10 @@ O R9 segue sendo executado em verticais pequenas e verificáveis enquanto o brow
 - o auto-review inicial encontrou o risco de associação ambígua em `Field` com múltiplos controles; a correção final não tenta inferir relações nesses casos e mantém `aria-describedby` sob responsabilidade explícita da feature;
 - a primitive não inventa IDs, não usa Context/hook e não altera regras de validação; erro, `required`, domínio financeiro, persistência, auth e ownership permanecem nas autoridades existentes;
 - regressões SSR da suíte de primitives cobrem `TextInput`, `Select` e o guard de múltiplos controles; `docs/design/DESIGN-SYSTEM.md` registra o contrato;
+- PR #139 — o hardening de semântica obrigatória do pipeline de Aporte foi agrupado em quatro atividades coesas: baseline/política, concentração, execução e snapshot auditável;
+- base manual/aporte e parâmetros de política passam a expor `required`; limites soft/hard fazem isso somente enquanto a classe de concentração está habilitada; execução comunica a obrigação de ativo/elegibilidade/quantidade mínima; e a versão da metodologia do snapshot também é marcada como obrigatória;
+- custos conhecidos permanecem intencionalmente opcionais, pois o contrato atual define campo vazio como zero; `noValidate` e as funções de domínio permanecem como autoridades e nenhuma regra financeira foi deslocada para o browser;
+- regressão source-level dedicada protege separadamente as quatro atividades e `docs/design/PORTFOLIO.md` registra o contrato endurecido;
 - nesta execução, mesmo com a URL pública fornecida (`portfolio-copilot-plum.vercel.app`) e a URL do projeto na Vercel, o ambiente continuou sem acesso navegável: fetch não abriu a página, o conector Vercel não possui permissão para listar o projeto e o shell não resolve `*.vercel.app`;
 - portanto screenshots, fidelity ledger, keyboard-only end-to-end e screen-reader smoke continuam **não executados** e não devem ser tratados como evidência existente.
 
