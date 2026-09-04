@@ -125,6 +125,8 @@ Progressive disclosure move reconciliação por etapa, reason codes e explicaç�
 
 A copy deixa explícito que o fluxo é planejamento: nenhuma etapa envia ordem para corretora ou representa execução financeira.
 
+No hardening R9 / PR #139, as obrigações já exigidas pelo domínio também ficam semanticamente explícitas ao longo do pipeline: base manual e aporte, parâmetros de política, limites soft/hard somente quando a classe de concentração é habilitada, ativo/elegibilidade/quantidade mínima de execução e versão da metodologia usam `required` nativo e indicação visual aplicável. Custos conhecidos permanecem opcionais porque o contrato existente define campo vazio como zero. Todos os forms preservam `noValidate`; as funções de domínio continuam sendo a autoridade de validação e nenhuma regra financeira é movida para o browser.
+
 ### Configuração
 
 Agrupa informações infrequentes:
@@ -161,7 +163,7 @@ Nenhuma dependência visual nova foi adicionada.
 - laptop/tablet: colunas viram fluxo único antes de comprimir formulários;
 - mobile: campos, resumos e listas empilham; navegação local pode rolar horizontalmente;
 - controles herdam touch target/focus do design system;
-- campos e escolhas obrigatórios nas etapas de criação, ativos e transações expõem `required` nativo sem delegar a validação ao browser, porque os forms preservam `noValidate` e as funções de domínio continuam sendo a autoridade;
+- campos e escolhas obrigatórios nas etapas de criação, ativos, transações e aporte expõem `required` nativo sem delegar a validação ao browser, porque os forms preservam `noValidate` e as funções de domínio continuam sendo a autoridade;
 - detalhes técnicos usam `details/summary` com target acessível;
 - navegação local não declara semântica de tabs sem implementar o respectivo modelo de teclado;
 - informação essencial não depende de hover ou apenas de cor;
