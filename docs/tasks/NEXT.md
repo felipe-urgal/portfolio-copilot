@@ -60,10 +60,11 @@ O R9 segue sendo executado em verticais pequenas e verificáveis enquanto o brow
 - o review ampliado encontrou também um consumidor no pipeline de Aporte subordinado a `h3`, então a solução final evita assumir qualquer nível: o título de `EmptyState` é texto semanticamente neutro por padrão e `headingLevel={2 | 3 | 4}` só é usado quando o estado realmente inicia uma subseção;
 - `FinancialProfileSessionSummary` preserva explicitamente `headingLevel={2}` porque seu estado ausente é o caso auditado que precisa de heading próprio; styling, spacing e copy permanecem inalterados;
 - regressões cobrem a primitive, os estados aninhados do Dashboard e da Carteira e o uso subordinado no passo de Objetivos do onboarding;
-- vertical atual — audit de accessible descriptions encontrou o mesmo padrão em Carteira, Transações e todo o pipeline de Aporte: quando um campo ficava inválido, vários consumidores substituíam o `HelpText` pelo `FieldError` em `aria-describedby`;
-- em vez de criar remendos em cada feature, `Field` passa a preservar automaticamente os IDs de `HelpText` explícitos nos `TextInput`/`Select` filhos diretos e a compor esses IDs com qualquer descrição adicional já fornecida pela feature;
+- PR #137 — o audit de accessible descriptions encontrou o mesmo padrão em Carteira, Transações e todo o pipeline de Aporte: quando um campo ficava inválido, vários consumidores substituíam o `HelpText` pelo `FieldError` em `aria-describedby`;
+- em vez de criar remendos em cada feature, `Field` preserva automaticamente os IDs explícitos de `HelpText` quando existe exatamente um `TextInput`/`Select` direto, compondo esses IDs com qualquer descrição adicional fornecida pela feature;
+- o auto-review inicial encontrou o risco de associação ambígua em `Field` com múltiplos controles; a correção final não tenta inferir relações nesses casos e mantém `aria-describedby` sob responsabilidade explícita da feature;
 - a primitive não inventa IDs, não usa Context/hook e não altera regras de validação; erro, `required`, domínio financeiro, persistência, auth e ownership permanecem nas autoridades existentes;
-- regressões SSR da suíte de primitives cobrem `TextInput` e `Select` no estado inválido e `docs/design/DESIGN-SYSTEM.md` registra o contrato;
+- regressões SSR da suíte de primitives cobrem `TextInput`, `Select` e o guard de múltiplos controles; `docs/design/DESIGN-SYSTEM.md` registra o contrato;
 - nesta execução, mesmo com a URL pública fornecida (`portfolio-copilot-plum.vercel.app`) e a URL do projeto na Vercel, o ambiente continuou sem acesso navegável: fetch não abriu a página, o conector Vercel não possui permissão para listar o projeto e o shell não resolve `*.vercel.app`;
 - portanto screenshots, fidelity ledger, keyboard-only end-to-end e screen-reader smoke continuam **não executados** e não devem ser tratados como evidência existente.
 
