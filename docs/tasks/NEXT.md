@@ -69,6 +69,10 @@ O R9 segue sendo executado em verticais pequenas e verificáveis enquanto o brow
 - base manual/aporte e parâmetros de política passam a expor `required`; limites soft/hard fazem isso somente enquanto a classe de concentração está habilitada; execução comunica a obrigação de ativo/elegibilidade/quantidade mínima; e a versão da metodologia do snapshot também é marcada como obrigatória;
 - custos conhecidos permanecem intencionalmente opcionais, pois o contrato atual define campo vazio como zero; `noValidate` e as funções de domínio permanecem como autoridades e nenhuma regra financeira foi deslocada para o browser;
 - regressão source-level dedicada protege separadamente as quatro atividades e `docs/design/PORTFOLIO.md` registra o contrato endurecido;
+- PR #139 foi mergeado em `62b7a3340e233773d2314b2602af6963b3e79662`; CI pós-merge #682 no mesmo SHA concluiu em success;
+- PR #140 — o hardening de overflow horizontal do Aporte agrupa quatro atividades coesas: baseline, concentração, execução/custos e snapshot auditável;
+- os seis containers tabulares horizontais passam a ser regiões nomeadas e focáveis (`role="region"`, `tabIndex={0}`), permitindo entrada explícita pelo teclado sem depender de gesto de ponteiro; o focus ring reutiliza os tokens canônicos existentes;
+- nenhuma tabela, cálculo, ordem do pipeline ou layout foi alterado; a regressão dedicada protege as seis regiões e o estilo de foco, e `docs/design/PORTFOLIO.md` registra o contrato;
 - nesta execução, mesmo com a URL pública fornecida (`portfolio-copilot-plum.vercel.app`) e a URL do projeto na Vercel, o ambiente continuou sem acesso navegável: fetch não abriu a página, o conector Vercel não possui permissão para listar o projeto e o shell não resolve `*.vercel.app`;
 - portanto screenshots, fidelity ledger, keyboard-only end-to-end e screen-reader smoke continuam **não executados** e não devem ser tratados como evidência existente.
 
