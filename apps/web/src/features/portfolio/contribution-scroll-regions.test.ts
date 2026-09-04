@@ -14,7 +14,10 @@ const EXECUTION_SOURCE = readFileSync(
   new URL("./contribution-execution-section.tsx", import.meta.url),
   "utf8",
 );
-const COST_SOURCE = readFileSync(new URL("./contribution-cost-section.tsx", import.meta.url), "utf8");
+const COST_SOURCE = readFileSync(
+  new URL("./contribution-cost-section.tsx", import.meta.url),
+  "utf8",
+);
 const RECOMMENDATION_SOURCE = readFileSync(
   new URL("./contribution-recommendation-section.tsx", import.meta.url),
   "utf8",

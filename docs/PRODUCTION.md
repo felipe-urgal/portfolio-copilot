@@ -28,7 +28,7 @@ Nenhum segredo, URL de banco ou OAuth secret é versionado.
 
 ## Production Contract
 
-O contrato ativo usa `strategy=git-managed`. A Vercel é responsável por criar o deployment a partir da branch `main`; não existe deploy local equivalente.
+O contrato ativo usa `strategy=git-managed`. A Vercel é responsável por criar o deployment a partir da branch `main`; não existe deploy local equivalente nem script `prod:deploy`.
 
 Comandos declarados para o Dev Dashboard:
 
@@ -38,13 +38,27 @@ pnpm prod:migrate
 pnpm prod:verify
 ```
 
-`prod:status` permanece disponível para diagnóstico manual. `prod:deploy` permanece intencionalmente recusado e explica que o deploy é gerenciado pelo provider/Git; ele não é declarado em `.dev-dashboard/production.json`.
+`prod:status` permanece disponível para diagnóstico manual. A promoção para produção acontece por Git/Vercel após o merge em `main`, portanto deployment não faz parte da interface local de scripts.
 
 Políticas:
 
 - backup: `external`, fornecido pelo Neon;
 - migrations: `before-deploy`, explícitas e fora de `next build`;
 - rollback: `manual-restore`, porque uma revisão anterior de código pode não ser compatível com schema já migrado.
+
+## Fluxo canônico de produção
+
+Para uma mudança pronta para produção:
+
+```text
+pnpm prod:check
+-> pnpm prod:migrate        # quando houver migration aplicável
+-> merge em main
+-> Vercel cria o deployment
+-> pnpm prod:verify
+```
+
+`prod:check` valida código/build usando ambiente isolado de check. `prod:migrate` é uma operação administrativa explícita contra o banco de produção e deve ser executada somente quando a mudança exigir migration. `prod:verify` é somente leitura e valida o readiness depois da promoção.
 
 ## Variáveis e separação de privilégios
 
@@ -106,7 +120,7 @@ DATABASE_DIRECT_URL=<Neon direct/unpooled URL>
 PORTFOLIO_COPILOT_PRODUCTION_READY_URL=https://portfolio-copilot-plum.vercel.app/api/health/ready
 ```
 
-Os scripts `prod:migrate` e `prod:verify` não carregam `.env.local` automaticamente. No Dev Dashboard, `.env.production.local` é injetado somente nas etapas locais de produção aplicáveis; `provider-deploy` não recebe esse ambiente.
+Os scripts `prod:migrate` e `prod:verify` não carregam `.env.local` automaticamente. No Dev Dashboard, `.env.production.local` é injetado somente nas etapas locais de produção aplicáveis; o deployment gerenciado pelo provider não recebe esse ambiente.
 
 Para operação manual fora do Dev Dashboard, carregue explicitamente o mesmo arquivo sem alterar os scripts canônicos:
 
@@ -189,8 +203,8 @@ Consulte também:
 
 ## Integração com o Dev Dashboard
 
-O Dev Dashboard deve interpretar este projeto como produção `git-managed` na Vercel. O fluxo não deve executar `prod:deploy` localmente.
+O Dev Dashboard deve interpretar este projeto como produção `git-managed` na Vercel. Não existe comando local de deploy para este projeto.
 
-Antes da promoção/deploy gerenciado, `prod:check` usa exclusivamente `.dev-dashboard/.env.check.local`; quando a política exigir, `prod:migrate` usa `.dev-dashboard/.env.production.local`. Após a promoção, `prod:verify` usa o mesmo ambiente local de produção para confirmar o readiness canônico. `provider-deploy` não recebe nenhum desses arquivos.
+Antes da promoção gerenciada, `prod:check` usa exclusivamente `.dev-dashboard/.env.check.local`; quando a política exigir, `prod:migrate` usa `.dev-dashboard/.env.production.local`. Após o merge e a promoção pela Vercel, `prod:verify` usa o mesmo ambiente local de produção para confirmar o readiness canônico. O provider não recebe nenhum desses arquivos locais.
 
-Uma falha somente de verify deve ser tratada como verificável novamente, sem repetir migration/deploy automaticamente.
+Uma falha somente de verify deve ser tratada como verificável novamente, sem repetir migration ou deployment automaticamente.

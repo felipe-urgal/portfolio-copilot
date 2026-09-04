@@ -22,7 +22,6 @@
     "prod:status": "node scripts/production-gate.mjs status",
     "prod:check": "node scripts/prod-check.mjs",
     "prod:migrate": "node scripts/migrate-production.mjs",
-    "prod:deploy": "node scripts/production-gate.mjs deploy",
     "prod:verify": "node scripts/verify-production.mjs"
   },
   "devDependencies": {

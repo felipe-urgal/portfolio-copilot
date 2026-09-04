@@ -100,18 +100,18 @@ For every non-trivial activity:
 
 Preferred validation is GitHub Actions on the exact final head.
 
-The repository quality gate includes:
+The required PR gate is intentionally small and uses the same canonical command as local development:
 
 ```text
 pnpm install --frozen-lockfile
-Docker Compose configuration validation
-pnpm format:check
-pnpm lint
-pnpm typecheck
 pnpm db:migrate
-root .env.local database fallback migration
-pnpm test
-pnpm build
+pnpm check
+```
+
+`pnpm check` executes:
+
+```text
+format:check -> lint -> typecheck -> test -> build
 ```
 
 Useful local baseline:
@@ -131,7 +131,9 @@ Runtime baseline:
 - pnpm `11.24.0`;
 - PostgreSQL `18.6-alpine` for the local/CI database baseline.
 
-`pnpm check` does **not** replace migration validation for persistence/schema changes.
+`pnpm check` does **not** replace migration validation for persistence/schema changes. Additional browser/E2E, operational, security or supply-chain checks are risk-based and should be run when the change requires them instead of being fixed cost on every PR.
+
+The canonical local recipe is `docs/DEVELOPMENT.md`; production operations are documented in `docs/PRODUCTION.md`.
 
 ### CI rules
 

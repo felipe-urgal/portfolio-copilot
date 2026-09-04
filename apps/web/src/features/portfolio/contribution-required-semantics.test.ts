@@ -62,9 +62,7 @@ describe("contribution required semantics", () => {
     expect(RECOMMENDATION_SOURCE).toContain(
       '<Label htmlFor="contribution-methodology-version" required>',
     );
-    expect(RECOMMENDATION_SOURCE).toMatch(
-      /id="contribution-methodology-version"\s+required/,
-    );
+    expect(RECOMMENDATION_SOURCE).toMatch(/id="contribution-methodology-version"\s+required/);
     expect(RECOMMENDATION_SOURCE).toContain("noValidate");
   });
 });
