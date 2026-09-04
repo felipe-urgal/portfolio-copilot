@@ -1,6 +1,6 @@
 # Próxima Atividade — UX/UI R9: acessibilidade, responsividade e visual fidelity QA
 
-**Status:** IN PROGRESS — prioridade canônica atual em 2026-09-03
+**Status:** IN PROGRESS — prioridade canônica atual em 2026-09-04
 
 ## Issue canônica
 
@@ -33,7 +33,7 @@ Audit final do R8:
 
 Validar o produto redesenhado como um único sistema em acessibilidade, responsividade, browsers e fidelidade ao Protótipo 3/R1 antes do gate final R10.
 
-## Progresso incremental em 2026-09-03
+## Progresso incremental até 2026-09-04
 
 O R9 segue sendo executado em verticais pequenas e verificáveis enquanto o browser QA remoto permanece indisponível:
 
@@ -60,6 +60,10 @@ O R9 segue sendo executado em verticais pequenas e verificáveis enquanto o brow
 - o review ampliado encontrou também um consumidor no pipeline de Aporte subordinado a `h3`, então a solução final evita assumir qualquer nível: o título de `EmptyState` é texto semanticamente neutro por padrão e `headingLevel={2 | 3 | 4}` só é usado quando o estado realmente inicia uma subseção;
 - `FinancialProfileSessionSummary` preserva explicitamente `headingLevel={2}` porque seu estado ausente é o caso auditado que precisa de heading próprio; styling, spacing e copy permanecem inalterados;
 - regressões cobrem a primitive, os estados aninhados do Dashboard e da Carteira e o uso subordinado no passo de Objetivos do onboarding;
+- vertical atual — audit de accessible descriptions encontrou o mesmo padrão em Carteira, Transações e todo o pipeline de Aporte: quando um campo ficava inválido, vários consumidores substituíam o `HelpText` pelo `FieldError` em `aria-describedby`;
+- em vez de criar remendos em cada feature, `Field` passa a preservar automaticamente os IDs de `HelpText` explícitos nos `TextInput`/`Select` filhos diretos e a compor esses IDs com qualquer descrição adicional já fornecida pela feature;
+- a primitive não inventa IDs, não usa Context/hook e não altera regras de validação; erro, `required`, domínio financeiro, persistência, auth e ownership permanecem nas autoridades existentes;
+- regressões SSR da suíte de primitives cobrem `TextInput` e `Select` no estado inválido e `docs/design/DESIGN-SYSTEM.md` registra o contrato;
 - nesta execução, mesmo com a URL pública fornecida (`portfolio-copilot-plum.vercel.app`) e a URL do projeto na Vercel, o ambiente continuou sem acesso navegável: fetch não abriu a página, o conector Vercel não possui permissão para listar o projeto e o shell não resolve `*.vercel.app`;
 - portanto screenshots, fidelity ledger, keyboard-only end-to-end e screen-reader smoke continuam **não executados** e não devem ser tratados como evidência existente.
 
