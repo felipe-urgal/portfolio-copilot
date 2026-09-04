@@ -234,7 +234,12 @@ export function ContributionRecommendationSection({
             </dl>
           </Disclosure>
 
-          <div className={styles.tableScroller}>
+          <div
+            className={styles.tableScroller}
+            role="region"
+            tabIndex={0}
+            aria-label="Decisões do snapshot auditável"
+          >
             <table className={styles.resultTable}>
               <thead>
                 <tr>
