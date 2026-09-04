@@ -58,16 +58,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Prettier diagnostic
-        run: |
-          pnpm exec prettier --write \
-            apps/web/src/features/portfolio/contribution-required-semantics.test.ts \
-            apps/web/src/features/portfolio/contribution-scroll-regions.test.ts
-          git diff -- \
-            apps/web/src/features/portfolio/contribution-required-semantics.test.ts \
-            apps/web/src/features/portfolio/contribution-scroll-regions.test.ts
-          exit 1
-
       - name: Apply migrations
         run: pnpm db:migrate
 
