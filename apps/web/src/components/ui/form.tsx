@@ -37,7 +37,9 @@ export function Field({ className, children, ...props }: FieldProps) {
   const helpIds = childArray.flatMap((child) =>
     isHelpTextElement(child) && typeof child.props.id === "string" ? [child.props.id] : [],
   );
-  const describedControlCount = childArray.filter((child) => isDescribedControlElement(child)).length;
+  const describedControlCount = childArray.filter((child) =>
+    isDescribedControlElement(child),
+  ).length;
   const canAssociateHelp = helpIds.length > 0 && describedControlCount === 1;
 
   const describedChildren = Children.map(children, (child) => {
