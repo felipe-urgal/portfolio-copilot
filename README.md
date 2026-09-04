@@ -144,7 +144,8 @@ O Production Contract está ativo para uso pessoal/controlado desde 31/08/2026:
 - migration/admin explícito: `DATABASE_DIRECT_URL` direct/unpooled;
 - autenticação GitHub fail-closed por allowlist da conta autorizada;
 - liveness/readiness: `/api/health/live` e `/api/health/ready`;
-- operações: `prod:migrate` e `prod:verify`;
+- operações: `prod:check`, `prod:migrate` e `prod:verify`;
+- deployment: gerenciado pela Vercel a partir de `main`, sem `prod:deploy` local;
 - baseline de recuperação validado por snapshot e restore-check isolado.
 
 A produção atual **não é produto público/multi-tenant**. Exposição a terceiros, monetização, LGPD operacional, observabilidade/SLO e demais gates continuam na #50.
@@ -351,15 +352,9 @@ Leia [`docs/UX-UI-REDESIGN-ROADMAP.md`](docs/UX-UI-REDESIGN-ROADMAP.md).
 
 ## Desenvolvimento local
 
-### Pré-requisitos
+O fluxo canônico para instalar, subir, migrar, testar e validar antes do PR está em [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md).
 
-- Git;
-- Node.js 24;
-- Corepack;
-- Docker + Docker Compose;
-- GitHub OAuth App local para testar autenticação.
-
-### Instalação
+Resumo:
 
 ```bash
 nvm use
@@ -367,67 +362,44 @@ corepack enable
 corepack prepare pnpm@11.24.0 --activate
 pnpm install --frozen-lockfile
 cp .env.example .env.local
-```
-
-Variáveis locais:
-
-```env
-AUTH_SECRET="replace-with-a-random-secret"
-AUTH_GITHUB_ID="replace-with-github-oauth-client-id"
-AUTH_GITHUB_SECRET="replace-with-github-oauth-client-secret"
-DATABASE_URL="postgresql://portfolio:portfolio@localhost:5433/portfolio_copilot"
-```
-
-Variáveis de check e produção são deliberadamente separadas do `.env.local`; consulte [`docs/PRODUCTION.md`](docs/PRODUCTION.md) para `CHECK_DATABASE_URL`, `AUTH_GITHUB_ALLOWED_ACCOUNT_ID`, `DATABASE_DIRECT_URL` e `PORTFOLIO_COPILOT_PRODUCTION_READY_URL`.
-
-### Banco
-
-```bash
 pnpm db:up
 pnpm db:migrate
-```
-
-O Compose publica PostgreSQL somente em `127.0.0.1:5433`.
-
-### OAuth callback
-
-```text
-http://localhost:5300/api/auth/callback/github
-```
-
-### App
-
-```bash
 pnpm dev
 ```
 
-```text
-http://localhost:5300
-```
-
-### Quality gate local
+Antes do PR:
 
 ```bash
 pnpm check
 ```
 
-Para equivalência mais próxima do CI, valide também o banco/migrations antes de `pnpm check`.
+`pnpm check` é a interface única para `format:check`, lint, typecheck, testes e build. Migration permanece explícita porque depende do estado do banco.
 
-Operação do ambiente pessoal/privado, incluindo `prod:migrate`, `prod:verify` e regras de deploy, fica em `docs/PRODUCTION.md` e não deve ser confundida com o fluxo local de desenvolvimento.
+## Produção
+
+O procedimento canônico de produção está em [`docs/PRODUCTION.md`](docs/PRODUCTION.md).
+
+Resumo para produção git-managed:
+
+```text
+pnpm prod:check
+-> pnpm prod:migrate        # quando aplicável
+-> merge em main
+-> Vercel cria o deployment
+-> pnpm prod:verify
+```
+
+Não existe `prod:deploy` local neste projeto.
 
 ## Quality gate e CI
 
-O CI atual executa:
+O CI prepara o banco com `pnpm db:migrate` e então executa o mesmo gate usado localmente:
 
-1. `pnpm install --frozen-lockfile`;
-2. Docker Compose config validation;
-3. `pnpm format:check`;
-4. `pnpm lint`;
-5. `pnpm typecheck`;
-6. `pnpm db:migrate`;
-7. migration usando fallback de `.env.local`;
-8. `pnpm test`;
-9. `pnpm build`.
+```bash
+pnpm check
+```
+
+Isso evita manter duas listas diferentes de lint/typecheck/test/build entre scripts, CI e documentação.
 
 Um PR só fica elegível para merge quando o **head final** passa o gate e o auto code review sênior independente está encerrado sem finding aberto.
 
@@ -437,6 +409,8 @@ Um PR só fica elegível para merge quando o **head final** passa o gate e o aut
 issue + NEXT.md
   -> branch
   -> implementação + testes
+  -> validação local
+  -> pnpm check
   -> docs/issues
   -> PR
   -> CI do head atual
@@ -445,7 +419,7 @@ issue + NEXT.md
   -> CI final
   -> diff final
   -> merge
-  -> handoff local
+  -> produção conforme docs/PRODUCTION.md
 ```
 
 Leia [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md).
