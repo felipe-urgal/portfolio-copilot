@@ -1,17 +1,55 @@
-import type {
-  HTMLAttributes,
-  InputHTMLAttributes,
-  LabelHTMLAttributes,
-  SelectHTMLAttributes,
+import {
+  Children,
+  cloneElement,
+  isValidElement,
+  type HTMLAttributes,
+  type InputHTMLAttributes,
+  type LabelHTMLAttributes,
+  type ReactElement,
+  type ReactNode,
+  type SelectHTMLAttributes,
 } from "react";
 
 import { classNames } from "./class-names";
 import styles from "./ui.module.css";
 
+type DescribedControlProps = Readonly<{
+  "aria-describedby"?: string;
+}>;
+
+function isHelpTextElement(child: ReactNode): child is ReactElement<HelpTextProps> {
+  return isValidElement(child) && child.type === HelpText;
+}
+
+function isDescribedControlElement(child: ReactNode): child is ReactElement<DescribedControlProps> {
+  return isValidElement(child) && (child.type === TextInput || child.type === Select);
+}
+
+function mergeDescribedBy(helpIds: readonly string[], describedBy: string | undefined): string {
+  const existingIds = describedBy?.trim().split(/\s+/u).filter(Boolean) ?? [];
+  return [...new Set([...helpIds, ...existingIds])].join(" ");
+}
+
 export type FieldProps = HTMLAttributes<HTMLDivElement>;
 
-export function Field({ className, ...props }: FieldProps) {
-  return <div className={classNames(styles.field, className)} {...props} />;
+export function Field({ className, children, ...props }: FieldProps) {
+  const helpIds = Children.toArray(children).flatMap((child) =>
+    isHelpTextElement(child) && typeof child.props.id === "string" ? [child.props.id] : [],
+  );
+
+  const describedChildren = Children.map(children, (child) => {
+    if (helpIds.length === 0 || !isDescribedControlElement(child)) return child;
+
+    return cloneElement(child, {
+      "aria-describedby": mergeDescribedBy(helpIds, child.props["aria-describedby"]),
+    });
+  });
+
+  return (
+    <div className={classNames(styles.field, className)} {...props}>
+      {describedChildren}
+    </div>
+  );
 }
 
 export interface LabelProps extends LabelHTMLAttributes<HTMLLabelElement> {
