@@ -19,6 +19,7 @@ import {
   Metric,
   SegmentedControl,
   SegmentedControlOption,
+  Select,
   Skeleton,
   Status,
   TextInput,
@@ -70,8 +71,8 @@ describe("canonical UI primitives", () => {
     expect(html).not.toContain("<a");
   });
 
-  it("provides canonical field semantics for help and validation", () => {
-    const html = renderToStaticMarkup(
+  it("preserves canonical help descriptions alongside validation feedback", () => {
+    const inputHtml = renderToStaticMarkup(
       <Field>
         <Label htmlFor="monthly-contribution" required>
           Aporte mensal
@@ -81,19 +82,50 @@ describe("canonical UI primitives", () => {
           name="monthlyContribution"
           required
           invalid
-          aria-describedby="monthly-contribution-help monthly-contribution-error"
+          aria-describedby="monthly-contribution-error"
         />
         <HelpText id="monthly-contribution-help">Informe o valor disponível.</HelpText>
         <FieldError id="monthly-contribution-error">Valor inválido.</FieldError>
       </Field>,
     );
 
-    expect(html).toContain('for="monthly-contribution"');
-    expect(html).toContain('aria-invalid="true"');
-    expect(html).toContain(
+    const selectHtml = renderToStaticMarkup(
+      <Field>
+        <Label htmlFor="reference-currency">Moeda de referência</Label>
+        <Select id="reference-currency" invalid aria-describedby="reference-currency-error">
+          <option value="BRL">BRL</option>
+        </Select>
+        <HelpText id="reference-currency-help">Use a moeda da carteira.</HelpText>
+        <FieldError id="reference-currency-error">Moeda inválida.</FieldError>
+      </Field>,
+    );
+
+    expect(inputHtml).toContain('for="monthly-contribution"');
+    expect(inputHtml).toContain('aria-invalid="true"');
+    expect(inputHtml).toContain(
       'aria-describedby="monthly-contribution-help monthly-contribution-error"',
     );
-    expect(html).toContain('role="alert"');
+    expect(inputHtml).toContain('role="alert"');
+    expect(selectHtml).toContain(
+      'aria-describedby="reference-currency-help reference-currency-error"',
+    );
+  });
+
+  it("does not guess help associations when a Field has multiple controls", () => {
+    const html = renderToStaticMarkup(
+      <Field>
+        <TextInput id="lower-bound" aria-describedby="lower-error" />
+        <TextInput id="upper-bound" aria-describedby="upper-error" />
+        <HelpText id="range-help">Informe os dois limites.</HelpText>
+      </Field>,
+    );
+
+    expect(html).toContain('id="lower-bound"');
+    expect(html).toContain('id="upper-bound"');
+    expect(html.match(/aria-describedby="lower-error"/gu)).toHaveLength(1);
+    expect(html.match(/aria-describedby="upper-error"/gu)).toHaveLength(1);
+    expect(html).not.toContain('aria-describedby="range-help lower-error"');
+    expect(html).not.toContain('aria-describedby="range-help upper-error"');
   });
 
   it("uses native controls for choice cards and segmented options", () => {
