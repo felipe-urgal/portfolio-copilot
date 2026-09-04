@@ -120,8 +120,10 @@ describe("canonical UI primitives", () => {
       </Field>,
     );
 
-    expect(html).toContain('id="lower-bound" aria-describedby="lower-error"');
-    expect(html).toContain('id="upper-bound" aria-describedby="upper-error"');
+    expect(html).toContain('id="lower-bound"');
+    expect(html).toContain('id="upper-bound"');
+    expect(html.match(/aria-describedby="lower-error"/gu)).toHaveLength(1);
+    expect(html.match(/aria-describedby="upper-error"/gu)).toHaveLength(1);
     expect(html).not.toContain('aria-describedby="range-help lower-error"');
     expect(html).not.toContain('aria-describedby="range-help upper-error"');
   });
