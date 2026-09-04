@@ -209,9 +209,12 @@ export function ContributionBaselinePanel({
 
             <div className={styles.fieldRow}>
               <Field>
-                <Label htmlFor="contribution-portfolio-value">Total da base manual</Label>
+                <Label htmlFor="contribution-portfolio-value" required>
+                  Total da base manual
+                </Label>
                 <TextInput
                   id="contribution-portfolio-value"
+                  required
                   type="text"
                   inputMode="decimal"
                   autoComplete="off"
@@ -235,9 +238,12 @@ export function ContributionBaselinePanel({
               </Field>
 
               <Field>
-                <Label htmlFor="contribution-amount">Novo aporte</Label>
+                <Label htmlFor="contribution-amount" required>
+                  Novo aporte
+                </Label>
                 <TextInput
                   id="contribution-amount"
+                  required
                   type="text"
                   inputMode="decimal"
                   autoComplete="off"
@@ -386,11 +392,12 @@ export function ContributionBaselinePanel({
                   <form className={styles.policyForm} noValidate onSubmit={handlePolicySubmit}>
                     <div className={styles.fieldRow}>
                       <Field>
-                        <Label htmlFor="minimum-meaningful-contribution">
+                        <Label htmlFor="minimum-meaningful-contribution" required>
                           Mínimo significativo
                         </Label>
                         <TextInput
                           id="minimum-meaningful-contribution"
+                          required
                           type="text"
                           inputMode="decimal"
                           autoComplete="off"
@@ -415,9 +422,12 @@ export function ContributionBaselinePanel({
                       </Field>
 
                       <Field>
-                        <Label htmlFor="max-contribution-destinations">Limite de destinos</Label>
+                        <Label htmlFor="max-contribution-destinations" required>
+                          Limite de destinos
+                        </Label>
                         <TextInput
                           id="max-contribution-destinations"
+                          required
                           type="text"
                           inputMode="numeric"
                           autoComplete="off"
