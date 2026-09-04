@@ -219,7 +219,12 @@ export function ContributionCostSection({
             </div>
           </dl>
 
-          <div className={styles.tableScroller}>
+          <div
+            className={styles.tableScroller}
+            role="region"
+            tabIndex={0}
+            aria-label="Resultado dos custos conhecidos"
+          >
             <table className={styles.resultTable}>
               <thead>
                 <tr>
