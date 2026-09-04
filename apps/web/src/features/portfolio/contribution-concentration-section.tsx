@@ -245,7 +245,12 @@ export function ContributionConcentrationSection({
             </div>
           </dl>
 
-          <div className={styles.tableScroller}>
+          <div
+            className={styles.tableScroller}
+            role="region"
+            tabIndex={0}
+            aria-label="Resultado dos limites de concentração"
+          >
             <table className={styles.resultTable}>
               <thead>
                 <tr>

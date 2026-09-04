@@ -127,6 +127,8 @@ A copy deixa explícito que o fluxo é planejamento: nenhuma etapa envia ordem p
 
 No hardening R9 / PR #139, as obrigações já exigidas pelo domínio também ficam semanticamente explícitas ao longo do pipeline: base manual e aporte, parâmetros de política, limites soft/hard somente quando a classe de concentração é habilitada, ativo/elegibilidade/quantidade mínima de execução e versão da metodologia usam `required` nativo e indicação visual aplicável. Custos conhecidos permanecem opcionais porque o contrato existente define campo vazio como zero. Todos os forms preservam `noValidate`; as funções de domínio continuam sendo a autoridade de validação e nenhuma regra financeira é movida para o browser.
 
+No hardening R9 / PR #140, os seis containers tabulares que podem exigir scroll horizontal — matriz do baseline e resultados de baseline/política, concentração, execução, custos e recomendação — tornam-se regiões nomeadas e focáveis com `role="region"`, `tabIndex={0}` e nome acessível específico. O foco do container reutiliza os tokens canônicos de focus ring; conteúdo, cálculos e layout das tabelas permanecem inalterados.
+
 ### Configuração
 
 Agrupa informações infrequentes:
@@ -164,6 +166,7 @@ Nenhuma dependência visual nova foi adicionada.
 - mobile: campos, resumos e listas empilham; navegação local pode rolar horizontalmente;
 - controles herdam touch target/focus do design system;
 - campos e escolhas obrigatórios nas etapas de criação, ativos, transações e aporte expõem `required` nativo sem delegar a validação ao browser, porque os forms preservam `noValidate` e as funções de domínio continuam sendo a autoridade;
+- tabelas do Aporte que podem exceder a largura disponível preservam scroll horizontal e oferecem região nomeada, entrada no foco de teclado e focus ring visível para operação independente de gesto de ponteiro;
 - detalhes técnicos usam `details/summary` com target acessível;
 - navegação local não declara semântica de tabs sem implementar o respectivo modelo de teclado;
 - informação essencial não depende de hover ou apenas de cor;

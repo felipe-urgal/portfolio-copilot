@@ -272,7 +272,12 @@ export function ContributionBaselinePanel({
               </div>
             </div>
 
-            <div className={styles.tableScroller}>
+            <div
+              className={styles.tableScroller}
+              role="region"
+              tabIndex={0}
+              aria-label="Alvo e valores atuais do aporte"
+            >
               <table className={styles.inputTable}>
                 <thead>
                   <tr>
@@ -474,7 +479,12 @@ export function ContributionBaselinePanel({
                   ) : null}
                 </section>
 
-                <div className={styles.tableScroller}>
+                <div
+                  className={styles.tableScroller}
+                  role="region"
+                  tabIndex={0}
+                  aria-label="Resultado do baseline e da política"
+                >
                   <table className={styles.resultTable}>
                     <thead>
                       <tr>

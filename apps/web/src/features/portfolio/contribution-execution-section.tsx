@@ -277,7 +277,12 @@ export function ContributionExecutionSection({
               description="Nenhuma alocação positiva exige destino nesta configuração."
             />
           ) : (
-            <div className={styles.tableScroller}>
+            <div
+              className={styles.tableScroller}
+              role="region"
+              tabIndex={0}
+              aria-label="Resultado das restrições de execução"
+            >
               <table className={styles.resultTable}>
                 <thead>
                   <tr>
