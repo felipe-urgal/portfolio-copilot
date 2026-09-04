@@ -34,22 +34,17 @@ describe("contribution required semantics", () => {
     expect(BASELINE_SOURCE).toContain("noValidate");
   });
 
-  it(
-    "makes concentration limits required only while their class is enabled",
-    () => {
-      for (const id of ["softId", "hardId"]) {
-        expect(CONCENTRATION_SOURCE).toContain(
-          `htmlFor={${id}} required={row.enabled}`,
-        );
-        expect(CONCENTRATION_SOURCE).toMatch(
-          new RegExp(`id=\\{${id}\\}\\s+required=\\{row\\.enabled\\}`),
-        );
-      }
+  it("makes concentration limits required only while their class is enabled", () => {
+    for (const id of ["softId", "hardId"]) {
+      expect(CONCENTRATION_SOURCE).toContain(`htmlFor={${id}} required={row.enabled}`);
+      expect(CONCENTRATION_SOURCE).toMatch(
+        new RegExp(`id=\\{${id}\\}\\s+required=\\{row\\.enabled\\}`),
+      );
+    }
 
-      expect(CONCENTRATION_SOURCE).toContain("disabled={!row.enabled}");
-      expect(CONCENTRATION_SOURCE).toContain("noValidate");
-    },
-  );
+    expect(CONCENTRATION_SOURCE).toContain("disabled={!row.enabled}");
+    expect(CONCENTRATION_SOURCE).toContain("noValidate");
+  });
 
   it("exposes native required semantics for execution destination inputs", () => {
     expect(EXECUTION_SOURCE).toContain("htmlFor={assetSelectId} required");
@@ -63,16 +58,11 @@ describe("contribution required semantics", () => {
     expect(EXECUTION_SOURCE).toContain("noValidate");
   });
 
-  it(
-    "exposes native required semantics for the audit snapshot methodology version",
-    () => {
-      expect(RECOMMENDATION_SOURCE).toContain(
-        '<Label htmlFor="contribution-methodology-version" required>',
-      );
-      expect(RECOMMENDATION_SOURCE).toMatch(
-        /id="contribution-methodology-version"\s+required/,
-      );
-      expect(RECOMMENDATION_SOURCE).toContain("noValidate");
-    },
-  );
+  it("exposes native required semantics for the audit snapshot methodology version", () => {
+    expect(RECOMMENDATION_SOURCE).toContain(
+      '<Label htmlFor="contribution-methodology-version" required>',
+    );
+    expect(RECOMMENDATION_SOURCE).toMatch(/id="contribution-methodology-version"\s+required/);
+    expect(RECOMMENDATION_SOURCE).toContain("noValidate");
+  });
 });
