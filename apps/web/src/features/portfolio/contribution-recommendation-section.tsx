@@ -144,9 +144,12 @@ export function ContributionRecommendationSection({
 
       <form className={recommendationStyles.form} noValidate onSubmit={handleSubmit}>
         <Field>
-          <Label htmlFor="contribution-methodology-version">Versão da metodologia</Label>
+          <Label htmlFor="contribution-methodology-version" required>
+            Versão da metodologia
+          </Label>
           <TextInput
             id="contribution-methodology-version"
+            required
             type="text"
             autoComplete="off"
             value={draft.methodologyVersion}
