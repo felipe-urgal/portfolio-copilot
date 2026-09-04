@@ -59,19 +59,18 @@ Qualquer push novo invalida a checagem final anterior.
 
 O GitHub Actions é a validação preferida porque executa o gate fora da máquina do desenvolvedor.
 
-O job atual executa:
+O job obrigatório de PR é intencionalmente enxuto e executa:
 
 ```text
 pnpm install --frozen-lockfile
-Docker Compose config validation
-pnpm format:check
 pnpm lint
 pnpm typecheck
 pnpm db:migrate
-root .env.local database fallback migration
 pnpm test
 pnpm build
 ```
+
+Checks operacionais mais caros devem ser executados quando o risco da mudança justificar, não como custo fixo de todo PR. Mudanças de persistência continuam exigindo validação de migration; mudanças visuais/integradas podem exigir browser/E2E; mudanças de segurança/supply chain podem exigir validações específicas.
 
 Baseline de runtime:
 
@@ -97,6 +96,21 @@ format:check -> lint -> typecheck -> test -> build
 ```
 
 Ele não substitui migration validation quando persistência/schema são afetados.
+
+### Política de testes e coverage
+
+O objetivo da suíte é detectar regressões materiais, não maximizar contagem de casos ou uma porcentagem global.
+
+Priorize testes para:
+
+- regras financeiras e invariantes de domínio;
+- auth/authz, ownership e isolamento;
+- persistência, migrations e concorrência;
+- contratos de integração;
+- regressões reproduzíveis;
+- comportamento relevante de UI e acessibilidade.
+
+Evite testes que apenas repetem constantes, nomes, exports triviais ou detalhes incidentais de implementação sem proteger um contrato material. Coverage pode ser usado como diagnóstico quando necessário, mas não é meta percentual de produto nem substitui revisão da qualidade dos cenários.
 
 ## Fallback local controlado
 
