@@ -30,22 +30,27 @@ Nenhum PR deve ser mergeado antes de completar as etapas aplicáveis:
 4. implementar a menor entrega vertical coerente;
 5. adicionar/ajustar testes e edge cases;
 6. atualizar documentação viva/normativa afetada;
-7. abrir PR com problema, solução, riscos, teste e docs alteradas;
-8. acompanhar o CI do **head atual**;
-9. corrigir causa raiz de qualquer falha real;
-10. executar auto code review completo em nível sênior sobre o diff integral;
-11. aplicar todos os findings relevantes ou registrar adiamento deliberado em issue/backlog;
-12. reconciliar `NEXT.md`, `BACKLOG.md`, `DONE.md`, roadmap e issues quando aplicável;
-13. executar novamente o quality gate após o **último push**;
-14. revisar a diff/changed-file list final e remover qualquer artefato temporário;
-15. mergear somente quando CI final estiver verde e o review estiver encerrado sem finding aberto;
-16. confirmar o merge e o CI pós-merge de `main` quando disponível;
-17. entregar handoff local com comandos exatos e próximos passos.
+7. subir o app localmente e validar manualmente o fluxo alterado quando aplicável;
+8. executar migration local quando a mudança envolver persistência/schema;
+9. executar `pnpm check` no head atual;
+10. abrir PR com problema, solução, riscos, teste e docs alteradas;
+11. acompanhar o CI do **head atual**;
+12. corrigir causa raiz de qualquer falha real;
+13. executar auto code review completo em nível sênior sobre o diff integral;
+14. aplicar todos os findings relevantes ou registrar adiamento deliberado em issue/backlog;
+15. reconciliar `NEXT.md`, `BACKLOG.md`, `DONE.md`, roadmap e issues quando aplicável;
+16. executar novamente o quality gate após o **último push**;
+17. revisar a diff/changed-file list final e remover qualquer artefato temporário;
+18. mergear somente quando CI final estiver verde e o review estiver encerrado sem finding aberto;
+19. confirmar o merge e o CI pós-merge de `main` quando disponível;
+20. seguir `docs/PRODUCTION.md` para migration/promoção/verify em produção quando aplicável.
 
 ### Regra de ouro
 
 ```text
-CI do head final verde
+app validado localmente
++ pnpm check no head final
++ CI do head final verde
 + auto code review sênior independente
 + findings corrigidos
 + docs/issues coerentes
@@ -55,22 +60,7 @@ CI do head final verde
 
 Qualquer push novo invalida a checagem final anterior.
 
-## Quality gate atual
-
-O GitHub Actions é a validação preferida porque executa o gate fora da máquina do desenvolvedor.
-
-O job obrigatório de PR é intencionalmente enxuto e executa:
-
-```text
-pnpm install --frozen-lockfile
-pnpm lint
-pnpm typecheck
-pnpm db:migrate
-pnpm test
-pnpm build
-```
-
-Checks operacionais mais caros devem ser executados quando o risco da mudança justificar, não como custo fixo de todo PR. Mudanças de persistência continuam exigindo validação de migration; mudanças visuais/integradas podem exigir browser/E2E; mudanças de segurança/supply chain podem exigir validações específicas.
+## Desenvolvimento local
 
 Baseline de runtime:
 
@@ -78,24 +68,59 @@ Baseline de runtime:
 - pnpm `11.24.0`;
 - PostgreSQL `18.6-alpine` no ambiente local/CI.
 
-### Gate local
+Preparação inicial:
 
 ```bash
+nvm use
 corepack enable
 corepack prepare pnpm@11.24.0 --activate
 pnpm install --frozen-lockfile
+cp .env.example .env.local
 pnpm db:up
 pnpm db:migrate
+```
+
+Subir a aplicação:
+
+```bash
+pnpm dev
+```
+
+Antes de abrir/atualizar o PR:
+
+```bash
 pnpm check
 ```
 
-`pnpm check` executa:
+`pnpm check` é a interface canônica do quality gate de código e executa:
 
 ```text
 format:check -> lint -> typecheck -> test -> build
 ```
 
-Ele não substitui migration validation quando persistência/schema são afetados.
+Migration fica separada porque depende de estado de banco e deve ser executada explicitamente quando aplicável:
+
+```bash
+pnpm db:migrate
+```
+
+## Quality gate e CI
+
+O GitHub Actions é a validação preferida porque executa o gate fora da máquina do desenvolvedor.
+
+O job obrigatório de PR prepara o banco e depois consome a mesma interface canônica usada localmente:
+
+```text
+pnpm install --frozen-lockfile
+pnpm db:migrate
+pnpm check
+```
+
+Assim, regras de formatação, lint, typecheck, testes e build não ficam duplicadas entre documentação, scripts e workflow.
+
+`pnpm check` não substitui migration validation quando persistência/schema são afetados.
+
+Checks operacionais mais caros devem ser executados quando o risco da mudança justificar, não como custo fixo de todo PR. Mudanças visuais/integradas podem exigir browser/E2E; mudanças de segurança/supply chain podem exigir validações específicas.
 
 ### Política de testes e coverage
 
@@ -243,8 +268,10 @@ Uma atividade só está concluída quando:
 
 - critérios de aceite atendidos;
 - implementação está na camada correta;
+- app/fluxo alterado foi validado localmente quando aplicável;
 - testes/edge cases adequados existem e passam;
 - migrations validadas quando aplicável;
+- `pnpm check` do commit final passa;
 - CI/quality gate do commit final está verde;
 - segurança/privacy foram revisadas;
 - mudanças financeiras tiveram review de invariantes;
@@ -285,3 +312,5 @@ pnpm db:migrate
 pnpm check
 pnpm dev
 ```
+
+Para produção, o procedimento canônico está em [`docs/PRODUCTION.md`](PRODUCTION.md).
