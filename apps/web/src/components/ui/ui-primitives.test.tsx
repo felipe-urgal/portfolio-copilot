@@ -111,6 +111,21 @@ describe("canonical UI primitives", () => {
     );
   });
 
+  it("does not guess help associations when a Field has multiple controls", () => {
+    const html = renderToStaticMarkup(
+      <Field>
+        <TextInput id="lower-bound" aria-describedby="lower-error" />
+        <TextInput id="upper-bound" aria-describedby="upper-error" />
+        <HelpText id="range-help">Informe os dois limites.</HelpText>
+      </Field>,
+    );
+
+    expect(html).toContain('id="lower-bound" aria-describedby="lower-error"');
+    expect(html).toContain('id="upper-bound" aria-describedby="upper-error"');
+    expect(html).not.toContain('aria-describedby="range-help lower-error"');
+    expect(html).not.toContain('aria-describedby="range-help upper-error"');
+  });
+
   it("uses native controls for choice cards and segmented options", () => {
     const html = renderToStaticMarkup(
       <div>
