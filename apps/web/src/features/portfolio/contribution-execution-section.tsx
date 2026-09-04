@@ -161,9 +161,12 @@ export function ContributionExecutionSection({
                   </div>
 
                   <Field>
-                    <Label htmlFor={assetSelectId}>Ativo local</Label>
+                    <Label htmlFor={assetSelectId} required>
+                      Ativo local
+                    </Label>
                     <Select
                       id={assetSelectId}
+                      required
                       value={row.assetId}
                       disabled={candidates.length === 0}
                       invalid={rowErrors?.assetId !== undefined}
@@ -191,7 +194,7 @@ export function ContributionExecutionSection({
 
                   <div>
                     <SegmentedControl
-                      legend="Elegibilidade"
+                      legend="Elegibilidade (obrigatório)"
                       aria-invalid={rowErrors?.isEligible !== undefined}
                       aria-describedby={
                         rowErrors?.isEligible !== undefined ? eligibilityErrorId : undefined
@@ -199,6 +202,7 @@ export function ContributionExecutionSection({
                     >
                       <SegmentedControlOption
                         name={`execution-eligibility-${row.assetClass}`}
+                        required
                         checked={row.isEligible === true}
                         onChange={() => updateDestination(row.assetClass, { isEligible: true })}
                       >
@@ -206,6 +210,7 @@ export function ContributionExecutionSection({
                       </SegmentedControlOption>
                       <SegmentedControlOption
                         name={`execution-eligibility-${row.assetClass}`}
+                        required
                         checked={row.isEligible === false}
                         onChange={() => updateDestination(row.assetClass, { isEligible: false })}
                       >
@@ -216,9 +221,12 @@ export function ContributionExecutionSection({
                   </div>
 
                   <Field>
-                    <Label htmlFor={minimumId}>Quantidade mínima negociável</Label>
+                    <Label htmlFor={minimumId} required>
+                      Quantidade mínima negociável
+                    </Label>
                     <TextInput
                       id={minimumId}
+                      required
                       type="text"
                       inputMode="decimal"
                       autoComplete="off"
