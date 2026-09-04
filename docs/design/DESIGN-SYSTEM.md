@@ -290,7 +290,7 @@ Quando `disabled`, renderiza conteúdo não navegável em vez de um `<a href>` a
 
 São primitives de composição e feedback de formulário.
 
-IDs permanecem explícitos no consumidor:
+IDs permanecem explícitos e auditáveis no consumidor. Quando `HelpText` é filho direto de `Field`, a primitive compõe seu `id` em `aria-describedby` dos `TextInput`/`Select` filhos diretos e preserva qualquer descrição adicional fornecida pela feature, como o `FieldError` ativo:
 
 ```tsx
 <Field>
@@ -301,14 +301,16 @@ IDs permanecem explícitos no consumidor:
     id="amount"
     required
     invalid={hasError}
-    aria-describedby="amount-help amount-error"
+    aria-describedby={hasError ? "amount-error" : undefined}
   />
   <HelpText id="amount-help">Valor disponível para o aporte.</HelpText>
   {hasError ? <FieldError id="amount-error">Informe um valor válido.</FieldError> : null}
 </Field>
 ```
 
-A fundação não usa Context/hook para ligar IDs implicitamente. Isso mantém o componente simples, SSR-friendly e auditável no markup.
+No markup final, o controle mantém `amount-help` tanto no estado normal quanto no estado inválido; quando houver erro, a descrição passa a conter `amount-help amount-error`. IDs repetidos são deduplicados.
+
+A fundação não usa Context/hook nem inventa IDs: associação automática vale apenas para `HelpText` com `id` explícito e controles diretos do mesmo `Field`. A feature continua responsável por decidir quais erros/descrições adicionais pertencem ao campo. Isso mantém o componente SSR-friendly e auditável sem fazer o erro substituir a orientação persistente.
 
 ### `TextInput` / `Select`
 
@@ -322,7 +324,7 @@ Centralizam:
 - disabled;
 - invalid/error.
 
-`invalid` define `aria-invalid=true`. `required`, `aria-describedby`, `name`, autocomplete e demais semantics continuam sendo responsabilidade da feature porque dependem do campo real.
+`invalid` define `aria-invalid=true`. `required`, `name`, autocomplete, IDs de erro e demais semantics dependentes do campo real continuam sendo responsabilidade da feature; `Field` apenas preserva o `HelpText` explícito na descrição acessível de controles diretos.
 
 ### `ChoiceCard`
 
@@ -475,6 +477,7 @@ R2 estabelece:
 - native inputs para choice/segmented;
 - `fieldset` + `legend` no segmented control;
 - `aria-invalid` explícito;
+- `HelpText` persistente em `aria-describedby` quando `FieldError` também precisa ser anunciado;
 - error com role acessível;
 - disabled real em `Button`;
 - link disabled sem `href`;
