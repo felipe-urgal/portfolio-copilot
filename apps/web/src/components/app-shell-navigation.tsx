@@ -99,12 +99,7 @@ function AccountArea({
       </Link>
 
       {displayName === undefined ? null : (
-        <Link
-          className={styles.accountLink}
-          href="/sign-out"
-          aria-label={`Sessão autenticada como ${displayName}. Abrir opções para sair.`}
-          onClick={() => onNavigate?.()}
-        >
+        <Link className={styles.accountLink} href="/sign-out" onClick={() => onNavigate?.()}>
           <span className={styles.accountAvatar} aria-hidden="true">
             {getInitials(displayName)}
           </span>
