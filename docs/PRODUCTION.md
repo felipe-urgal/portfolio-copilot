@@ -144,6 +144,8 @@ GET /api/health/ready
 
 `/api/health/ready` executa probe bounded no PostgreSQL. Retorna `200` quando aplicação + banco estão disponíveis e `503` quando a dependência não está pronta. A resposta não expõe connection string, usuário, senha, host interno nem mensagem bruta do driver.
 
+A rota humana `/health` é uma superfície informativa separada dos probes automáticos. Ela mostra somente o estado operacional básico que a página realmente consulta e não deve ser usada por automação no lugar de `/api/health/live` ou `/api/health/ready`. No hardening R9, a página também declara metadata própria (`Status da aplicação | Portfolio Copilot`) para que o documento seja identificável por título em vez de herdar o título genérico do layout raiz; isso não altera liveness, readiness nem o contrato de `prod:verify`.
+
 `prod:verify` consulta o readiness canônico com retry bounded. É somente leitura e nunca repete migration ou deploy.
 
 ## Evidência do primeiro ambiente
