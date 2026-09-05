@@ -1,0 +1,54 @@
+name: tmp-reconcile-r9-next
+
+on:
+  push:
+    branches:
+      - docs/r9-reconcile-147-151
+    paths:
+      - .github/workflows/tmp-reconcile-r9-next.yml
+
+permissions:
+  contents: write
+
+jobs:
+  reconcile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: docs/r9-reconcile-147-151
+          fetch-depth: 0
+      - name: Reconcile canonical R9 tracking
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 <<'PY'
+          from pathlib import Path
+
+          path = Path("docs/tasks/NEXT.md")
+          text = path.read_text()
+
+          text = text.replace(
+              "**Status:** IN PROGRESS — prioridade canônica atual em 2026-09-04",
+              "**Status:** IN PROGRESS — prioridade canônica atual em 2026-09-05",
+              1,
+          )
+          text = text.replace(
+              "## Progresso incremental até 2026-09-04",
+              "## Progresso incremental até 2026-09-05",
+              1,
+          )
+
+          marker = "- nenhuma tabela, cálculo, ordem do pipeline ou layout foi alterado; a regressão dedicada protege as seis regiões e o estilo de foco, e `docs/design/PORTFOLIO.md` registra o contrato;\n"
+          addition = """- PR #147 — o status principal do perfil no Dashboard passa a usar `role=\"status\"`, permitindo anunciar a restauração local assíncrona de `Perfil pendente` para `Perfil configurado` sem alterar layout, domínio ou persistência; regressão e `docs/design/DASHBOARD.md` registram o contrato; CI do head #710 concluído em success;\n- PR #148 — o marcador da utility `Saúde da aplicação` no AppShell deixa de usar tokens de `success` sem uma fonte real de liveness/readiness e passa a ser visualmente neutro; `/health` continua sendo a surface que expõe o estado operacional real; regressão e `docs/design/APP-SHELL.md` registram o contrato; CI do head #711 concluído em success;\n- PR #149 — o contador persistente do catálogo de ativos (`Nenhum ativo` / `N ativos`) passa a usar `role=\"status\"`, reutilizando o feedback já visível após cadastro local sem toast, foco artificial ou estado paralelo; regressão e `docs/design/PORTFOLIO.md` registram o contrato; CI do head #712 concluído em success;\n- PR #150 — o contador persistente do Transaction Ledger (`Ledger vazio` / `N movimentações`) passa a usar `role=\"status\"` para anunciar `CASH_IN`, `CASH_OUT`, `BUY` e `SELL` válidos sem alterar cálculo, posições, persistência ou foco; após o merge do #149, a branch foi reconciliada sobre a `main` porque ambas tocavam os mesmos três arquivos, preservando as duas verticais; head final `0286cca999b8082b156b46ea3d30abbedf1786e0`, CI #719 concluído em success e `docs/design/PORTFOLIO.md` reconciliado;\n- PR #151 — o bloco de persistência da revisão do onboarding passa a expor `role=\"status\"`, `aria-live=\"polite\"` e `aria-atomic=\"true\"`, anunciando salvar/remover/falha sem mover foco nem alterar o opt-in; a falha inicial de formatação foi corrigida com a versão canônica do Prettier do repositório; head final `810ac8bfef7775f1a856851fdea27308897fc50d`, CI #722 concluído em success e `docs/design/ONBOARDING.md` reconciliado;\n- PRs #147, #148, #149, #150 e #151 foram mergeados por squash; a `main` resultante do lote ficou em `dd0e78b0ce576776db90e84ecfa2d4da6174eaa2`; o R9 permanece aberto e R10 não é promovido enquanto browser QA/fidelity/keyboard-only E2E/screen-reader smoke não tiverem evidência reproduzível.\n"""
+          if text.count(marker) != 1:
+              raise SystemExit("Could not locate the #140 tracking marker exactly once")
+          text = text.replace(marker, marker + addition, 1)
+          path.write_text(text)
+          PY
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/tasks/NEXT.md
+          git commit -m "docs: reconcile R9 status announcement batch"
+          git push origin HEAD:docs/r9-reconcile-147-151
