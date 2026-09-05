@@ -46,6 +46,16 @@ describe("DashboardOverview R6", () => {
     expect(html).not.toMatch(/>\s*0%\s*</);
   });
 
+  it("announces profile status when local persistence restores the shared snapshot", () => {
+    const absentHtml = renderDashboard();
+    const profileHtml = renderDashboard(PROFILE);
+
+    expect(absentHtml).toContain('role="status"');
+    expect(absentHtml).toContain("Perfil pendente");
+    expect(profileHtml).toContain('role="status"');
+    expect(profileHtml).toContain("Perfil configurado");
+  });
+
   it("keeps nested empty states within the dashboard section headings", () => {
     const html = renderDashboard();
 

@@ -677,7 +677,7 @@ export function PortfolioWorkspace({
                     <h2>Ativos disponíveis</h2>
                     <p>Catálogo e posição são conceitos separados.</p>
                   </div>
-                  <Status tone="neutral">
+                  <Status role="status" tone="neutral">
                     {countLabel(assets.length, "ativo", "ativos", "Nenhum ativo")}
                   </Status>
                 </div>

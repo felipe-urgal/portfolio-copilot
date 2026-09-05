@@ -16,6 +16,9 @@ const PORTFOLIO_CSS = readFileSync(
 const TASK_NAV_BUTTON =
   /PORTFOLIO_TASKS\.map\(\(task\) => \(\s*<Button\s+key=\{task\.id\}[\s\S]*?size="md"/;
 const SCOPED_VALIDATION_FOCUS = /focusFirstInvalidField\(event\.currentTarget\);/g;
+const ASSET_CATALOG_STATUS =
+  /<Status role="status" tone="neutral">\s*\{countLabel\(assets\.length,/;
+
 const LEDGER_STATUS =
   /<Status role="status" tone="neutral">\s*\{countLabel\(\s*transactions\.length,/;
 
@@ -92,6 +95,14 @@ describe("PortfolioWorkspace", () => {
     }
   });
 
+  it("announces the updated asset catalog count after local registration", () => {
+    expect(PORTFOLIO_SOURCE).toMatch(ASSET_CATALOG_STATUS);
+  });
+
+  it("announces the updated Transaction Ledger count after valid cash flows and trades", () => {
+    expect(PORTFOLIO_SOURCE).toMatch(LEDGER_STATUS);
+  });
+
   it("exposes native required semantics for cash flows and asset trades", () => {
     expect(PORTFOLIO_SOURCE).toContain('legend="Tipo do fluxo de caixa (obrigatório)"');
     expect(PORTFOLIO_SOURCE).toMatch(/name="cashTransactionType"\s+required/);
@@ -104,10 +115,6 @@ describe("PortfolioWorkspace", () => {
       expect(PORTFOLIO_SOURCE).toContain(`htmlFor="${id}" required`);
       expect(PORTFOLIO_SOURCE).toMatch(new RegExp(`id="${id}"\\s+required`));
     }
-  });
-
-  it("announces the updated Transaction Ledger count after valid cash flows and trades", () => {
-    expect(PORTFOLIO_SOURCE).toMatch(LEDGER_STATUS);
   });
 
   it("exposes the R7 task model after portfolio creation without an incomplete ARIA tabs pattern", () => {

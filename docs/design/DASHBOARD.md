@@ -58,7 +58,8 @@ As foundations existem no repositório, mas não há uma integração de produto
 
 - greeting curto derivado de identidade real;
 - descrição muda conforme o perfil esteja configurado ou pendente;
-- `Status` informa somente o estado do perfil.
+- `Status` informa somente o estado do perfil;
+- no hardening R9, esse `Status` usa `role="status"` porque o `FinancialSessionProvider` pode restaurar um snapshot local após a hidratação; a transição de `Perfil pendente` para `Perfil configurado` precisa ser anunciada sem mover foco.
 
 ### Métricas compactas
 
@@ -113,7 +114,8 @@ O fluxo de segurança não mudou:
 - nenhuma informação essencial depende de hover;
 - focus ring e touch targets vêm das primitives/tokens;
 - reduced motion permanece no boundary global do design system;
-- landmarks continuam pertencendo ao AppShell; o Dashboard não cria outro `main`.
+- landmarks continuam pertencendo ao AppShell; o Dashboard não cria outro `main`;
+- mudanças assíncronas do estado principal do perfil são anunciadas por uma região `status`, sem transformar fatos estáticos secundários em live regions desnecessárias.
 
 ## Fora de escopo do R6
 

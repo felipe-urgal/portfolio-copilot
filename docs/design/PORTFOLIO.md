@@ -97,6 +97,8 @@ Cadastro e catálogo ficam próximos, mas posição continua uma projeção sepa
 
 No hardening R9, nome, classe econômica, instrumento e moeda de referência do ativo comunicam com `required` nativo a mesma obrigatoriedade já aplicada por `createLocalAssetSnapshot(...)`; a validação de domínio continua sendo a autoridade do submit.
 
+No hardening R9, o contador visual do catálogo (`Nenhum ativo` / `N ativos`) também funciona como `role="status"`. Assim, concluir um cadastro local atualiza uma região já existente e anuncia o novo total sem criar toast, estado de feedback paralelo ou mover foco do formulário.
+
 Estados distintos permanecem explícitos:
 
 - nenhum ativo cadastrado;
@@ -173,6 +175,7 @@ Nenhuma dependência visual nova foi adicionada.
 - navegação local não declara semântica de tabs sem implementar o respectivo modelo de teclado;
 - informação essencial não depende de hover ou apenas de cor;
 - no hardening R9, uma ação que desaparece após mutação deve entregar foco a um destino persistente; a remoção da cópia local do perfil transfere foco para a nota de sessão depois que o estado de persistência muda;
+- resultados de cadastro local que já possuem um contador persistente reutilizam esse `Status` como região live, evitando feedback visual-only e componentes redundantes.
 - mutações válidas do Transaction Ledger reutilizam seu contador persistente como região `status`, mantendo o submit no contexto e evitando feedback visual-only.
 
 R9 continua responsável pelo audit integrado WCAG 2.2 AA e visual fidelity final.

@@ -20,6 +20,7 @@ const NAVIGATION_SOURCE = readFileSync(
 const MOBILE_MENU_BUTTON = /variant="secondary"\s+size="md"\s+aria-haspopup="dialog"/;
 const DRAWER_CLOSE_BUTTON = /variant="ghost"\s+size="md"\s+onClick=\{\(\) => closeDrawer\(true\)\}/;
 const BRAND_TOUCH_TARGET = /\.brand\s*\{[\s\S]*?min-height:\s*var\(--touch-target-min\);/;
+const HEALTH_MARKER = /\.utilityMarker\s*\{([\s\S]*?)\}/;
 
 function renderShell(activeRoute: "/dashboard" | "/portfolio" | "/onboarding" = "/dashboard") {
   return renderToStaticMarkup(
@@ -43,6 +44,14 @@ describe("AppShell", () => {
     expect(html).not.toContain('href="/assistant"');
     expect(html).not.toContain('href="/reports"');
     expect(html).not.toContain('href="/theses"');
+  });
+
+  it("keeps the health utility visually neutral until the real health page is opened", () => {
+    const marker = SHELL_CSS.match(HEALTH_MARKER)?.[1] ?? "";
+
+    expect(marker).toContain("var(--color-border-strong)");
+    expect(marker).toContain("var(--color-surface-subtle)");
+    expect(marker).not.toContain("--color-success");
   });
 
   it("provides skip navigation, landmarks and a closed mobile drawer trigger", () => {
