@@ -590,7 +590,12 @@ function ReviewStep({
         )}
       </section>
 
-      <div className={styles.persistenceState}>
+      <div
+        className={styles.persistenceState}
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+      >
         <Status tone={isPersisted ? "success" : storageUnavailable ? "warning" : "neutral"}>
           {isPersisted
             ? "Salvo neste dispositivo"
