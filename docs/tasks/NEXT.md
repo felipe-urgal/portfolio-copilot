@@ -1,6 +1,6 @@
 # Próxima Atividade — UX/UI R9: acessibilidade, responsividade e visual fidelity QA
 
-**Status:** IN PROGRESS — prioridade canônica atual em 2026-09-04
+**Status:** IN PROGRESS — prioridade canônica atual em 2026-09-05
 
 ## Issue canônica
 
@@ -33,7 +33,7 @@ Audit final do R8:
 
 Validar o produto redesenhado como um único sistema em acessibilidade, responsividade, browsers e fidelidade ao Protótipo 3/R1 antes do gate final R10.
 
-## Progresso incremental até 2026-09-04
+## Progresso incremental até 2026-09-05
 
 O R9 segue sendo executado em verticais pequenas e verificáveis enquanto o browser QA remoto permanece indisponível:
 
@@ -73,6 +73,12 @@ O R9 segue sendo executado em verticais pequenas e verificáveis enquanto o brow
 - PR #140 — o hardening de overflow horizontal do Aporte agrupa quatro atividades coesas: baseline, concentração, execução/custos e snapshot auditável;
 - os seis containers tabulares horizontais passam a ser regiões nomeadas e focáveis (`role="region"`, `tabIndex={0}`), permitindo entrada explícita pelo teclado sem depender de gesto de ponteiro; o focus ring reutiliza os tokens canônicos existentes;
 - nenhuma tabela, cálculo, ordem do pipeline ou layout foi alterado; a regressão dedicada protege as seis regiões e o estilo de foco, e `docs/design/PORTFOLIO.md` registra o contrato;
+- PR #147 — o status principal do perfil no Dashboard passa a usar `role="status"`, permitindo anunciar a restauração local assíncrona de `Perfil pendente` para `Perfil configurado` sem alterar layout, domínio ou persistência; regressão e `docs/design/DASHBOARD.md` registram o contrato; CI do head #710 concluído em success;
+- PR #148 — o marcador da utility `Saúde da aplicação` no AppShell deixa de usar tokens de `success` sem uma fonte real de liveness/readiness e passa a ser visualmente neutro; `/health` continua sendo a surface que expõe o estado operacional real; regressão e `docs/design/APP-SHELL.md` registram o contrato; CI do head #711 concluído em success;
+- PR #149 — o contador persistente do catálogo de ativos (`Nenhum ativo` / `N ativos`) passa a usar `role="status"`, reutilizando o feedback já visível após cadastro local sem toast, foco artificial ou estado paralelo; regressão e `docs/design/PORTFOLIO.md` registram o contrato; CI do head #712 concluído em success;
+- PR #150 — o contador persistente do Transaction Ledger (`Ledger vazio` / `N movimentações`) passa a usar `role="status"` para anunciar `CASH_IN`, `CASH_OUT`, `BUY` e `SELL` válidos sem alterar cálculo, posições, persistência ou foco; após o merge do #149, a branch foi reconciliada sobre a `main` porque ambas tocavam os mesmos três arquivos, preservando as duas verticais; head final `0286cca999b8082b156b46ea3d30abbedf1786e0`, CI #719 concluído em success e `docs/design/PORTFOLIO.md` reconciliado;
+- PR #151 — o bloco de persistência da revisão do onboarding passa a expor `role="status"`, `aria-live="polite"` e `aria-atomic="true"`, anunciando salvar/remover/falha sem mover foco nem alterar o opt-in; a falha inicial de formatação foi corrigida com a versão canônica do Prettier do repositório; head final `810ac8bfef7775f1a856851fdea27308897fc50d`, CI #722 concluído em success e `docs/design/ONBOARDING.md` reconciliado;
+- PRs #147, #148, #149, #150 e #151 foram mergeados por squash; a `main` resultante do lote ficou em `dd0e78b0ce576776db90e84ecfa2d4da6174eaa2`; o R9 permanece aberto e R10 não é promovido enquanto browser QA/fidelity/keyboard-only E2E/screen-reader smoke não tiverem evidência reproduzível.
 - nesta execução, mesmo com a URL pública fornecida (`portfolio-copilot-plum.vercel.app`) e a URL do projeto na Vercel, o ambiente continuou sem acesso navegável: fetch não abriu a página, o conector Vercel não possui permissão para listar o projeto e o shell não resolve `*.vercel.app`;
 - portanto screenshots, fidelity ledger, keyboard-only end-to-end e screen-reader smoke continuam **não executados** e não devem ser tratados como evidência existente.
 
