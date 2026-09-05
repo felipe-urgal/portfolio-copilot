@@ -117,6 +117,8 @@ Tipo, data, ativo quando aplicável, quantidade e settlement ficam escaneáveis.
 
 No hardening R9, as legendas de tipo/operação deixam explícito que a decisão é obrigatória, os radios correspondentes usam `required`, e valor de caixa, ativo, quantidade e settlement comunicam a obrigatoriedade nativamente sem substituir `createCashTransactionSnapshot(...)` ou `createAssetTradeSnapshot(...)`.
 
+No hardening R9, o contador persistente do Transaction Ledger (`Ledger vazio` / `N movimentações`) usa `role="status"`. Cada `CASH_IN`, `CASH_OUT`, `BUY` ou `SELL` validado passa a atualizar uma região já visível no mesmo task, anunciando a conclusão da mutação sem toast, foco artificial ou estado de sucesso paralelo.
+
 ### Aporte
 
 A tarefa de aporte preserva o pipeline completo, mas migra forms, actions, status e feedback para primitives R2.
@@ -170,7 +172,8 @@ Nenhuma dependência visual nova foi adicionada.
 - detalhes técnicos usam `details/summary` com target acessível;
 - navegação local não declara semântica de tabs sem implementar o respectivo modelo de teclado;
 - informação essencial não depende de hover ou apenas de cor;
-- no hardening R9, uma ação que desaparece após mutação deve entregar foco a um destino persistente; a remoção da cópia local do perfil transfere foco para a nota de sessão depois que o estado de persistência muda.
+- no hardening R9, uma ação que desaparece após mutação deve entregar foco a um destino persistente; a remoção da cópia local do perfil transfere foco para a nota de sessão depois que o estado de persistência muda;
+- mutações válidas do Transaction Ledger reutilizam seu contador persistente como região `status`, mantendo o submit no contexto e evitando feedback visual-only.
 
 R9 continua responsável pelo audit integrado WCAG 2.2 AA e visual fidelity final.
 
