@@ -712,7 +712,11 @@ export function FinancialOnboardingFlow() {
                 aria-current={isCurrent ? "step" : undefined}
                 data-completed={isCompleted ? "true" : undefined}
               >
-                <span className={styles.progressNumber} aria-hidden="true">
+                <span
+                  className={styles.progressNumber}
+                  aria-label={isCompleted ? "Concluída" : undefined}
+                  aria-hidden={isCompleted ? undefined : true}
+                >
                   {isCompleted ? "✓" : index + 1}
                 </span>
                 <span className={styles.progressCopy}>
