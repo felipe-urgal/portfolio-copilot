@@ -80,7 +80,12 @@ export function FinancialProfileSessionSummary() {
       <Disclosure
         summary="Contexto financeiro da sessão"
         summaryAside={
-          <Status tone={financialProfile === null ? "neutral" : "info"}>
+          <Status
+            tone={financialProfile === null ? "neutral" : "info"}
+            role="status"
+            aria-live="polite"
+            aria-atomic="true"
+          >
             {financialProfile === null
               ? "Não configurado"
               : isPersisted
