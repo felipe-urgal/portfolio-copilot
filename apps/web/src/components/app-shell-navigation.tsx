@@ -102,7 +102,7 @@ function AccountArea({
         <Link
           className={styles.accountLink}
           href="/sign-out"
-          aria-label={`Sessão autenticada como ${displayName}. Abrir opções para sair.`}
+          aria-label={`${displayName}. Sair da sessão`}
           onClick={() => onNavigate?.()}
         >
           <span className={styles.accountAvatar} aria-hidden="true">
