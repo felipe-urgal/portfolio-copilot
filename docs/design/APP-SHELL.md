@@ -23,6 +23,8 @@ A navegação primária contém somente capacidades existentes:
 
 `/health` permanece como utility operacional e `/sign-out` como affordance da sessão autenticada. O shell não cria placeholders para Assistant, relatórios, teses ou qualquer outra capacidade futura.
 
+O affordance de `/health` no shell é deliberadamente neutro. O AppShell não consulta liveness/readiness e, portanto, não pode exibir cor ou badge que implique `healthy` antes da navegação. O estado operacional real é apresentado somente dentro da rota `/health`, onde existe uma fonte concreta para essa afirmação.
+
 ## Desktop
 
 A partir de 961px:
@@ -96,6 +98,7 @@ Essa redução de payload mantém o drawer interativo sem serializar dados de se
 - não criar nova navegação global dentro de features;
 - não recriar Button, Container, focus ring ou feedback fundamental no CSS do shell/feature;
 - não adicionar rota ao shell antes da capacidade real existir;
+- não representar health/success/stale no shell sem uma fonte real que sustente esse estado;
 - domínio, auth, ownership e persistência não pertencem ao `AppShell`;
 - context rail do futuro Copiloto só entra quando houver capacidade funcional correspondente;
 - mudanças responsivas precisam preservar o mesmo modelo de informação, não criar uma navegação alternativa.
@@ -106,6 +109,7 @@ O R3/R9 possui testes para:
 
 - rotas reais e active route;
 - ausência de rotas fictícias;
+- utility de health visualmente neutra enquanto o shell não consulta estado operacional;
 - skip link e landmarks;
 - trigger mobile fechado por padrão;
 - contexto de conta sem exposição do subject interno;
