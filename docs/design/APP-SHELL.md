@@ -80,7 +80,7 @@ Cada `AppShell` fornece:
 
 Features inseridas dentro do shell não devem criar outro `main` nem um segundo chrome de navegação.
 
-Quando um controle visível recebe `aria-label`, o nome acessível deve preservar a ação que aparece na tela. Em particular, o link de conta mantém `Sair da sessão` no nome acessível e acrescenta apenas o `displayName` como contexto; ele não substitui o label visível por uma ação alternativa como “abrir opções”. Isso preserva label-in-name e descreve a navegação real para `/sign-out`.
+O link de conta deriva seu nome acessível do próprio conteúdo visível (`displayName` + `Sair da sessão`) em vez de sobrescrevê-lo com `aria-label`. Assim, a ação que aparece na tela permanece literalmente no nome acessível e futuras mudanças de copy não criam uma segunda fonte de verdade para label-in-name.
 
 ## Boundary server/client e privacidade
 
@@ -101,7 +101,7 @@ Essa redução de payload mantém o drawer interativo sem serializar dados de se
 - não recriar Button, Container, focus ring ou feedback fundamental no CSS do shell/feature;
 - não adicionar rota ao shell antes da capacidade real existir;
 - não representar health/success/stale no shell sem uma fonte real que sustente esse estado;
-- não substituir labels visíveis de ações por nomes acessíveis divergentes quando `aria-label` for necessário;
+- preferir o nome acessível nativo derivado da copy visível quando o controle já contém label suficiente; não criar `aria-label` redundante que possa divergir;
 - domínio, auth, ownership e persistência não pertencem ao `AppShell`;
 - context rail do futuro Copiloto só entra quando houver capacidade funcional correspondente;
 - mudanças responsivas precisam preservar o mesmo modelo de informação, não criar uma navegação alternativa.
@@ -115,7 +115,7 @@ O R3/R9 possui testes para:
 - utility de health visualmente neutra enquanto o shell não consulta estado operacional;
 - skip link e landmarks;
 - trigger mobile fechado por padrão;
-- contexto de conta sem exposição do subject interno e com `Sair da sessão` preservado no nome acessível;
+- contexto de conta sem exposição do subject interno e com nome acessível derivado de `displayName` + `Sair da sessão` visíveis;
 - contratos CSS de sidebar/drawer/reduced motion;
 - touch target canônico da brand e dos controles de navegação mobile;
 - onboarding sem shell paralelo.
