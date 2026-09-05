@@ -39,6 +39,8 @@ AppShell
 
 O stepper é orientação, não uma segunda navegação. Por isso usa composição aberta e marcadores de etapa em vez de quatro cards concorrentes com o formulário.
 
+No hardening R9, a etapa atual continua sendo identificada por `aria-current="step"`. Etapas anteriores preservam `data-completed` para styling e passam a expor o estado textual `Concluída` por meio do próprio marcador de progresso; o check visual deixa de ser a única forma de comunicar conclusão. Etapas futuras mantêm seus números decorativos fora da árvore acessível, evitando ruído sem criar um pattern de tabs ou navegação inexistente.
+
 ## 3. Etapas
 
 ### Perfil
