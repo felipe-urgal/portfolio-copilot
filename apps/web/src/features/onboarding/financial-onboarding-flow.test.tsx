@@ -124,6 +124,15 @@ describe("FinancialOnboardingFlow", () => {
     expect(FLOW_SOURCE).toContain("ref={addGoalButtonRef}");
   });
 
+  it("announces persistence changes in review without moving focus", () => {
+    expect(FLOW_SOURCE).toMatch(
+      /className=\{styles\.persistenceState\}\s+role="status"\s+aria-live="polite"\s+aria-atomic="true"/,
+    );
+    expect(FLOW_SOURCE).toContain("Salvo neste dispositivo");
+    expect(FLOW_SOURCE).toContain("Armazenamento indisponível");
+    expect(FLOW_SOURCE).toContain("Somente nesta sessão");
+  });
+
   it("keeps persistence detail in the canonical progressive disclosure without changing opt-in", () => {
     const html = renderFlow();
 
