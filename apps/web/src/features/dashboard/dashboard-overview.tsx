@@ -84,7 +84,9 @@ export function DashboardOverview({ displayName }: DashboardOverviewProps) {
               <span className={styles.eyebrow}>Contexto validado</span>
               <h2 id="dashboard-metrics-title">O que já é possível afirmar</h2>
             </div>
-            <Status tone="neutral">{persistenceLabel(persistenceStatus)}</Status>
+            <Status role="status" aria-live="polite" aria-atomic="true" tone="neutral">
+              {persistenceLabel(persistenceStatus)}
+            </Status>
           </div>
 
           <Grid minimum="sm" space="sm" className={styles.metricsGrid}>

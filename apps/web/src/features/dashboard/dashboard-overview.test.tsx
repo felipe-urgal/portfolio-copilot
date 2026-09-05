@@ -3,7 +3,10 @@ import { describe, expect, it } from "vitest";
 
 import type { FinancialProfileSnapshot } from "@portfolio-copilot/domain";
 
-import { FinancialSessionProvider } from "@/components/financial-session";
+import {
+  FinancialSessionProvider,
+  type FinancialProfilePersistenceStatus,
+} from "@/components/financial-session";
 
 import { DashboardOverview } from "./dashboard-overview";
 
@@ -23,9 +26,15 @@ const PROFILE: FinancialProfileSnapshot = {
   ],
 };
 
-function renderDashboard(initialFinancialProfile: FinancialProfileSnapshot | null = null): string {
+function renderDashboard(
+  initialFinancialProfile: FinancialProfileSnapshot | null = null,
+  initialPersistenceStatus: FinancialProfilePersistenceStatus = "memory-only",
+): string {
   return renderToStaticMarkup(
-    <FinancialSessionProvider initialFinancialProfile={initialFinancialProfile}>
+    <FinancialSessionProvider
+      initialFinancialProfile={initialFinancialProfile}
+      initialPersistenceStatus={initialPersistenceStatus}
+    >
       <DashboardOverview displayName="Felipe" />
     </FinancialSessionProvider>,
   );
@@ -54,6 +63,14 @@ describe("DashboardOverview R6", () => {
     expect(absentHtml).toContain("Perfil pendente");
     expect(profileHtml).toContain('role="status"');
     expect(profileHtml).toContain("Perfil configurado");
+  });
+
+  it("announces persistence changes from the existing metrics status", () => {
+    const html = renderDashboard(PROFILE, "persisted");
+
+    expect(html).toContain("Salvo neste dispositivo");
+    expect(html).toContain('aria-live="polite"');
+    expect(html).toContain('aria-atomic="true"');
   });
 
   it("keeps nested empty states within the dashboard section headings", () => {
