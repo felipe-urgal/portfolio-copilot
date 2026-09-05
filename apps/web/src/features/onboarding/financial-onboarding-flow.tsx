@@ -714,6 +714,7 @@ export function FinancialOnboardingFlow() {
               >
                 <span
                   className={styles.progressNumber}
+                  role={isCompleted ? "img" : undefined}
                   aria-label={isCompleted ? "Concluída" : undefined}
                   aria-hidden={isCompleted ? undefined : true}
                 >
