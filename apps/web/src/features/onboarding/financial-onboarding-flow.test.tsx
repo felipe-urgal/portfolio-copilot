@@ -44,6 +44,14 @@ describe("FinancialOnboardingFlow", () => {
     expect(html).not.toContain('aria-label="Navegação principal"');
   });
 
+  it("exposes completed steps without changing the current-step contract", () => {
+    expect(FLOW_SOURCE).toContain('aria-current={isCurrent ? "step" : undefined}');
+    expect(FLOW_SOURCE).toContain('data-completed={isCompleted ? "true" : undefined}');
+    expect(FLOW_SOURCE).toContain('role={isCompleted ? "img" : undefined}');
+    expect(FLOW_SOURCE).toContain('aria-label={isCompleted ? "Concluída" : undefined}');
+    expect(FLOW_SOURCE).toContain("aria-hidden={isCompleted ? undefined : true}");
+  });
+
   it("keeps profile inputs grouped, labelled and described", () => {
     const html = renderFlow();
 
