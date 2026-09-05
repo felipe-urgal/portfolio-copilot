@@ -71,7 +71,7 @@ export function DashboardOverview({ displayName }: DashboardOverviewProps) {
             : "Comece pelo contexto financeiro. O Dashboard não preenche lacunas com patrimônio, retorno ou recomendações fictícias."
         }
         actions={
-          <Status tone={hasProfile ? "success" : "warning"}>
+          <Status role="status" tone={hasProfile ? "success" : "warning"}>
             {hasProfile ? "Perfil configurado" : "Perfil pendente"}
           </Status>
         }
