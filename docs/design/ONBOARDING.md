@@ -71,6 +71,7 @@ A revisão apresenta o snapshot já validado antes de qualquer decisão de persi
 - moeda, risco, horizonte e reserva;
 - objetivos, quando existirem;
 - `Status` para distinguir `somente nesta sessão`, `salvo neste dispositivo` e `armazenamento indisponível`;
+- o bloco que reúne `Status` + explicação de persistência é uma região `role="status"`, `aria-live="polite"` e `aria-atomic="true"`, para anunciar salvar/remover/falha como uma única mudança coerente sem mover foco;
 - editar, salvar/remover persistência e recomeçar continuam ações explícitas.
 
 ## 4. Persistência
@@ -84,6 +85,8 @@ Antes da revisão, o detalhe fica em progressive disclosure (`details/summary`).
 - recarregar pode restaurar o snapshot local quando disponível;
 - nada é sincronizado automaticamente com conta, servidor ou outro dispositivo;
 - sair da sessão autenticada não é equivalente a apagar o perfil local.
+
+No hardening R9, mudanças de persistência ocorridas dentro da própria etapa de revisão são anunciadas pela região de status existente. A implementação não adiciona toast, modal, redirecionamento ou foco artificial e não altera o opt-in.
 
 ## 5. Primitives canônicas
 
