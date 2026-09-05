@@ -117,9 +117,10 @@ describe("PortfolioWorkspace", () => {
     }
   });
 
-  it("exposes the R7 task model after portfolio creation without an incomplete ARIA tabs pattern", () => {
+  it("exposes truthful local task selection without an incomplete ARIA tabs pattern", () => {
     const html = renderToStaticMarkup(<PortfolioWorkspace initialSnapshot={SNAPSHOT} />);
 
+    expect(html).toContain('role="group"');
     expect(html).toContain('aria-label="Tarefas da carteira"');
     expect(html).toContain("Visão geral");
     expect(html).toContain("Ativos e posições");
@@ -127,7 +128,10 @@ describe("PortfolioWorkspace", () => {
     expect(html).toContain("Aporte");
     expect(html).toContain("Configuração");
     expect(html).toContain('id="portfolio-task-overview"');
-    expect(html).toContain('aria-current="page"');
+    expect(html).toContain('aria-controls="portfolio-panel-overview"');
+    expect(html.match(/aria-pressed="true"/g)).toHaveLength(1);
+    expect(html.match(/aria-pressed="false"/g)).toHaveLength(4);
+    expect(html).not.toContain('aria-current="page"');
     expect(html).not.toContain('role="tablist"');
     expect(html).not.toContain('role="tabpanel"');
     expect(html).toContain('id="portfolio-panel-assets"');

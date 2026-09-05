@@ -68,7 +68,7 @@ Nenhum ativo, saldo, posição ou transação inicial é presumido.
 
 ### Navegação por tarefa
 
-Depois da criação, `/portfolio` mantém uma única rota e expõe navegação local simples:
+Depois da criação, `/portfolio` mantém uma única rota e expõe um seletor local simples:
 
 - Visão geral;
 - Ativos e posições;
@@ -76,7 +76,7 @@ Depois da criação, `/portfolio` mantém uma única rota e expõe navegação l
 - Aporte;
 - Configuração.
 
-A navegação usa botões com `aria-current`, não um pattern ARIA de tabs incompleto. As seções permanecem montadas enquanto são alternadas, preservando rascunhos e o estado interno do pipeline de aporte durante a sessão.
+O seletor é um `role="group"` de botões e comunica a tarefa ativa com `aria-pressed`, mantendo `aria-controls` para relacionar cada controle ao painel correspondente. Ele não usa `aria-current="page"`, porque a seleção não navega para outra página, e também não declara um pattern ARIA de tabs sem implementar seu modelo de teclado. As seções permanecem montadas enquanto são alternadas, preservando rascunhos e o estado interno do pipeline de aporte durante a sessão.
 
 ### Visão geral
 
@@ -169,12 +169,12 @@ Nenhuma dependência visual nova foi adicionada.
 
 - desktop: grids por tarefa sem empilhar toda a aplicação simultaneamente;
 - laptop/tablet: colunas viram fluxo único antes de comprimir formulários;
-- mobile: campos, resumos e listas empilham; navegação local pode rolar horizontalmente;
+- mobile: campos, resumos e listas empilham; seletor local pode rolar horizontalmente;
 - controles herdam touch target/focus do design system;
 - campos e escolhas obrigatórios nas etapas de criação, ativos, transações e aporte expõem `required` nativo sem delegar a validação ao browser, porque os forms preservam `noValidate` e as funções de domínio continuam sendo a autoridade;
 - tabelas do Aporte que podem exceder a largura disponível preservam scroll horizontal e oferecem região nomeada, entrada no foco de teclado e focus ring visível para operação independente de gesto de ponteiro;
 - detalhes técnicos usam `details/summary` com target acessível;
-- navegação local não declara semântica de tabs sem implementar o respectivo modelo de teclado;
+- seletor local usa `role="group"` + `aria-pressed`, preserva `aria-controls` e não declara semântica de página ou tabs para uma troca de painel na mesma rota;
 - informação essencial não depende de hover ou apenas de cor;
 - no hardening R9, uma ação que desaparece após mutação deve entregar foco a um destino persistente; a remoção da cópia local do perfil transfere foco para a nota de sessão depois que o estado de persistência muda;
 - restauração assíncrona do perfil compartilhado reutiliza o `Status` já visível no summary como região live `polite`/atômica, sem feedback duplicado;
