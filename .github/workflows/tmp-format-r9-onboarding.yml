@@ -1,0 +1,34 @@
+name: tmp-format-r9-onboarding
+
+on:
+  push:
+    branches:
+      - fix/r9-onboarding-persistence-announcement
+    paths:
+      - .github/workflows/tmp-format-r9-onboarding.yml
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/r9-onboarding-persistence-announcement
+          fetch-depth: 0
+      - name: Format the onboarding source with the repository Prettier version
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx --yes prettier@3.9.6 --write apps/web/src/features/onboarding/financial-onboarding-flow.tsx
+          if git diff --quiet; then
+            echo "No formatting changes required"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add apps/web/src/features/onboarding/financial-onboarding-flow.tsx
+          git commit -m "style: format onboarding persistence status"
+          git push origin HEAD:fix/r9-onboarding-persistence-announcement
