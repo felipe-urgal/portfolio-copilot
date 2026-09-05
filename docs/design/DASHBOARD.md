@@ -67,7 +67,8 @@ A seção só aparece quando existe perfil validado.
 
 - quantidade de objetivos é um fato determinístico;
 - meta de reserva só aparece quando foi declarada;
-- ausência de meta não vira zero ou placeholder financeiro.
+- ausência de meta não vira zero ou placeholder financeiro;
+- o `Status` de persistência já exibido ao lado da seção (`Somente nesta sessão`, `Salvo neste dispositivo` ou `Armazenamento local indisponível`) é uma região `role="status"`, `aria-live="polite"` e `aria-atomic="true"`; restauração ou remoção da cópia local atualiza essa região existente sem toast, modal ou foco artificial.
 
 ### Panorama de Carteira
 
@@ -115,7 +116,8 @@ O fluxo de segurança não mudou:
 - focus ring e touch targets vêm das primitives/tokens;
 - reduced motion permanece no boundary global do design system;
 - landmarks continuam pertencendo ao AppShell; o Dashboard não cria outro `main`;
-- mudanças assíncronas do estado principal do perfil são anunciadas por uma região `status`, sem transformar fatos estáticos secundários em live regions desnecessárias.
+- mudanças assíncronas do estado principal do perfil são anunciadas por uma região `status`;
+- mudanças do estado de persistência reutilizam o `Status` compacto já visível como região live `polite`/atômica, evitando feedback duplicado e sem transformar fatos estáticos secundários em live regions desnecessárias.
 
 ## Fora de escopo do R6
 
