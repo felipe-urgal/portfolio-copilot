@@ -951,7 +951,7 @@ export function PortfolioWorkspace({
                     <h2>Transaction Ledger</h2>
                     <p>Mais recentes primeiro; cada item é um snapshot validado.</p>
                   </div>
-                  <Status tone="neutral">
+                  <Status role="status" tone="neutral">
                     {countLabel(
                       transactions.length,
                       "movimentação",

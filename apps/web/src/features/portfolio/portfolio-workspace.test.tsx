@@ -19,6 +19,9 @@ const SCOPED_VALIDATION_FOCUS = /focusFirstInvalidField\(event\.currentTarget\);
 const ASSET_CATALOG_STATUS =
   /<Status role="status" tone="neutral">\s*\{countLabel\(assets\.length,/;
 
+const LEDGER_STATUS =
+  /<Status role="status" tone="neutral">\s*\{countLabel\(\s*transactions\.length,/;
+
 const SNAPSHOT = {
   id: "8d5a7a27-2db8-4a51-a6c8-d84f78fd1298",
   name: "Carteira principal",
@@ -94,6 +97,10 @@ describe("PortfolioWorkspace", () => {
 
   it("announces the updated asset catalog count after local registration", () => {
     expect(PORTFOLIO_SOURCE).toMatch(ASSET_CATALOG_STATUS);
+  });
+
+  it("announces the updated Transaction Ledger count after valid cash flows and trades", () => {
+    expect(PORTFOLIO_SOURCE).toMatch(LEDGER_STATUS);
   });
 
   it("exposes native required semantics for cash flows and asset trades", () => {
