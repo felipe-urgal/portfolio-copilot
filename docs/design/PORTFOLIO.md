@@ -148,6 +148,8 @@ Reset da Carteira não remove perfil financeiro nem dados da conta.
 
 O resumo compartilhado do perfil permanece disponível na página, mas passa a ser disclosure secundário sobre `Surface`, `Status`, `Button`, `LinkButton` e `EmptyState` canônicos. Ele não domina mais a entrada do workspace.
 
+No hardening R9, o `Status` persistente no próprio summary funciona como região live `polite` e atômica. Assim, quando `FinancialSessionProvider` restaura assincronamente um perfil salvo após a hidratação, a transição de `Não configurado` para `Somente nesta sessão`/`Salvo neste dispositivo` pode ser anunciada sem abrir o disclosure e sem criar toast ou estado paralelo. A remoção manual da cópia local continua usando o handoff de foco já definido para a nota persistente.
+
 ## Design system
 
 R7 remove implementações locais de controles fundamentais da Carteira e do pipeline de aporte:
@@ -175,6 +177,7 @@ Nenhuma dependência visual nova foi adicionada.
 - navegação local não declara semântica de tabs sem implementar o respectivo modelo de teclado;
 - informação essencial não depende de hover ou apenas de cor;
 - no hardening R9, uma ação que desaparece após mutação deve entregar foco a um destino persistente; a remoção da cópia local do perfil transfere foco para a nota de sessão depois que o estado de persistência muda;
+- restauração assíncrona do perfil compartilhado reutiliza o `Status` já visível no summary como região live `polite`/atômica, sem feedback duplicado;
 - resultados de cadastro local que já possuem um contador persistente reutilizam esse `Status` como região live, evitando feedback visual-only e componentes redundantes.
 - mutações válidas do Transaction Ledger reutilizam seu contador persistente como região `status`, mantendo o submit no contexto e evitando feedback visual-only.
 

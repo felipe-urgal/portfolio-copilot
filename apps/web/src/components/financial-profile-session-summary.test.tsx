@@ -64,6 +64,17 @@ describe("FinancialProfileSessionSummary", () => {
     expect(html).not.toMatch(/>\s*0%\s*</);
   });
 
+  it("announces asynchronous session-profile status changes from the persistent summary", () => {
+    const html = renderSummary(null);
+
+    expect(html).toContain('role="status"');
+    expect(html).toContain('aria-live="polite"');
+    expect(html).toContain('aria-atomic="true"');
+    expect(SUMMARY_SOURCE).toContain('role="status"');
+    expect(SUMMARY_SOURCE).toContain('aria-live="polite"');
+    expect(SUMMARY_SOURCE).toContain('aria-atomic="true"');
+  });
+
   it("renders profile, reserve target and goals from the shared snapshot without exposing ids", () => {
     const html = renderSummary(PROFILE);
 
