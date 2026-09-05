@@ -1,0 +1,87 @@
+name: tmp-reconcile-r9-ledger
+
+on:
+  push:
+    branches:
+      - fix/r9-portfolio-ledger-status
+    paths:
+      - .github/workflows/tmp-reconcile-r9-ledger.yml
+
+permissions:
+  contents: write
+
+jobs:
+  reconcile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/r9-portfolio-ledger-status
+          fetch-depth: 0
+      - name: Reconcile with main and reapply the ledger vertical
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin main
+          git merge --no-edit origin/main || true
+
+          unexpected="$(git diff --name-only --diff-filter=U | grep -Ev '^(apps/web/src/features/portfolio/portfolio-workspace\.tsx|apps/web/src/features/portfolio/portfolio-workspace\.test\.tsx|docs/design/PORTFOLIO\.md)$' || true)"
+          if [ -n "$unexpected" ]; then
+            echo "Unexpected merge conflicts:"
+            echo "$unexpected"
+            exit 1
+          fi
+
+          git checkout origin/main -- \
+            apps/web/src/features/portfolio/portfolio-workspace.tsx \
+            apps/web/src/features/portfolio/portfolio-workspace.test.tsx \
+            docs/design/PORTFOLIO.md
+
+          python3 <<'PY'
+          from pathlib import Path
+
+          source_path = Path("apps/web/src/features/portfolio/portfolio-workspace.tsx")
+          source = source_path.read_text()
+          old = '''                  <Status tone="neutral">\n                    {countLabel(\n                      transactions.length,\n'''
+          new = '''                  <Status role="status" tone="neutral">\n                    {countLabel(\n                      transactions.length,\n'''
+          if source.count(old) != 1:
+              raise SystemExit("Could not locate the Transaction Ledger status exactly once")
+          source_path.write_text(source.replace(old, new, 1))
+
+          test_path = Path("apps/web/src/features/portfolio/portfolio-workspace.test.tsx")
+          test = test_path.read_text()
+          if "const LEDGER_STATUS =" in test:
+              raise SystemExit("LEDGER_STATUS already present unexpectedly")
+          test = test.replace(
+              "\nconst SNAPSHOT = {\n",
+              '''\nconst LEDGER_STATUS =\n  /<Status role="status" tone="neutral">\\s*\\{countLabel\\(\\s*transactions\\.length,/;\n\nconst SNAPSHOT = {\n''',
+              1,
+          )
+          marker = '''  it("exposes native required semantics for cash flows and asset trades", () => {\n'''
+          addition = '''  it("announces the updated Transaction Ledger count after valid cash flows and trades", () => {\n    expect(PORTFOLIO_SOURCE).toMatch(LEDGER_STATUS);\n  });\n\n'''
+          if test.count(marker) != 1:
+              raise SystemExit("Could not locate ledger-test insertion marker exactly once")
+          test_path.write_text(test.replace(marker, addition + marker, 1))
+
+          docs_path = Path("docs/design/PORTFOLIO.md")
+          docs = docs_path.read_text()
+          transaction_marker = "No hardening R9, as legendas de tipo/operação deixam explícito que a decisão é obrigatória, os radios correspondentes usam `required`, e valor de caixa, ativo, quantidade e settlement comunicam a obrigatoriedade nativamente sem substituir `createCashTransactionSnapshot(...)` ou `createAssetTradeSnapshot(...)`.\n"
+          transaction_addition = "\nNo hardening R9, o contador persistente do Transaction Ledger (`Ledger vazio` / `N movimentações`) usa `role=\"status\"`. Cada `CASH_IN`, `CASH_OUT`, `BUY` ou `SELL` validado passa a atualizar uma região já visível no mesmo task, anunciando a conclusão da mutação sem toast, foco artificial ou estado de sucesso paralelo.\n"
+          if docs.count(transaction_marker) != 1:
+              raise SystemExit("Could not locate transaction documentation marker exactly once")
+          docs = docs.replace(transaction_marker, transaction_marker + transaction_addition, 1)
+          accessibility_marker = "- resultados de cadastro local que já possuem um contador persistente reutilizam esse `Status` como região live, evitando feedback visual-only e componentes redundantes.\n"
+          accessibility_addition = "- mutações válidas do Transaction Ledger reutilizam seu contador persistente como região `status`, mantendo o submit no contexto e evitando feedback visual-only.\n"
+          if docs.count(accessibility_marker) != 1:
+              raise SystemExit("Could not locate accessibility documentation marker exactly once")
+          docs_path.write_text(docs.replace(accessibility_marker, accessibility_marker + accessibility_addition, 1))
+          PY
+
+          git add \
+            apps/web/src/features/portfolio/portfolio-workspace.tsx \
+            apps/web/src/features/portfolio/portfolio-workspace.test.tsx \
+            docs/design/PORTFOLIO.md
+          git commit -m "chore: reconcile ledger status with main"
+          git push origin HEAD:fix/r9-portfolio-ledger-status
