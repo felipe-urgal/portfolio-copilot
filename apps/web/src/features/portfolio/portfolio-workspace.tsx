@@ -430,7 +430,7 @@ export function PortfolioWorkspace({
         </div>
       ) : (
         <>
-          <nav className={styles.taskTabs} aria-label="Tarefas da carteira">
+          <div className={styles.taskTabs} role="group" aria-label="Tarefas da carteira">
             {PORTFOLIO_TASKS.map((task) => (
               <Button
                 key={task.id}
@@ -439,7 +439,7 @@ export function PortfolioWorkspace({
                 }}
                 size="md"
                 variant={activeTask === task.id ? "secondary" : "ghost"}
-                aria-current={activeTask === task.id ? "page" : undefined}
+                aria-pressed={activeTask === task.id}
                 aria-controls={`portfolio-panel-${task.id}`}
                 id={`portfolio-task-${task.id}`}
                 onClick={() => setActiveTask(task.id)}
@@ -447,7 +447,7 @@ export function PortfolioWorkspace({
                 {task.label}
               </Button>
             ))}
-          </nav>
+          </div>
 
           <section
             className={styles.taskPanel}
