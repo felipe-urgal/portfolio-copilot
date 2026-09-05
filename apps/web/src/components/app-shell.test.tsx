@@ -72,7 +72,7 @@ describe("AppShell", () => {
     expect(html).toContain("Felipe Urgal");
     expect(html).toContain("FU");
     expect(html).toContain("Sair da sessão");
-    expect(NAVIGATION_SOURCE).not.toContain('aria-label={`${displayName}');
+    expect(NAVIGATION_SOURCE).not.toContain("aria-label={`${displayName}");
     expect(html).not.toContain("Abrir opções para sair");
     expect(html).not.toContain(IDENTITY.subject);
   });
