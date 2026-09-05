@@ -24,11 +24,15 @@ Topologia operacional:
 - health canônico: `https://portfolio-copilot-plum.vercel.app/api/health/ready`;
 - exposição pública/monetização: continua fora de escopo até o Regulatory Gate aplicável ser concluído.
 
+`vercel.json` define deliberadamente `git.deploymentEnabled=false`. Desde o #145, merges e pushes em `main` não devem criar um segundo deployment Git-triggered automaticamente; a etapa de promoção é orquestrada pelo Dev Dashboard e executa o deployment no provider de forma explícita.
+
 Nenhum segredo, URL de banco ou OAuth secret é versionado.
 
 ## Production Contract
 
-O contrato ativo usa `strategy=git-managed`. A Vercel é responsável por criar o deployment a partir da branch `main`; não existe deploy local equivalente nem script `prod:deploy`.
+O contrato ativo continua usando `strategy=git-managed`: `main` é a branch/revisão de produção e a Vercel é o provider externo responsável por executar o deployment. Esse nome **não** significa que a integração Git nativa da Vercel esteja habilitada. Ela permanece desabilitada em `vercel.json` para evitar deploy duplicado no plano Hobby.
+
+A promoção é coordenada pelo Dev Dashboard no passo `provider-deploy`. Não existe deploy local equivalente nem script `prod:deploy` neste repositório.
 
 Comandos declarados para o Dev Dashboard:
 
@@ -38,7 +42,7 @@ pnpm prod:migrate
 pnpm prod:verify
 ```
 
-`prod:status` permanece disponível para diagnóstico manual. A promoção para produção acontece por Git/Vercel após o merge em `main`, portanto deployment não faz parte da interface local de scripts.
+`prod:status` permanece disponível para diagnóstico manual e explicita `git.deploymentEnabled=false` + `promotion=provider-deploy`. A ação direta `node scripts/production-gate.mjs deploy` continua recusada: ela não deve contornar a orquestração do Dev Dashboard nem reabilitar deployment Git automático.
 
 Políticas:
 
@@ -48,17 +52,18 @@ Políticas:
 
 ## Fluxo canônico de produção
 
-Para uma mudança pronta para produção:
+Para uma revisão elegível à promoção, o fluxo operacional é:
 
 ```text
 pnpm prod:check
--> pnpm prod:migrate        # quando houver migration aplicável
--> merge em main
--> Vercel cria o deployment
+-> pnpm prod:migrate        # somente quando houver migration aplicável
+-> provider-deploy          # Dev Dashboard promove a revisão de main na Vercel
 -> pnpm prod:verify
 ```
 
-`prod:check` valida código/build usando ambiente isolado de check. `prod:migrate` é uma operação administrativa explícita contra o banco de produção e deve ser executada somente quando a mudança exigir migration. `prod:verify` é somente leitura e valida o readiness depois da promoção.
+A revisão alvo deve estar em `main` antes do `provider-deploy`, mas **merge em `main` não é uma etapa de deployment** e não dispara promoção automática por Git. Essa separação permite validar/migrar explicitamente e evita duas tentativas concorrentes de deploy.
+
+`prod:check` valida código/build usando ambiente isolado de check. `prod:migrate` é uma operação administrativa explícita contra o banco de produção e deve ser executada somente quando a mudança exigir migration. `provider-deploy` pertence ao orquestrador externo e não é exposto como script local do projeto. `prod:verify` é somente leitura e valida o readiness depois da promoção.
 
 ## Variáveis e separação de privilégios
 
@@ -120,7 +125,7 @@ DATABASE_DIRECT_URL=<Neon direct/unpooled URL>
 PORTFOLIO_COPILOT_PRODUCTION_READY_URL=https://portfolio-copilot-plum.vercel.app/api/health/ready
 ```
 
-Os scripts `prod:migrate` e `prod:verify` não carregam `.env.local` automaticamente. No Dev Dashboard, `.env.production.local` é injetado somente nas etapas locais de produção aplicáveis; o deployment gerenciado pelo provider não recebe esse ambiente.
+Os scripts `prod:migrate` e `prod:verify` não carregam `.env.local` automaticamente. No Dev Dashboard, `.env.production.local` é injetado somente nas etapas locais de produção aplicáveis; o `provider-deploy` é uma etapa externa e não recebe esse arquivo local.
 
 Para operação manual fora do Dev Dashboard, carregue explicitamente o mesmo arquivo sem alterar os scripts canônicos:
 
@@ -146,7 +151,7 @@ GET /api/health/ready
 
 A rota humana `/health` é uma superfície informativa separada dos probes automáticos. Ela mostra somente o estado operacional básico que a página realmente consulta e não deve ser usada por automação no lugar de `/api/health/live` ou `/api/health/ready`. No hardening R9, a página também declara metadata própria (`Status da aplicação | Portfolio Copilot`) para que o documento seja identificável por título em vez de herdar o título genérico do layout raiz; isso não altera liveness, readiness nem o contrato de `prod:verify`.
 
-`prod:verify` consulta o readiness canônico com retry bounded. É somente leitura e nunca repete migration ou deploy.
+`prod:verify` consulta o readiness canônico com retry bounded. É somente leitura e nunca repete migration ou deployment automaticamente.
 
 ## Evidência do primeiro ambiente
 
@@ -205,8 +210,8 @@ Consulte também:
 
 ## Integração com o Dev Dashboard
 
-O Dev Dashboard deve interpretar este projeto como produção `git-managed` na Vercel. Não existe comando local de deploy para este projeto.
+O Dev Dashboard deve interpretar este projeto como produção `git-managed` na Vercel, usando `main` como revisão de produção e **sem** depender de deployment Git-triggered da Vercel. `vercel.json` mantém `git.deploymentEnabled=false`; a promoção real é a etapa explícita `provider-deploy` do orquestrador.
 
-Antes da promoção gerenciada, `prod:check` usa exclusivamente `.dev-dashboard/.env.check.local`; quando a política exigir, `prod:migrate` usa `.dev-dashboard/.env.production.local`. Após o merge e a promoção pela Vercel, `prod:verify` usa o mesmo ambiente local de produção para confirmar o readiness canônico. O provider não recebe nenhum desses arquivos locais.
+Antes da promoção, `prod:check` usa exclusivamente `.dev-dashboard/.env.check.local`; quando a política exigir, `prod:migrate` usa `.dev-dashboard/.env.production.local`. Em seguida, o Dev Dashboard aciona o deployment no provider e somente depois `prod:verify` usa o ambiente local de produção para confirmar o readiness canônico. O provider não recebe nenhum desses arquivos locais.
 
 Uma falha somente de verify deve ser tratada como verificável novamente, sem repetir migration ou deployment automaticamente.

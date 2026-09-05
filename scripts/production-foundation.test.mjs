@@ -30,13 +30,16 @@ const manifest = JSON.parse(
 const packageJson = JSON.parse(
   await readFile(new URL("../package.json", import.meta.url), "utf8"),
 );
+const vercelConfig = JSON.parse(
+  await readFile(new URL("../vercel.json", import.meta.url), "utf8"),
+);
 const productionGatePath = new URL(
   "./production-gate.mjs",
   import.meta.url,
 ).pathname;
 
 describe("production contract", () => {
-  it("declares the validated Vercel production without a local deploy command", () => {
+  it("declares provider orchestration without local or Git-triggered deploy", () => {
     expect(manifest.production).toMatchObject({
       enabled: true,
       strategy: "git-managed",
@@ -60,6 +63,7 @@ describe("production contract", () => {
     });
     expect(manifest.production.commands.deploy).toBeUndefined();
     expect(manifest.production.blockedBy).toBeUndefined();
+    expect(vercelConfig.git).toEqual({ deploymentEnabled: false });
   });
 
   it("uses explicit check and production entrypoints without loading .env.local implicitly", () => {
@@ -70,21 +74,26 @@ describe("production contract", () => {
     expect(packageJson.scripts["prod:verify"]).toBe(
       "node scripts/verify-production.mjs",
     );
+    expect(packageJson.scripts["prod:deploy"]).toBeUndefined();
   });
 
-  it("reports enabled git-managed status and refuses local deploy", () => {
+  it("reports Dev Dashboard provider promotion and refuses local deploy", () => {
     const status = spawnSync(process.execPath, [productionGatePath, "status"], {
       encoding: "utf8",
     });
     expect(status.status).toBe(0);
     expect(status.stdout).toContain("production.enabled=true");
     expect(status.stdout).toContain("provider=vercel");
+    expect(status.stdout).toContain("git.deploymentEnabled=false");
+    expect(status.stdout).toContain("promotion=provider-deploy");
 
     const deploy = spawnSync(process.execPath, [productionGatePath, "deploy"], {
       encoding: "utf8",
     });
     expect(deploy.status).toBe(2);
-    expect(deploy.stderr).toContain("git-managed pela Vercel");
+    expect(deploy.stderr).toContain("Dev Dashboard");
+    expect(deploy.stderr).toContain("provider-deploy");
+    expect(deploy.stderr).toContain("deployments Git automáticos da Vercel estão desabilitados");
   });
 });
 
