@@ -1,7 +1,17 @@
+import type { Metadata } from "next";
+
+import { APP_NAME } from "@portfolio-copilot/shared";
+
 import { getApplicationHealth } from "@/lib/application-health";
 import { Container, PageHeader, Stack, Status, Surface } from "@/components/ui";
 
 import styles from "./health.module.css";
+
+export const metadata: Metadata = {
+  title: `Status da aplicação | ${APP_NAME}`,
+  description:
+    "Consulte o estado operacional básico desta instância sem expor detalhes internos ou credenciais.",
+};
 
 export default function HealthPage() {
   const health = getApplicationHealth();
