@@ -66,12 +66,14 @@ describe("AppShell", () => {
     expect(html).toContain('aria-controls="app-navigation-drawer"');
   });
 
-  it("shows useful account context without leaking the canonical identity subject", () => {
+  it("keeps the visible sign-out action in the account link accessible name", () => {
     const html = renderShell();
 
     expect(html).toContain("Felipe Urgal");
     expect(html).toContain("FU");
-    expect(html).toContain("Sessão autenticada como Felipe Urgal");
+    expect(html).toContain('aria-label="Felipe Urgal. Sair da sessão"');
+    expect(html).toContain("Sair da sessão");
+    expect(html).not.toContain("Abrir opções para sair");
     expect(html).not.toContain(IDENTITY.subject);
   });
 
